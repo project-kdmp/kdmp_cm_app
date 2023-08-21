@@ -1,6 +1,24 @@
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  /// 화면 세로 방향 고정
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  final getIt = GetIt.instance;
+
+  /// 'SecureStorage'는 보안성이 더 높은 SharedPreferences라고 보시면 됩니다
+  /// 로컬 저장소
+  final secureStorageRepository = SecureStorageRepositoryImpl();
+  final getJwtUseCase = GetJwtUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<GetJwtUseCase>(getJwtUseCase);
+  final setJwtUseCase = SetJwtUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<SetJwtUseCase>(setJwtUseCase);
+
   runApp(const MyApp());
 }
 

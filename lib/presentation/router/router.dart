@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../domain/usecase/auth/get_jwt_usecase.dart';
+import '../../domain/usecase/auth/secure_storage/jwt/get_jwt_usecase.dart';
 import '../view/screen/auth/auth_screen.dart';
 import '../view/screen/home/home_screen.dart';
 

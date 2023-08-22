@@ -4,6 +4,7 @@ import '../../../../../data/constant/text/common.dart';
 import '../../../../../data/constant/text/terms.dart';
 import '../../../widget/common/custom_animated_button.dart';
 
+/// 위치 서비스 이용약관 상세 화면
 class TermsLocationScreen extends StatelessWidget {
   const TermsLocationScreen({Key? key}) : super(key: key);
 
@@ -12,7 +13,6 @@ class TermsLocationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /// 화면
     return Scaffold(
       backgroundColor: Colors.white,
       /// 상단 앱바
@@ -27,6 +27,7 @@ class TermsLocationScreen extends StatelessWidget {
           ),
         ),
       ),
+      /// 화면
       body: SafeArea(
         child: Column(
           children: [

@@ -1,6 +1,7 @@
 /// 권한 요청에서 사용될 텍스트들
 
 const permissionGuide = "접근 권한 안내";
+const permissionMessage = "아래 접근 권한을 사용합니다";
 const locationTitle = "위치";
 const locationPermissionMessage = "출발지 위치 확인을 안내하기 위해 필요한 권한";
 const contactTitle = "연락처";

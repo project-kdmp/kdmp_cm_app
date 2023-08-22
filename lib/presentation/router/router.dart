@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../domain/usecase/auth/secure_storage/jwt/get_jwt_usecase.dart';
+import '../view/screen/auth/permission/permission_screen.dart';
 import '../view/screen/auth/terms/terms_detail_screen.dart';
 import '../view/screen/auth/terms/terms_location_screen.dart';
 import '../view/screen/auth/terms/terms_screen.dart';
@@ -24,10 +25,11 @@ final GoRouter router = GoRouter(
     /// JWT가 없음 == 로그아웃된 상태, 로그인 화면(이용약관)으로 이동
     final isSignedIn = jwt.isNotEmpty;
     if (!isSignedIn) {
-      /// 회원가입 로직 진행 중일 때는, 리다이렉트를 하지 않음
+      /// 회원가입 로직(온보딩) 진행 중일 때는, 리다이렉트를 하지 않음
       if (state.location != TermsScreen.routeURL &&
           state.location != TermsDetailScreen.routeURL &&
-          state.location != TermsLocationScreen.routeURL
+          state.location != TermsLocationScreen.routeURL &&
+          state.location != PermissionScreen.routeURL
       ) {
         return TermsScreen.routeURL;
       }
@@ -55,6 +57,13 @@ final GoRouter router = GoRouter(
       name: TermsLocationScreen.routeName,
       path: TermsLocationScreen.routeURL,
       builder: (context, state) => const TermsLocationScreen(),
+    ),
+
+    /// 권한
+    GoRoute(
+      name: PermissionScreen.routeName,
+      path: PermissionScreen.routeURL,
+      builder: (context, state) => const PermissionScreen(),
     ),
 
     /// 홈

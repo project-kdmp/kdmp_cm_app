@@ -13,7 +13,6 @@ class TermsDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /// 화면
     return Scaffold(
       backgroundColor: Colors.white,
       /// 상단 앱바
@@ -28,6 +27,7 @@ class TermsDetailScreen extends StatelessWidget {
           ),
         ),
       ),
+      /// 화면
       body: SafeArea(
         child: Column(
           children: [

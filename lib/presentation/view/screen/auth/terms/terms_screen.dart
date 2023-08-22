@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:kdmp_cm_app/data/constant/text/terms.dart';
 
 import '../../../../../data/constant/text/common.dart';
+import '../../../../../data/constant/text/terms.dart';
 import '../../../../viewmodel/auth/terms/terms_viewmodel.dart';
 import '../../../widget/auth/terms/terms_checkbox.dart';
 import '../../../widget/common/custom_animated_button.dart';
 import '../../../widget/common/custom_checkbox.dart';
+import '../permission/permission_screen.dart';
 import 'terms_detail_screen.dart';
 import 'terms_location_screen.dart';
 
@@ -34,11 +35,8 @@ class _TermsScreenState extends State<TermsScreen> {
           create: (context) => _termsViewModel,
         ),
       ],
-
-      /// 화면
       child: Scaffold(
         backgroundColor: Colors.white,
-
         /// 상단 앱바
         appBar: AppBar(
           elevation: 0,
@@ -51,6 +49,7 @@ class _TermsScreenState extends State<TermsScreen> {
             ),
           ),
         ),
+        /// 화면
         body: SafeArea(
           child: Column(
             children: [
@@ -129,6 +128,7 @@ class _TermsScreenState extends State<TermsScreen> {
                 ),
               ),
 
+              /// 하단 버튼
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: ValueListenableBuilder<bool>(
@@ -137,8 +137,9 @@ class _TermsScreenState extends State<TermsScreen> {
                     return CustomAnimatedButton(
                       text: agree,
                       isEnabled: value,
-                      onPressed: () async {
-                        // TODO : 다음화면으로 이동
+                      onPressed: () {
+                        /// 권한 화면으로 이동
+                        context.pushNamed(PermissionScreen.routeName);
                       },
                     );
                   },

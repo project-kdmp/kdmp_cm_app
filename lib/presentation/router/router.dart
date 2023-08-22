@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../domain/usecase/auth/secure_storage/jwt/get_jwt_usecase.dart';
+import '../view/screen/auth/terms/terms_detail_screen.dart';
+import '../view/screen/auth/terms/terms_location_screen.dart';
 import '../view/screen/auth/terms/terms_screen.dart';
 import '../view/screen/home/home_screen.dart';
 
@@ -16,13 +18,17 @@ final GoRouter router = GoRouter(
   /// 검증을 통과하지 못하면, TermsScreen로 이동
   redirect: (context, state) async {
     String jwt = await GetIt.instance<GetJwtUseCase>().execute();
-    debugPrint("GoRouter jwt : $jwt");
+    // debugPrint("GoRouter jwt : $jwt");
 
     /// JWT를 보유중 == 로그인된 상태, 홈 화면으로 이동
     /// JWT가 없음 == 로그아웃된 상태, 로그인 화면(이용약관)으로 이동
     final isSignedIn = jwt.isNotEmpty;
     if (!isSignedIn) {
-      if (state.location != TermsScreen.routeURL) {
+      /// 회원가입 로직 진행 중일 때는, 리다이렉트를 하지 않음
+      if (state.location != TermsScreen.routeURL &&
+          state.location != TermsDetailScreen.routeURL &&
+          state.location != TermsLocationScreen.routeURL
+      ) {
         return TermsScreen.routeURL;
       }
     }
@@ -35,6 +41,20 @@ final GoRouter router = GoRouter(
       name: TermsScreen.routeName,
       path: TermsScreen.routeURL,
       builder: (context, state) => const TermsScreen(),
+    ),
+
+    /// 서비스 이용약관 상세
+    GoRoute(
+      name: TermsDetailScreen.routeName,
+      path: TermsDetailScreen.routeURL,
+      builder: (context, state) => const TermsDetailScreen(),
+    ),
+
+    /// 위치 서비스 이용약관 상세
+    GoRoute(
+      name: TermsLocationScreen.routeName,
+      path: TermsLocationScreen.routeURL,
+      builder: (context, state) => const TermsLocationScreen(),
     ),
 
     /// 홈

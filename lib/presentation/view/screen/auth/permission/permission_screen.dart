@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../../data/constant/text/common.dart';
 import '../../../../../data/constant/text/permission.dart';
@@ -116,6 +117,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
                 isEnabled: true, // TODO : 권한 체크 로직 만들어야함
                 onPressed: () {
                   // TODO : 휴대폰번호 인증 화면으로 이동
+                  context.pushNamed(VerificationScreen.routeName);
                 },
               ),
             ),

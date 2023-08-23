@@ -2,6 +2,8 @@
 
 const phoneNumber = "휴대폰번호";
 const phoneNumberVerification = "휴대폰번호 본인인증";
-const sendAuthenticationNumber = "인증번호 전송";
-const reSendAuthenticationNumber = "인증번호 다시 받기";
-const authenticationNumber = "인증번호";
+const sendVerificationNumber = "인증번호 전송";
+const reSendVerificationNumber = "인증번호 다시 받기";
+const verificationNumber = "인증번호";
+const writePhoneNumber = "휴대폰번호를 입력해주세요";
+const writeVerificationNumber = "인증번호를 입력해주세요";

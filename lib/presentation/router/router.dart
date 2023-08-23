@@ -7,6 +7,7 @@ import '../view/screen/auth/permission/permission_screen.dart';
 import '../view/screen/auth/terms/terms_detail_screen.dart';
 import '../view/screen/auth/terms/terms_location_screen.dart';
 import '../view/screen/auth/terms/terms_screen.dart';
+import '../view/screen/auth/verification/verification_screen.dart';
 import '../view/screen/home/home_screen.dart';
 
 final GoRouter router = GoRouter(
@@ -29,7 +30,8 @@ final GoRouter router = GoRouter(
       if (state.location != TermsScreen.routeURL &&
           state.location != TermsDetailScreen.routeURL &&
           state.location != TermsLocationScreen.routeURL &&
-          state.location != PermissionScreen.routeURL
+          state.location != PermissionScreen.routeURL &&
+          state.location != VerificationScreen.routeURL
       ) {
         return TermsScreen.routeURL;
       }
@@ -64,6 +66,13 @@ final GoRouter router = GoRouter(
       name: PermissionScreen.routeName,
       path: PermissionScreen.routeURL,
       builder: (context, state) => const PermissionScreen(),
+    ),
+
+    /// 휴대폰번호 본인인증
+    GoRoute(
+      name: VerificationScreen.routeName,
+      path: VerificationScreen.routeURL,
+      builder: (context, state) => const VerificationScreen(),
     ),
 
     /// 홈

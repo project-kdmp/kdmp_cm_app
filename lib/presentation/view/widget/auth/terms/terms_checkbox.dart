@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../data/constant/text/common.dart';
-import '../../common/custom_checkbox.dart';
+import '../../common/checkbox/custom_checkbox.dart';
 
 class TermsCheckBox extends StatelessWidget {
   const TermsCheckBox({

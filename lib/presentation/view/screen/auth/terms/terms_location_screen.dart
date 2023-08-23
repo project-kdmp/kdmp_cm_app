@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../data/constant/text/common.dart';
 import '../../../../../data/constant/text/terms.dart';
-import '../../../widget/common/custom_animated_button.dart';
+import '../../../widget/common/button/custom_animated_button.dart';
 
 /// 위치 서비스 이용약관 상세 화면
 class TermsLocationScreen extends StatelessWidget {

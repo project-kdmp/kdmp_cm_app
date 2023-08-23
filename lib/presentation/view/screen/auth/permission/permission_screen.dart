@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../../data/constant/text/common.dart';
 import '../../../../../data/constant/text/permission.dart';
 import '../../../widget/auth/permission/permission_guide_item.dart';
-import '../../../widget/common/custom_animated_button.dart';
+import '../../../screen/auth/verification/verification_screen.dart';
+import '../../../widget/common/button/custom_animated_button.dart';
 
 /// 권한 화면
 class PermissionScreen extends StatefulWidget {

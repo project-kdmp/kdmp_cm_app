@@ -130,7 +130,7 @@ class _TermsScreenState extends State<TermsScreen> {
 
               /// 하단 버튼
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.all(16),
                 child: ValueListenableBuilder<bool>(
                   valueListenable: _termsViewModel.isValidNotifier,
                   builder: (context, value, _) {

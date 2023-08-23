@@ -41,7 +41,7 @@ class TermsDetailScreen extends StatelessWidget {
 
             /// 하단 버튼
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(16),
               child: CustomAnimatedButton(
                 text: agree,
                 onPressed: () {

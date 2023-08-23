@@ -49,22 +49,21 @@ class _VerificationScreenState extends State<VerificationScreen> {
       /// 화면
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(right: 16, left: 16, top: 16),
+          padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                phoneNumber,
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 8),
-
               /// 휴대폰번호 입력 필드
               Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      phoneNumber,
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     TextField(
                       controller: _textEditingControllerForPhoneNumber,
                       decoration: const InputDecoration(
@@ -99,7 +98,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
                               return RoundedElevatedButton(
                                 text: reSendVerificationNumber + value,
                                 onPressed: () {
-                                  // TODO : 인증번호 전송 로직 구현
+                                  // TODO : 인증번호 전송 로직 구현해야함
+                                  /// 인증번호 전송
                                   _verificationViewModel.setIsSentVerificationNumber(isSent: true);
 
                                   /// 타이머 시작/재시작
@@ -112,9 +112,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           return RoundedElevatedButton(
                             text: sendVerificationNumber,
                             onPressed: () {
-                              // TODO : 인증번호 전송 로직 구현
+                              // TODO : 인증번호 전송 로직 구현해야함
+                              // TODO : 인증번호 전송하기 전에, 입력된 전화번호 검증(길이 등으로) 추가해야함
+                              /// 인증번호 전송
                               _verificationViewModel.setIsSentVerificationNumber(isSent: true);
-
                               /// 타이머 시작/재시작
                               _timerViewModel.startCountdownTimer();
                             },

@@ -22,7 +22,6 @@ class AuthRepositoryImpl extends AuthRepository {
       final response = await _dio.post(
         url,
         data: authRequestModel.toJson(),
-        options: Options(contentType: Headers.jsonContentType),
       );
 
       // TODO : 추후 서버 준비되면 code가 200인지, 201인지 확인하여 1개는 제거

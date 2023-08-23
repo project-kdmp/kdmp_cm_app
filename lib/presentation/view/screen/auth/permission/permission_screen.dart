@@ -111,7 +111,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
 
             /// 하단 버튼
             Padding(
-              padding: const EdgeInsets.only(right: 16, left: 16, top: 16),
+              padding: const EdgeInsets.all(16),
               child: CustomAnimatedButton(
                 text: ok,
                 isEnabled: true, // TODO : 권한 체크 로직 만들어야함

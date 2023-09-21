@@ -1,1 +1,4 @@
-const baseUrl = "http://ec2-13-124-245-172.ap-northeast-2.compute.amazonaws.com:8085/"; // TODO : 추후 API나오면 확인해주세요
+// TODO : 추후 API 나오면 확인
+const baseUrl = "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8085";
+const baseBizUrl = "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8088";
+const baseImageUrl = "$baseBizUrl/v1/biztotal";

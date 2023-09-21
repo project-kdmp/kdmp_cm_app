@@ -23,10 +23,47 @@ dependencies:
   get_it: ^7.6.0
 
   # Route
-  go_router: ^8.1.0
+  go_router: ^10.1.2
 
   # Local Storage
-  flutter_secure_storage: ^8.0.0
+  flutter_secure_storage: ^9.0.0
+
+  # Permission
+  permission_handler: ^10.4.3
+
+  # Toast Message
+  fluttertoast: ^8.2.2
+
+  # Geo Location
+  geolocator: ^10.0.0
+
+  # HTML
+  flutter_html: ^3.0.0-beta.1
+
+  # URL Launcher
+  url_launcher: ^6.1.14
+
+  # Device Info
+  device_info_plus: ^9.0.3
+
+  # For MediaType
+  http_parser: ^4.0.2
+
+  # For DateFormat
+  intl: ^0.18.1
+
+  # On Boarding
+  introduction_screen: ^3.0.2
+
+  # 다국어 패키지
+  flutter_localizations:
+    sdk: flutter
+
+  # Naver Map
+  flutter_naver_map: ^1.0.2
+
+  # 키 관리
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -37,3 +74,17 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - .env
+    - assets/setup/icon_darkmode.png
+    - assets/setup/icon_lightmode.png
+    - assets/permission/icon_call.png
+    - assets/permission/icon_file.png
+    - assets/permission/icon_location.png
+    - assets/permission/icon_notification.png
+    - assets/common/icon_warning.png
+    - assets/common/app_logo.png
+    - assets/register/icon_check_off.png
+    - assets/register/icon_check_on.png
+    - assets/register/img_no_permission.png

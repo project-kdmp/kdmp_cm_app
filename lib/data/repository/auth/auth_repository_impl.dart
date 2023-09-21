@@ -1,42 +1,103 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-
-import '../../../domain/repository/auth/auth_repository.dart';
-import '../../constant/url.dart';
-import '../../model/auth/auth_request_model.dart';
-import '../../model/auth/auth_response_model.dart';
-import '../../model/auth/auth_state.dart';
+import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
+import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/model/auth/login_request.dart';
+import 'package:kdmp_cm_app/data/model/auth/login_response.dart';
+import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
+import 'package:kdmp_cm_app/data/model/common/default_request.dart';
+import 'package:kdmp_cm_app/data/model/common/default_response.dart';
+import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/domain/repository/auth/auth_repository.dart';
 
 class AuthRepositoryImpl extends AuthRepository {
-
   final Dio _dio;
 
   AuthRepositoryImpl(this._dio);
 
   @override
-  Future<AuthState> signIn({required AuthRequestModel authRequestModel}) async {
-    const api = 'v1/signin/login';
+  Future<StateAPI> login({required LoginRequest loginRequest}) async {
+    const api = '/v1/auth-svr/cmLogin';
     const url = '$baseUrl$api';
 
     try {
       final response = await _dio.post(
         url,
-        data: authRequestModel.toJson(),
+        data: loginRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
       );
 
-      // TODO : 추후 서버 준비되면 code가 200인지, 201인지 확인하여 1개는 제거
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final authResponseModel = AuthResponseModel.fromJson(response.data);
-        final AuthState state = Success(authResponseModel);
-
-        debugPrint("state : $state");
-
-        return state;
+      switch (response.statusCode) {
+        case 200:
+          {
+            final loginResponse = LoginResponse.fromJson(response.data);
+            final StateAPI state = Success(loginResponse);
+            debugPrint("state: $state");
+            return state;
+          }
+        default:
+          {
+            final badResponse = BadResponse.fromJson(response.data);
+            final StateAPI state = Bad(badResponse);
+            debugPrint("state: $state");
+            return state;
+          }
       }
-      return Fail();
-    } catch (e) {
-      return Fail();
+    } on DioException catch (e) {
+      try {
+        if (e.response != null) {
+          final badResponse = BadResponse.fromJson(e.response?.data);
+          final StateAPI state = Bad(badResponse);
+          debugPrint("state: $state");
+          return state;
+        }
+        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
+      } catch (e2) {
+        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
+      }
     }
   }
 
+  @override
+  Future<StateAPI> logout({required DefaultRequest logoutRequest}) async {
+    const api = '/v1/auth-svr/cmLogout';
+    const url = '$baseUrl$api';
+
+    try {
+      final response = await _dio.post(
+        url,
+        data: logoutRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      switch (response.statusCode) {
+        case 200:
+          {
+            final loginResponse = DefaultResponse.fromJson(response.data);
+            final StateAPI state = Success(loginResponse);
+            debugPrint("state: $state");
+            return state;
+          }
+        default:
+          {
+            final badResponse = BadResponse.fromJson(response.data);
+            final StateAPI state = Bad(badResponse);
+            debugPrint("state: $state");
+            return state;
+          }
+      }
+    } on DioException catch (e) {
+      try {
+        if (e.response != null) {
+          final badResponse = BadResponse.fromJson(e.response?.data);
+          final StateAPI state = Bad(badResponse);
+          debugPrint("state: $state");
+          return state;
+        }
+        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
+      } catch (e2) {
+        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
+      }
+    }
+  }
 }

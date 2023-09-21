@@ -1,78 +1,71 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../domain/usecase/auth/secure_storage/jwt/get_jwt_usecase.dart';
-import '../view/screen/auth/permission/permission_screen.dart';
-import '../view/screen/auth/terms/terms_detail_screen.dart';
-import '../view/screen/auth/terms/terms_location_screen.dart';
-import '../view/screen/auth/terms/terms_screen.dart';
-import '../view/screen/auth/verification/verification_screen.dart';
-import '../view/screen/home/home_screen.dart';
+import 'package:kdmp_cm_app/data/model/register/register_request.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_firstlogin_usecase.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/no_permission_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/phone_verify_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/splash/splash_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/term/driver_term_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/term/term_detail_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/term/term_screen.dart';
 
 final GoRouter router = GoRouter(
-  /// 기본 화면
-  /// 아래 redirect 에서 걸리지 않는다면, 이 기본 화면으로 이동
-  initialLocation: HomeScreen.routeURL,
+  initialLocation: SplashScreen.routeURL,
 
-  /// Redirect
-  /// 앱 기동 & 화면 이동할 때, 아래 로직을 검증
-  /// 검증을 통과하지 못하면, TermsScreen로 이동
+  /// Default
   redirect: (context, state) async {
-    String jwt = await GetIt.instance<GetJwtUseCase>().execute();
-    // debugPrint("GoRouter jwt : $jwt");
+    final jwt = await GetIt.instance<GetJwtUseCase>().execute();
+    final isFirstLogin = await GetIt.instance<GetFirstLoginUseCase>().execute();
 
-    /// JWT를 보유중 == 로그인된 상태, 홈 화면으로 이동
-    /// JWT가 없음 == 로그아웃된 상태, 로그인 화면(이용약관)으로 이동
-    final isSignedIn = jwt.isNotEmpty;
-    if (!isSignedIn) {
-      /// 회원가입 로직(온보딩) 진행 중일 때는, 리다이렉트를 하지 않음
-      if (state.location != TermsScreen.routeURL &&
-          state.location != TermsDetailScreen.routeURL &&
-          state.location != TermsLocationScreen.routeURL &&
-          state.location != PermissionScreen.routeURL &&
-          state.location != VerificationScreen.routeURL
-      ) {
-        return TermsScreen.routeURL;
+    debugPrint("GoRouter jwt : $jwt, isFirstLogin : $isFirstLogin");
+
+    /// JWT를 보유중 == 로그인된 상태, 스플래시 화면으로 이동
+    /// JWT가 없음 == 로그아웃된 상태, 로그인 화면으로 이동
+    final isLogin = jwt.isNotEmpty;
+    if (!isLogin) {
+      /// 로그인 아닌 상태
+      if (isFirstLogin) {
+        /// 한번도 로그인한적이 없는 경우, 접근 권한 안내 화면으로 이동
+        debugPrint("state: ${state.matchedLocation}");
+        if (!state.matchedLocation.contains(PermissionScreen.routeURL) && !state.matchedLocation.contains(TermScreen.routeURL) && !state.matchedLocation.contains(PhoneVerifyScreen.routeURL) && !state.matchedLocation.contains(LoginScreen.routeURL)) {
+          return PermissionScreen.routeURL;
+        }
+      } else {
+        /// 로그인한적 있는 경우, 로그인 화면으로 이동
+        if (state.matchedLocation != LoginScreen.routeURL) {
+          return LoginScreen.routeURL;
+        }
       }
     }
     return null;
   },
   routes: <RouteBase>[
-
-    /// 이용약관
+    /// 스플래시
     GoRoute(
-      name: TermsScreen.routeName,
-      path: TermsScreen.routeURL,
-      builder: (context, state) => const TermsScreen(),
+      name: SplashScreen.routeName,
+      path: SplashScreen.routeURL,
+      builder: (context, state) => const SplashScreen(),
     ),
 
-    /// 서비스 이용약관 상세
+    /// 온보딩
     GoRoute(
-      name: TermsDetailScreen.routeName,
-      path: TermsDetailScreen.routeURL,
-      builder: (context, state) => const TermsDetailScreen(),
+      name: OnBoardingScreen.routeName,
+      path: OnBoardingScreen.routeURL,
+      builder: (context, state) => const OnBoardingScreen(),
     ),
 
-    /// 위치 서비스 이용약관 상세
+    /// 로그인
     GoRoute(
-      name: TermsLocationScreen.routeName,
-      path: TermsLocationScreen.routeURL,
-      builder: (context, state) => const TermsLocationScreen(),
-    ),
-
-    /// 권한
-    GoRoute(
-      name: PermissionScreen.routeName,
-      path: PermissionScreen.routeURL,
-      builder: (context, state) => const PermissionScreen(),
-    ),
-
-    /// 휴대폰번호 본인인증
-    GoRoute(
-      name: VerificationScreen.routeName,
-      path: VerificationScreen.routeURL,
-      builder: (context, state) => const VerificationScreen(),
+      name: LoginScreen.routeName,
+      path: LoginScreen.routeURL,
+      builder: (context, state) => const LoginScreen(),
     ),
 
     /// 홈
@@ -82,5 +75,61 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const HomeScreen(),
     ),
 
+    /// 접근 권한 안내
+    GoRoute(
+      name: PermissionScreen.routeName,
+      path: PermissionScreen.routeURL,
+      builder: (context, state) => const PermissionScreen(),
+    ),
+
+    /// 이용약관
+    GoRoute(
+      name: TermScreen.routeName,
+      path: TermScreen.routeURL,
+      builder: (context, state) => const TermScreen(),
+    ),
+
+    /// 미동의 이용약관
+    GoRoute(
+      name: CMTermScreen.routeName,
+      path: CMTermScreen.routeURL,
+      builder: (context, state) => const CMTermScreen(),
+    ),
+
+    /// 이용약관 상세
+    GoRoute(
+      name: TermDetailScreen.routeName,
+      path: TermDetailScreen.routeURL,
+      builder: (context, state) {
+        final params = state.uri.queryParameters;
+        final int trmSq = int.parse(params["trmSq"]!);
+        final bool isAgreeButtonEnabled = params["isAgreeButtonEnabled"] != null ? bool.parse(params["isAgreeButtonEnabled"]!) : true;
+        return TermDetailScreen(trmSq: trmSq, isAgreeButtonEnabled: isAgreeButtonEnabled);
+      },
+    ),
+
+    /// 본인인증 확인
+    GoRoute(
+      name: PhoneVerifyScreen.routeName,
+      path: PhoneVerifyScreen.routeURL,
+      builder: (context, state) {
+        final List<AgreeTerm> agreeTermList = state.extra as List<AgreeTerm>;
+        return PhoneVerifyScreen(agreeTermList: agreeTermList);
+      },
+    ),
+
+    /// 정지 회원 안내
+    GoRoute(
+      name: NoPermissionScreen.routeName,
+      path: NoPermissionScreen.routeURL,
+      builder: (context, state) => const NoPermissionScreen(),
+    ),
+
+    /// 운행불가 차량안내
+    GoRoute(
+      name: DriverTermScreen.routeName,
+      path: DriverTermScreen.routeURL,
+      builder: (context, state) => const DriverTermScreen(),
+    ),
   ],
 );

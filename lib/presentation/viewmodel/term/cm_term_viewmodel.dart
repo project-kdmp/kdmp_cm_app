@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
-import 'package:kdmp_cm_app/data/model/register/register_request.dart';
 import 'package:kdmp_cm_app/data/model/term/cm_term_list_response.dart';
+import 'package:kdmp_cm_app/data/model/term/my_term_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/term/set_my_term_usecase.dart';
 
 /// 이용약관 관련 뷰모델
 ///
@@ -14,10 +15,12 @@ class CMTermViewModel {
   CMTermViewModel({
     required this.getMbrSqUseCase,
     required this.getTermUseCase,
+    required this.setMyTermUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final GetTermUseCase getTermUseCase;
+  final SetMyTermUseCase setMyTermUseCase;
 
   /// 전체 이용약관
   final ValueNotifier<bool> _isAllCheck = ValueNotifier<bool>(false);
@@ -128,6 +131,19 @@ class CMTermViewModel {
       }
       termList = newTermList;
     }
+
+    return result;
+  }
+
+  /// 이용약관 동의하기 API
+  Future<StateAPI> agreeTerms() async {
+    state = Loading();
+
+    final mbrSq = await getMbrSqUseCase.execute();
+
+    final request = MyTermRequest(mbrSq: mbrSq, agreeTermList: agreeTermList);
+    final result = await setMyTermUseCase.execute(myTermRequest: request);
+    state = result;
 
     return result;
   }

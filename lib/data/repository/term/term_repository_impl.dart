@@ -4,8 +4,10 @@ import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
 import 'package:kdmp_cm_app/data/constant/url.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
+import 'package:kdmp_cm_app/data/model/common/default_response.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/term/cm_term_list_response.dart';
+import 'package:kdmp_cm_app/data/model/term/my_term_request.dart';
 import 'package:kdmp_cm_app/data/model/term/term_detail_request.dart';
 import 'package:kdmp_cm_app/data/model/term/term_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/term/term_list_request.dart';
@@ -159,6 +161,49 @@ class TermRepositoryImpl extends TermRepository {
           {
             final driverTermResponse = TermDetailResponse.fromJson(response.data);
             final StateAPI state = Success(driverTermResponse);
+            debugPrint("state: $state");
+            return state;
+          }
+        default:
+          {
+            final badResponse = BadResponse.fromJson(response.data);
+            final StateAPI state = Bad(badResponse);
+            debugPrint("state: $state");
+            return state;
+          }
+      }
+    } on DioException catch (e) {
+      try {
+        if (e.response != null) {
+          final badResponse = BadResponse.fromJson(e.response?.data);
+          final StateAPI state = Bad(badResponse);
+          debugPrint("state: $state");
+          return state;
+        }
+        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
+      } catch (e2) {
+        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
+      }
+    }
+  }
+
+  @override
+  Future<StateAPI> setMyTerm({required MyTermRequest myTermRequest}) async {
+    const api = '/v1/biztotal/cm/setMyTerm';
+    const url = '$baseBizUrl$api';
+
+    try {
+      final response = await _dio.post(
+        url,
+        data: myTermRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      switch (response.statusCode) {
+        case 200:
+          {
+            final responseObject = DefaultResponse.fromJson(response.data);
+            final StateAPI state = Success(responseObject);
             debugPrint("state: $state");
             return state;
           }

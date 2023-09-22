@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kdmp_cm_app/data/model/register/register_request.dart';
+import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/term/cm_term_list_response.dart';
+import 'package:kdmp_cm_app/data/model/term/my_term_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/term/set_my_term_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/checkbox/custom_checkbox.dart';
@@ -30,7 +34,7 @@ class CMTermScreen extends StatefulWidget {
 }
 
 class _CMTermScreenState extends State<CMTermScreen> {
-  late final CMTermViewModel _cmCMTermViewModel;
+  late final CMTermViewModel _cmTermViewModel;
 
   @override
   void initState() {
@@ -40,11 +44,12 @@ class _CMTermScreenState extends State<CMTermScreen> {
 
   /// Create
   initViewModel() async {
-    _cmCMTermViewModel = CMTermViewModel(
+    _cmTermViewModel = CMTermViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getTermUseCase: GetIt.instance<GetTermUseCase>(),
+      setMyTermUseCase: GetIt.instance<SetMyTermUseCase>(),
     );
-    await _cmCMTermViewModel.getCMTermList();
+    await _cmTermViewModel.getCMTermList();
   }
 
   @override
@@ -53,7 +58,7 @@ class _CMTermScreenState extends State<CMTermScreen> {
     return MultiProvider(
       providers: [
         Provider<CMTermViewModel>(
-          create: (context) => _cmCMTermViewModel,
+          create: (context) => _cmTermViewModel,
         ),
       ],
       child: Scaffold(
@@ -98,14 +103,14 @@ class _CMTermScreenState extends State<CMTermScreen> {
                                 /// 안드로이드에서 LiveData 의 상태변화를 observe 를 통해서 관찰하는 것처럼,
                                 /// 플러터의 ValueNotifier 상태변화는 하기 ValueListenableBuilder 를 통해서 관찰할 수 있습니다
                                 ValueListenableBuilder<bool>(
-                                  valueListenable: _cmCMTermViewModel.isAllCheckNotifier,
+                                  valueListenable: _cmTermViewModel.isAllCheckNotifier,
                                   builder: (context, value, _) {
                                     return CustomCheckBox(
                                       isChecked: value,
                                       isBold: true,
                                       message: StringTerm.allAgree,
                                       onPressed: (isChecked) {
-                                        _cmCMTermViewModel.setAgreeTermToAll(isAgreeYn: isChecked);
+                                        _cmTermViewModel.setAgreeTermToAll(isAgreeYn: isChecked);
                                       },
                                     );
                                   },
@@ -121,7 +126,7 @@ class _CMTermScreenState extends State<CMTermScreen> {
 
                             /// 이용약관 리스트
                             ValueListenableBuilder<List<Term>>(
-                              valueListenable: _cmCMTermViewModel.termListNotifier,
+                              valueListenable: _cmTermViewModel.termListNotifier,
                               builder: (context, termList, _) {
                                 return ListView.separated(
                                   scrollDirection: Axis.vertical,
@@ -130,14 +135,14 @@ class _CMTermScreenState extends State<CMTermScreen> {
                                   itemCount: termList.length,
                                   itemBuilder: (context, index) {
                                     return ValueListenableBuilder<List<AgreeTerm>>(
-                                      valueListenable: _cmCMTermViewModel.agreeTermListNotifier,
+                                      valueListenable: _cmTermViewModel.agreeTermListNotifier,
                                       builder: (context, agreeTermList, _) {
                                         return TermCheckBox(
                                           isMandatory: termList[index].trmMandatoryYn == "Y",
                                           message: termList[index].trmTitle ?? "(없음)",
                                           isChecked: agreeTermList[index].agreeYn == "Y",
                                           onPressed: (isChecked) {
-                                            _cmCMTermViewModel.setAgreeTermToIndex(index: index, isAgreeYn: isChecked == true);
+                                            _cmTermViewModel.setAgreeTermToIndex(index: index, isAgreeYn: isChecked == true);
                                           },
                                           onDetailPressed: () async {
                                             /// 상세화면에서 '동의'를 했으면, 체크박스를 체크
@@ -146,7 +151,7 @@ class _CMTermScreenState extends State<CMTermScreen> {
                                               queryParameters: {"trmSq": termList[index].trmSq.toString()},
                                             );
                                             if (isAgreed != null) {
-                                              _cmCMTermViewModel.setAgreeTermToIndex(index: index, isAgreeYn: isAgreed);
+                                              _cmTermViewModel.setAgreeTermToIndex(index: index, isAgreeYn: isAgreed);
                                             }
                                           },
                                         );
@@ -169,18 +174,22 @@ class _CMTermScreenState extends State<CMTermScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: ValueListenableBuilder<bool>(
-                      valueListenable: _cmCMTermViewModel.isValidNotifier,
+                      valueListenable: _cmTermViewModel.isValidNotifier,
                       builder: (context, value, _) {
                         return CustomElevatedButton(
                           text: StringTerm.bottomButton,
                           isEnabled: value,
-                          onPressed: () {
-                            // TODO: 이용약관 동의여부 저장
-
-                            // /// 홈 화면으로 이동
-                            // context.goNamed(
-                            //   HomeScreen.routeName,
-                            // );
+                          onPressed: () async {
+                            /// 이용약관 동의여부 저장
+                            final result = await _cmTermViewModel.agreeTerms();
+                            if (result is Success) {
+                              /// 홈 화면으로 이동
+                              context.goNamed(HomeScreen.routeName);
+                            } else if (result is Bad) {
+                              Fluttertoast.showToast(msg: StringCommon.httpBad);
+                            } else if (result is Fail) {
+                              Fluttertoast.showToast(msg: "${result.errorMessage}");
+                            }
                           },
                         );
                       },

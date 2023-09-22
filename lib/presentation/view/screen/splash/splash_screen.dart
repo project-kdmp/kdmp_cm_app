@@ -17,6 +17,8 @@ import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/splash/splash_viewmodel.dart';
 
 /// 스플래시 화면
@@ -99,17 +101,17 @@ class _SplashScreenState extends State<SplashScreen> {
               case MbrSt.registerComplete:
 
                 /// 이용약관 갱신 여부 확인
-                // if (response.bagreeTrmUpdate) {
-                //   /// 필수 약관 모두 동의
-                //   final isOnBoardingCheck = await _splashViewModel.isOnBoardingCheck();
-                //   if (!isOnBoardingCheck) {
-                //     await context.pushNamed(OnBoardingScreen.routeName);
-                //   }
+                if (response.bagreeTrmUpdate) {
+                  /// 필수 약관 모두 동의
+                  final isOnBoardingCheck = await _splashViewModel.isOnBoardingCheck();
+                  if (!isOnBoardingCheck) {
+                    await context.pushNamed(OnBoardingScreen.routeName);
+                  }
                 context.goNamed(HomeScreen.routeName);
-                // } else {
-                //   /// 미동의 필수 약관 갱신 필요
-                //   context.goNamed(CMTermScreen.routeName);
-                // }
+                } else {
+                  /// 미동의 필수 약관 갱신 필요
+                  context.goNamed(CMTermScreen.routeName);
+                }
                 break;
               case MbrSt.withdrawal:
                 Fluttertoast.showToast(msg: StringLogin.mbrStW);

@@ -30,6 +30,7 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrsq_usecase.
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/setup/setup_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/term/set_my_term_usecase.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_text_mode.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_data.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
@@ -140,6 +141,8 @@ void main() async {
   final termRepository = TermRepositoryImpl(dio);
   final getTermUseCase = GetTermUseCase(termRepository: termRepository);
   getIt.registerSingleton<GetTermUseCase>(getTermUseCase);
+  final setMyTermUseCase = SetMyTermUseCase(termRepository: termRepository);
+  getIt.registerSingleton<SetMyTermUseCase>(setMyTermUseCase);
 
   /// 회원가입
   final registerRepository = RegisterRepositoryImpl(dio);

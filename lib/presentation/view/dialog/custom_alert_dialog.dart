@@ -7,9 +7,10 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevat
 class CustomAlertDialog extends StatelessWidget {
   const CustomAlertDialog({
     Key? key,
-    this.isWarning = false,
     this.title,
     this.content,
+    this.isWarning = false,
+    this.isCanceled = true,
     required this.onConfirm,
   }) : super(key: key);
 
@@ -17,11 +18,12 @@ class CustomAlertDialog extends StatelessWidget {
   final String? title;
   final String? content;
   final Function() onConfirm;
+  final bool isCanceled;
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async => isCanceled,
       child: AlertDialog(
         contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         actionsPadding: const EdgeInsets.only(left: 18, right: 18, bottom: 18),

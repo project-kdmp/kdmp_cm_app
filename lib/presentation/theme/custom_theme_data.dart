@@ -38,7 +38,7 @@ class CustomThemeData {
           ),
           elevation: 0,
           backgroundColor: ColorLight.primary,
-          textStyle: const TextStyle(
+          textStyle: textTheme.bodyLarge?.copyWith(
             color: ColorLight.background,
             fontWeight: FontWeight.w400,
             letterSpacing: 0.0,

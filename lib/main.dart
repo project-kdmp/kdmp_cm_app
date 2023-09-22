@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get_it/get_it.dart';
@@ -31,12 +30,10 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrsq_usecase.
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/setup/setup_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
-import 'package:kdmp_cm_app/presentation/theme/text_provider.dart';
-import 'package:kdmp_cm_app/presentation/theme/theme_provider.dart';
-import 'package:kdmp_cm_app/presentation/values/colors.dart';
-import 'package:kdmp_cm_app/presentation/viewmodel/menu/setup_viewmodel.dart';
+import 'package:kdmp_cm_app/presentation/theme/custom_text_mode.dart';
+import 'package:kdmp_cm_app/presentation/theme/custom_theme_data.dart';
+import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:provider/provider.dart';
 
 import 'domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'domain/usecase/secure_storage/jwt/set_jwt_usecase.dart';
@@ -99,8 +96,10 @@ void main() async {
 
   /// 환경설정값
   final themeMode = await setupUseCase.getThemeMode();
-
-  final mThemeMode = themeMode == "light" ? ThemeMode.light : ThemeMode.dark;
+  CustomThemeMode.instance;
+  CustomTextMode.instance;
+  var mThemeMode = themeMode == "light" ? ThemeMode.light : ThemeMode.dark;
+  CustomThemeMode.change(mThemeMode);
 
   /// Dio Singleton
   final Dio dio = DioSingleton.getInstance();
@@ -147,306 +146,43 @@ void main() async {
   final getRegisterUseCase = SetRegisterUseCase(registerRepository: registerRepository);
   getIt.registerSingleton<SetRegisterUseCase>(getRegisterUseCase);
 
-  runApp(MyApp(themeMode: mThemeMode));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, this.themeMode = ThemeMode.light});
-
-  final ThemeMode themeMode;
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => ThemeProvider(themeMode: themeMode),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => TextProvider(textMode: TextMode.medium),
-        ),
-      ],
-      builder: (context, child) {
-        return MaterialApp.router(
-          routerConfig: router,
-          localizationsDelegates: const [
-            // 다언어 설정
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('ko', 'KR'), // 한국어
-            Locale('en', 'US'), // 영어
-          ],
-          theme: ThemeData(
-            /// PageTransitionsTheme로 화면이 열리고 닫힐 때 iOS 같은 애니메이션 효과를 적용
-            pageTransitionsTheme: const PageTransitionsTheme(
-              builders: {
-                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: CustomThemeMode.themeMode,
+      builder: (context, themeMode, child) {
+        return ValueListenableBuilder<TextTheme>(
+          valueListenable: CustomTextMode.textTheme,
+          builder: (context, textTheme, child) {
+            return MaterialApp.router(
+              routerConfig: router,
+              localizationsDelegates: const [
+                // 다언어 설정
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('ko', 'KR'), // 한국어
+                Locale('en', 'US'), // 영어
+              ],
+              theme: CustomThemeData.light(textTheme),
+              darkTheme: CustomThemeData.dark(textTheme),
+              themeMode: themeMode,
+              builder: (context, child) {
+                return MediaQuery(
+                  data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                  child: child!,
+                );
               },
-            ),
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            canvasColor: Colors.transparent,
-
-            /// 기본 테마
-            scaffoldBackgroundColor: ColorLight.background,
-            disabledColor: ColorLight.gray3,
-            dividerColor: ColorLight.gray6,
-            cardColor: ColorLight.gray5,
-            colorScheme: const ColorScheme.light(
-              primary: ColorLight.primary,
-              secondary: ColorLight.icon,
-            ),
-            appBarTheme: AppBarTheme.of(context).copyWith(
-              backgroundColor: ColorLight.background,
-              iconTheme: const IconThemeData(color: ColorLight.gray1),
-            ),
-            iconTheme: const IconThemeData(color: ColorLight.gray1),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                minimumSize: const Size(double.infinity, double.minPositive),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                elevation: 0,
-                backgroundColor: ColorLight.primary,
-                textStyle: TextStyle(
-                  color: ColorLight.background,
-                  fontWeight: FontWeight.w400,
-                  fontSize: Provider.of<TextProvider>(context).text16,
-                  letterSpacing: 0.0,
-                  wordSpacing: 0.0,
-                  height: 0.0,
-                ),
-              ),
-            ),
-            toggleButtonsTheme: ToggleButtonsThemeData(
-              color: ColorLight.gray4,
-              borderColor: ColorLight.gray6,
-              selectedColor: ColorLight.icon,
-              selectedBorderColor: ColorLight.icon,
-              fillColor: ColorLight.btn,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            textTheme: TextTheme(
-              bodyLarge: TextStyle(
-                color: ColorLight.gray1,
-                fontWeight: FontWeight.w400,
-                fontSize: Provider.of<TextProvider>(context).text16,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              // 기본 적용 텍스트
-              bodyMedium: TextStyle(
-                color: ColorLight.gray1,
-                fontWeight: FontWeight.w400,
-                fontSize: Provider.of<TextProvider>(context).text14,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              bodySmall: TextStyle(
-                color: ColorLight.gray1,
-                fontWeight: FontWeight.w400,
-                fontSize: Provider.of<TextProvider>(context).text12,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              titleLarge: TextStyle(
-                color: ColorLight.gray1,
-                fontWeight: FontWeight.w600,
-                fontSize: Provider.of<TextProvider>(context).text16,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              titleMedium: TextStyle(
-                color: ColorLight.gray1,
-                fontWeight: FontWeight.w600,
-                fontSize: Provider.of<TextProvider>(context).text14,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              titleSmall: TextStyle(
-                color: ColorLight.gray1,
-                fontWeight: FontWeight.w600,
-                fontSize: Provider.of<TextProvider>(context).text12,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              displaySmall: TextStyle(
-                color: ColorLight.gray1,
-                fontWeight: FontWeight.w600,
-                fontSize: Provider.of<TextProvider>(context).text20,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              displayMedium: TextStyle(
-                color: ColorLight.gray1,
-                fontWeight: FontWeight.w600,
-                fontSize: Provider.of<TextProvider>(context).text22,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              displayLarge: TextStyle(
-                color: ColorLight.gray1,
-                fontWeight: FontWeight.w600,
-                fontSize: Provider.of<TextProvider>(context).text24,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-            ),
-            sliderTheme: const SliderThemeData(
-              activeTrackColor: ColorLight.icon,
-              activeTickMarkColor: ColorLight.icon,
-              inactiveTrackColor: ColorLight.gray6,
-              inactiveTickMarkColor: ColorLight.gray6,
-              thumbColor: ColorLight.icon,
-            ),
-          ),
-          darkTheme: ThemeData.dark().copyWith(
-            /// 다크 모드 테마
-            scaffoldBackgroundColor: ColorNight.background,
-            disabledColor: ColorNight.gray3,
-            dividerColor: ColorNight.gray6,
-            cardColor: ColorNight.gray5,
-            colorScheme: const ColorScheme.dark(
-              primary: ColorNight.primary,
-              secondary: ColorNight.icon,
-            ),
-            appBarTheme: AppBarTheme.of(context).copyWith(
-              backgroundColor: ColorNight.background,
-              iconTheme: const IconThemeData(color: ColorNight.gray1),
-            ),
-            iconTheme: const IconThemeData(color: ColorNight.gray1),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                minimumSize: const Size(double.infinity, double.minPositive),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                elevation: 0,
-                backgroundColor: ColorNight.primary,
-                textStyle: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w400,
-                  fontSize: Provider.of<TextProvider>(context).text16,
-                  letterSpacing: 0.0,
-                  wordSpacing: 0.0,
-                  height: 0.0,
-                ),
-              ),
-            ),
-            toggleButtonsTheme: ToggleButtonsThemeData(
-              color: ColorNight.gray4,
-              borderColor: ColorNight.gray6,
-              selectedColor: ColorNight.icon,
-              selectedBorderColor: ColorNight.icon,
-              fillColor: ColorNight.btn,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            textTheme: TextTheme(
-              bodyLarge: TextStyle(
-                color: ColorNight.gray1,
-                fontWeight: FontWeight.w400,
-                fontSize: Provider.of<TextProvider>(context).text16,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              // 기본 적용 텍스트
-              bodyMedium: TextStyle(
-                color: ColorNight.gray1,
-                fontWeight: FontWeight.w400,
-                fontSize: Provider.of<TextProvider>(context).text14,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              bodySmall: TextStyle(
-                color: ColorNight.gray1,
-                fontWeight: FontWeight.w400,
-                fontSize: Provider.of<TextProvider>(context).text12,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              titleLarge: TextStyle(
-                color: ColorNight.gray1,
-                fontWeight: FontWeight.w600,
-                fontSize: Provider.of<TextProvider>(context).text16,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              titleMedium: TextStyle(
-                color: ColorNight.gray1,
-                fontWeight: FontWeight.w600,
-                fontSize: Provider.of<TextProvider>(context).text14,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              titleSmall: TextStyle(
-                color: ColorNight.gray1,
-                fontWeight: FontWeight.w600,
-                fontSize: Provider.of<TextProvider>(context).text12,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              displaySmall: TextStyle(
-                color: ColorNight.gray1,
-                fontWeight: FontWeight.w600,
-                fontSize: Provider.of<TextProvider>(context).text20,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              displayMedium: TextStyle(
-                color: ColorNight.gray1,
-                fontWeight: FontWeight.w600,
-                fontSize: Provider.of<TextProvider>(context).text22,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-              displayLarge: TextStyle(
-                color: ColorNight.gray1,
-                fontWeight: FontWeight.w600,
-                fontSize: Provider.of<TextProvider>(context).text24,
-                letterSpacing: 0.0,
-                wordSpacing: 0.0,
-                height: 0.0,
-              ),
-            ),
-            sliderTheme: const SliderThemeData(
-              activeTrackColor: ColorNight.icon,
-              activeTickMarkColor: ColorNight.icon,
-              inactiveTrackColor: ColorNight.gray6,
-              inactiveTickMarkColor: ColorNight.gray6,
-              thumbColor: ColorNight.icon,
-            ),
-          ),
-          themeMode: Provider.of<ThemeProvider>(context).themeMode,
-          // builder: (context, child) {
-          //   return MediaQuery(
-          //     data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-          //     child: child!,
-          //   );
-          // },
+            );
+          },
         );
       },
     );

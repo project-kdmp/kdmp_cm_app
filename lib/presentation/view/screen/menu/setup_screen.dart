@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/setup/setup_usecase.dart';
-import 'package:kdmp_cm_app/presentation/theme/theme_provider.dart';
+import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
@@ -86,8 +86,7 @@ class _SetupScreenState extends State<SetupScreen> {
                           onPressed: (index, text) {
                             final isLightMode = index == 0;
                             _setupViewModel.setThemeMode(isLightMode: isLightMode);
-                            final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-                            themeProvider.setThemeMode(isLightMode ? ThemeMode.light : ThemeMode.dark);
+                            CustomThemeMode.change(isLightMode ? ThemeMode.light : ThemeMode.dark);
                           },
                         );
                       },

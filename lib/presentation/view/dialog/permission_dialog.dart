@@ -3,8 +3,8 @@ import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 
-class PermissionAlertDialog extends StatelessWidget {
-  const PermissionAlertDialog({
+class PermissionDialog extends StatelessWidget {
+  const PermissionDialog({
     Key? key,
     required this.onConfirm,
     this.onCancel,

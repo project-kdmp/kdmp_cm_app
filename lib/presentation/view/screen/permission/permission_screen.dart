@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
-import 'package:kdmp_cm_app/presentation/view/dialog/permission_alert_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/permission_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
@@ -45,7 +45,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
       context: context,
       barrierDismissible: true, // dialog 영역 외 터치 여부
       builder: (BuildContext context) {
-        return PermissionAlertDialog(
+        return PermissionDialog(
           onConfirm: () {
             // 앱 설정 화면으로 이동
             Navigator.pop(context);

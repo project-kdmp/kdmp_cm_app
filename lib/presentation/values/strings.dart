@@ -89,6 +89,11 @@ abstract class StringRegister {
   static const String phoneVerify = "본인확인";
   static const String registerSuccess = "회원가입 성공";
   static const String registerFail = "회원가입 실패";
+  static const String registerCarTitle = "차량정보 등록";
+  static const String registerCarContent1 = "입력하신 차량정보는";
+  static const String registerCarContent2 = "대리 서비스에 이용됩니다.";
+  static const String registerBottomButton = "차량정보 입력";
+  static const String driverTerm = "운행불가 차종안내";
 
   static const String noPermission = "정지 회원 안내";
   static const String noPermissionContent = "사용이 정지되었습니다.";
@@ -104,4 +109,13 @@ abstract class StringMenu {
   StringMenu._();
 
   static const String title = "메뉴";
+}
+
+abstract class StringCarAdd {
+  StringCarAdd._();
+
+  static const String title = "차량 번호 입력";
+  static const String carNumber = "차량번호";
+  static const String inputGuide1 = "차량번호를 네 자리를 입력해주세요.";
+  static const String carAddSuccess = "차량정보 등록이 완료되었습니다.";
 }

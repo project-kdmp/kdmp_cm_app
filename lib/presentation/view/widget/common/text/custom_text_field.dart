@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
     Key? key,
     this.text = "",
-    this.hint = "",
+    this.hint = " ",
     this.onChanged,
     this.controller,
     this.isPassword = false,
@@ -12,6 +13,7 @@ class CustomTextField extends StatelessWidget {
     this.suffixText,
     this.textAlign,
     this.inputType,
+    this.maxLength,
   }) : super(key: key);
 
   final String text;
@@ -23,11 +25,13 @@ class CustomTextField extends StatelessWidget {
   final String? suffixText;
   final TextAlign? textAlign;
   final TextInputType? inputType;
+  final int? maxLength;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       child: TextFormField(
+        inputFormatters: inputType == TextInputType.number ? [FilteringTextInputFormatter.digitsOnly] : [],
         // textInputAction: TextInputAction.next,
         // onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
         keyboardType: inputType,
@@ -37,8 +41,9 @@ class CustomTextField extends StatelessWidget {
         style: Theme.of(context).textTheme.bodyLarge,
         obscureText: isPassword,
         textAlign: textAlign ?? TextAlign.start,
+        maxLength: maxLength,
         decoration: InputDecoration(
-          suffixText: suffixText,
+          counterText: "",
           contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
           hintText: hint,
           hintStyle: TextStyle(

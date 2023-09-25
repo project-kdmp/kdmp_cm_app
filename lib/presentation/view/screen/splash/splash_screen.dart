@@ -18,6 +18,7 @@ import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/splash/splash_viewmodel.dart';
 
@@ -93,7 +94,8 @@ class _SplashScreenState extends State<SplashScreen> {
             /// 가입상태
             switch (response.mbrSt) {
               case MbrSt.temp:
-                // TODO: 차량등록 화면으로 이동
+                /// 차량등록 화면으로 이동
+                context.goNamed(RegisterCarScreen.routeName);
                 break;
               case MbrSt.reject:
                 // 심사 거절이나 기사용 상태
@@ -107,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   if (!isOnBoardingCheck) {
                     await context.pushNamed(OnBoardingScreen.routeName);
                   }
-                context.goNamed(HomeScreen.routeName);
+                  context.goNamed(HomeScreen.routeName);
                 } else {
                   /// 미동의 필수 약관 갱신 필요
                   context.goNamed(CMTermScreen.routeName);

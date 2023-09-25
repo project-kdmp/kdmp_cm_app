@@ -14,6 +14,7 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrsq_usecase.
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/auth/login_viewmodel.dart';
@@ -93,7 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         /// 가입상태
                         switch (response.mbrSt) {
                           case MbrSt.temp:
-                            // TODO: 차량등록 화면으로 이동
+
+                            /// 차량등록 화면으로 이동
+                            context.goNamed(RegisterCarScreen.routeName);
                             break;
                           case MbrSt.reject:
                             // 심사 거절이나 기사용 상태

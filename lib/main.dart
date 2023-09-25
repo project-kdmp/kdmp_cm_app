@@ -9,11 +9,13 @@ import 'package:get_it/get_it.dart';
 import 'package:kdmp_cm_app/common/network/dio_singleton.dart';
 import 'package:kdmp_cm_app/common/network/interceptor/token_interceptor.dart';
 import 'package:kdmp_cm_app/data/repository/auth/auth_repository_impl.dart';
+import 'package:kdmp_cm_app/data/repository/mypage/mypage_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/register/register_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/secure_storage/secure_storage_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/term/term_repository_impl.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/logout/set_logout_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/mypage/set_car_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_auto_refresh_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_auto_refresh_usecase.dart';
@@ -148,6 +150,11 @@ void main() async {
   final registerRepository = RegisterRepositoryImpl(dio);
   final getRegisterUseCase = SetRegisterUseCase(registerRepository: registerRepository);
   getIt.registerSingleton<SetRegisterUseCase>(getRegisterUseCase);
+
+  /// 내정보
+  final myPageRepository = MyPageRepositoryImpl(dio);
+  final setCarInfoUseCase = SetCarInfoUseCase(myPageRepository: myPageRepository);
+  getIt.registerSingleton<SetCarInfoUseCase>(setCarInfoUseCase);
 
   runApp(const MyApp());
 }

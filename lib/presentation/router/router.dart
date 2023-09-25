@@ -10,6 +10,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_scree
 import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/no_permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/phone_verify_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/splash/splash_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/driver_term_screen.dart';
@@ -116,6 +117,13 @@ final GoRouter router = GoRouter(
         final List<AgreeTerm> agreeTermList = state.extra as List<AgreeTerm>;
         return PhoneVerifyScreen(agreeTermList: agreeTermList);
       },
+    ),
+
+    /// 초기 차량정보 등록
+    GoRoute(
+      name: RegisterCarScreen.routeName,
+      path: RegisterCarScreen.routeURL,
+      builder: (context, state) => const RegisterCarScreen(),
     ),
 
     /// 정지 회원 안내

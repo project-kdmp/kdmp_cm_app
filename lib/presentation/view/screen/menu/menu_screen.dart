@@ -4,6 +4,7 @@ import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/menu/custom_move_button.dart';
@@ -45,8 +46,7 @@ class MenuScreen extends StatelessWidget {
                           height: 28,
                         ),
                         onPressed: () {
-                          // TODO: 내 정보 화면으로 이동
-                          // context.pushNamed(MyPageScreen.routeName);
+                          context.pushNamed(MyPageScreen.routeName);
                         },
                       ),
 

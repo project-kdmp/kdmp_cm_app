@@ -128,3 +128,15 @@ abstract class StringCarAdd {
   static const String inputGuide1 = "차량번호를 네 자리를 입력해주세요.";
   static const String carAddSuccess = "차량정보 등록이 완료되었습니다.";
 }
+
+abstract class StringMyPage {
+  StringMyPage._();
+
+  static const String name = "이름";
+  static const String phone = "휴대폰번호";
+  static const String email = "이메일";
+  static const String logout = "로그아웃";
+  static const String withdraw = "탈퇴하기";
+
+  static const String logoutConfirm = "정말 로그아웃 하시겠습니까?";
+}

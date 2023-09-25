@@ -15,6 +15,7 @@ import 'package:kdmp_cm_app/data/repository/secure_storage/secure_storage_reposi
 import 'package:kdmp_cm_app/data/repository/term/term_repository_impl.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/logout/set_logout_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/mypage/get_profile_detail_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_car_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_auto_refresh_usecase.dart';
@@ -153,6 +154,8 @@ void main() async {
 
   /// 내정보
   final myPageRepository = MyPageRepositoryImpl(dio);
+  final getProfileDetailUseCase = GetProfileDetailUseCase(myPageRepository: myPageRepository);
+  getIt.registerSingleton<GetProfileDetailUseCase>(getProfileDetailUseCase);
   final setCarInfoUseCase = SetCarInfoUseCase(myPageRepository: myPageRepository);
   getIt.registerSingleton<SetCarInfoUseCase>(setCarInfoUseCase);
 

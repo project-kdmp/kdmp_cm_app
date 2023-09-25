@@ -2,6 +2,7 @@ import 'package:kdmp_cm_app/data/model/auth/login_response.dart';
 import 'package:kdmp_cm_app/data/model/auth/refresh_response.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
+import 'package:kdmp_cm_app/data/model/mypage/profile_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/register/register_response.dart';
 import 'package:kdmp_cm_app/data/model/term/cm_term_list_response.dart';
 import 'package:kdmp_cm_app/data/model/term/term_detail_response.dart';
@@ -45,4 +46,6 @@ class Success extends StateAPI {
   TermListResponse get termListResponse => _response;
 
   CMTermListResponse get cmTermListResponse => _response;
+
+  ProfileDetailResponse get profileDetailResponse => _response;
 }

@@ -6,7 +6,7 @@ class DefaultResponse {
   DefaultResponse({
     required this.serverVersion,
     required this.serverId,
-    this.mbrSq,
+    required this.mbrSq,
   });
 
   factory DefaultResponse.fromJson(Map<String, dynamic> json) {

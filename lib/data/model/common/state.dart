@@ -2,6 +2,7 @@ import 'package:kdmp_cm_app/data/model/auth/login_response.dart';
 import 'package:kdmp_cm_app/data/model/auth/refresh_response.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
+import 'package:kdmp_cm_app/data/model/common/drv_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_detail_response.dart';
@@ -14,6 +15,8 @@ import 'package:kdmp_cm_app/data/model/register/register_response.dart';
 import 'package:kdmp_cm_app/data/model/term/cm_term_list_response.dart';
 import 'package:kdmp_cm_app/data/model/term/term_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/term/term_list_response.dart';
+import 'package:kdmp_cm_app/data/model/work/call_info_response.dart';
+import 'package:kdmp_cm_app/data/model/work/reservation_info_response.dart';
 
 abstract class StateAPI {}
 
@@ -42,6 +45,8 @@ class Success extends StateAPI {
 
   DefaultResponse get defaultResponse => _response;
 
+  DrvResponse get drvResponse => _response;
+
   LoginResponse get loginResponse => _response;
 
   RefreshResponse get refreshResponse => _response;
@@ -69,4 +74,8 @@ class Success extends StateAPI {
   PlaceListResponse get placeListResponse => _response;
 
   PlaceResponse get placeResponse => _response;
+
+  CallInfoResponse get callInfoResponse => _response;
+
+  ReservationInfoResponse get reservationInfoResponse => _response;
 }

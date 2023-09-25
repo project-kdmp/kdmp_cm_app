@@ -13,6 +13,7 @@ import 'package:kdmp_cm_app/data/repository/mypage/mypage_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/register/register_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/secure_storage/secure_storage_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/term/term_repository_impl.dart';
+import 'package:kdmp_cm_app/data/repository/work/work_repository_impl.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/logout/set_logout_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_call_detail_usecase.dart';
@@ -47,6 +48,14 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_onboarding_che
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/setup/setup_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/set_my_term_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/get_reservation_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_pay_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_text_mode.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_data.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
@@ -197,6 +206,25 @@ void main() async {
   getIt.registerSingleton<SetPlaceDeleteUseCase>(setPlaceDeleteUseCase);
   final setPlaceModifyUseCase = SetPlaceModifyUseCase(myPageRepository: myPageRepository);
   getIt.registerSingleton<SetPlaceModifyUseCase>(setPlaceModifyUseCase);
+
+  /// 기사요청
+  final workRepository = WorkRepositoryImpl(dio);
+  final getCallInfoUseCase = GetCallInfoUseCase(workRepository: workRepository);
+  getIt.registerSingleton<GetCallInfoUseCase>(getCallInfoUseCase);
+  final getReservationInfoUseCase = GetReservationInfoUseCase(workRepository: workRepository);
+  getIt.registerSingleton<GetReservationInfoUseCase>(getReservationInfoUseCase);
+  final setCallCancelUseCase = SetCallCancelUseCase(workRepository: workRepository);
+  getIt.registerSingleton<SetCallCancelUseCase>(setCallCancelUseCase);
+  final setCallFeeChangeUseCase = SetCallFeeChangeUseCase(workRepository: workRepository);
+  getIt.registerSingleton<SetCallFeeChangeUseCase>(setCallFeeChangeUseCase);
+  final setCallRequestUseCase = SetCallRequestUseCase(workRepository: workRepository);
+  getIt.registerSingleton<SetCallRequestUseCase>(setCallRequestUseCase);
+  final setConfirmCallCancelUseCase = SetConfirmCallCancelUseCase(workRepository: workRepository);
+  getIt.registerSingleton<SetConfirmCallCancelUseCase>(setConfirmCallCancelUseCase);
+  final setPayUseCase = SetPayUseCase(workRepository: workRepository);
+  getIt.registerSingleton<SetPayUseCase>(setPayUseCase);
+  final setReservationRequestUseCase = SetReservationRequestUseCase(workRepository: workRepository);
+  getIt.registerSingleton<SetReservationRequestUseCase>(setReservationRequestUseCase);
 
   runApp(const MyApp());
 }

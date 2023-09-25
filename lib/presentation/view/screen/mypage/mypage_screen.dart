@@ -12,6 +12,7 @@ import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/withdraw_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/menu/custom_move_button.dart';
@@ -112,8 +113,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   text: StringMyPage.withdraw,
                   isArrow: false,
                   onPressed: () {
-                    // TODO: 탈퇴하기 화면으로 이동
-                    // context.goNamed(WithdrawScreen.routeName);
+                    context.goNamed(WithdrawScreen.routeName);
                   },
                 ),
                 const SizedBox(height: 24),

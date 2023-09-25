@@ -99,4 +99,47 @@ class MyPageRepositoryImpl extends MyPageRepository {
       }
     }
   }
+
+  @override
+  Future<StateAPI> withdrawalMember({required DefaultRequest withdrawalMemberRequest}) async {
+    const api = '/v1/biztotal/cm/myinfo/cancelMbr';
+    const url = '$baseBizUrl$api';
+
+    try {
+      final response = await _dio.post(
+        url,
+        data: withdrawalMemberRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      switch (response.statusCode) {
+        case 200:
+          {
+            final responseObject = DefaultResponse.fromJson(response.data);
+            final StateAPI state = Success(responseObject);
+            debugPrint("state: $state");
+            return state;
+          }
+        default:
+          {
+            final badResponse = BadResponse.fromJson(response.data);
+            final StateAPI state = Bad(badResponse);
+            debugPrint("state: $state");
+            return state;
+          }
+      }
+    } on DioException catch (e) {
+      try {
+        if (e.response != null) {
+          final badResponse = BadResponse.fromJson(e.response?.data);
+          final StateAPI state = Bad(badResponse);
+          debugPrint("state: $state");
+          return state;
+        }
+        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
+      } catch (e2) {
+        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
+      }
+    }
+  }
 }

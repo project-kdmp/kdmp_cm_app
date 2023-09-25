@@ -6,4 +6,6 @@ abstract class MyPageRepository {
   Future<StateAPI> getProfileDetail({required DefaultRequest getProfileRequest});
 
   Future<StateAPI> addCar({required CarInfoRequest carInfoRequest});
+
+  Future<StateAPI> withdrawalMember({required DefaultRequest withdrawalMemberRequest});
 }

@@ -140,3 +140,14 @@ abstract class StringMyPage {
 
   static const String logoutConfirm = "정말 로그아웃 하시겠습니까?";
 }
+
+abstract class StringWithdraw {
+  StringWithdraw._();
+
+  static const String title = "탈퇴하기";
+  static const String content1 = "OOOO를 탈퇴하시겠습니까?";
+  static const String content2 = "(탈퇴 시 개인정보처리 정책 내용)";
+  static const String bottomButton = "탈퇴하기";
+
+  static const String withdrawalConfirm = "정말 탈퇴하시겠습니까?";
+}

@@ -9,6 +9,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/withdraw_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/no_permission_screen.dart';
@@ -154,7 +155,16 @@ final GoRouter router = GoRouter(
           name: MyPageScreen.routeName,
           path: MyPageScreen.routeName,
           builder: (context, state) => const MyPageScreen(),
+          routes: [
+            /// 탈퇴하기
+            GoRoute(
+              name: WithdrawScreen.routeName,
+              path: WithdrawScreen.routeName,
+              builder: (context, state) => const WithdrawScreen(),
+            ),
+          ],
         ),
+
         /// 환경설정
         GoRoute(
           name: SetupScreen.routeName,

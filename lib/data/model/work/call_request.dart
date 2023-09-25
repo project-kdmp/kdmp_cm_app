@@ -6,10 +6,10 @@ class CallRequest {
   String carNumId;
   String drvReqNm;
   String drvReqSt;
-  DateTime reqRegDt;
-  DateTime drvReserveDt;
-  DateTime drvEndDt;
-  DateTime drvStartDt;
+  String reqRegDt;
+  String drvReserveDt;
+  String drvEndDt;
+  String drvStartDt;
   String reqStartAddress;
   String reqStartPlaceNm;
   String reqEndAddress;

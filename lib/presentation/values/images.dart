@@ -28,3 +28,27 @@ abstract class ImagePermission {
   static const String iconLocation = "assets/permission/icon_location.png";
   static const String iconNotification = "assets/permission/icon_notification.png";
 }
+
+abstract class ImageMenuLight {
+  ImageMenuLight._();
+
+  static const String iconCalled = "assets/menu/icon_called_light.png";
+  static const String iconCarInfo = "assets/menu/icon_car_info_light.png";
+  static const String iconCS = "assets/menu/icon_cs_light.png";
+  static const String iconMyPage = "assets/menu/icon_mypage_light.png";
+  static const String iconPayment = "assets/menu/icon_payment_light.png";
+  static const String iconPlace = "assets/menu/icon_place_light.png";
+  static const String iconSetup = "assets/menu/icon_setup_light.png";
+}
+
+abstract class ImageMenuDark {
+  ImageMenuDark._();
+
+  static const String iconCalled = "assets/menu/icon_called_dark.png";
+  static const String iconCarInfo = "assets/menu/icon_car_info_dark.png";
+  static const String iconCS = "assets/menu/icon_cs_dark.png";
+  static const String iconMyPage = "assets/menu/icon_mypage_dark.png";
+  static const String iconPayment = "assets/menu/icon_payment_dark.png";
+  static const String iconPlace = "assets/menu/icon_place_dark.png";
+  static const String iconSetup = "assets/menu/icon_setup_dark.png";
+}

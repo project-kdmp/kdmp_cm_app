@@ -6,6 +6,8 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.da
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_firstlogin_usecase.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/no_permission_screen.dart';
@@ -67,13 +69,6 @@ final GoRouter router = GoRouter(
       name: LoginScreen.routeName,
       path: LoginScreen.routeURL,
       builder: (context, state) => const LoginScreen(),
-    ),
-
-    /// 홈
-    GoRoute(
-      name: HomeScreen.routeName,
-      path: HomeScreen.routeURL,
-      builder: (context, state) => const HomeScreen(),
     ),
 
     /// 접근 권한 안내
@@ -138,6 +133,28 @@ final GoRouter router = GoRouter(
       name: DriverTermScreen.routeName,
       path: DriverTermScreen.routeURL,
       builder: (context, state) => const DriverTermScreen(),
+    ),
+
+    /// 홈
+    GoRoute(
+      name: HomeScreen.routeName,
+      path: HomeScreen.routeURL,
+      builder: (context, state) => const HomeScreen(),
+    ),
+
+    /// 메뉴
+    GoRoute(
+      name: MenuScreen.routeName,
+      path: MenuScreen.routeURL,
+      builder: (context, state) => const MenuScreen(),
+      routes: [
+        /// 환경설정
+        GoRoute(
+          name: SetupScreen.routeName,
+          path: SetupScreen.routeName,
+          builder: (context, state) => const SetupScreen(),
+        ),
+      ],
     ),
   ],
 );

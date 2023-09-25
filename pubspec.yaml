@@ -88,3 +88,10 @@ flutter:
     - assets/register/icon_check_off.png
     - assets/register/icon_check_on.png
     - assets/register/img_no_permission.png
+    - assets/menu/icon_called_light.png
+    - assets/menu/icon_car_info_light.png
+    - assets/menu/icon_cs_light.png
+    - assets/menu/icon_mypage_light.png
+    - assets/menu/icon_payment_light.png
+    - assets/menu/icon_place_light.png
+    - assets/menu/icon_setup_light.png

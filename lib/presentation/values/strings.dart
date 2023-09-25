@@ -73,6 +73,8 @@ abstract class StringHome {
   StringHome._();
 
   static const String title = "타이틀";
+  static const String reservationButton = "예약하기";
+  static const String callButton = "호출하기";
 }
 
 abstract class StringSetup {
@@ -109,6 +111,13 @@ abstract class StringMenu {
   StringMenu._();
 
   static const String title = "메뉴";
+  static const String myPage = "내 정보";
+  static const String called = "이용내역";
+  static const String place = "자주 가는 장소";
+  static const String payment = "결제 관리";
+  static const String carInfo = "차량 정보";
+  static const String cs = "고객센터";
+  static const String setup = "환경설정";
 }
 
 abstract class StringCarAdd {

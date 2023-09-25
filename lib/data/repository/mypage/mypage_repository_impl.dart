@@ -5,13 +5,11 @@ import 'package:kdmp_cm_app/data/constant/url.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
+import 'package:kdmp_cm_app/data/model/common/drv_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
-import 'package:kdmp_cm_app/data/model/mypage/call_detail_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_list_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_list_response.dart';
-import 'package:kdmp_cm_app/data/model/mypage/called_delete_request.dart';
-import 'package:kdmp_cm_app/data/model/mypage/called_detail_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_list_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_list_response.dart';
@@ -204,7 +202,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   }
 
   @override
-  Future<StateAPI> deleteCalled({required CalledDeleteRequest calledDeleteRequest}) async {
+  Future<StateAPI> deleteCalled({required DrvRequest calledDeleteRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/delUse';
     const url = '$baseBizUrl$api';
 
@@ -419,7 +417,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   }
 
   @override
-  Future<StateAPI> getCallDetail({required CallDetailRequest callDetailRequest}) async {
+  Future<StateAPI> getCallDetail({required DrvRequest callDetailRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/getUse';
     const url = '$baseBizUrl$api';
 
@@ -461,7 +459,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   }
 
   @override
-  Future<StateAPI> getCalledDetail({required CalledDetailRequest calledDetailRequest}) async {
+  Future<StateAPI> getCalledDetail({required DrvRequest calledDetailRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/getUseEnd';
     const url = '$baseBizUrl$api';
 

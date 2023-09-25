@@ -1,15 +1,15 @@
-class CalledDetailRequest {
+class DrvRequest {
   String clientVersion;
   String clientId;
   int drvReqSq;
 
-  CalledDetailRequest({
+  DrvRequest({
     this.clientVersion = "",
     this.clientId = "",
     required this.drvReqSq,
   });
 
-  factory CalledDetailRequest.fromJson(Map<String, dynamic> json) => CalledDetailRequest(
+  factory DrvRequest.fromJson(Map<String, dynamic> json) => DrvRequest(
         clientVersion: json["clientVersion"],
         clientId: json["clientId"],
         drvReqSq: json["drvReqSq"],

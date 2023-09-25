@@ -1,5 +1,5 @@
+import 'package:kdmp_cm_app/data/model/common/drv_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
-import 'package:kdmp_cm_app/data/model/mypage/called_detail_request.dart';
 import 'package:kdmp_cm_app/domain/repository/mypage/mypage_repository.dart';
 
 class GetCalledDetailUseCase {
@@ -7,7 +7,7 @@ class GetCalledDetailUseCase {
 
   GetCalledDetailUseCase({required MyPageRepository myPageRepository}) : _myPageRepository = myPageRepository;
 
-  Future<StateAPI> execute({required CalledDetailRequest calledDetailRequest}) async {
+  Future<StateAPI> execute({required DrvRequest calledDetailRequest}) async {
     return await _myPageRepository.getCalledDetail(calledDetailRequest: calledDetailRequest);
   }
 }

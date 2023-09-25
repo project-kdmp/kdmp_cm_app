@@ -1,9 +1,7 @@
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
+import 'package:kdmp_cm_app/data/model/common/drv_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
-import 'package:kdmp_cm_app/data/model/mypage/call_detail_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_list_request.dart';
-import 'package:kdmp_cm_app/data/model/mypage/called_delete_request.dart';
-import 'package:kdmp_cm_app/data/model/mypage/called_detail_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_list_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_add_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_delete_request.dart';
@@ -21,7 +19,7 @@ abstract class MyPageRepository {
 
   Future<StateAPI> deleteCar({required CarDeleteRequest carDeleteRequest});
 
-  Future<StateAPI> deleteCalled({required CalledDeleteRequest calledDeleteRequest});
+  Future<StateAPI> deleteCalled({required DrvRequest calledDeleteRequest});
 
   Future<StateAPI> addPlace({required PlaceAddRequest placeAddRequest});
 
@@ -31,11 +29,11 @@ abstract class MyPageRepository {
 
   Future<StateAPI> modifyCar({required CarModifyRequest carModifyRequest});
 
-  Future<StateAPI> getCallDetail({required CallDetailRequest callDetailRequest});
+  Future<StateAPI> getCallDetail({required DrvRequest callDetailRequest});
 
   Future<StateAPI> getCallList({required CallListRequest callListRequest});
 
-  Future<StateAPI> getCalledDetail({required CalledDetailRequest calledDetailRequest});
+  Future<StateAPI> getCalledDetail({required DrvRequest calledDetailRequest});
 
   Future<StateAPI> getCalledList({required CalledListRequest calledListRequest});
 

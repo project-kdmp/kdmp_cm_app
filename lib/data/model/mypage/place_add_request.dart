@@ -1,27 +1,31 @@
-class CarInfoRequest {
+class PlaceAddRequest {
   String clientVersion;
   String clientId;
   int mbrSq;
-  String carNumId;
+  String fplaceNicknm;
+  String fplaceAddress;
 
-  CarInfoRequest({
+  PlaceAddRequest({
     this.clientVersion = "",
     this.clientId = "",
     required this.mbrSq,
-    required this.carNumId,
+    required this.fplaceNicknm,
+    required this.fplaceAddress,
   });
 
-  factory CarInfoRequest.fromJson(Map<String, dynamic> json) => CarInfoRequest(
+  factory PlaceAddRequest.fromJson(Map<String, dynamic> json) => PlaceAddRequest(
         clientVersion: json["clientVersion"],
         clientId: json["clientId"],
         mbrSq: json["mbrSq"],
-        carNumId: json["carNumId"],
+        fplaceNicknm: json["fplaceNicknm"],
+        fplaceAddress: json["fplaceAddress"],
       );
 
   Map<String, dynamic> toJson() => {
         "clientVersion": clientVersion,
         "clientId": clientId,
         "mbrSq": mbrSq,
-        "carNumId": carNumId,
+        "fplaceNicknm": fplaceNicknm,
+        "fplaceAddress": fplaceAddress,
       };
 }

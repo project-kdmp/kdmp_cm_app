@@ -2,6 +2,13 @@ import 'package:kdmp_cm_app/data/model/auth/login_response.dart';
 import 'package:kdmp_cm_app/data/model/auth/refresh_response.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
+import 'package:kdmp_cm_app/data/model/mypage/call_detail_response.dart';
+import 'package:kdmp_cm_app/data/model/mypage/call_list_response.dart';
+import 'package:kdmp_cm_app/data/model/mypage/called_detail_response.dart';
+import 'package:kdmp_cm_app/data/model/mypage/called_list_response.dart';
+import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
+import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
+import 'package:kdmp_cm_app/data/model/mypage/place_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/profile_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/register/register_response.dart';
 import 'package:kdmp_cm_app/data/model/term/cm_term_list_response.dart';
@@ -48,4 +55,18 @@ class Success extends StateAPI {
   CMTermListResponse get cmTermListResponse => _response;
 
   ProfileDetailResponse get profileDetailResponse => _response;
+
+  CallDetailResponse get callDetailResponse => _response;
+
+  CallListResponse get callListResponse => _response;
+
+  CalledDetailResponse get calledDetailResponse => _response;
+
+  CalledListResponse get calledListResponse => _response;
+
+  CarListResponse get carListResponse => _response;
+
+  PlaceListResponse get placeListResponse => _response;
+
+  PlaceResponse get placeResponse => _response;
 }

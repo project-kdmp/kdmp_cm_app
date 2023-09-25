@@ -1,11 +1,45 @@
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
-import 'package:kdmp_cm_app/data/model/mypage/car_info_request.dart';
+import 'package:kdmp_cm_app/data/model/mypage/call_detail_request.dart';
+import 'package:kdmp_cm_app/data/model/mypage/call_list_request.dart';
+import 'package:kdmp_cm_app/data/model/mypage/called_delete_request.dart';
+import 'package:kdmp_cm_app/data/model/mypage/called_detail_request.dart';
+import 'package:kdmp_cm_app/data/model/mypage/called_list_request.dart';
+import 'package:kdmp_cm_app/data/model/mypage/car_add_request.dart';
+import 'package:kdmp_cm_app/data/model/mypage/car_delete_request.dart';
+import 'package:kdmp_cm_app/data/model/mypage/car_modify_request.dart';
+import 'package:kdmp_cm_app/data/model/mypage/place_add_request.dart';
+import 'package:kdmp_cm_app/data/model/mypage/place_delete_request.dart';
+import 'package:kdmp_cm_app/data/model/mypage/place_modify_request.dart';
 
 abstract class MyPageRepository {
   Future<StateAPI> getProfileDetail({required DefaultRequest getProfileRequest});
 
-  Future<StateAPI> addCar({required CarInfoRequest carInfoRequest});
-
   Future<StateAPI> withdrawalMember({required DefaultRequest withdrawalMemberRequest});
+
+  Future<StateAPI> deletePlace({required PlaceDeleteRequest placeDeleteRequest});
+
+  Future<StateAPI> deleteCar({required CarDeleteRequest carDeleteRequest});
+
+  Future<StateAPI> deleteCalled({required CalledDeleteRequest calledDeleteRequest});
+
+  Future<StateAPI> addPlace({required PlaceAddRequest placeAddRequest});
+
+  Future<StateAPI> addCar({required CarAddRequest carAddRequest});
+
+  Future<StateAPI> modifyPlace({required PlaceModifyRequest placeModifyRequest});
+
+  Future<StateAPI> modifyCar({required CarModifyRequest carModifyRequest});
+
+  Future<StateAPI> getCallDetail({required CallDetailRequest callDetailRequest});
+
+  Future<StateAPI> getCallList({required CallListRequest callListRequest});
+
+  Future<StateAPI> getCalledDetail({required CalledDetailRequest calledDetailRequest});
+
+  Future<StateAPI> getCalledList({required CalledListRequest calledListRequest});
+
+  Future<StateAPI> getPlaceList({required DefaultRequest getPlaceListRequest});
+
+  Future<StateAPI> getCarList({required DefaultRequest getCarListRequest});
 }

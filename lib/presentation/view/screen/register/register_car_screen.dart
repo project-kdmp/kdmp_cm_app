@@ -3,7 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
-import 'package:kdmp_cm_app/domain/usecase/mypage/set_car_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/mypage/set_car_add_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
@@ -41,7 +41,7 @@ class _RegisterCarScreenState extends State<RegisterCarScreen> {
   void initViewModel() {
     _registerCarViewModel = RegisterCarViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
-      setCarInfoUseCase: GetIt.instance<SetCarInfoUseCase>(),
+      setCarAddUseCase: GetIt.instance<SetCarAddUseCase>(),
     );
   }
 

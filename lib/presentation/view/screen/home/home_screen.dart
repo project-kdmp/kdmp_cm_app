@@ -12,6 +12,7 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
@@ -321,46 +322,64 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     return Text(getPrice(value));
                                                   },
                                                 ),
-                                                activeColor: Theme.of(context).colorScheme.secondary,
+                                                fillColor: MaterialStateProperty.all(value == PriceType.basic ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor),
                                               ),
                                             ),
                                             const SizedBox(height: 8),
 
                                             /// 요금 직접 입력
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(vertical: 4),
-                                              decoration: BoxDecoration(
-                                                borderRadius: const BorderRadius.all(Radius.circular(12)),
-                                                border: Border.all(color: value == PriceType.input ? Theme.of(context).colorScheme.secondary : Colors.transparent, width: 1),
-                                                color: value == PriceType.input ? Theme.of(context).toggleButtonsTheme.fillColor : Theme.of(context).dividerColor,
-                                              ),
-                                              child: RadioListTile(
-                                                value: PriceType.input,
-                                                groupValue: _homeViewModel.priceType,
-                                                onChanged: (value) {
-                                                  // TODO: 요금 직접 입력
-                                                  if (value is PriceType) {
-                                                    _homeViewModel.priceType = value;
-                                                  }
-                                                },
-                                                title: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      StringHome.inputPrice,
-                                                      style: value == PriceType.input ? Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary) : Theme.of(context).textTheme.bodyMedium,
-                                                    ),
-                                                    const SizedBox(height: 4),
-                                                    Text(StringHome.inputPriceSub, style: Theme.of(context).textTheme.bodySmall),
-                                                  ],
-                                                ),
-                                                secondary: ValueListenableBuilder<int>(
-                                                  valueListenable: _homeViewModel.inputPriceNotifier,
-                                                  builder: (context, value, child) {
-                                                    return Text(getPrice(value));
+                                            GestureDetector(
+                                              onTap: () async {
+                                                /// 요금 직접 입력 팝업 띄움
+                                                final result = await showModalBottomSheet(
+                                                  context: context,
+                                                  isScrollControlled: true,
+                                                  builder: (context) {
+                                                    return Wrap(
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                                          child: CallPriceBottomSheet(minPrice: _homeViewModel.basicPrice),
+                                                        ),
+                                                      ],
+                                                    );
                                                   },
+                                                );
+                                                if (result != null) {
+                                                  _homeViewModel.inputPrice = result;
+                                                  _homeViewModel.priceType = PriceType.input;
+                                                }
+                                              },
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                                                  border: Border.all(color: value == PriceType.input ? Theme.of(context).colorScheme.secondary : Colors.transparent, width: 1),
+                                                  color: value == PriceType.input ? Theme.of(context).toggleButtonsTheme.fillColor : Theme.of(context).dividerColor,
                                                 ),
-                                                activeColor: Theme.of(context).colorScheme.secondary,
+                                                child: RadioListTile(
+                                                  value: PriceType.input,
+                                                  groupValue: _homeViewModel.priceType,
+                                                  onChanged: null,
+                                                  title: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        StringHome.inputPrice,
+                                                        style: value == PriceType.input ? Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary) : Theme.of(context).textTheme.bodyMedium,
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Text(StringHome.inputPriceSub, style: Theme.of(context).textTheme.bodySmall),
+                                                    ],
+                                                  ),
+                                                  secondary: ValueListenableBuilder<int>(
+                                                    valueListenable: _homeViewModel.inputPriceNotifier,
+                                                    builder: (context, value, child) {
+                                                      return Text(getPrice(value), style: Theme.of(context).textTheme.bodyMedium);
+                                                    },
+                                                  ),
+                                                  fillColor: MaterialStateProperty.all(value == PriceType.input ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor),
+                                                ),
                                               ),
                                             ),
                                           ],

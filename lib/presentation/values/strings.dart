@@ -163,3 +163,14 @@ abstract class StringWithdraw {
 
   static const String withdrawalConfirm = "정말 탈퇴하시겠습니까?";
 }
+
+abstract class StringCallPrice {
+  StringCallPrice._();
+
+  static const String title = "요금 직접 입력";
+  static const String bottomButton = "확인";
+  static const String amount = "요금";
+  static const String inputGuide0 = "  ";
+  static const String inputGuide1 = "요금을 입력해주세요.";
+  static const String inputGuide2 = "이상으로 입력해주세요.";
+}

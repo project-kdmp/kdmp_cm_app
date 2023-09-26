@@ -209,13 +209,14 @@ class HomeViewModel {
   Future<StateAPI> _getCallPrice() async {
     state = Loading();
 
-    final mbrSq = await getMbrSqUseCase.execute();
-
-    final request = CallPriceRequest(mbrSq: mbrSq);
-    final result = await getCallPriceUseCase.execute(callPriceRequest: request);
-    state = result;
-
-    return result;
+    // final mbrSq = await getMbrSqUseCase.execute();
+    //
+    // final request = CallPriceRequest(mbrSq: mbrSq);
+    // final result = await getCallPriceUseCase.execute(callPriceRequest: request);
+    // state = result;
+    //
+    // return result;
+    return Fail(); // TODO: 임시값
   }
 
   // TODO: 콜 호출하기 API

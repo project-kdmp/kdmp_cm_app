@@ -75,6 +75,18 @@ abstract class StringHome {
   static const String title = "타이틀";
   static const String reservationButton = "예약하기";
   static const String callButton = "호출하기";
+  static const String startPlaceHint = "출발지 검색";
+  static const String endPlaceHint = "도착지 검색";
+  static const String stopoverButton = "경유";
+  static const String basicPrice = "일반요금";
+  static const String basicPriceSub = "혼잡 시 긴 대기시간";
+  static const String inputPrice = "요금 직접 입력";
+  static const String inputPriceSub = "빠른 귀가를 위해 직접 입력";
+  static const String payment1 = "결제수단";
+  static const String payment2 = "결제";
+  static const String empty = "없음";
+  static const String selectButton = "선택";
+  static const String changeButton = "변경";
 }
 
 abstract class StringSetup {

@@ -7,8 +7,10 @@ class CustomRoundButton extends StatelessWidget {
     required this.onPressed,
     this.isEnabled = true,
     this.margin,
+    this.padding,
     this.textColor,
     this.backgroundColor,
+    this.borderColor,
     this.icon,
   }) : super(key: key);
 
@@ -16,8 +18,10 @@ class CustomRoundButton extends StatelessWidget {
   final Function() onPressed;
   final bool isEnabled;
   final EdgeInsets? margin;
+  final EdgeInsets? padding;
   final Color? textColor;
   final Color? backgroundColor;
+  final Color? borderColor;
   final IconData? icon;
 
   @override
@@ -28,10 +32,8 @@ class CustomRoundButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           minimumSize: const Size(double.minPositive, double.minPositive),
           backgroundColor: backgroundColor ?? Theme.of(context).dividerColor,
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+          padding: padding ?? const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: borderColor ?? Colors.transparent)),
         ),
         onPressed: isEnabled ? onPressed : null,
         child: Row(

@@ -5,6 +5,8 @@ class CustomThemeMode {
 
   static final ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.light);
 
+  static ThemeMode get getThemeMode => themeMode.value;
+
   factory CustomThemeMode() => instance;
 
   static void change(ThemeMode mThemeMode) {

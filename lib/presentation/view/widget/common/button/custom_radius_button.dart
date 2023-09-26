@@ -27,13 +27,15 @@ class CustomRadiusButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isEnabled ? onPressed : null,
         style: ElevatedButton.styleFrom(
-            backgroundColor: isEnabled ? backgroundColor ?? Theme.of(context).scaffoldBackgroundColor : Theme.of(context).cardColor,
-            minimumSize: minimumSize,
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-            side: BorderSide(
-              color: Theme.of(context).colorScheme.secondary,
-              width: 1,
-            )),
+          backgroundColor: backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
+          minimumSize: minimumSize,
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          side: BorderSide(
+            color: isEnabled ? Theme.of(context).colorScheme.secondary : Theme.of(context).cardColor,
+            width: 1,
+          ),
+          disabledBackgroundColor: backgroundColor != null ? Theme.of(context).cardColor : Theme.of(context).scaffoldBackgroundColor,
+        ),
         child: Text(
           text,
           style: TextStyle(

@@ -1,0 +1,266 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:get_it/get_it.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
+import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
+import 'package:kdmp_cm_app/presentation/viewmodel/address/start_map_viewmodel.dart';
+import 'package:provider/provider.dart';
+
+/// 출발지 설정 지도 화면
+class StartMapScreen extends StatefulWidget {
+  const StartMapScreen({Key? key}) : super(key: key);
+
+  static const String routeName = "start_map";
+
+  @override
+  State<StartMapScreen> createState() => _StartMapScreenState();
+}
+
+class _StartMapScreenState extends State<StartMapScreen> {
+  late final StartMapViewModel _startMapViewModel;
+
+  late final NaverMapController _mapController;
+  final Completer<NaverMapController> mapControllerCompleter = Completer();
+  late final NMarker currentMarker;
+
+  /// 네이버 지도
+  final ValueNotifier<NaverMap?> _naverMap = ValueNotifier<NaverMap?>(null);
+
+  ValueNotifier<NaverMap?> get naverMapNotifier => _naverMap;
+
+  NaverMap? get naverMap => _naverMap.value;
+
+  set naverMap(NaverMap? value) => _naverMap.value = value;
+
+  @override
+  void initState() {
+    super.initState();
+    initViewModel();
+    initData();
+  }
+
+  /// Create
+  void initViewModel() {
+    _startMapViewModel = StartMapViewModel(
+      getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
+    );
+  }
+
+  void initData() async {
+    /// 현위치 좌표 가져오기
+    _startMapViewModel.startLatLng = await getCurrentLocation();
+
+    /// 네이버 지도 초기화
+    naverMap = initNaverMap(nLatLng: _startMapViewModel.startLatLng);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        Provider<StartMapViewModel>(
+          create: (context) => _startMapViewModel,
+        ),
+      ],
+      child: Scaffold(
+        /// 상단 앱바
+        appBar: BaseAppBar(
+          appBar: AppBar(),
+          title: StringStartSetup.title,
+        ),
+
+        /// 화면
+        body: SafeArea(
+          child: Column(
+            children: [
+              /// 지도
+              ValueListenableBuilder<NaverMap?>(
+                valueListenable: naverMapNotifier,
+                builder: (context, value, child) {
+                  return Expanded(child: value ?? Container(color: Theme.of(context).dividerColor));
+                },
+              ),
+
+              Stack(
+                children: [
+                  /// 상단 둥근 테두리
+                  Transform.translate(
+                    offset: const Offset(0, -20),
+                    child: Container(
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(context).disabledColor.withOpacity(0.5),
+                            spreadRadius: 0,
+                            blurRadius: 20,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Column(
+                      children: [
+                        /// 장소명
+                        ValueListenableBuilder<String>(
+                          valueListenable: _startMapViewModel.startPlaceNotifier,
+                          builder: (context, value, child) {
+                            return Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                value,
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 10),
+
+                        /// 주소
+                        ValueListenableBuilder<NLatLng>(
+                          valueListenable: _startMapViewModel.startLatLngNotifier,
+                          builder: (context, value, child) {
+                            return Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                "${value.latitude}, ${value.longitude}",
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(context).disabledColor,
+                                    ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              /// 출발지 설정 버튼
+              Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                padding: const EdgeInsets.all(20),
+                child: CustomElevatedButton(
+                  text: StringStartSetup.bottomButton,
+                  onPressed: () {
+                    // TODO: 조회한 데이터 전달
+                  },
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<NLatLng> getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    debugPrint("location position: $position");
+    return NLatLng(position.latitude, position.longitude);
+  }
+
+  showAlertDialog() {
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          onConfirm: () {
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
+  showConfirmDialog() {
+    return showDialog(
+      context: context,
+      barrierDismissible: true, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomConfirmDialog(
+          onConfirm: () {
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
+  /// 네이버 지도
+  NaverMap initNaverMap({required NLatLng nLatLng}) {
+    return NaverMap(
+      options: NaverMapViewOptions(
+        // 실내 맵 사용 가능 여부
+        indoorEnable: true,
+        // 위치 버튼 표시 여부
+        locationButtonEnable: true,
+        // 심볼 탭 이벤트 소비 여부
+        consumeSymbolTapEvents: true,
+        // 줌아웃 조절 여부
+        zoomGesturesEnable: true,
+        // 방향 조절 여부
+        rotationGesturesEnable: true,
+        // 이동 조절 여부
+        scrollGesturesEnable: true,
+        // 네이버 로고 클릭 이벤트 여부
+        logoClickEnable: false,
+        // 네이버 로고 위치
+        logoAlign: NLogoAlign.leftTop,
+        // 네이버 로고 마진
+        logoMargin: const EdgeInsets.all(8),
+        // 하단 거리 표시 없애기
+        scaleBarEnable: false,
+
+        initialCameraPosition: NCameraPosition(
+          target: nLatLng,
+          zoom: 16, // 0.0 ~ 21.0
+        ),
+        mapType: NMapType.navi,
+        nightModeEnable: CustomThemeMode.getThemeMode == ThemeMode.dark, // mapType이 네비게이션일 경우에만 제공
+      ),
+      onMapReady: (controller) async {
+        // 지도 준비 완료 시 호출되는 콜백 함수
+        _mapController = controller;
+        mapControllerCompleter.complete(controller); // completer에 지도 컨트롤러 완료 신호 전송
+        debugPrint("onMapReady");
+
+        /// 출발지 초기값 지정
+        currentMarker = NMarker(id: "current", position: nLatLng, alpha: 0, size: const Size(1, 1));
+        _mapController.addOverlayAll({currentMarker});
+        final infoWindow = NInfoWindow.onMarker(id: currentMarker.info.id, text: "출발지");
+        infoWindow.setOffsetX(-1);
+        infoWindow.setOffsetY(-1);
+        currentMarker.openInfoWindow(infoWindow);
+      },
+      onCameraChange: (reason, animated) async {
+        /// 카메라 위치 변경에 따른 위치값 변경
+        final cameraPosition = await _mapController.getCameraPosition();
+        final newLatLng = NLatLng(cameraPosition.target.latitude, cameraPosition.target.longitude);
+        currentMarker.setPosition(newLatLng);
+        _startMapViewModel.startLatLng = newLatLng;
+      },
+    );
+  }
+}

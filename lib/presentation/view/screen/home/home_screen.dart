@@ -15,6 +15,7 @@ import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
@@ -39,6 +40,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late final NaverMapController _mapController;
   final Completer<NaverMapController> mapControllerCompleter = Completer();
+  late final NMarker currentMarker;
+
+  /// 네이버 지도
+  final ValueNotifier<NaverMap?> _naverMap = ValueNotifier<NaverMap?>(null);
+
+  ValueNotifier<NaverMap?> get naverMapNotifier => _naverMap;
+
+  NaverMap? get naverMap => _naverMap.value;
+
+  set naverMap(NaverMap? value) => _naverMap.value = value;
 
   @override
   void initState() {
@@ -54,7 +65,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void initData() async {}
+  void initData() async {
+    /// 현위치 좌표 가져오기
+    _homeViewModel.startLatLng = await getCurrentLocation();
+
+    /// 네이버 지도 초기화
+    naverMap = initNaverMap(nLatLng: _homeViewModel.startLatLng);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,13 +107,11 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               /// 지도
-              Expanded(
-                child: ValueListenableBuilder<NLatLng>(
-                  valueListenable: _homeViewModel.latLngNotifier,
-                  builder: (context, value, child) {
-                    return _naverMapSection(context: context, nLatLng: value);
-                  },
-                ),
+              ValueListenableBuilder<NaverMap?>(
+                valueListenable: naverMapNotifier,
+                builder: (context, value, child) {
+                  return Expanded(child: value ?? Container(color: Theme.of(context).dividerColor));
+                },
               ),
 
               Stack(
@@ -151,9 +166,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           hint: StringHome.startPlaceHint,
                                           text: value,
                                           backgroundColor: Colors.transparent,
-                                          onPressed: () {
-                                            // TODO: 출발지 설정 화면으로 이동
-                                            _homeViewModel.startPlace = "출발지";
+                                          onPressed: () async {
+                                            final result = await context.pushNamed(StartSearchScreen.routeName);
                                           },
                                         ),
                                       ),
@@ -567,7 +581,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// 네이버 지도
-  Widget _naverMapSection({required BuildContext context, required NLatLng nLatLng}) {
+  NaverMap initNaverMap({required NLatLng nLatLng}) {
     return NaverMap(
       options: NaverMapViewOptions(
         // 실내 맵 사용 가능 여부
@@ -593,7 +607,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         initialCameraPosition: NCameraPosition(
           target: nLatLng,
-          zoom: 10,
+          zoom: 16, // 0.0 ~ 21.0
         ),
         mapType: NMapType.navi,
         nightModeEnable: CustomThemeMode.getThemeMode == ThemeMode.dark, // mapType이 네비게이션일 경우에만 제공
@@ -604,22 +618,20 @@ class _HomeScreenState extends State<HomeScreen> {
         mapControllerCompleter.complete(controller); // completer에 지도 컨트롤러 완료 신호 전송
         debugPrint("onMapReady");
 
-        _mapController.setLocationTrackingMode(NLocationTrackingMode.face);
-
-        final marker = NMarker(
-          id: "now",
-          position: nLatLng,
-          icon: await NOverlayImage.fromWidget(
-            widget: Icon(
-              Icons.location_on,
-              color: Theme.of(context).colorScheme.secondary,
-            ),
-            size: const Size(20, 24),
-            context: context,
-          ),
-        );
-
-        _mapController.addOverlayAll({marker});
+        /// 출발지 초기값 지정
+        // currentMarker = NMarker(id: "current", position: nLatLng, alpha: 0, size: const Size(1, 1));
+        // _mapController.addOverlayAll({currentMarker});
+        // final infoWindow = NInfoWindow.onMarker(id: currentMarker.info.id, text: "출발지");
+        // infoWindow.setOffsetX(-1);
+        // infoWindow.setOffsetY(-1);
+        // currentMarker.openInfoWindow(infoWindow);
+      },
+      onCameraChange: (reason, animated) async {
+        /// 카메라 위치 변경에 따른 위치값 변경
+        final cameraPosition = await _mapController.getCameraPosition();
+        final newLatLng = NLatLng(cameraPosition.target.latitude, cameraPosition.target.longitude);
+        currentMarker.setPosition(newLatLng);
+        _homeViewModel.startLatLng = newLatLng;
       },
     );
   }

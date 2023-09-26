@@ -8,6 +8,7 @@ class CustomSearchField extends StatelessWidget {
     required this.onChanged,
     this.isPassword = false,
     this.isEnabled = true,
+    this.icon,
   }) : super(key: key);
 
   final String text;
@@ -15,6 +16,7 @@ class CustomSearchField extends StatelessWidget {
   final Function(String) onChanged;
   final bool isPassword;
   final bool isEnabled;
+  final Icon? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +53,7 @@ class CustomSearchField extends StatelessWidget {
           ),
           onChanged: (value) => onChanged(value),
         ),
-        const SizedBox(width: 50, child: Icon(Icons.search, size: 24)),
+        SizedBox(width: 50, child: icon ?? const Icon(Icons.search, size: 24)),
       ],
     );
   }

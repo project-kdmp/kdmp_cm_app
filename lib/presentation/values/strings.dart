@@ -174,3 +174,15 @@ abstract class StringCallPrice {
   static const String inputGuide1 = "요금을 입력해주세요.";
   static const String inputGuide2 = "이상으로 입력해주세요.";
 }
+
+abstract class StringStartSetup {
+  StringStartSetup._();
+
+  static const String title = "출발지 설정";
+  static const String searchHint = "출발지 검색";
+  static const String nowLocation = "현위치";
+  static const String selectMap = "지도에서 선택";
+  static const String edit = "편집";
+  static const String recentKeyword = "최근 검색";
+  static const String bottomButton = "출발지 설정";
+}

@@ -1,0 +1,263 @@
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_icon_text_button.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_search_field.dart';
+import 'package:kdmp_cm_app/presentation/viewmodel/address/start_setup_viewmodel.dart';
+import 'package:provider/provider.dart';
+
+/// 출발지 설정 검색 화면
+class StartSearchScreen extends StatefulWidget {
+  const StartSearchScreen({Key? key}) : super(key: key);
+
+  static const String routeName = "start_search";
+
+  @override
+  State<StartSearchScreen> createState() => _StartSearchScreenState();
+}
+
+class _StartSearchScreenState extends State<StartSearchScreen> with SingleTickerProviderStateMixin {
+  late final StartSearchViewModel _startSearchViewModel;
+
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    initViewModel();
+    initScrollController();
+    initData();
+  }
+
+  /// Create
+  void initViewModel() {
+    _startSearchViewModel = StartSearchViewModel(
+      getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
+    );
+  }
+
+  void initScrollController() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.maxScrollExtent == _scrollController.position.pixels) {
+        initData();
+      }
+    });
+  }
+
+  void initData() {
+    /// 최근 검색 리스트 가져오기
+    _startSearchViewModel.getSearchList();
+    _startSearchViewModel.recentList = List.from({"우림라이온스밸리A동", "우림라이온스밸리B동", "우림라이온스밸리C동"});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    /// Provider
+    return MultiProvider(
+      providers: [
+        Provider<StartSearchViewModel>(
+          create: (context) => _startSearchViewModel,
+        ),
+      ],
+      child: Scaffold(
+        /// 상단 앱바
+        appBar: BaseAppBar(
+          appBar: AppBar(),
+          title: StringStartSetup.title,
+        ),
+
+        /// 화면
+        body: SafeArea(
+          child: ScrollConfiguration(
+            behavior: CustomScrollBehavior(),
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                children: [
+                  /// 검색바
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 4),
+                    child: ValueListenableBuilder<String>(
+                      valueListenable: _startSearchViewModel.keywordNotifier,
+                      builder: (context, value, _) {
+                        return CustomSearchField(
+                          hint: StringStartSetup.searchHint,
+                          icon: Icon(
+                            Icons.location_on,
+                            size: 22,
+                            color: Theme.of(context).disabledColor,
+                          ),
+                          onChanged: (value) {
+                            _startSearchViewModel.keyword = value;
+                            _startSearchViewModel.getSearchList();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      /// 현위치 버튼
+                      CustomIconTextButton(
+                        icon: Icons.location_searching_outlined,
+                        text: StringStartSetup.nowLocation,
+                        onPressed: () async {
+                          final result = await context.pushNamed(StartMapScreen.routeName);
+                        },
+                      ),
+                      const SizedBox(height: 10, child: VerticalDivider(width: 20, thickness: 1)),
+
+                      /// 지도에서 선택 버튼
+                      CustomIconTextButton(
+                        icon: Icons.map_outlined,
+                        text: StringStartSetup.selectMap,
+                        onPressed: () async {
+                          final result = await context.pushNamed(StartMapScreen.routeName);
+                        },
+                      ),
+                      const SizedBox(width: 20),
+                    ],
+                  ),
+
+                  const Divider(thickness: 6),
+
+                  /// 최근 검색 리스트 또는 검색 리스트
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _startSearchViewModel.isRecentListValidNotifier,
+                    builder: (context, value, child) {
+                      return value
+                          ? Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(StringStartSetup.recentKeyword, style: Theme.of(context).textTheme.titleMedium),
+
+                                      /// 편집 버튼
+                                      GestureDetector(
+                                        child: Text(StringStartSetup.edit, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                                        onTap: () {
+                                          // TODO: 출발지 검색 기록 편집 화면으로 이동
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                /// 최근 검색 리스트
+                                ValueListenableBuilder<List<String>>(
+                                  valueListenable: _startSearchViewModel.recentListNotifier,
+                                  builder: (context, value, _) {
+                                    return getRecentListView(value);
+                                  },
+                                )
+                              ],
+                            )
+                          :
+
+                          /// 검색 리스트
+                          ValueListenableBuilder<List<String>>(
+                              valueListenable: _startSearchViewModel.searchListNotifier,
+                              builder: (context, value, _) {
+                                return getSearchListView(value);
+                              },
+                            );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 검색 리스트
+  Widget getSearchListView(List<String> value) {
+    return ListView.separated(
+      itemCount: value.length,
+      shrinkWrap: true,
+      primary: false,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () async {
+            /// 검색 리스트 아이템 클릭
+            // TODO: 값 전달
+            context.pop();
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("우림라이온스밸리", style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 10),
+                Text("우림라이온스밸리", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+              ],
+            ),
+          ),
+        );
+      },
+      separatorBuilder: (context, index) {
+        return const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Divider(thickness: 1),
+        );
+      },
+    );
+  }
+
+  /// 최근 검색 리스트
+  Widget getRecentListView(List<String> value) {
+    return ListView.separated(
+      itemCount: value.length,
+      shrinkWrap: true,
+      primary: false,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () async {
+            /// 최근 검색 리스트 아이템 클릭
+            // TODO: 값 전달
+            context.pop();
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.access_time_outlined, color: Theme.of(context).disabledColor, size: 22),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("우림라이온스밸리", style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: 10),
+                    Text("우림라이온스밸리", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      separatorBuilder: (context, index) {
+        return const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Divider(thickness: 1),
+        );
+      },
+    );
+  }
+}

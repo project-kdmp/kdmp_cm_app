@@ -119,8 +119,13 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
                           /// 가입상태
                           switch (loginResponse.mbrSt) {
                             case MbrSt.temp:
-                            /// 차량등록 화면으로 이동
-                              context.goNamed(RegisterCarScreen.routeName);
+                              if (loginResponse.mbrCarCount > 0) {
+                                /// 홈 화면으로 이동
+                                context.goNamed(HomeScreen.routeName);
+                              } else {
+                                /// 차량등록 화면으로 이동
+                                context.goNamed(RegisterCarScreen.routeName);
+                              }
                               break;
                             case MbrSt.reject:
                               // 심사 거절이나 기사용 상태

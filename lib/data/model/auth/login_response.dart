@@ -9,6 +9,7 @@ class LoginResponse {
   String mbrRegprogressSt;
   String jwt;
   String autoRefresh;
+  int mbrCarCount;
   bool bagreeTrmUpdate;
 
   LoginResponse({
@@ -22,6 +23,7 @@ class LoginResponse {
     required this.mbrRegprogressSt,
     required this.jwt,
     required this.autoRefresh,
+    required this.mbrCarCount,
     required this.bagreeTrmUpdate,
   });
 
@@ -37,6 +39,7 @@ class LoginResponse {
       mbrRegprogressSt: json["mbrRegprogressSt"] as String,
       jwt: json["jwt"] as String,
       autoRefresh: json["autoRefresh"] as String,
+      mbrCarCount: json["mbrCarCount"] as int,
       bagreeTrmUpdate: json["bagreeTrmUpdate"] as bool,
     );
   }
@@ -52,6 +55,7 @@ class LoginResponse {
         "mbrRegprogressSt": mbrRegprogressSt,
         "jwt": jwt,
         "autoRefresh": autoRefresh,
+        "mbrCarCount": mbrCarCount,
         "bagreeTrmUpdate": bagreeTrmUpdate,
       };
 }

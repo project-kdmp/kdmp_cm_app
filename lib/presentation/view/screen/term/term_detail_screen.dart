@@ -99,7 +99,7 @@ class _TermDetailScreenState extends State<TermDetailScreen> {
             /// 하단 버튼
             widget.isAgreeButtonEnabled
                 ? Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     child: CustomElevatedButton(
                       text: StringTerm.bottomButton,
                       onPressed: () {

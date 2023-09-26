@@ -81,7 +81,7 @@ class _DriverTermScreenState extends State<DriverTermScreen> {
 
                 /// 하단 버튼
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   child: CustomElevatedButton(
                     text: StringCommon.confirm,
                     onPressed: () {

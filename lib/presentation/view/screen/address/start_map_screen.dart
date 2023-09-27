@@ -280,7 +280,7 @@ class _StartMapScreenState extends State<StartMapScreen> {
         currentMarker.openInfoWindow(infoWindow);
       },
       onCameraChange: (reason, animated) async {
-        debugPrint("onCameraChange");
+        // debugPrint("onCameraChange");
 
         /// 카메라 위치 변경에 따른 마커 변경 (실시간)
         final cameraPosition = await _mapController.getCameraPosition();

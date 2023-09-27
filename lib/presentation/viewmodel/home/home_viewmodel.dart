@@ -3,14 +3,21 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
+import 'package:kdmp_cm_app/data/model/naver/directions_request.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 
 class HomeViewModel {
   HomeViewModel({
     required this.getMbrSqUseCase,
+    required this.getNaverPriceUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
+  final GetNaverPriceUseCase getNaverPriceUseCase;
+
+  String clientId = "";
+  String clientSecret = "";
 
   /// 현위치 좌표
   final ValueNotifier<NLatLng> _currentLatLng = ValueNotifier<NLatLng>(const NLatLng(37.5666103, 126.9783882));
@@ -168,6 +175,16 @@ class HomeViewModel {
     isCallButtonValid = valid;
   }
 
+  bool isPriceValid() {
+    bool valid;
+    if (startMapData != null && endMapData != null) {
+      valid = true;
+    } else {
+      valid = false;
+    }
+    return valid;
+  }
+
   /// 상태
   StateAPI state = Loading();
 
@@ -177,26 +194,35 @@ class HomeViewModel {
       return;
     }
 
-    // final result = await _getCallPrice();
-    // if (result is Success) {
+    final result = await _getCallPrice();
+    if (result is Success) {
+      final response = result.directionsResponse;
+      basicPrice = response.route.traoptimal[0].summary.taxiFare + response.route.traoptimal[0].summary.tollFare; // 택시 요금 + 통행 요금(톨게이트)
+    }
     _checkStopoverButtonValid();
     _checkCallButtonValid();
-    // }
-    // 요금 조회 성공 시
   }
 
-  // TODO: 요금 조회 API
+  /// 요금 조회 API
   Future<StateAPI> _getCallPrice() async {
     state = Loading();
 
-    // final mbrSq = await getMbrSqUseCase.execute();
-    //
-    // final request = CallPriceRequest(mbrSq: mbrSq);
-    // final result = await getCallPriceUseCase.execute(callPriceRequest: request);
-    // state = result;
-    //
-    // return result;
-    return Fail(); // TODO: 임시값
+    final start = "${startMapData!.latLng.longitude},${startMapData!.latLng.latitude}";
+    final goal = "${endMapData!.latLng.longitude},${endMapData!.latLng.latitude}";
+
+    final request = DirectionsRequest(
+      start: start,
+      goal: goal,
+      // waypoints: "126.9783882,37.5666103" // TODO: 임시값
+    );
+    final result = await getNaverPriceUseCase.execute(
+      clientId: clientId,
+      clientSecret: clientSecret,
+      directionsRequest: request,
+    );
+    state = result;
+
+    return result;
   }
 
   // TODO: 콜 호출하기 API

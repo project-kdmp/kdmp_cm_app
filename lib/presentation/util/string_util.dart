@@ -156,7 +156,7 @@ String makeAddress(List<Result> items) {
       }
     }
   }
-  return [sido, sigugun, dongmyun, rest, ri].join(" ").replaceAll("  ", " ").trim();
+  return [sido, sigugun, dongmyun, ri, rest].join(" ").replaceAll("  ", " ").trim();
 }
 
 /// 네이버 장소 검색 장소명 반환

@@ -34,6 +34,7 @@ import 'package:kdmp_cm_app/domain/usecase/mypage/set_place_modify_usecase.dart'
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_withdrawal_member_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_auto_refresh_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_auto_refresh_usecase.dart';
@@ -235,6 +236,8 @@ void main() async {
   getIt.registerSingleton<GetNaverAddressUseCase>(getNaverAddressUseCase);
   final getNaverAddressInfoUseCase = GetNaverAddressInfoUseCase(naverRepository: naverRepository);
   getIt.registerSingleton<GetNaverAddressInfoUseCase>(getNaverAddressInfoUseCase);
+  final getNaverPriceUseCase = GetNaverPriceUseCase(naverRepository: naverRepository);
+  getIt.registerSingleton<GetNaverPriceUseCase>(getNaverPriceUseCase);
 
   runApp(const MyApp());
 }

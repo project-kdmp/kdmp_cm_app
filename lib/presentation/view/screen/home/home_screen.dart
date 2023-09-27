@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
@@ -9,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
@@ -61,10 +63,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// Create
-  void initViewModel() {
+  void initViewModel() async {
     _homeViewModel = HomeViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
+      getNaverPriceUseCase: GetIt.instance<GetNaverPriceUseCase>(),
     );
+
+    /// 키 관리 파일 가져오기
+    await dotenv.load(fileName: ".env");
+    _homeViewModel.clientId = dotenv.get("NAVER_MAP_CLIENT_ID");
+    _homeViewModel.clientSecret = dotenv.get("NAVER_MAP_CLIENT_SECRET");
   }
 
   void initData() async {

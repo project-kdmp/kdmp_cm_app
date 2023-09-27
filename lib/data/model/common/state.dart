@@ -12,6 +12,7 @@ import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/place_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/profile_detail_response.dart';
+import 'package:kdmp_cm_app/data/model/naver/directions_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/geocoding_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/reverse_geocoding_response.dart';
 import 'package:kdmp_cm_app/data/model/register/register_response.dart';
@@ -86,4 +87,6 @@ class Success extends StateAPI {
   ReverseGeocodingResponse get reverseGeocodingResponse => _response;
 
   GeocodingResponse get geocodingResponse => _response;
+
+  DirectionsResponse get directionsResponse => _response;
 }

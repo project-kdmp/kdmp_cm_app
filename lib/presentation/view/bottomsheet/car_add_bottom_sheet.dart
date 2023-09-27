@@ -98,38 +98,34 @@ class CarAddBottomSheet extends StatelessWidget {
 
             /// 차량번호
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: Row(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(width: 10),
-                  const Text(StringCarAdd.carNumber),
-                  const SizedBox(width: 24),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        /// 차량번호 입력
-                        CustomTextField(
-                          inputType: TextInputType.number,
-                          maxLength: 4,
-                          onChanged: (value) {
-                            carNumber = value;
-                          },
-                        ),
-                        const SizedBox(height: 8),
+                  const SizedBox(height: 20),
 
-                        /// 입력값 에러 표시
-                        ValueListenableBuilder(
-                          valueListenable: errorMessageNotifier,
-                          builder: (context, value, child) {
-                            return Text(
-                              value,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.red),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                  const Text(StringCarAdd.carNumber),
+                  const SizedBox(height: 10),
+
+                  /// 차량번호 입력
+                  CustomTextField(
+                    inputType: TextInputType.number,
+                    maxLength: 4,
+                    onChanged: (value) {
+                      carNumber = value;
+                    },
+                  ),
+                  const SizedBox(height: 8),
+
+                  /// 입력값 에러 표시
+                  ValueListenableBuilder(
+                    valueListenable: errorMessageNotifier,
+                    builder: (context, value, child) {
+                      return Text(
+                        value,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.red),
+                      );
+                    },
                   ),
                 ],
               ),

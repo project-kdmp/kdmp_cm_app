@@ -78,7 +78,7 @@ class MenuScreen extends StatelessWidget {
                         },
                       ),
 
-                      /// 결제 관리 버튼
+                      /// 결제관리 버튼
                       CustomMoveButton(
                         text: StringMenu.payment,
                         iconImage: Image.asset(
@@ -87,7 +87,7 @@ class MenuScreen extends StatelessWidget {
                           height: 28,
                         ),
                         onPressed: () {
-                          // TODO: 결제 관리 화면 이동
+                          // TODO: 결제관리 화면 이동
                           // context.pushNamed(PaymentScreen.routeName);
                         },
                       ),

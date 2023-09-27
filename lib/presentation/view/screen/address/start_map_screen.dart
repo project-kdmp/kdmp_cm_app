@@ -134,16 +134,16 @@ class _StartMapScreenState extends State<StartMapScreen> {
                       ),
                     ),
                   ),
-                  Container(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: Column(
-                      children: [
-                        /// 장소명
-                        ValueListenableBuilder<MapData>(
-                          valueListenable: _startMapViewModel.mapDataNotifier,
-                          builder: (context, value, child) {
-                            return Container(
+                  ValueListenableBuilder<MapData>(
+                    valueListenable: _startMapViewModel.mapDataNotifier,
+                    builder: (context, value, child) {
+                      return Container(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        child: Column(
+                          children: [
+                            /// 장소명
+                            Container(
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 value.place.isNotEmpty ? value.place : "장소명 없음",
@@ -151,16 +151,11 @@ class _StartMapScreenState extends State<StartMapScreen> {
                                       color: Theme.of(context).colorScheme.primary,
                                     ),
                               ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 10),
+                            ),
+                            const SizedBox(height: 10),
 
-                        /// 주소
-                        ValueListenableBuilder<MapData>(
-                          valueListenable: _startMapViewModel.mapDataNotifier,
-                          builder: (context, value, child) {
-                            return Container(
+                            /// 주소
+                            Container(
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 value.address.isNotEmpty ? value.address : "화면을 이동하여 장소를 지정해주세요.",
@@ -168,11 +163,11 @@ class _StartMapScreenState extends State<StartMapScreen> {
                                       color: Theme.of(context).disabledColor,
                                     ),
                               ),
-                            );
-                          },
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -187,6 +182,7 @@ class _StartMapScreenState extends State<StartMapScreen> {
                     child: CustomElevatedButton(
                       isEnabled: value,
                       text: StringStartSetup.bottomButton,
+                      enabledBackgroundColor: Theme.of(context).colorScheme.secondary,
                       onPressed: () {
                         /// 조회한 데이터 전달
                         final mapData = _startMapViewModel.mapData;
@@ -286,17 +282,20 @@ class _StartMapScreenState extends State<StartMapScreen> {
       onCameraChange: (reason, animated) async {
         debugPrint("onCameraChange");
 
-        /// 카메라 위치 변경에 따른 위치값 변경
+        /// 카메라 위치 변경에 따른 마커 변경 (실시간)
         final cameraPosition = await _mapController.getCameraPosition();
         final newLatLng = NLatLng(cameraPosition.target.latitude, cameraPosition.target.longitude);
         currentMarker.setPosition(newLatLng);
-        _startMapViewModel.mapData = MapData(latLng: newLatLng);
       },
       onCameraIdle: () async {
         debugPrint("onCameraIdle");
 
+        /// 카메라 위치 변경에 따른 위치값 변경 (스크롤이 멈춘 후)
+        final cameraPosition = await _mapController.getCameraPosition();
+        final newLatLng = NLatLng(cameraPosition.target.latitude, cameraPosition.target.longitude);
+
         /// 좌표로 장소 조회
-        final mapData = await _naverMapViewModel.getAddress(nLatLng: _startMapViewModel.mapData.latLng);
+        final mapData = await _naverMapViewModel.getAddress(nLatLng: newLatLng);
         _startMapViewModel.mapData = mapData;
       },
     );

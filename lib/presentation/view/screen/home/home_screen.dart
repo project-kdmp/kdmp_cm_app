@@ -192,8 +192,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                               /// 카메라 위치 변경
                                               _mapController.updateCamera(
                                                 NCameraUpdate.scrollAndZoomTo(
-                                                  target: result.latLng,
-                                                  zoom: 13, // 0.0 ~ 21.0
+                                                  target: _homeViewModel.endMapData != null
+                                                      ? NLatLng(
+                                                          (_homeViewModel.endMapData!.latLng.latitude + result.latLng.latitude) / 2,
+                                                          (_homeViewModel.endMapData!.latLng.longitude + result.latLng.longitude) / 2,
+                                                        )
+                                                      : result.latLng,
+                                                  zoom: 14, // 0.0 ~ 21.0
                                                 ),
                                               );
                                             }
@@ -302,8 +307,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                               /// 카메라 위치 변경
                                               _mapController.updateCamera(
                                                 NCameraUpdate.scrollAndZoomTo(
-                                                  target: result.latLng,
-                                                  zoom: 13, // 0.0 ~ 21.0
+                                                  target: _homeViewModel.startMapData != null
+                                                      ? NLatLng(
+                                                          (_homeViewModel.startMapData!.latLng.latitude + result.latLng.latitude) / 2,
+                                                          (_homeViewModel.startMapData!.latLng.longitude + result.latLng.longitude) / 2,
+                                                        )
+                                                      : result.latLng,
+                                                  zoom: 14, // 0.0 ~ 21.0
                                                 ),
                                               );
                                             }

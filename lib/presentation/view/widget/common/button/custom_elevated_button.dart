@@ -9,6 +9,7 @@ class CustomElevatedButton extends StatelessWidget {
     this.margin,
     this.textColor,
     this.backgroundColor,
+    this.enabledBackgroundColor,
     this.minimumSize,
   }) : super(key: key);
 
@@ -18,6 +19,7 @@ class CustomElevatedButton extends StatelessWidget {
   final EdgeInsets? margin;
   final Color? textColor;
   final Color? backgroundColor;
+  final Color? enabledBackgroundColor;
   final Size? minimumSize;
 
   @override
@@ -27,7 +29,7 @@ class CustomElevatedButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isEnabled ? onPressed : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isEnabled ? backgroundColor ?? Theme.of(context).colorScheme.primary : Theme.of(context).cardColor,
+          backgroundColor: isEnabled ? backgroundColor ?? Theme.of(context).colorScheme.primary : enabledBackgroundColor ?? Theme.of(context).cardColor,
           minimumSize: minimumSize,
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
         ),

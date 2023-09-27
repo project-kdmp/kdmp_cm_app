@@ -6,11 +6,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
+import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
@@ -67,10 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void initData() async {
     /// 현위치 좌표 가져오기
-    _homeViewModel.startLatLng = await getCurrentLocation();
+    _homeViewModel.currentLatLng = await getCurrentLocation();
 
     /// 네이버 지도 초기화
-    naverMap = initNaverMap(nLatLng: _homeViewModel.startLatLng);
+    naverMap = initNaverMap(nLatLng: _homeViewModel.currentLatLng);
   }
 
   @override
@@ -149,14 +151,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             children: [
                               /// 출발지
-                              ValueListenableBuilder<String>(
-                                valueListenable: _homeViewModel.startPlaceNotifier,
+                              ValueListenableBuilder<MapData?>(
+                                valueListenable: _homeViewModel.startMapDataNotifier,
                                 builder: (context, value, child) {
                                   return Row(
                                     children: [
                                       Icon(
                                         Icons.location_on,
-                                        color: value.isNotEmpty ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor,
+                                        color: value != null ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor,
                                         size: 24,
                                       ),
 
@@ -164,10 +166,37 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Expanded(
                                         child: CustomTextButton(
                                           hint: StringHome.startPlaceHint,
-                                          text: value,
+                                          text: value != null
+                                              ? value.place.isNotEmpty
+                                                  ? value.place
+                                                  : value.address
+                                              : "",
                                           backgroundColor: Colors.transparent,
                                           onPressed: () async {
                                             final result = await context.pushNamed(StartSearchScreen.routeName);
+                                            if (result != null && result is MapData) {
+                                              _homeViewModel.startMapData = result;
+
+                                              /// 출발지 마커 추가
+                                              final startMarker = NMarker(
+                                                id: "start",
+                                                position: result.latLng,
+                                                icon: await NOverlayImage.fromWidget(
+                                                  context: context,
+                                                  widget: Image.asset(ImageCommon.icStart),
+                                                  size: const Size(26, 26),
+                                                ),
+                                              );
+                                              _mapController.addOverlay(startMarker);
+
+                                              /// 카메라 위치 변경
+                                              _mapController.updateCamera(
+                                                NCameraUpdate.scrollAndZoomTo(
+                                                  target: result.latLng,
+                                                  zoom: 13, // 0.0 ~ 21.0
+                                                ),
+                                              );
+                                            }
                                           },
                                         ),
                                       ),
@@ -231,14 +260,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
 
                               /// 도착지
-                              ValueListenableBuilder<String>(
-                                valueListenable: _homeViewModel.endPlaceNotifier,
+                              ValueListenableBuilder<MapData?>(
+                                valueListenable: _homeViewModel.endMapDataNotifier,
                                 builder: (context, value, child) {
                                   return Row(
                                     children: [
                                       Icon(
                                         Icons.flag_sharp,
-                                        color: value.isNotEmpty ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor,
+                                        color: value != null ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor,
                                         size: 24,
                                       ),
 
@@ -246,11 +275,38 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Expanded(
                                         child: CustomTextButton(
                                           hint: StringHome.endPlaceHint,
-                                          text: value,
+                                          text: value != null
+                                              ? value.place.isNotEmpty
+                                                  ? value.place
+                                                  : value.address
+                                              : "",
                                           backgroundColor: Colors.transparent,
-                                          onPressed: () {
+                                          onPressed: () async {
                                             // TODO: 도착지 설정 화면으로 이동
-                                            _homeViewModel.endPlace = "도착지";
+                                            final result = await context.pushNamed(StartSearchScreen.routeName);
+                                            if (result != null && result is MapData) {
+                                              _homeViewModel.endMapData = result;
+
+                                              /// 도착지 마커 추가
+                                              final endMarker = NMarker(
+                                                id: "end",
+                                                position: result.latLng,
+                                                icon: await NOverlayImage.fromWidget(
+                                                  context: context,
+                                                  widget: Image.asset(ImageCommon.icEnd),
+                                                  size: const Size(26, 26),
+                                                ),
+                                              );
+                                              _mapController.addOverlay(endMarker);
+
+                                              /// 카메라 위치 변경
+                                              _mapController.updateCamera(
+                                                NCameraUpdate.scrollAndZoomTo(
+                                                  target: result.latLng,
+                                                  zoom: 13, // 0.0 ~ 21.0
+                                                ),
+                                              );
+                                            }
                                           },
                                         ),
                                       ),
@@ -628,10 +684,10 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       onCameraChange: (reason, animated) async {
         /// 카메라 위치 변경에 따른 위치값 변경
-        final cameraPosition = await _mapController.getCameraPosition();
-        final newLatLng = NLatLng(cameraPosition.target.latitude, cameraPosition.target.longitude);
-        currentMarker.setPosition(newLatLng);
-        _homeViewModel.startLatLng = newLatLng;
+        // final cameraPosition = await _mapController.getCameraPosition();
+        // final newLatLng = NLatLng(cameraPosition.target.latitude, cameraPosition.target.longitude);
+        // currentMarker.setPosition(newLatLng);
+        // _homeViewModel.startLatLng = newLatLng;
       },
     );
   }

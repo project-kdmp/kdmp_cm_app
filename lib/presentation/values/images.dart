@@ -3,6 +3,8 @@ abstract class ImageCommon {
 
   static const String iconWarning = "assets/common/icon_warning.png";
   static const String appLogo = "assets/common/app_logo.png";
+  static const String icStart = "assets/common/ic_start.png";
+  static const String icEnd = "assets/common/ic_end.png";
 }
 
 abstract class ImageRegister {

@@ -10,6 +10,7 @@ import 'package:kdmp_cm_app/common/network/dio_singleton.dart';
 import 'package:kdmp_cm_app/common/network/interceptor/token_interceptor.dart';
 import 'package:kdmp_cm_app/data/repository/auth/auth_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/mypage/mypage_repository_impl.dart';
+import 'package:kdmp_cm_app/data/repository/naver/naver_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/register/register_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/secure_storage/secure_storage_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/term/term_repository_impl.dart';
@@ -31,6 +32,8 @@ import 'package:kdmp_cm_app/domain/usecase/mypage/set_place_add_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_place_delete_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_place_modify_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_withdrawal_member_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_auto_refresh_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_auto_refresh_usecase.dart';
@@ -73,7 +76,7 @@ void main() async {
 
   /// 네이버 지도
   await NaverMapSdk.instance.initialize(
-    clientId: dotenv.get("NAVER_CLIENT_ID"),
+    clientId: dotenv.get("NAVER_MAP_CLIENT_ID"),
     onAuthFailed: (ex) => debugPrint("********* 네이버맵 인증오류 : $ex *********"),
   );
 
@@ -225,6 +228,13 @@ void main() async {
   getIt.registerSingleton<SetPayUseCase>(setPayUseCase);
   final setReservationRequestUseCase = SetReservationRequestUseCase(workRepository: workRepository);
   getIt.registerSingleton<SetReservationRequestUseCase>(setReservationRequestUseCase);
+
+  /// 네이버 API
+  final naverRepository = NaverRepositoryImpl(dio);
+  final getNaverAddressUseCase = GetNaverAddressUseCase(naverRepository: naverRepository);
+  getIt.registerSingleton<GetNaverAddressUseCase>(getNaverAddressUseCase);
+  final getNaverAddressInfoUseCase = GetNaverAddressInfoUseCase(naverRepository: naverRepository);
+  getIt.registerSingleton<GetNaverAddressInfoUseCase>(getNaverAddressInfoUseCase);
 
   runApp(const MyApp());
 }

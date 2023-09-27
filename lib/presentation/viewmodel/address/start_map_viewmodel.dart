@@ -1,6 +1,8 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import "package:flutter/cupertino.dart";
+import "package:flutter_naver_map/flutter_naver_map.dart";
+import "package:kdmp_cm_app/data/model/common/map_data_model.dart";
+import "package:kdmp_cm_app/data/model/common/state.dart";
+import "package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart";
 
 class StartMapViewModel {
   StartMapViewModel({
@@ -9,30 +11,40 @@ class StartMapViewModel {
 
   final GetMbrSqUseCase getMbrSqUseCase;
 
-  /// 현위치 좌표
-  final ValueNotifier<NLatLng> _latLng = ValueNotifier<NLatLng>(const NLatLng(37.5666103, 126.9783882));
+  /// 장소 데이터
+  final ValueNotifier<MapData> _mapData = ValueNotifier<MapData>(
+    MapData(
+      latLng: const NLatLng(37.5666103, 126.9783882),
+      place: "",
+      address: "",
+    ),
+  );
 
-  ValueNotifier<NLatLng> get latLngNotifier => _latLng;
+  ValueNotifier<MapData> get mapDataNotifier => _mapData;
 
-  NLatLng get latLng => _latLng.value;
+  MapData get mapData => _mapData.value;
 
-  set latLng(NLatLng value) => _latLng.value = value;
+  set mapData(MapData value) {
+    _mapData.value = value;
+    _checkIsValid();
+  }
 
-  /// 출발지 장소명
-  final ValueNotifier<String> _startPlace = ValueNotifier<String>("");
+  /// 하단 버튼 활성화 여부
+  final ValueNotifier<bool> _isValid = ValueNotifier<bool>(false);
 
-  ValueNotifier<String> get startPlaceNotifier => _startPlace;
+  ValueNotifier<bool> get isValidNotifier => _isValid;
 
-  String get startPlace => _startPlace.value;
+  bool get isValid => _isValid.value;
 
-  set startPlace(String value) => _startPlace.value = value;
+  _setIsValid({required bool value}) {
+    _isValid.value = value;
+  }
 
-  /// 출발지 좌표
-  final ValueNotifier<NLatLng> _startLatLng = ValueNotifier<NLatLng>(const NLatLng(37.5666103, 126.9783882));
+  _checkIsValid() {
+    var valid = mapData.address.isNotEmpty;
+    _setIsValid(value: valid);
+  }
 
-  ValueNotifier<NLatLng> get startLatLngNotifier => _startLatLng;
-
-  NLatLng get startLatLng => _startLatLng.value;
-
-  set startLatLng(NLatLng value) => _startLatLng.value = value;
+  /// 상태
+  StateAPI state = Loading();
 }

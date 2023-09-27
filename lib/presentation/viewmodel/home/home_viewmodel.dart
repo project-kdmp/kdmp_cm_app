@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
-import 'package:kdmp_cm_app/data/model/work/call_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 
 class HomeViewModel {
@@ -13,35 +13,24 @@ class HomeViewModel {
   final GetMbrSqUseCase getMbrSqUseCase;
 
   /// 현위치 좌표
-  final ValueNotifier<NLatLng> _latLng = ValueNotifier<NLatLng>(const NLatLng(37.5666103, 126.9783882));
+  final ValueNotifier<NLatLng> _currentLatLng = ValueNotifier<NLatLng>(const NLatLng(37.5666103, 126.9783882));
 
-  ValueNotifier<NLatLng> get latLngNotifier => _latLng;
+  ValueNotifier<NLatLng> get currentLatLngNotifier => _currentLatLng;
 
-  NLatLng get latLng => _latLng.value;
+  NLatLng get currentLatLng => _currentLatLng.value;
 
-  set latLng(NLatLng value) => _latLng.value = value;
+  set currentLatLng(NLatLng value) => _currentLatLng.value = value;
 
-  /// 출발지 장소명
-  final ValueNotifier<String> _startPlace = ValueNotifier<String>("");
+  /// 출발지 데이터 모델
+  final ValueNotifier<MapData?> _startMapData = ValueNotifier<MapData?>(null);
 
-  ValueNotifier<String> get startPlaceNotifier => _startPlace;
+  ValueNotifier<MapData?> get startMapDataNotifier => _startMapData;
 
-  String get startPlace => _startPlace.value;
+  MapData? get startMapData => _startMapData.value;
 
-  set startPlace(String value) {
-    _startPlace.value = value;
+  set startMapData(MapData? value) {
+    _startMapData.value = value;
     getCallPrice();
-  }
-
-  /// 출발지 좌표
-  final ValueNotifier<NLatLng> _startLatLng = ValueNotifier<NLatLng>(const NLatLng(37.5666103, 126.9783882));
-
-  ValueNotifier<NLatLng> get startLatLngNotifier => _startLatLng;
-
-  NLatLng get startLatLng => _startLatLng.value;
-
-  set startLatLng(NLatLng value) {
-    _startLatLng.value = value;
   }
 
   /// 경유지 리스트
@@ -62,26 +51,17 @@ class HomeViewModel {
     stopoverList = copyList;
   }
 
-  /// 도착지 장소명
-  final ValueNotifier<String> _endPlace = ValueNotifier<String>("");
+  /// 도착지 데이터 모델
+  final ValueNotifier<MapData?> _endMapData = ValueNotifier<MapData?>(null);
 
-  ValueNotifier<String> get endPlaceNotifier => _endPlace;
+  ValueNotifier<MapData?> get endMapDataNotifier => _endMapData;
 
-  String get endPlace => _endPlace.value;
+  MapData? get endMapData => _endMapData.value;
 
-  set endPlace(String value) {
-    _endPlace.value = value;
+  set endMapData(MapData? value) {
+    _endMapData.value = value;
     getCallPrice();
   }
-
-  /// 도착지 좌표
-  final ValueNotifier<NLatLng> _endLatLng = ValueNotifier<NLatLng>(const NLatLng(37.5666103, 126.9783882));
-
-  ValueNotifier<NLatLng> get endLatLngNotifier => _endLatLng;
-
-  NLatLng get endLatLng => _endLatLng.value;
-
-  set endLatLng(NLatLng value) => _endLatLng.value = value;
 
   /// 도착지 검색 내 경유 버튼 활성화 여부
   final ValueNotifier<bool> _isStopoverButtonValid = ValueNotifier<bool>(false);
@@ -94,7 +74,7 @@ class HomeViewModel {
 
   _checkStopoverButtonValid() {
     bool valid;
-    if (startPlace.isNotEmpty && endPlace.isNotEmpty && stopoverList.isEmpty) {
+    if (startMapData != null && endMapData != null && stopoverList.isEmpty) {
       valid = true;
     } else {
       valid = false;
@@ -113,7 +93,7 @@ class HomeViewModel {
 
   _checkPriceButtonValid() {
     bool valid;
-    if (startPlace.isNotEmpty && endPlace.isNotEmpty && basicPrice != 0) {
+    if (startMapData != null && endMapData != null && basicPrice != 0) {
       valid = true;
     } else {
       valid = false;
@@ -180,7 +160,7 @@ class HomeViewModel {
 
   _checkCallButtonValid() {
     bool valid;
-    if (startPlace.isNotEmpty && endPlace.isNotEmpty && paymKind.isNotEmpty && basicPrice != 0) {
+    if (startMapData != null && endMapData != null && paymKind.isNotEmpty && basicPrice != 0) {
       valid = true;
     } else {
       valid = false;
@@ -193,15 +173,15 @@ class HomeViewModel {
 
   /// 요금 조회
   getCallPrice() async {
-    if (startPlace.isEmpty && endPlace.isEmpty) {
+    if (startMapData == null || endMapData == null) {
       return;
     }
 
-    final result = await _getCallPrice();
-    if (result is Success) {
-      _checkStopoverButtonValid();
-      _checkCallButtonValid();
-    }
+    // final result = await _getCallPrice();
+    // if (result is Success) {
+    _checkStopoverButtonValid();
+    _checkCallButtonValid();
+    // }
     // 요금 조회 성공 시
   }
 

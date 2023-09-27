@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomSearchField extends StatelessWidget {
   const CustomSearchField({
     Key? key,
     this.text = "",
     this.hint = "",
-    required this.onChanged,
     this.isPassword = false,
     this.isEnabled = true,
     this.icon,
+    this.inputType,
+    required this.onSearch,
   }) : super(key: key);
 
   final String text;
   final String hint;
-  final Function(String) onChanged;
   final bool isPassword;
   final bool isEnabled;
   final Icon? icon;
+  final TextInputType? inputType;
+  final Function(String) onSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +27,10 @@ class CustomSearchField extends StatelessWidget {
       alignment: Alignment.centerLeft,
       children: [
         TextFormField(
-          // textInputAction: TextInputAction.next,
-          onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
+          inputFormatters: inputType == TextInputType.number ? [FilteringTextInputFormatter.digitsOnly] : [],
+          textInputAction: TextInputAction.search,
+          onFieldSubmitted: onSearch,
+          keyboardType: inputType,
           enabled: isEnabled,
           initialValue: text,
           style: Theme.of(context).textTheme.bodyLarge,
@@ -51,7 +56,6 @@ class CustomSearchField extends StatelessWidget {
               ),
             ),
           ),
-          onChanged: (value) => onChanged(value),
         ),
         SizedBox(width: 50, child: icon ?? const Icon(Icons.search, size: 24)),
       ],

@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
@@ -11,6 +15,7 @@ import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
+import 'package:kdmp_cm_app/presentation/viewmodel/address/naver_map_viewmodel.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/address/start_map_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +31,7 @@ class StartMapScreen extends StatefulWidget {
 
 class _StartMapScreenState extends State<StartMapScreen> {
   late final StartMapViewModel _startMapViewModel;
+  late final NaverMapViewModel _naverMapViewModel;
 
   late final NaverMapController _mapController;
   final Completer<NaverMapController> mapControllerCompleter = Completer();
@@ -48,18 +54,30 @@ class _StartMapScreenState extends State<StartMapScreen> {
   }
 
   /// Create
-  void initViewModel() {
+  void initViewModel() async {
     _startMapViewModel = StartMapViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
+    );
+
+    /// 키 관리 파일 가져오기
+    await dotenv.load(fileName: ".env");
+    _naverMapViewModel = NaverMapViewModel(
+      clientId: dotenv.get("NAVER_MAP_CLIENT_ID"),
+      clientSecret: dotenv.get("NAVER_MAP_CLIENT_SECRET"),
+      getNaverAddressUseCase: GetIt.instance<GetNaverAddressUseCase>(),
     );
   }
 
   void initData() async {
     /// 현위치 좌표 가져오기
-    _startMapViewModel.startLatLng = await getCurrentLocation();
+    final nLatLng = await getCurrentLocation();
+
+    /// 좌표로 장소 조회
+    final mapData = await _naverMapViewModel.getAddress(nLatLng: nLatLng);
+    _startMapViewModel.mapData = mapData;
 
     /// 네이버 지도 초기화
-    naverMap = initNaverMap(nLatLng: _startMapViewModel.startLatLng);
+    naverMap = initNaverMap(nLatLng: nLatLng);
   }
 
   @override
@@ -68,6 +86,9 @@ class _StartMapScreenState extends State<StartMapScreen> {
       providers: [
         Provider<StartMapViewModel>(
           create: (context) => _startMapViewModel,
+        ),
+        Provider<NaverMapViewModel>(
+          create: (context) => _naverMapViewModel,
         ),
       ],
       child: Scaffold(
@@ -119,13 +140,13 @@ class _StartMapScreenState extends State<StartMapScreen> {
                     child: Column(
                       children: [
                         /// 장소명
-                        ValueListenableBuilder<String>(
-                          valueListenable: _startMapViewModel.startPlaceNotifier,
+                        ValueListenableBuilder<MapData>(
+                          valueListenable: _startMapViewModel.mapDataNotifier,
                           builder: (context, value, child) {
                             return Container(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                value,
+                                value.place.isNotEmpty ? value.place : "장소명 없음",
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                       color: Theme.of(context).colorScheme.primary,
                                     ),
@@ -136,13 +157,13 @@ class _StartMapScreenState extends State<StartMapScreen> {
                         const SizedBox(height: 10),
 
                         /// 주소
-                        ValueListenableBuilder<NLatLng>(
-                          valueListenable: _startMapViewModel.startLatLngNotifier,
+                        ValueListenableBuilder<MapData>(
+                          valueListenable: _startMapViewModel.mapDataNotifier,
                           builder: (context, value, child) {
                             return Container(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                "${value.latitude}, ${value.longitude}",
+                                value.address.isNotEmpty ? value.address : "화면을 이동하여 장소를 지정해주세요.",
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       color: Theme.of(context).disabledColor,
                                     ),
@@ -157,16 +178,24 @@ class _StartMapScreenState extends State<StartMapScreen> {
               ),
 
               /// 출발지 설정 버튼
-              Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                padding: const EdgeInsets.all(20),
-                child: CustomElevatedButton(
-                  text: StringStartSetup.bottomButton,
-                  onPressed: () {
-                    // TODO: 조회한 데이터 전달
-                  },
-                ),
-              )
+              ValueListenableBuilder<bool>(
+                valueListenable: _startMapViewModel.isValidNotifier,
+                builder: (context, value, child) {
+                  return Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    padding: const EdgeInsets.all(20),
+                    child: CustomElevatedButton(
+                      isEnabled: value,
+                      text: StringStartSetup.bottomButton,
+                      onPressed: () {
+                        /// 조회한 데이터 전달
+                        final mapData = _startMapViewModel.mapData;
+                        context.pop(mapData);
+                      },
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -255,11 +284,20 @@ class _StartMapScreenState extends State<StartMapScreen> {
         currentMarker.openInfoWindow(infoWindow);
       },
       onCameraChange: (reason, animated) async {
+        debugPrint("onCameraChange");
+
         /// 카메라 위치 변경에 따른 위치값 변경
         final cameraPosition = await _mapController.getCameraPosition();
         final newLatLng = NLatLng(cameraPosition.target.latitude, cameraPosition.target.longitude);
         currentMarker.setPosition(newLatLng);
-        _startMapViewModel.startLatLng = newLatLng;
+        _startMapViewModel.mapData = MapData(latLng: newLatLng);
+      },
+      onCameraIdle: () async {
+        debugPrint("onCameraIdle");
+
+        /// 좌표로 장소 조회
+        final mapData = await _naverMapViewModel.getAddress(nLatLng: _startMapViewModel.mapData.latLng);
+        _startMapViewModel.mapData = mapData;
       },
     );
   }

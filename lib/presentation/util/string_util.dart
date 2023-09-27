@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
+import 'package:kdmp_cm_app/data/model/naver/reverse_geocoding_response.dart';
 
 /// m를 km로 변환하여 반환
 String convertMToKm(int? m) {
@@ -99,4 +100,81 @@ String getDateFormat({required String? date, String dateFormat = "yyyy-MM-dd"}) 
     }
   }
   return "";
+}
+
+/// 네이버 장소 검색 주소 반환
+String makeAddress(List<Result> items) {
+  if (items.isEmpty) {
+    return "";
+  }
+  final item = items[0];
+  final region = item.region;
+  final land = item.land;
+  final isRoadAddress = item.name == "roadaddr";
+
+  String sido = "";
+  String sigugun = "";
+  String dongmyun = "";
+  String ri = "";
+  String rest = "";
+
+  if (region.area1 != null && region.area1!.name.isNotEmpty) {
+    sido = region.area1!.name;
+  }
+
+  if (region.area2 != null && region.area2!.name.isNotEmpty) {
+    sigugun = region.area2!.name;
+  }
+
+  if (region.area3 != null && region.area3!.name.isNotEmpty) {
+    dongmyun = region.area3!.name;
+  }
+
+  if (region.area4 != null && region.area4!.name.isNotEmpty) {
+    ri = region.area4!.name;
+  }
+
+  if (land != null) {
+    if (land.number1 != null && land.number1!.isNotEmpty) {
+      if (land.type != null && land.type == "2") {
+        rest += "산";
+      }
+
+      rest += land.number1!;
+
+      if (land.number2 != null && land.number2!.isNotEmpty) {
+        rest += "-${land.number2!}";
+      }
+    }
+
+    if (isRoadAddress) {
+      if (dongmyun.substring(dongmyun.length - 1, dongmyun.length) == "면") {
+        ri = land.name ?? "";
+      } else {
+        dongmyun = land.name ?? "";
+        ri = "";
+      }
+    }
+  }
+  return [sido, sigugun, dongmyun, rest, ri].join(" ").replaceAll("  ", " ").trim();
+}
+
+/// 네이버 장소 검색 장소명 반환
+String makePlace(List<Result> items) {
+  if (items.isEmpty) {
+    return "";
+  }
+  final item = items[0];
+  final land = item.land;
+  final isRoadAddress = item.name == "roadaddr";
+  String rest = "";
+
+  if (land != null) {
+    if (isRoadAddress) {
+      if (land.addition0 != null && land.addition0!.value.isNotEmpty) {
+        rest += " ${land.addition0?.value}";
+      }
+    }
+  }
+  return rest.trim();
 }

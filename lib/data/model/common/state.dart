@@ -3,6 +3,7 @@ import 'package:kdmp_cm_app/data/model/auth/refresh_response.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
 import 'package:kdmp_cm_app/data/model/common/drv_response.dart';
+import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_detail_response.dart';
@@ -11,6 +12,8 @@ import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/place_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/profile_detail_response.dart';
+import 'package:kdmp_cm_app/data/model/naver/geocoding_response.dart';
+import 'package:kdmp_cm_app/data/model/naver/reverse_geocoding_response.dart';
 import 'package:kdmp_cm_app/data/model/register/register_response.dart';
 import 'package:kdmp_cm_app/data/model/term/cm_term_list_response.dart';
 import 'package:kdmp_cm_app/data/model/term/term_detail_response.dart';
@@ -78,4 +81,9 @@ class Success extends StateAPI {
   CallInfoResponse get callInfoResponse => _response;
 
   ReservationInfoResponse get reservationInfoResponse => _response;
+
+  /// 네이버 API
+  ReverseGeocodingResponse get reverseGeocodingResponse => _response;
+
+  GeocodingResponse get geocodingResponse => _response;
 }

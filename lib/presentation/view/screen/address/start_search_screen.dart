@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
+import 'package:kdmp_cm_app/data/model/naver/geocoding_response.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
@@ -38,6 +44,7 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
   void initViewModel() {
     _startSearchViewModel = StartSearchViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
+      getNaverAddressInfoUseCase: GetIt.instance<GetNaverAddressInfoUseCase>(),
     );
   }
 
@@ -49,10 +56,18 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
     });
   }
 
-  void initData() {
+  void initData() async {
+    /// 키 관리 파일 가져오기
+    await dotenv.load(fileName: ".env");
+    _startSearchViewModel.clientId = dotenv.get("NAVER_MAP_CLIENT_ID");
+    _startSearchViewModel.clientSecret = dotenv.get("NAVER_MAP_CLIENT_SECRET");
+
+    /// 현위치 좌표 가져오기
+    _startSearchViewModel.currentLatLng = await getCurrentLocation();
+
     /// 최근 검색 리스트 가져오기
-    _startSearchViewModel.getSearchList();
-    _startSearchViewModel.recentList = List.from({"우림라이온스밸리A동", "우림라이온스밸리B동", "우림라이온스밸리C동"});
+    // _startSearchViewModel.getRecentList();
+    _startSearchViewModel.recentList = List.from({"우림라이온스밸리A동", "우림라이온스밸리B동", "우림라이온스밸리C동"}); // TODO: 임시값
   }
 
   @override
@@ -92,7 +107,7 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
                             size: 22,
                             color: Theme.of(context).disabledColor,
                           ),
-                          onChanged: (value) {
+                          onSearch: (value) {
                             _startSearchViewModel.keyword = value;
                             _startSearchViewModel.getSearchList();
                           },
@@ -110,6 +125,9 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
                         text: StringStartSetup.nowLocation,
                         onPressed: () async {
                           final result = await context.pushNamed(StartMapScreen.routeName);
+                          if (result != null && result is MapData) {
+                            context.pop(result);
+                          }
                         },
                       ),
                       const SizedBox(height: 10, child: VerticalDivider(width: 20, thickness: 1)),
@@ -120,6 +138,9 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
                         text: StringStartSetup.selectMap,
                         onPressed: () async {
                           final result = await context.pushNamed(StartMapScreen.routeName);
+                          if (result != null && result is MapData) {
+                            context.pop(result);
+                          }
                         },
                       ),
                       const SizedBox(width: 20),
@@ -165,7 +186,7 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
                           :
 
                           /// 검색 리스트
-                          ValueListenableBuilder<List<String>>(
+                          ValueListenableBuilder<List<Address>>(
                               valueListenable: _startSearchViewModel.searchListNotifier,
                               builder: (context, value, _) {
                                 return getSearchListView(value);
@@ -183,7 +204,7 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
   }
 
   /// 검색 리스트
-  Widget getSearchListView(List<String> value) {
+  Widget getSearchListView(List<Address> value) {
     return ListView.separated(
       itemCount: value.length,
       shrinkWrap: true,
@@ -201,9 +222,11 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("우림라이온스밸리", style: Theme.of(context).textTheme.titleLarge),
+                Text(value[index].roadAddress, style: Theme.of(context).textTheme.titleLarge),
+
+                /// 도로명 주소
                 const SizedBox(height: 10),
-                Text("우림라이온스밸리", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                Text(value[index].roadAddress, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
               ],
             ),
           ),
@@ -259,5 +282,11 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
         );
       },
     );
+  }
+
+  Future<NLatLng> getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    debugPrint("location position: $position");
+    return NLatLng(position.latitude, position.longitude);
   }
 }

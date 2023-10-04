@@ -189,11 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               final startMarker = NMarker(
                                                 id: "start",
                                                 position: result.latLng,
-                                                icon: await NOverlayImage.fromWidget(
-                                                  context: context,
-                                                  widget: Image.asset(ImageCommon.icStart),
-                                                  size: const Size(26, 26),
-                                                ),
+                                                icon: const NOverlayImage.fromAssetImage(ImageCommon.icStart),
                                               );
                                               _mapController.addOverlay(startMarker);
 
@@ -206,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           (_homeViewModel.endMapData!.latLng.longitude + result.latLng.longitude) / 2,
                                                         )
                                                       : result.latLng,
-                                                  zoom: 14, // 0.0 ~ 21.0
+                                                  zoom: 12, // 0.0 ~ 21.0
                                                 ),
                                               );
                                             }
@@ -304,11 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               final endMarker = NMarker(
                                                 id: "end",
                                                 position: result.latLng,
-                                                icon: await NOverlayImage.fromWidget(
-                                                  context: context,
-                                                  widget: Image.asset(ImageCommon.icEnd),
-                                                  size: const Size(26, 26),
-                                                ),
+                                                icon: const NOverlayImage.fromAssetImage(ImageCommon.icEnd),
                                               );
                                               _mapController.addOverlay(endMarker);
 
@@ -321,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           (_homeViewModel.startMapData!.latLng.longitude + result.latLng.longitude) / 2,
                                                         )
                                                       : result.latLng,
-                                                  zoom: 14, // 0.0 ~ 21.0
+                                                  zoom: 12, // 0.0 ~ 21.0
                                                 ),
                                               );
                                             }
@@ -681,7 +673,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         initialCameraPosition: NCameraPosition(
           target: nLatLng,
-          zoom: 16, // 0.0 ~ 21.0
+          zoom: 12, // 0.0 ~ 21.0
         ),
         mapType: NMapType.navi,
         nightModeEnable: CustomThemeMode.getThemeMode == ThemeMode.dark, // mapType이 네비게이션일 경우에만 제공
@@ -691,14 +683,6 @@ class _HomeScreenState extends State<HomeScreen> {
         _mapController = controller;
         mapControllerCompleter.complete(controller); // completer에 지도 컨트롤러 완료 신호 전송
         debugPrint("onMapReady");
-
-        /// 출발지 초기값 지정
-        // currentMarker = NMarker(id: "current", position: nLatLng, alpha: 0, size: const Size(1, 1));
-        // _mapController.addOverlayAll({currentMarker});
-        // final infoWindow = NInfoWindow.onMarker(id: currentMarker.info.id, text: "출발지");
-        // infoWindow.setOffsetX(-1);
-        // infoWindow.setOffsetY(-1);
-        // currentMarker.openInfoWindow(infoWindow);
       },
       onCameraChange: (reason, animated) async {
         /// 카메라 위치 변경에 따른 위치값 변경

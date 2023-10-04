@@ -29,17 +29,40 @@ class MyTermRequest {
 class AgreeTerm {
   int trmSq;
   String agreeYn;
-  String trmMandatoryYn;
 
   AgreeTerm({
     required this.trmSq,
-    this.agreeYn = "N",
-    required this.trmMandatoryYn,
+    required this.agreeYn,
   });
 
   factory AgreeTerm.fromJson(Map<String, dynamic> json) {
     return AgreeTerm(
       trmSq: json["trmSq"],
+      agreeYn: json["agreeYn"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "trmSq": trmSq,
+        "agreeYn": agreeYn,
+      };
+}
+
+class TempAgreeTerm {
+  int trmSq;
+  String agreeYn;
+  String? trmMandatoryYn;
+
+  TempAgreeTerm({
+    required this.trmSq,
+    this.agreeYn = "N",
+    required this.trmMandatoryYn,
+  });
+
+  factory TempAgreeTerm.fromJson(Map<String, dynamic> json) {
+    return TempAgreeTerm(
+      trmSq: json["trmSq"],
+      agreeYn: json["agreeYn"],
       trmMandatoryYn: json["trmMandatoryYn"],
     );
   }

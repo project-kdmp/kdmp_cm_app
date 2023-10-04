@@ -40,11 +40,15 @@ class PhoneVerifyViewModel {
     required String mbrNm,
     required String mbrMobilePhone,
     required String mbrCi,
-    required List<AgreeTerm> agreeTermList,
+    required List<TempAgreeTerm> tempAgreeTermList,
   }) async {
     state = Loading();
 
     final mbrDeviceId = await getDeviceId();
+    final agreeTermList = List<AgreeTerm>.from({});
+    for (int i = 0; i < tempAgreeTermList.length; i++) {
+      agreeTermList.add(AgreeTerm(trmSq: tempAgreeTermList[i].trmSq, agreeYn: tempAgreeTermList[i].agreeYn));
+    }
     final request = RegisterRequest(
       mbrNm: mbrNm,
       mbrDeviceId: mbrDeviceId,

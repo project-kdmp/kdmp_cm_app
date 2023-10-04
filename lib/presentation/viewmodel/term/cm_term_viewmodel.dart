@@ -42,7 +42,7 @@ class CMTermViewModel {
 
   _checkIsValid() {
     var valid = true;
-    for (var item in agreeTermList) {
+    for (var item in tempAgreeTermList) {
       if (item.trmMandatoryYn == "Y" && item.agreeYn == "N") valid = false;
     }
     _setIsValid(value: valid);
@@ -54,7 +54,7 @@ class CMTermViewModel {
 
   checkAllCheck() {
     var valid = true;
-    for (var item in agreeTermList) {
+    for (var item in tempAgreeTermList) {
       if (item.agreeYn == "N") valid = false;
     }
     _setAllCheck(value: valid);
@@ -75,36 +75,36 @@ class CMTermViewModel {
   }
 
   /// 이용약관 동의여부 목록
-  final ValueNotifier<List<AgreeTerm>> _agreeTermList = ValueNotifier<List<AgreeTerm>>([]);
+  final ValueNotifier<List<TempAgreeTerm>> _tempAgreeTermList = ValueNotifier<List<TempAgreeTerm>>([]);
 
-  ValueNotifier<List<AgreeTerm>> get agreeTermListNotifier => _agreeTermList;
+  ValueNotifier<List<TempAgreeTerm>> get tempAgreeTermListNotifier => _tempAgreeTermList;
 
-  List<AgreeTerm> get agreeTermList => _agreeTermList.value;
+  List<TempAgreeTerm> get tempAgreeTermList => _tempAgreeTermList.value;
 
   setAgreeTermList({required List<Term> value}) {
-    var newAgreeTermList = List<AgreeTerm>.from([]);
+    var newAgreeTermList = List<TempAgreeTerm>.from([]);
     for (var item in termList) {
-      newAgreeTermList.add(AgreeTerm(trmSq: item.trmSq, trmMandatoryYn: item.trmMandatoryYn ?? "N"));
+      newAgreeTermList.add(TempAgreeTerm(trmSq: item.trmSq, trmMandatoryYn: item.trmMandatoryYn ?? "N"));
     }
-    _agreeTermList.value = newAgreeTermList;
+    _tempAgreeTermList.value = newAgreeTermList;
   }
 
   setAgreeTermToIndex({required int index, required bool isAgreeYn}) {
-    var newAgreeTermList = List<AgreeTerm>.from([]);
-    newAgreeTermList.addAll(agreeTermList);
+    var newAgreeTermList = List<TempAgreeTerm>.from([]);
+    newAgreeTermList.addAll(tempAgreeTermList);
     newAgreeTermList[index].agreeYn = isAgreeYn ? "Y" : "N";
-    _agreeTermList.value = newAgreeTermList;
+    _tempAgreeTermList.value = newAgreeTermList;
     checkAllCheck();
     _checkIsValid();
   }
 
   setAgreeTermToAll({required bool isAgreeYn}) {
-    var newAgreeTermList = List<AgreeTerm>.from([]);
-    newAgreeTermList.addAll(agreeTermList);
+    var newAgreeTermList = List<TempAgreeTerm>.from([]);
+    newAgreeTermList.addAll(tempAgreeTermList);
     for (var item in newAgreeTermList) {
       item.agreeYn = isAgreeYn ? "Y" : "N";
     }
-    _agreeTermList.value = newAgreeTermList;
+    _tempAgreeTermList.value = newAgreeTermList;
     checkAllCheck();
     _checkIsValid();
   }
@@ -140,8 +140,15 @@ class CMTermViewModel {
     state = Loading();
 
     final mbrSq = await getMbrSqUseCase.execute();
+    final agreeTermList = List<AgreeTerm>.from({});
+    for (int i = 0; i < tempAgreeTermList.length; i++) {
+      agreeTermList.add(AgreeTerm(trmSq: tempAgreeTermList[i].trmSq, agreeYn: tempAgreeTermList[i].agreeYn));
+    }
 
-    final request = MyTermRequest(mbrSq: mbrSq, agreeTermList: agreeTermList);
+    final request = MyTermRequest(
+      mbrSq: mbrSq,
+      agreeTermList: agreeTermList,
+    );
     final result = await setMyTermUseCase.execute(myTermRequest: request);
     state = result;
 

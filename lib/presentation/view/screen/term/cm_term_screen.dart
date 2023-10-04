@@ -134,8 +134,8 @@ class _CMTermScreenState extends State<CMTermScreen> {
                                   primary: false,
                                   itemCount: termList.length,
                                   itemBuilder: (context, index) {
-                                    return ValueListenableBuilder<List<AgreeTerm>>(
-                                      valueListenable: _cmTermViewModel.agreeTermListNotifier,
+                                    return ValueListenableBuilder<List<TempAgreeTerm>>(
+                                      valueListenable: _cmTermViewModel.tempAgreeTermListNotifier,
                                       builder: (context, agreeTermList, _) {
                                         return TermCheckBox(
                                           isMandatory: termList[index].trmMandatoryYn == "Y",

@@ -119,7 +119,7 @@ class _TermScreenState extends State<TermScreen> {
                                   primary: false,
                                   itemCount: termList.length,
                                   itemBuilder: (context, index) {
-                                    return ValueListenableBuilder<List<AgreeTerm>>(
+                                    return ValueListenableBuilder<List<TempAgreeTerm>>(
                                       valueListenable: _termViewModel.agreeTermListNotifier,
                                       builder: (context, agreeTermList, _) {
                                         return TermCheckBox(

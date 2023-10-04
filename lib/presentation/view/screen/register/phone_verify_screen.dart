@@ -31,7 +31,7 @@ class PhoneVerifyScreen extends StatefulWidget {
   static const String routeName = "phone_verify";
   static const String routeURL = "/phone_verify";
 
-  final List<AgreeTerm> agreeTermList;
+  final List<TempAgreeTerm> agreeTermList;
 
   @override
   State<PhoneVerifyScreen> createState() => _PhoneVerifyScreenState();
@@ -87,7 +87,7 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
                   mbrNm: mbrNm,
                   mbrMobilePhone: mbrMobilePhone,
                   mbrCi: mbrCi,
-                  agreeTermList: widget.agreeTermList,
+                  tempAgreeTermList: widget.agreeTermList,
                 );
 
                 if (registerResult is Success) {

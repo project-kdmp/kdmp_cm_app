@@ -114,7 +114,7 @@ final GoRouter router = GoRouter(
       name: PhoneVerifyScreen.routeName,
       path: PhoneVerifyScreen.routeURL,
       builder: (context, state) {
-        final List<AgreeTerm> agreeTermList = state.extra as List<AgreeTerm>;
+        final List<TempAgreeTerm> agreeTermList = state.extra as List<TempAgreeTerm>;
         return PhoneVerifyScreen(agreeTermList: agreeTermList);
       },
     ),

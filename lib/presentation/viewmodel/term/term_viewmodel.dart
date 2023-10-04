@@ -67,22 +67,22 @@ class TermViewModel {
   }
 
   /// 이용약관 동의여부 목록
-  final ValueNotifier<List<AgreeTerm>> _agreeTermList = ValueNotifier<List<AgreeTerm>>([]);
+  final ValueNotifier<List<TempAgreeTerm>> _agreeTermList = ValueNotifier<List<TempAgreeTerm>>([]);
 
-  ValueNotifier<List<AgreeTerm>> get agreeTermListNotifier => _agreeTermList;
+  ValueNotifier<List<TempAgreeTerm>> get agreeTermListNotifier => _agreeTermList;
 
-  List<AgreeTerm> get agreeTermList => _agreeTermList.value;
+  List<TempAgreeTerm> get agreeTermList => _agreeTermList.value;
 
   setAgreeTermList({required List<Term> value}) {
-    var newAgreeTermList = List<AgreeTerm>.from([]);
+    var newAgreeTermList = List<TempAgreeTerm>.from([]);
     for (var item in termList) {
-      newAgreeTermList.add(AgreeTerm(trmSq: item.trmSq, trmMandatoryYn: item.trmMandatoryYn ?? "N"));
+      newAgreeTermList.add(TempAgreeTerm(trmSq: item.trmSq, trmMandatoryYn: item.trmMandatoryYn ?? "N"));
     }
     _agreeTermList.value = newAgreeTermList;
   }
 
   setAgreeTermToIndex({required int index, required bool isAgreeYn}) {
-    var newAgreeTermList = List<AgreeTerm>.from([]);
+    var newAgreeTermList = List<TempAgreeTerm>.from([]);
     newAgreeTermList.addAll(agreeTermList);
     newAgreeTermList[index].agreeYn = isAgreeYn ? "Y" : "N";
     _agreeTermList.value = newAgreeTermList;
@@ -91,7 +91,7 @@ class TermViewModel {
   }
 
   setAgreeTermToAll({required bool isAgreeYn}) {
-    var newAgreeTermList = List<AgreeTerm>.from([]);
+    var newAgreeTermList = List<TempAgreeTerm>.from([]);
     newAgreeTermList.addAll(agreeTermList);
     for (var item in newAgreeTermList) {
       item.agreeYn = isAgreeYn ? "Y" : "N";

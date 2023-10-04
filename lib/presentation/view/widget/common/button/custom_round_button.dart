@@ -12,6 +12,7 @@ class CustomRoundButton extends StatelessWidget {
     this.backgroundColor,
     this.borderColor,
     this.icon,
+    this.textSize,
   }) : super(key: key);
 
   final String text;
@@ -23,6 +24,7 @@ class CustomRoundButton extends StatelessWidget {
   final Color? backgroundColor;
   final Color? borderColor;
   final IconData? icon;
+  final double? textSize;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,10 @@ class CustomRoundButton extends StatelessWidget {
             SizedBox(width: icon != null ? 4 : 0),
             Text(
               text,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: textColor ?? Theme.of(context).disabledColor),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: textColor ?? Theme.of(context).disabledColor,
+                    fontSize: textSize,
+                  ),
             ),
           ],
         ),

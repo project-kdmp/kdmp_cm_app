@@ -7,7 +7,7 @@ class GetPlaceListUseCase {
 
   GetPlaceListUseCase({required MyPageRepository myPageRepository}) : _myPageRepository = myPageRepository;
 
-  Future<StateAPI> execute({required DefaultRequest placeListRequest}) async {
-    return await _myPageRepository.getPlaceList(getPlaceListRequest: placeListRequest);
+  Future<StateAPI> execute({required DefaultRequest getPlaceListRequest}) async {
+    return await _myPageRepository.getPlaceList(getPlaceListRequest: getPlaceListRequest);
   }
 }

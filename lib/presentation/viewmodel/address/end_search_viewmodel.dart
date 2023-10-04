@@ -1,25 +1,39 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/geocoding_request.dart';
 import 'package:kdmp_cm_app/data/model/naver/geocoding_response.dart';
+import 'package:kdmp_cm_app/domain/usecase/mypage/get_place_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 
-class StartSearchViewModel {
-  StartSearchViewModel({
+class EndSearchViewModel {
+  EndSearchViewModel({
     required this.getMbrSqUseCase,
     required this.getNaverAddressInfoUseCase,
+    required this.getPlaceListUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final GetNaverAddressInfoUseCase getNaverAddressInfoUseCase;
+  final GetPlaceListUseCase getPlaceListUseCase;
 
   String clientId = "";
   String clientSecret = "";
 
   /// 현위치 좌표
   NLatLng? currentLatLng;
+
+  /// 자주 가는 장소 리스트
+  final ValueNotifier<List<Place>> _placeList = ValueNotifier<List<Place>>(List.empty());
+
+  ValueNotifier<List<Place>> get placeListNotifier => _placeList;
+
+  List<Place> get placeList => _placeList.value;
+
+  set placeList(List<Place> value) => _placeList.value = value;
 
   /// 현재 페이지
   final ValueNotifier<int> _page = ValueNotifier<int>(1);
@@ -70,7 +84,7 @@ class StartSearchViewModel {
   set recentList(List<String> value) => _recentList.value = value;
 
   /// 최근 검색 리스트 활성화 여부
-  final ValueNotifier<bool> _isRecentListValid = ValueNotifier<bool>(true);
+  final ValueNotifier<bool> _isRecentListValid = ValueNotifier<bool>(false);
 
   ValueNotifier<bool> get isRecentListValidNotifier => _isRecentListValid;
 
@@ -80,7 +94,7 @@ class StartSearchViewModel {
 
   _checkRecentListValid() {
     bool valid;
-    if (searchList.isEmpty && keyword.isEmpty) {
+    if (searchList.isEmpty && keyword.isEmpty && recentList.isNotEmpty) {
       valid = true;
     } else {
       valid = false;
@@ -90,6 +104,24 @@ class StartSearchViewModel {
 
   /// 상태
   StateAPI state = Loading();
+
+  /// 차량정보 리스트 조회 API
+  Future<StateAPI> getPlaceList() async {
+    state = Loading();
+
+    final mbrSq = await getMbrSqUseCase.execute();
+
+    final request = DefaultRequest(mbrSq: mbrSq);
+    final result = await getPlaceListUseCase.execute(getPlaceListRequest: request);
+    state = result;
+
+    if (result is Success) {
+      final response = result.placeListResponse;
+      placeList = response.resultList;
+    }
+
+    return result;
+  }
 
   /// 검색 리스트 조회 API
   Future<void> getSearchList() async {
@@ -126,6 +158,5 @@ class StartSearchViewModel {
   }
 
   // TODO: 최근 검색 리스트 조회
-  Future<void> getRecentList() async {
-  }
+  Future<void> getRecentList() async {}
 }

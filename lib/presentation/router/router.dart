@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/register/register_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_firstlogin_usecase.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/end_map_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
@@ -158,6 +160,22 @@ final GoRouter router = GoRouter(
               path: StartMapScreen.routeName,
               builder: (context, state) {
                 return const StartMapScreen();
+              },
+            ),
+          ],
+        ),
+        /// 도착지 설정 검색
+        GoRoute(
+          name: EndSearchScreen.routeName,
+          path: EndSearchScreen.routeName,
+          builder: (context, state) => const EndSearchScreen(),
+          routes: [
+            /// 도착지 설정 지도
+            GoRoute(
+              name: EndMapScreen.routeName,
+              path: EndMapScreen.routeName,
+              builder: (context, state) {
+                return const EndMapScreen();
               },
             ),
           ],

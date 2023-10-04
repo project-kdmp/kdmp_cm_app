@@ -19,6 +19,7 @@ import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
@@ -181,6 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               : "",
                                           backgroundColor: Colors.transparent,
                                           onPressed: () async {
+                                            /// 출발지 설정 검색 화면으로 이동
                                             final result = await context.pushNamed(StartSearchScreen.routeName);
                                             if (result != null && result is MapData) {
                                               _homeViewModel.startMapData = result;
@@ -291,8 +293,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                               : "",
                                           backgroundColor: Colors.transparent,
                                           onPressed: () async {
-                                            // TODO: 도착지 설정 화면으로 이동
-                                            final result = await context.pushNamed(StartSearchScreen.routeName);
+                                            /// 도착지 설정 검색 화면으로 이동
+                                            final result = await context.pushNamed(EndSearchScreen.routeName);
                                             if (result != null && result is MapData) {
                                               _homeViewModel.endMapData = result;
 

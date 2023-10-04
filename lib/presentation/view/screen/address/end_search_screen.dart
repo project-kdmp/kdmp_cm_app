@@ -5,30 +5,33 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
+import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/geocoding_response.dart';
+import 'package:kdmp_cm_app/domain/usecase/mypage/get_place_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/end_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_icon_text_button.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_search_field.dart';
-import 'package:kdmp_cm_app/presentation/viewmodel/address/start_search_viewmodel.dart';
+import 'package:kdmp_cm_app/presentation/viewmodel/address/end_search_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-/// 출발지 설정 검색 화면
-class StartSearchScreen extends StatefulWidget {
-  const StartSearchScreen({Key? key}) : super(key: key);
+/// 도착지 설정 검색 화면
+class EndSearchScreen extends StatefulWidget {
+  const EndSearchScreen({Key? key}) : super(key: key);
 
-  static const String routeName = "start_search";
+  static const String routeName = "end_search";
 
   @override
-  State<StartSearchScreen> createState() => _StartSearchScreenState();
+  State<EndSearchScreen> createState() => _EndSearchScreenState();
 }
 
-class _StartSearchScreenState extends State<StartSearchScreen> with SingleTickerProviderStateMixin {
-  late final StartSearchViewModel _startSearchViewModel;
+class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProviderStateMixin {
+  late final EndSearchViewModel _endSearchViewModel;
 
   final ScrollController _scrollController = ScrollController();
 
@@ -42,9 +45,10 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
 
   /// Create
   void initViewModel() {
-    _startSearchViewModel = StartSearchViewModel(
+    _endSearchViewModel = EndSearchViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getNaverAddressInfoUseCase: GetIt.instance<GetNaverAddressInfoUseCase>(),
+      getPlaceListUseCase: GetIt.instance<GetPlaceListUseCase>(),
     );
   }
 
@@ -59,14 +63,17 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
   void initData() async {
     /// 키 관리 파일 가져오기
     await dotenv.load(fileName: ".env");
-    _startSearchViewModel.clientId = dotenv.get("NAVER_MAP_CLIENT_ID");
-    _startSearchViewModel.clientSecret = dotenv.get("NAVER_MAP_CLIENT_SECRET");
+    _endSearchViewModel.clientId = dotenv.get("NAVER_MAP_CLIENT_ID");
+    _endSearchViewModel.clientSecret = dotenv.get("NAVER_MAP_CLIENT_SECRET");
 
     /// 현위치 좌표 가져오기
-    _startSearchViewModel.currentLatLng = await getCurrentLocation();
+    _endSearchViewModel.currentLatLng = await getCurrentLocation();
+
+    /// 자주 가는 장소 리스트 가져오기
+    _endSearchViewModel.getPlaceList();
 
     /// 최근 검색 리스트 가져오기
-    // _startSearchViewModel.getRecentList();
+    // _endSearchViewModel.getRecentList();
   }
 
   @override
@@ -74,15 +81,15 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
     /// Provider
     return MultiProvider(
       providers: [
-        Provider<StartSearchViewModel>(
-          create: (context) => _startSearchViewModel,
+        Provider<EndSearchViewModel>(
+          create: (context) => _endSearchViewModel,
         ),
       ],
       child: Scaffold(
         /// 상단 앱바
         appBar: BaseAppBar(
           appBar: AppBar(),
-          title: StringStartSetup.title,
+          title: StringEndSetup.title,
         ),
 
         /// 화면
@@ -97,60 +104,58 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
                   Padding(
                     padding: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 4),
                     child: ValueListenableBuilder<String>(
-                      valueListenable: _startSearchViewModel.keywordNotifier,
+                      valueListenable: _endSearchViewModel.keywordNotifier,
                       builder: (context, value, _) {
                         return CustomSearchField(
-                          hint: StringStartSetup.searchHint,
+                          hint: StringEndSetup.searchHint,
                           icon: Icon(
                             Icons.location_on,
                             size: 22,
                             color: Theme.of(context).disabledColor,
                           ),
                           onSearch: (value) {
-                            _startSearchViewModel.keyword = value;
-                            _startSearchViewModel.getSearchList();
+                            _endSearchViewModel.keyword = value;
+                            _endSearchViewModel.getSearchList();
                           },
                         );
                       },
                     ),
                   ),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      /// 현위치 버튼
-                      CustomIconTextButton(
-                        icon: Icons.location_searching_outlined,
-                        text: StringStartSetup.nowLocation,
-                        onPressed: () async {
-                          final result = await context.pushNamed(StartMapScreen.routeName);
-                          if (result != null && result is MapData) {
-                            context.pop(result);
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 10, child: VerticalDivider(width: 20, thickness: 1)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        /// 자주 가는 장소 리스트
+                        ValueListenableBuilder<List<Place>>(
+                          valueListenable: _endSearchViewModel.placeListNotifier,
+                          builder: (context, value, child) {
+                            return Expanded(child: SizedBox(height: 40, child: getPlaceList(value)));
+                          },
+                        ),
+                        const SizedBox(width: 8),
 
-                      /// 지도에서 선택 버튼
-                      CustomIconTextButton(
-                        icon: Icons.map_outlined,
-                        text: StringStartSetup.selectMap,
-                        onPressed: () async {
-                          final result = await context.pushNamed(StartMapScreen.routeName);
-                          if (result != null && result is MapData) {
-                            context.pop(result);
-                          }
-                        },
-                      ),
-                      const SizedBox(width: 20),
-                    ],
+                        /// 지도에서 선택 버튼
+                        CustomIconTextButton(
+                          icon: Icons.map_outlined,
+                          text: StringEndSetup.selectMap,
+                          onPressed: () async {
+                            final result = await context.pushNamed(EndMapScreen.routeName);
+                            if (result != null && result is MapData) {
+                              context.pop(result);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
 
                   const Divider(thickness: 6),
 
                   /// 최근 검색 리스트 또는 검색 리스트
                   ValueListenableBuilder<bool>(
-                    valueListenable: _startSearchViewModel.isRecentListValidNotifier,
+                    valueListenable: _endSearchViewModel.isRecentListValidNotifier,
                     builder: (context, value, child) {
                       return value
                           ? Column(
@@ -160,13 +165,13 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(StringStartSetup.recentKeyword, style: Theme.of(context).textTheme.titleMedium),
+                                      Text(StringEndSetup.recentKeyword, style: Theme.of(context).textTheme.titleMedium),
 
                                       /// 편집 버튼
                                       GestureDetector(
-                                        child: Text(StringStartSetup.edit, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                                        child: Text(StringEndSetup.edit, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
                                         onTap: () {
-                                          // TODO: 출발지 검색 기록 편집 화면으로 이동
+                                          // TODO: 도착지 검색 기록 편집 화면으로 이동
                                         },
                                       ),
                                     ],
@@ -175,7 +180,7 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
 
                                 /// 최근 검색 리스트
                                 ValueListenableBuilder<List<String>>(
-                                  valueListenable: _startSearchViewModel.recentListNotifier,
+                                  valueListenable: _endSearchViewModel.recentListNotifier,
                                   builder: (context, value, _) {
                                     return getRecentListView(value);
                                   },
@@ -186,7 +191,7 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
 
                           /// 검색 리스트
                           ValueListenableBuilder<List<Address>>(
-                              valueListenable: _startSearchViewModel.searchListNotifier,
+                              valueListenable: _endSearchViewModel.searchListNotifier,
                               builder: (context, value, _) {
                                 return getSearchListView(value);
                               },
@@ -199,6 +204,31 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
           ),
         ),
       ),
+    );
+  }
+
+  /// 자주 가는 장소 리스트
+  Widget getPlaceList(List<Place> value) {
+    return ListView.separated(
+      itemCount: value.length,
+      shrinkWrap: true,
+      primary: false,
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (context, index) {
+        return CustomRoundButton(
+          text: value[index].fplaceNicknm ?? "",
+          backgroundColor: Theme.of(context).toggleButtonsTheme.fillColor,
+          textColor: Theme.of(context).colorScheme.secondary,
+          textSize: 16,
+          // 텍스트 사이즈 고정
+          onPressed: () async {
+            // TODO: 해당 장소로 도착지 설정
+          },
+        );
+      },
+      separatorBuilder: (context, index) {
+        return const SizedBox(width: 8);
+      },
     );
   }
 
@@ -219,7 +249,7 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(value[index].roadAddress, style: Theme.of(context).textTheme.titleLarge),
 
@@ -257,12 +287,12 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Icon(Icons.access_time_outlined, color: Theme.of(context).disabledColor, size: 22),
                 const SizedBox(width: 10),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text("우림라이온스밸리", style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 10),

@@ -26,7 +26,7 @@ class CarInfoViewModel {
   final SetCarModifyUseCase setCarModifyUseCase;
   final SetCarDeleteUseCase setCarDeleteUseCase;
 
-  /// 일반콜 리스트
+  /// 차량정보 리스트
   final ValueNotifier<List<Car>> _carList = ValueNotifier<List<Car>>(List.empty());
 
   ValueNotifier<List<Car>> get carListNotifier => _carList;

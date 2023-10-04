@@ -187,6 +187,17 @@ abstract class StringStartSetup {
   static const String bottomButton = "출발지 설정";
 }
 
+abstract class StringEndSetup {
+  StringEndSetup._();
+
+  static const String title = "도착지 설정";
+  static const String searchHint = "도착지 검색";
+  static const String selectMap = "지도에서 선택";
+  static const String edit = "편집";
+  static const String recentKeyword = "최근 검색";
+  static const String bottomButton = "도착지 설정";
+}
+
 abstract class StringCar {
   StringCar._();
 

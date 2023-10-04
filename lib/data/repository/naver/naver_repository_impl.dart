@@ -149,7 +149,7 @@ class NaverRepositoryImpl extends NaverRepository {
               debugPrint("state: $state");
               return state;
             } else {
-              return Fail();
+              return Fail(errorMessage: responseObject.message);
             }
           }
         default:

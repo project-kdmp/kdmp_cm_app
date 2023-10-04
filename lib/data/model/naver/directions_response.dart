@@ -47,8 +47,8 @@ class Traoptimal {
   factory Traoptimal.fromJson(Map<String, dynamic> json) => Traoptimal(
         summary: Summary.fromJson(json["summary"]),
         path: List<List<double>>.from(json["path"].map((x) => List<double>.from(x.map((x) => x.toDouble())))),
-        section: List<Section>.from((json["section"] ?? {}).map((x) => Section.fromJson(x))),
-        guide: List<Guide>.from((json["guide"] ?? {}).map((x) => Guide.fromJson(x))),
+        section: List<Section>.from((json["section"] ?? List<Section>.empty()).map((x) => Section.fromJson(x))),
+        guide: List<Guide>.from((json["guide"] ?? List<Guide>.empty()).map((x) => Guide.fromJson(x))),
       );
 }
 

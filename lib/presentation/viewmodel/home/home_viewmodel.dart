@@ -81,6 +81,7 @@ class HomeViewModel {
 
   _checkStopoverButtonValid() {
     bool valid;
+    debugPrint("경유지 버튼 ${startMapData != null} ${endMapData != null} ${stopoverList.isEmpty}");
     if (startMapData != null && endMapData != null && stopoverList.isEmpty) {
       valid = true;
     } else {
@@ -209,11 +210,16 @@ class HomeViewModel {
 
     final start = "${startMapData!.latLng.longitude},${startMapData!.latLng.latitude}";
     final goal = "${endMapData!.latLng.longitude},${endMapData!.latLng.latitude}";
+    String waypoints = "";
+    for (int i = 0; i < stopoverList.length; i++) {
+      waypoints += "${stopoverList[i].long},${stopoverList[i].lat}";
+      if (i < stopoverList.length - 1) waypoints += "|";
+    }
 
     final request = DirectionsRequest(
       start: start,
       goal: goal,
-      // waypoints: "126.9783882,37.5666103" // TODO: 임시값
+      waypoints: waypoints,
     );
     final result = await getNaverPriceUseCase.execute(
       clientId: clientId,

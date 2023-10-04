@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/register/register_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_firstlogin_usecase.dart';
@@ -8,6 +9,9 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/end_map_screen.dart
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_map_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
@@ -164,6 +168,7 @@ final GoRouter router = GoRouter(
             ),
           ],
         ),
+
         /// 도착지 설정 검색
         GoRoute(
           name: EndSearchScreen.routeName,
@@ -180,6 +185,33 @@ final GoRouter router = GoRouter(
             ),
           ],
         ),
+
+        /// 경유지 설정
+        GoRoute(
+            name: StopOverScreen.routeName,
+            path: StopOverScreen.routeName,
+            builder: (context, state) {
+              final List<StopOver> stopoverList = state.extra as List<StopOver>;
+              return StopOverScreen(stopoverList: stopoverList);
+            },
+            routes: [
+              /// 경유지 설정 검색
+              GoRoute(
+                name: StopoverSearchScreen.routeName,
+                path: StopoverSearchScreen.routeName,
+                builder: (context, state) => const StopoverSearchScreen(),
+                routes: [
+                  /// 경유지 설정 지도
+                  GoRoute(
+                    name: StopoverMapScreen.routeName,
+                    path: StopoverMapScreen.routeName,
+                    builder: (context, state) {
+                      return const StopoverMapScreen();
+                    },
+                  ),
+                ],
+              ),
+            ]),
       ],
     ),
 

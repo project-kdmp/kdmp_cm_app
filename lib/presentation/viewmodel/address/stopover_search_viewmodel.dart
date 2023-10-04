@@ -9,8 +9,8 @@ import 'package:kdmp_cm_app/domain/usecase/mypage/get_place_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 
-class EndSearchViewModel {
-  EndSearchViewModel({
+class StopoverSearchViewModel {
+  StopoverSearchViewModel({
     required this.getMbrSqUseCase,
     required this.getNaverAddressInfoUseCase,
     required this.getPlaceListUseCase,

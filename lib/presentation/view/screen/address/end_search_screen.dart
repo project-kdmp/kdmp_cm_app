@@ -239,23 +239,37 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
       shrinkWrap: true,
       primary: false,
       itemBuilder: (context, index) {
+        final item = value[index];
+        final address = item.roadAddress.isNotEmpty ? item.roadAddress : item.jibunAddress;
+        String place = address;
+        for (int i = 0; i < item.addressElements.length; i++) {
+          if (item.addressElements[i].types.isNotEmpty && item.addressElements[i].types[0] == "BUILDING_NAME") {
+            place = item.addressElements[i].longName;
+          }
+        }
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 검색 리스트 아이템 클릭
-            // TODO: 값 전달
-            context.pop();
+            context.pop(
+              MapData(
+                latLng: NLatLng(double.parse(item.y), double.parse(item.x)),
+                address: address,
+                place: place,
+              ),
+            );
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value[index].roadAddress, style: Theme.of(context).textTheme.titleLarge),
+                /// 장소명
+                Text(place, style: Theme.of(context).textTheme.titleLarge),
 
-                /// 도로명 주소
+                /// 주소
                 const SizedBox(height: 10),
-                Text(value[index].roadAddress, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                Text(address, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
               ],
             ),
           ),

@@ -21,6 +21,7 @@ import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
@@ -244,9 +245,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                               child: CustomTextButton(
                                                 text: text,
                                                 backgroundColor: Colors.transparent,
-                                                onPressed: () {
-                                                  // TODO: 경유지 설정 화면으로 이동
-                                                  _homeViewModel.stopoverList = List.empty();
+                                                onPressed: () async {
+                                                  /// 경유지 설정 화면으로 이동
+                                                  final result = await context.pushNamed(
+                                                    StopOverScreen.routeName,
+                                                    extra: _homeViewModel.stopoverList,
+                                                  );
+                                                  if (result != null && result is List<StopOver>) {
+                                                    _homeViewModel.stopoverList = result;
+                                                  }
                                                 },
                                               ),
                                             ),
@@ -334,17 +341,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   textColor: Theme.of(context).colorScheme.secondary,
                                                   borderColor: Theme.of(context).cardColor,
                                                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                                  onPressed: () {
-                                                    // TODO: 경유지 설정 화면으로 이동
-                                                    _homeViewModel.addStopoverList(
-                                                      StopOver(
-                                                        address: "주소",
-                                                        placeName: "경유지장소명",
-                                                        stopDistance: 10,
-                                                        lat: 0.0,
-                                                        long: 0.0,
-                                                      ),
+                                                  onPressed: () async {
+                                                    /// 경유지 설정 화면으로 이동
+                                                    final result = await context.pushNamed(
+                                                      StopOverScreen.routeName,
+                                                      extra: _homeViewModel.stopoverList,
                                                     );
+                                                    if (result != null && result is List<StopOver>) {
+                                                      _homeViewModel.stopoverList = result;
+                                                    }
                                                   },
                                                 )
                                               : const SizedBox();
@@ -362,6 +367,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ValueListenableBuilder<bool>(
                           valueListenable: _homeViewModel.isPriceButtonValidNotifier,
                           builder: (context, value, child) {
+                            debugPrint("asdfasdfasdfasdf: $value");
                             return value
                                 ? Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),

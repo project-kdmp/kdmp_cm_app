@@ -54,3 +54,9 @@ abstract class ImageMenuDark {
   static const String iconPlace = "assets/menu/icon_place_dark.png";
   static const String iconSetup = "assets/menu/icon_setup_dark.png";
 }
+
+abstract class ImageMenu {
+  ImageMenu._();
+
+  static const String iconCar = "assets/menu/icon_car.png";
+}

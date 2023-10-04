@@ -388,7 +388,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
       switch (response.statusCode) {
         case 200:
           {
-            final responseObject = PlaceResponse.fromJson(response.data);
+            final responseObject = DefaultResponse.fromJson(response.data);
             final StateAPI state = Success(responseObject);
             debugPrint("state: $state");
             return state;

@@ -10,6 +10,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/car_info_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/withdraw_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
@@ -183,6 +184,13 @@ final GoRouter router = GoRouter(
               builder: (context, state) => const WithdrawScreen(),
             ),
           ],
+        ),
+
+        /// 차량정보
+        GoRoute(
+          name: CarInfoScreen.routeName,
+          path: CarInfoScreen.routeName,
+          builder: (context, state) => const CarInfoScreen(),
         ),
 
         /// 환경설정

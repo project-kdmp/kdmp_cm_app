@@ -7,7 +7,7 @@ class GetCarListUseCase {
 
   GetCarListUseCase({required MyPageRepository myPageRepository}) : _myPageRepository = myPageRepository;
 
-  Future<StateAPI> execute({required DefaultRequest carListRequest}) async {
-    return await _myPageRepository.getCarList(getCarListRequest: carListRequest);
+  Future<StateAPI> execute({required DefaultRequest getCarListRequest}) async {
+    return await _myPageRepository.getCarList(getCarListRequest: getCarListRequest);
   }
 }

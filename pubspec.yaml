@@ -95,5 +95,6 @@ flutter:
     - assets/menu/icon_payment_light.png
     - assets/menu/icon_place_light.png
     - assets/menu/icon_setup_light.png
+    - assets/menu/icon_car.png
     - assets/common/ic_start.png
     - assets/common/ic_end.png

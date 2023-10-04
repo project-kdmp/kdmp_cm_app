@@ -186,3 +186,15 @@ abstract class StringStartSetup {
   static const String recentKeyword = "최근 검색";
   static const String bottomButton = "출발지 설정";
 }
+
+abstract class StringCar {
+  StringCar._();
+
+  static const String title = "차량정보";
+  static const String bottomButton = "차량추가";
+  static const String delete = "삭제";
+  static const String modify = "수정";
+  static const String deleteAlert = "차량을 삭제하시겠습니까?";
+  static const String deleteSuccess = "차량정보가 삭제되었습니다.";
+  static const String modifySuccess = "차량정보가 수정되었습니다.";
+}

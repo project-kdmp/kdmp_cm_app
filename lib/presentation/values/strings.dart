@@ -141,6 +141,13 @@ abstract class StringCarAdd {
   static const String carAddSuccess = "차량정보 등록이 완료되었습니다.";
 }
 
+abstract class StringCarSelect {
+  StringCarSelect._();
+
+  static const String title = "차량선택";
+  static const String addCar = "차량추가";
+}
+
 abstract class StringMyPage {
   StringMyPage._();
 

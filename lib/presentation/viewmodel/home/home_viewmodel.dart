@@ -1,19 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
+import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/directions_request.dart';
+import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 
 class HomeViewModel {
   HomeViewModel({
     required this.getMbrSqUseCase,
+    required this.getCarListUseCase,
     required this.getNaverPriceUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
+  final GetCarListUseCase getCarListUseCase;
   final GetNaverPriceUseCase getNaverPriceUseCase;
 
   String clientId = "";
@@ -189,6 +194,23 @@ class HomeViewModel {
   /// 상태
   StateAPI state = Loading();
 
+  /// 차량정보 리스트 조회 API
+  Future<List<Car>> getCarList() async {
+    state = Loading();
+
+    final mbrSq = await getMbrSqUseCase.execute();
+
+    final request = DefaultRequest(mbrSq: mbrSq);
+    final result = await getCarListUseCase.execute(getCarListRequest: request);
+    state = result;
+
+    if (result is Success) {
+      return result.carListResponse.resultList;
+    }
+
+    return List.empty();
+  }
+
   /// 요금 조회
   getCallPrice() async {
     if (startMapData == null || endMapData == null) {
@@ -232,7 +254,7 @@ class HomeViewModel {
   }
 
   // TODO: 콜 호출하기 API
-  Future<StateAPI> requestCall() async {
+  Future<StateAPI> requestCall({required String carNumberId}) async {
     state = Loading();
 
     final mbrSq = await getMbrSqUseCase.execute();

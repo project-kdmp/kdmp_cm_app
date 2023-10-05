@@ -10,6 +10,8 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
+import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
+import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
@@ -17,8 +19,9 @@ import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
-import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/bottomsheet/car_select_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/call_confirm_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
@@ -69,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initViewModel() async {
     _homeViewModel = HomeViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
+      getCarListUseCase: GetIt.instance<GetCarListUseCase>(),
       getNaverPriceUseCase: GetIt.instance<GetNaverPriceUseCase>(),
     );
 
@@ -537,91 +541,103 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               ValueListenableBuilder<bool>(
-                  valueListenable: _homeViewModel.isCallButtonValidNotifier,
-                  builder: (context, value, child) {
-                    return Container(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      padding: const EdgeInsets.only(top: 8, bottom: 20, left: 20, right: 20),
-                      child: Row(
-                        children: [
-                          /// 예약하기 버튼
-                          Expanded(
-                            child: CustomRadiusButton(
-                              isEnabled: value,
-                              text: StringHome.reservationButton,
-                              onPressed: () async {
-                                // TODO: 예약하기
-                                final result = await _homeViewModel.requestReservation();
-                                if (result is Success) {
-                                  // TODO: 콜 예약 성공시 처리
-                                } else if (result is Bad) {
-                                  Fluttertoast.showToast(msg: StringCommon.httpBad);
-                                } else if (result is Fail) {
-                                  Fluttertoast.showToast(msg: "${result.errorMessage}");
-                                }
-                              },
-                            ),
+                valueListenable: _homeViewModel.isCallButtonValidNotifier,
+                builder: (context, value, child) {
+                  return Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    padding: const EdgeInsets.only(top: 8, bottom: 20, left: 20, right: 20),
+                    child: Row(
+                      children: [
+                        /// 예약하기 버튼
+                        Expanded(
+                          child: CustomRadiusButton(
+                            isEnabled: value,
+                            text: StringHome.reservationButton,
+                            onPressed: () async {
+                              // TODO: 예약하기
+                              final result = await _homeViewModel.requestReservation();
+                              if (result is Success) {
+                                // TODO: 콜 예약 성공시 처리
+                              } else if (result is Bad) {
+                                Fluttertoast.showToast(msg: StringCommon.httpBad);
+                              } else if (result is Fail) {
+                                Fluttertoast.showToast(msg: "${result.errorMessage}");
+                              }
+                            },
                           ),
-                          const SizedBox(width: 8),
+                        ),
+                        const SizedBox(width: 8),
 
-                          /// 호출하기 버튼
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: value
-                                  ? () async {
-                                      final content = _homeViewModel.endMapData!.place.isNotEmpty ? _homeViewModel.endMapData!.place : _homeViewModel.endMapData!.address;
-                                      await _showCallConfirmDialog(
-                                        content: content,
-                                        onConfirm: () async {
-                                          Navigator.pop(context);
+                        /// 호출하기 버튼
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: value
+                                ? () async {
+                                    final content = _homeViewModel.endMapData!.place.isNotEmpty ? _homeViewModel.endMapData!.place : _homeViewModel.endMapData!.address;
+                                    await _showCallConfirmDialog(
+                                      content: content,
+                                      onConfirm: () async {
+                                        Navigator.pop(context);
 
+                                        /// 차량선택 팝업
+                                        final carList = await _homeViewModel.getCarList();
+                                        final result = await showModalBottomSheet(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (context) {
+                                            return Wrap(children: [CarSelectBottomSheet(carList: carList)]);
+                                          },
+                                        );
+                                        if (result != null && result is Car) {
                                           // TODO: 호출하기
-                                          final result = await _homeViewModel.requestCall();
-                                          if (result is Success) {
+                                          final requestResult = await _homeViewModel.requestCall(carNumberId: result.carNumId);
+                                          if (requestResult is Success) {
                                             // TODO: 콜 호출 성공시 처리
-                                          } else if (result is Bad) {
+                                          } else if (requestResult is Bad) {
                                             Fluttertoast.showToast(msg: StringCommon.httpBad);
-                                          } else if (result is Fail) {
-                                            Fluttertoast.showToast(msg: "${result.errorMessage}");
+                                          } else if (requestResult is Fail) {
+                                            Fluttertoast.showToast(msg: "${requestResult.errorMessage}");
                                           }
-                                        },
-                                      );
-                                    }
-                                  : null,
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                              ),
-                              child: Row(
-                                children: [
-                                  /// 아이콘
-                                  Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: const BoxDecoration(color: Colors.white10, shape: BoxShape.circle),
-                                    child: const Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        child: Icon(Icons.call, color: Colors.white, size: 20),
-                                      ),
+                                        }
+                                      },
+                                    );
+                                  }
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                            ),
+                            child: Row(
+                              children: [
+                                /// 아이콘
+                                Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: const BoxDecoration(color: Colors.white10, shape: BoxShape.circle),
+                                  child: const Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      child: Icon(Icons.call, color: Colors.white, size: 20),
                                     ),
                                   ),
-                                  const SizedBox(width: 18),
+                                ),
+                                const SizedBox(width: 18),
 
-                                  /// 예약콜
-                                  const Text(
-                                    StringHome.callButton,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
+                                /// 예약콜
+                                const Text(
+                                  StringHome.callButton,
+                                  style: TextStyle(
+                                    color: Colors.white,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    );
-                  }),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

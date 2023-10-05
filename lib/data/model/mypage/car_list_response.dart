@@ -23,10 +23,10 @@ class CarListResponse {
 }
 
 class Car {
-  String? carNumId;
+  String carNumId;
 
   Car({
-    this.carNumId,
+    required this.carNumId,
   });
 
   factory Car.fromJson(Map<String, dynamic> json) => Car(

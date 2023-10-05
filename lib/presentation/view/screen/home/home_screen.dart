@@ -18,6 +18,7 @@ import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/call_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
@@ -511,7 +512,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
 
-                                      /// 결제수단 선택
+                                      /// 결제수단 선택 버튼
                                       CustomRoundButton(
                                         text: value.isEmpty ? StringHome.selectButton : StringHome.changeButton,
                                         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -568,15 +569,23 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: ElevatedButton(
                               onPressed: value
                                   ? () async {
-                                      // TODO: 호출하기
-                                      final result = await _homeViewModel.requestCall();
-                                      if (result is Success) {
-                                        // TODO: 콜 호출 성공시 처리
-                                      } else if (result is Bad) {
-                                        Fluttertoast.showToast(msg: StringCommon.httpBad);
-                                      } else if (result is Fail) {
-                                        Fluttertoast.showToast(msg: "${result.errorMessage}");
-                                      }
+                                      final content = _homeViewModel.endMapData!.place.isNotEmpty ? _homeViewModel.endMapData!.place : _homeViewModel.endMapData!.address;
+                                      await _showCallConfirmDialog(
+                                        content: content,
+                                        onConfirm: () async {
+                                          Navigator.pop(context);
+
+                                          // TODO: 호출하기
+                                          final result = await _homeViewModel.requestCall();
+                                          if (result is Success) {
+                                            // TODO: 콜 호출 성공시 처리
+                                          } else if (result is Bad) {
+                                            Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                          } else if (result is Fail) {
+                                            Fluttertoast.showToast(msg: "${result.errorMessage}");
+                                          }
+                                        },
+                                      );
                                     }
                                   : null,
                               style: ElevatedButton.styleFrom(
@@ -649,6 +658,20 @@ class _HomeScreenState extends State<HomeScreen> {
           onConfirm: () {
             Navigator.pop(context);
           },
+        );
+      },
+    );
+  }
+
+  _showCallConfirmDialog({String? title, required String content, required Function() onConfirm}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: true, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CallConfirmDialog(
+          title: title,
+          content: content,
+          onConfirm: onConfirm,
         );
       },
     );

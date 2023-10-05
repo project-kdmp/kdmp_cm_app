@@ -221,3 +221,11 @@ abstract class StringCar {
   static const String deleteSuccess = "차량정보가 삭제되었습니다.";
   static const String modifySuccess = "차량정보가 수정되었습니다.";
 }
+
+abstract class StringCall {
+  StringCall._();
+
+  static const String callContent = "(으)로\n호출하시겠습니까?";
+  static const String waitTitle = "대기료 발생 안내";
+  static const String waitContent= "대기로 발생 내용";
+}

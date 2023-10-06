@@ -595,7 +595,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           },
                                         );
                                         if (result != null && result is Car) {
-                                          // TODO: 호출하기
+                                          /// 호출하기
                                           final requestResult = await _homeViewModel.requestCall(carNumId: result.carNumId);
                                           if (requestResult is Success) {
                                             /// 운행 화면으로 이동

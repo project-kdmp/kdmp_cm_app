@@ -96,6 +96,14 @@ abstract class DrvReqSt {
   static const String end = "END"; // 운행종료
 }
 
+/// 콜 취소사유 유형
+abstract class DrvCancelTp {
+  DrvCancelTp._();
+
+  static const String oths = "OTHS"; // 다른 서비스 이용
+  static const String drvc = "DRVC"; // 기사님 연락 후 취소
+}
+
 /// 종합소득세 신청 용도
 abstract class IncomReqUseTp {
   IncomReqUseTp._();

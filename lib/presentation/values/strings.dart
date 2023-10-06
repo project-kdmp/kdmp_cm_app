@@ -255,3 +255,12 @@ abstract class StringWork {
   static const String callConfirmAlert = "운행이 확정되었습니다.";
   static const String callStartAlert = "기사님이 출발지에 도착했습니다.";
 }
+
+abstract class StringCallCancel {
+  StringCallCancel._();
+
+  static const String title = "호출을 취소하시겠습니까?";
+  static const String content = "사유를 선택해주세요.";
+  static const String typeOTHS = "다른 서비스 이용";
+  static const String typeDRVC = "기사님 사정으로 연락 후 취소";
+}

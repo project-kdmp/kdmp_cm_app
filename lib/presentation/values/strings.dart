@@ -249,4 +249,9 @@ abstract class StringWork {
   static const String payment = "결제";
   static const String price = "요금";
   static const String date = "일시";
+
+  static const String cancelConfirm = "호출을 취소하시겠습니까?";
+  static const String cancelSuccess = "호출이 취소되었습니다.";
+  static const String callConfirmAlert = "운행이 확정되었습니다.";
+  static const String callStartAlert = "기사님이 출발지에 도착했습니다.";
 }

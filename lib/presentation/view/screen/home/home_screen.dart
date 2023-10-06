@@ -27,6 +27,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.d
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/work/work_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_text_button.dart';
@@ -109,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
           automaticallyImplyLeading: false,
           elevation: 0.0,
           actions: [
+            /// 메뉴 버튼
             IconButton(
               onPressed: () {
                 context.pushNamed(MenuScreen.routeName);
@@ -590,14 +592,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         );
                                         if (result != null && result is Car) {
                                           // TODO: 호출하기
-                                          final requestResult = await _homeViewModel.requestCall(carNumberId: result.carNumId);
-                                          if (requestResult is Success) {
+                                          // final requestResult = await _homeViewModel.requestCall(carNumberId: result.carNumId);
+                                          // if (requestResult is Success) {
                                             // TODO: 콜 호출 성공시 처리
-                                          } else if (requestResult is Bad) {
-                                            Fluttertoast.showToast(msg: StringCommon.httpBad);
-                                          } else if (requestResult is Fail) {
-                                            Fluttertoast.showToast(msg: "${requestResult.errorMessage}");
-                                          }
+                                            context.pushNamed(WorkScreen.routeName);
+                                          // } else if (requestResult is Bad) {
+                                          //   Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                          // } else if (requestResult is Fail) {
+                                          //   Fluttertoast.showToast(msg: "${requestResult.errorMessage}");
+                                          // }
                                         }
                                       },
                                     );

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/constant/url.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/vertical_dashed_divider.dart';
@@ -71,14 +75,35 @@ class _WorkScreenState extends State<WorkScreen> {
                                 textColor: Theme.of(context).colorScheme.secondary,
                                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                                 onPressed: () async {
-                                  // TODO: 호출취소
+                                  /// 호출취소 팝업 띄움
+                                  await _showConfirmDialog(
+                                    content: StringCar.deleteAlert,
+                                    onConfirm: () async {
+                                      Navigator.pop(context);
+
+                                      // TODO: 호출취소 사유 선택
+
+                                      // TODO: 호출취소
+                                      // final result = await _workViewModel.cancelCall;
+                                      // if (result is Success) {
+                                      await _showAlertDialog(content: StringWork.cancelSuccess, isCanceled: false);
+
+                                      /// 홈 화면으로 이동
+                                      context.goNamed(HomeScreen.routeName);
+                                      // } else if (result is Bad) {
+                                      //   Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                      // } else if (result is Fail) {
+                                      //   Fluttertoast.showToast(msg: "${result.errorMessage}");
+                                      // }
+                                    },
+                                  );
                                 },
                               ),
                             ],
                           ),
                           const SizedBox(height: 80),
 
-                          true
+                          false
                               ? Column(
                                   children: [
                                     /// 프로필 사진
@@ -301,6 +326,51 @@ class _WorkScreenState extends State<WorkScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  /// 운행 확정 팝업
+  Future<void> showCallConfirmAlert() async {
+    _showAlertDialog(content: StringWork.callConfirmAlert, isCanceled: false);
+    // TODO: 상태 변경
+    // _workViewModel.
+  }
+
+  /// 출발지 도착 팝업
+  Future<void> showStartAlert() async {
+    _showAlertDialog(content: StringWork.callStartAlert, isCanceled: false);
+  }
+
+  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: title,
+          content: content,
+          isCanceled: isCanceled,
+          isWarning: isWarning,
+          onConfirm: () {
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
+  _showConfirmDialog({String? title, String? content, bool isWarning = false, required Function() onConfirm}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: true, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomConfirmDialog(
+          title: title,
+          content: content,
+          isWarning: isWarning,
+          onConfirm: onConfirm,
+        );
+      },
     );
   }
 }

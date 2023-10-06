@@ -156,9 +156,9 @@ class WorkRepositoryImpl extends WorkRepository {
     const url = '$baseBizUrl$api';
 
     try {
-      final response = await _dio.post(
+      final response = await _dio.get(
         url,
-        data: getCallInfoRequest.toJson(),
+        queryParameters: getCallInfoRequest.toJson(),
         options: Options(contentType: Headers.jsonContentType),
       );
 

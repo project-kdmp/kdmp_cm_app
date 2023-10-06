@@ -14,6 +14,7 @@ import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
@@ -75,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getCarListUseCase: GetIt.instance<GetCarListUseCase>(),
       getNaverPriceUseCase: GetIt.instance<GetNaverPriceUseCase>(),
+      setCallRequestUseCase: GetIt.instance<SetCallRequestUseCase>(),
     );
 
     /// 키 관리 파일 가져오기
@@ -158,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  /// 호출 정보 입력지
+                  /// 호출 정보 입력
                   Container(
                     color: Theme.of(context).scaffoldBackgroundColor,
                     child: Column(
@@ -228,11 +230,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               ValueListenableBuilder<List<StopOver>>(
                                 valueListenable: _homeViewModel.stopOverListNotifier,
                                 builder: (context, value, child) {
-                                  String text = "";
+                                  String text = value.isNotEmpty
+                                      ? value[0].placeName.isNotEmpty
+                                          ? value[0].placeName
+                                          : value[0].address
+                                      : "";
                                   if (value.length > 1) {
-                                    text = "${value[0].placeName} 외 ${value.length - 1}";
-                                  } else if (value.length == 1) {
-                                    text = value[0].placeName;
+                                    text += " 외 ${value.length - 1}";
                                   }
                                   return value.isNotEmpty
                                       ? Row(
@@ -511,7 +515,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       /// 선택한 결제수단
                                       Expanded(
                                         child: Text(
-                                          value.isEmpty ? StringHome.empty : value,
+                                          value.isEmpty ? StringHome.empty : getPaymentKind(value),
                                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                                 color: Theme.of(context).disabledColor,
                                               ),
@@ -527,7 +531,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                                         onPressed: () {
                                           // TODO: 결제수단 선택 화면으로 이동
-                                          _homeViewModel.paymKind = "asdf";
+                                          _homeViewModel.paymKind = "CARD";
                                         },
                                       ),
                                     ],
@@ -592,15 +596,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                         );
                                         if (result != null && result is Car) {
                                           // TODO: 호출하기
-                                          // final requestResult = await _homeViewModel.requestCall(carNumberId: result.carNumId);
-                                          // if (requestResult is Success) {
-                                            // TODO: 콜 호출 성공시 처리
-                                            context.pushNamed(WorkScreen.routeName);
-                                          // } else if (requestResult is Bad) {
-                                          //   Fluttertoast.showToast(msg: StringCommon.httpBad);
-                                          // } else if (requestResult is Fail) {
-                                          //   Fluttertoast.showToast(msg: "${requestResult.errorMessage}");
-                                          // }
+                                          final requestResult = await _homeViewModel.requestCall(carNumId: result.carNumId);
+                                          if (requestResult is Success) {
+                                            /// 운행 화면으로 이동
+                                            final drvReqSq = requestResult.drvResponse.drvReqSq;
+                                            final callResult = await context.pushNamed(
+                                              WorkScreen.routeName,
+                                              extra: drvReqSq,
+                                            );
+                                            if (callResult is bool) {
+                                              if (callResult == false) {
+                                                /// 운행취소
+                                                /// 입력 데이터 삭제
+                                                _homeViewModel.clearData();
+
+                                                /// 지도 마커 삭제
+                                                _mapController.clearOverlays(type: NOverlayType.marker);
+                                              }
+                                            }
+                                          } else if (requestResult is Bad) {
+                                            Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                          } else if (requestResult is Fail) {
+                                            Fluttertoast.showToast(msg: "${requestResult.errorMessage}");
+                                          }
                                         }
                                       },
                                     );

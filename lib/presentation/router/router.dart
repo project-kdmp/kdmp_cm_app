@@ -219,7 +219,10 @@ final GoRouter router = GoRouter(
         GoRoute(
           name: WorkScreen.routeName,
           path: WorkScreen.routeName,
-          builder: (context, state) => const WorkScreen(),
+          builder: (context, state) {
+            final int drvReqSq = state.extra as int;
+            return WorkScreen(drvReqSq: drvReqSq);
+          },
         ),
       ],
     ),

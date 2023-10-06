@@ -31,24 +31,20 @@ String getPaymentKind(String? paymentKind) {
 String getCallType(String? drvReqSt) {
   if (drvReqSt != null) {
     switch (drvReqSt) {
-      case "CARD":
-        return "카드";
-      case "CASH":
-        return "현금";
-      case DrvReqSt.res:
-        return "예약";
-      case DrvReqSt.rco:
-        return "예약 확정";
-      case DrvReqSt.rwt:
-        return "예약출발지도착 - 대기중";
-      case DrvReqSt.rst:
-        return "예약-운행시작";
-      case DrvReqSt.rcd:
-        return "예약-카드결제완료";
-      case DrvReqSt.ren:
-        return "예약-운행종료";
-      case DrvReqSt.rdl:
-        return "예약-취소";
+      // case DrvReqSt.res:
+      //   return "예약";
+      // case DrvReqSt.rco:
+      //   return "예약 확정";
+      // case DrvReqSt.rwt:
+      //   return "예약출발지도착 - 대기중";
+      // case DrvReqSt.rst:
+      //   return "예약-운행시작";
+      // case DrvReqSt.rcd:
+      //   return "예약-카드결제완료";
+      // case DrvReqSt.ren:
+      //   return "예약-운행종료";
+      // case DrvReqSt.rdl:
+      //   return "예약-취소";
       case DrvReqSt.cal:
         return "호출중";
       case DrvReqSt.cco:

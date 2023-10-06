@@ -1,30 +1,36 @@
+import 'dart:convert';
+
+import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
+
 class CallInfoResponse {
   String serverVersion;
   String serverId;
   int? drvReqSq;
-  String? paymKind;
+  String paymKind;
   String? carNumId;
   int? mbrCmSq;
   int? mbrDmSq;
   String? drvReqNm;
-  String? drvReqSt;
+  String? mbrDmNm;
+  String? mbrProfilePic;
+  String drvReqSt;
   String? reqRegDt;
   String? drvReserveDt;
   String? drvEndDt;
   String? drvStartDt;
-  String? reqStartAddress;
-  String? reqStartPlaceNm;
-  String? reqEndAddress;
-  String? reqEndPlaceNm;
-  String? stopOverLst;
+  String reqStartAddress;
+  String reqStartPlaceNm;
+  String reqEndAddress;
+  String reqEndPlaceNm;
+  List<StopOver> stopOverLst;
   String? drvSafeCall;
-  int? drvPaymPrice;
-  int? drvDistance;
+  int drvPaymPrice;
+  int drvDistance;
   String? reqAsk;
-  int? gpsStartLat;
-  int? gpsStartLong;
-  int? gpsEndLat;
-  int? gpsEndLong;
+  double? gpsStartLat;
+  double? gpsStartLong;
+  double? gpsEndLat;
+  double? gpsEndLong;
   String? createId;
   String? createDt;
   String? updateId;
@@ -34,24 +40,26 @@ class CallInfoResponse {
     required this.serverVersion,
     required this.serverId,
     required this.drvReqSq,
-    this.paymKind,
+    required this.paymKind,
     this.carNumId,
     this.mbrCmSq,
     this.mbrDmSq,
     this.drvReqNm,
-    this.drvReqSt,
+    this.mbrDmNm,
+    this.mbrProfilePic,
+    required this.drvReqSt,
     this.reqRegDt,
     this.drvReserveDt,
     this.drvEndDt,
     this.drvStartDt,
-    this.reqStartAddress,
-    this.reqStartPlaceNm,
-    this.reqEndAddress,
-    this.reqEndPlaceNm,
-    this.stopOverLst,
+    required this.reqStartAddress,
+    required this.reqStartPlaceNm,
+    required this.reqEndAddress,
+    required this.reqEndPlaceNm,
+    required this.stopOverLst,
     this.drvSafeCall,
-    this.drvPaymPrice,
-    this.drvDistance,
+    required this.drvPaymPrice,
+    required this.drvDistance,
     this.reqAsk,
     this.gpsStartLat,
     this.gpsStartLong,
@@ -72,16 +80,18 @@ class CallInfoResponse {
         mbrCmSq: json["mbrCmSq"],
         mbrDmSq: json["mbrDmSq"],
         drvReqNm: json["drvReqNm"],
+        mbrDmNm: json["mbrDmNm"],
+        mbrProfilePic: json["mbrProfilePic"],
         drvReqSt: json["drvReqSt"],
         reqRegDt: json["reqRegDt"],
         drvReserveDt: json["drvReserveDt"],
         drvEndDt: json["drvEndDt"],
         drvStartDt: json["drvStartDt"],
         reqStartAddress: json["reqStartAddress"],
-        reqStartPlaceNm: json["reqStartPlaceNm"],
+        reqStartPlaceNm: json["reqStartPlaceNm"] ?? "",
         reqEndAddress: json["reqEndAddress"],
-        reqEndPlaceNm: json["reqEndPlaceNm"],
-        stopOverLst: json["stopOverLst"],
+        reqEndPlaceNm: json["reqEndPlaceNm"] ?? "",
+        stopOverLst: json["stopOverLst"] != null && json["stopOverLst"] != "" ? List<StopOver>.from(jsonDecode(json["stopOverLst"]).map((x) => StopOver.fromJson(x))) : List.empty(),
         drvSafeCall: json["drvSafeCall"],
         drvPaymPrice: json["drvPaymPrice"],
         drvDistance: json["drvDistance"],
@@ -105,6 +115,8 @@ class CallInfoResponse {
         "mbrCmSq": mbrCmSq,
         "mbrDmSq": mbrDmSq,
         "drvReqNm": drvReqNm,
+        "mbrDmNm": mbrDmNm,
+        "mbrProfilePic": mbrProfilePic,
         "drvReqSt": drvReqSt,
         "reqRegDt": reqRegDt,
         "drvReserveDt": drvReserveDt,
@@ -114,7 +126,7 @@ class CallInfoResponse {
         "reqStartPlaceNm": reqStartPlaceNm,
         "reqEndAddress": reqEndAddress,
         "reqEndPlaceNm": reqEndPlaceNm,
-        "stopOverLst": stopOverLst,
+        "stopOverLst": stopOverLst.isNotEmpty ? List<dynamic>.from(stopOverLst.map((x) => x.toJson())) : "",
         "drvSafeCall": drvSafeCall,
         "drvPaymPrice": drvPaymPrice,
         "drvDistance": drvDistance,

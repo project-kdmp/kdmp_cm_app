@@ -44,10 +44,10 @@ class Reservation {
   String? reqEndPlaceNm;
   int? drvPaymPrice;
   int? drvDistance;
-  int? gpsStartLat;
-  int? gpsStartLong;
-  int? gpsEndLat;
-  int? gpsEndLong;
+  double? gpsStartLat;
+  double? gpsStartLong;
+  double? gpsEndLat;
+  double? gpsEndLong;
 
   Reservation({
     required this.drvReqSq,

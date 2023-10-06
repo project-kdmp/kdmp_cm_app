@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:kdmp_cm_app/data/model/common/pagenation_model.dart';
+import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 
 class CalledListResponse {
   String serverVersion;
@@ -34,7 +37,7 @@ class Called {
   String? drvEndDt;
   String? drvReqSt;
   String? reqStartAddress;
-  String? stopOverLst;
+  List<StopOver> stopOverLst;
   String? reqEndAddress;
   int? drvPaymPrice;
   String? payCardInfo;
@@ -45,7 +48,7 @@ class Called {
     this.drvEndDt,
     this.drvReqSt,
     this.reqStartAddress,
-    this.stopOverLst,
+    required this.stopOverLst,
     this.reqEndAddress,
     this.drvPaymPrice,
     this.payCardInfo,
@@ -57,7 +60,7 @@ class Called {
         drvEndDt: json["drvEndDt"],
         drvReqSt: json["drvReqSt"],
         reqStartAddress: json["reqStartAddress"],
-        stopOverLst: json["stopOverLst"],
+        stopOverLst: json["stopOverLst"] != null && json["stopOverLst"] != "" ? List<StopOver>.from(jsonDecode(json["stopOverLst"]).map((x) => StopOver.fromJson(x))) : List.empty(),
         reqEndAddress: json["reqEndAddress"],
         drvPaymPrice: json["drvPaymPrice"],
         payCardInfo: json["payCardInfo"],
@@ -69,7 +72,7 @@ class Called {
         "drvEndDt": drvEndDt,
         "drvReqSt": drvReqSt,
         "reqStartAddress": reqStartAddress,
-        "stopOverLst": stopOverLst,
+        "stopOverLst": stopOverLst.isNotEmpty ? List<dynamic>.from(stopOverLst.map((x) => x.toJson())) : "",
         "reqEndAddress": reqEndAddress,
         "drvPaymPrice": drvPaymPrice,
         "payCardInfo": payCardInfo,

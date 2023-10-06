@@ -1,25 +1,32 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/directions_request.dart';
+import 'package:kdmp_cm_app/data/model/work/call_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 
 class HomeViewModel {
   HomeViewModel({
     required this.getMbrSqUseCase,
     required this.getCarListUseCase,
     required this.getNaverPriceUseCase,
+    required this.setCallRequestUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final GetCarListUseCase getCarListUseCase;
   final GetNaverPriceUseCase getNaverPriceUseCase;
+  final SetCallRequestUseCase setCallRequestUseCase;
 
   String clientId = "";
   String clientSecret = "";
@@ -162,6 +169,15 @@ class HomeViewModel {
     _checkCallButtonValid();
   }
 
+  /// 운행거리
+  final ValueNotifier<int> _distance = ValueNotifier<int>(0);
+
+  ValueNotifier<int> get distanceNotifier => _distance;
+
+  int get distance => _distance.value;
+
+  set distance(int value) => _distance.value = value;
+
   /// 예약하기, 호출하기 버튼 활성화 여부
   final ValueNotifier<bool> _isCallButtonValid = ValueNotifier<bool>(false);
 
@@ -189,6 +205,15 @@ class HomeViewModel {
       valid = false;
     }
     return valid;
+  }
+
+  void clearData() {
+    startMapData = null;
+    endMapData = null;
+    stopOverList = List.empty();
+    paymKind = "";
+    distance = 0;
+    basicPrice = 0;
   }
 
   /// 상태
@@ -221,6 +246,7 @@ class HomeViewModel {
     if (result is Success) {
       final response = result.directionsResponse;
       basicPrice = response.route.traoptimal[0].summary.taxiFare + response.route.traoptimal[0].summary.tollFare; // 택시 요금 + 통행 요금(톨게이트)
+      distance = response.route.traoptimal[0].summary.distance; // 운행거리
     }
     _checkStopOverButtonValid();
     _checkCallButtonValid();
@@ -254,39 +280,33 @@ class HomeViewModel {
   }
 
   // TODO: 콜 호출하기 API
-  Future<StateAPI> requestCall({required String carNumberId}) async {
+  Future<StateAPI> requestCall({required String carNumId}) async {
     state = Loading();
 
     final mbrSq = await getMbrSqUseCase.execute();
 
-    // final request = CallRequest(
-    //   mbrCmSq: mbrSq,
-    //   paymKind: paymKind,
-    //   carNumId: carNumId,
-    //   drvReqNm: drvReqNm,
-    //   drvReqSt: drvReqSt,
-    //   reqRegDt: reqRegDt,
-    //   drvReserveDt: drvReserveDt,
-    //   drvEndDt: drvEndDt,
-    //   drvStartDt: drvStartDt,
-    //   reqStartAddress: reqStartAddress,
-    //   reqStartPlaceNm: reqStartPlaceNm,
-    //   reqEndAddress: reqEndAddress,
-    //   reqEndPlaceNm: reqEndPlaceNm,
-    //   stopOverLst: stopOverLst,
-    //   drvPaymPrice: drvPaymPrice,
-    //   drvDistance: drvDistance,
-    //   reqAsk: reqAsk,
-    //   gpsStartLat: gpsStartLat,
-    //   gpsStartLong: gpsStartLong,
-    //   gpsEndLat: gpsEndLat,
-    //   gpsEndLong: gpsEndLong,
-    // );
-    // final result = await setCallRequestUseCase.execute(callRequestUseCase: request);
-    // state = result;
-    //
-    // return result;
-    return Fail(); // TODO: 임시값
+    final request = CallRequest(
+      mbrCmSq: mbrSq,
+      paymKind: paymKind,
+      carNumId: carNumId,
+      drvReqSt: DrvReqSt.cal,
+      reqRegDt: DateTime.now().toIso8601String(),
+      reqStartAddress: startMapData!.address,
+      reqStartPlaceNm: startMapData!.place,
+      reqEndAddress: endMapData!.address,
+      reqEndPlaceNm: endMapData!.place,
+      stopOverLst: stopOverList,
+      drvPaymPrice: priceType == PriceType.basic ? basicPrice : inputPrice,
+      drvDistance: distance,
+      gpsStartLat: startMapData!.latLng.latitude,
+      gpsStartLong: startMapData!.latLng.longitude,
+      gpsEndLat: endMapData!.latLng.latitude,
+      gpsEndLong: endMapData!.latLng.longitude,
+    );
+    final result = await setCallRequestUseCase.execute(callRequest: request);
+    state = result;
+
+    return result;
   }
 
   // TODO: 예약콜 호출하기 API

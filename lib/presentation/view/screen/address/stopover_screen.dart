@@ -15,19 +15,19 @@ import 'package:provider/provider.dart';
 class StopOverScreen extends StatefulWidget {
   const StopOverScreen({
     Key? key,
-    required this.stopoverList,
+    required this.stopOverList,
   }) : super(key: key);
 
   static const String routeName = "stopover";
 
-  final List<StopOver> stopoverList;
+  final List<StopOver> stopOverList;
 
   @override
   State<StopOverScreen> createState() => _StopOverScreenState();
 }
 
 class _StopOverScreenState extends State<StopOverScreen> {
-  late final StopOverViewModel _stopoverViewModel;
+  late final StopOverViewModel _stopOverViewModel;
 
   @override
   void initState() {
@@ -38,11 +38,11 @@ class _StopOverScreenState extends State<StopOverScreen> {
 
   /// Create
   void initViewModel() {
-    _stopoverViewModel = StopOverViewModel();
+    _stopOverViewModel = StopOverViewModel();
   }
 
   void initData() {
-    _stopoverViewModel.stopoverList = widget.stopoverList;
+    _stopOverViewModel.stopOverList = widget.stopOverList;
   }
 
   @override
@@ -51,14 +51,14 @@ class _StopOverScreenState extends State<StopOverScreen> {
     return MultiProvider(
       providers: [
         Provider<StopOverViewModel>(
-          create: (context) => _stopoverViewModel,
+          create: (context) => _stopOverViewModel,
         ),
       ],
       child: Scaffold(
         /// 상단 앱바
         appBar: BaseAppBar(
           appBar: AppBar(),
-          title: StringStopoverSetup.title,
+          title: StringStopOverSetup.title,
         ),
 
         /// 화면
@@ -72,7 +72,7 @@ class _StopOverScreenState extends State<StopOverScreen> {
                     children: [
                       const SizedBox(height: 16),
                       ValueListenableBuilder<List<StopOver>>(
-                        valueListenable: _stopoverViewModel.stopoverListNotifier,
+                        valueListenable: _stopOverViewModel.stopOverListNotifier,
                         builder: (context, value, _) {
                           return value.isNotEmpty
                               ? getListView(value)
@@ -93,12 +93,12 @@ class _StopOverScreenState extends State<StopOverScreen> {
                       /// 경유지 추가 버튼
                       CustomRadiusButton(
                         minimumSize: const Size(double.minPositive, double.minPositive),
-                        text: StringStopoverSetup.addButton,
+                        text: StringStopOverSetup.addButton,
                         onPressed: () async {
                           /// 경유지 설정 검색 화면으로 이동
-                          final result = await context.pushNamed(StopoverSearchScreen.routeName);
+                          final result = await context.pushNamed(StopOverSearchScreen.routeName);
                           if (result != null && result is MapData) {
-                            _stopoverViewModel.addStopoverList(
+                            _stopOverViewModel.addStopOverList(
                               StopOver(
                                 address: result.address,
                                 placeName: result.place,
@@ -120,10 +120,10 @@ class _StopOverScreenState extends State<StopOverScreen> {
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: CustomElevatedButton(
-                  text: StringStopoverSetup.bottomButton,
+                  text: StringStopOverSetup.bottomButton,
                   onPressed: () {
                     /// 홈 화면에 경유지 리스트 전달
-                    context.pop(_stopoverViewModel.stopoverList);
+                    context.pop(_stopOverViewModel.stopOverList);
                   },
                 ),
               ),
@@ -166,7 +166,7 @@ class _StopOverScreenState extends State<StopOverScreen> {
                 child: Icon(Icons.close, size: 16, color: Theme.of(context).disabledColor),
                 onTap: () {
                   /// 경유지 삭제
-                  _stopoverViewModel.removeStopoverList(index);
+                  _stopOverViewModel.removeStopOverList(index);
                 },
               ),
             ],

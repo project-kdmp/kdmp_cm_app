@@ -4,8 +4,8 @@ import "package:kdmp_cm_app/data/model/common/map_data_model.dart";
 import "package:kdmp_cm_app/data/model/common/state.dart";
 import "package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart";
 
-class StopoverMapViewModel {
-  StopoverMapViewModel({
+class StopOverMapViewModel {
+  StopOverMapViewModel({
     required this.getMbrSqUseCase,
   });
 

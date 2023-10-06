@@ -4,24 +4,24 @@ import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 
 class StopOverViewModel {
   /// 경유지 리스트
-  final ValueNotifier<List<StopOver>> _stopoverList = ValueNotifier<List<StopOver>>(List.empty());
+  final ValueNotifier<List<StopOver>> _stopOverList = ValueNotifier<List<StopOver>>(List.empty());
 
-  ValueNotifier<List<StopOver>> get stopoverListNotifier => _stopoverList;
+  ValueNotifier<List<StopOver>> get stopOverListNotifier => _stopOverList;
 
-  List<StopOver> get stopoverList => _stopoverList.value;
+  List<StopOver> get stopOverList => _stopOverList.value;
 
-  set stopoverList(List<StopOver> value) => _stopoverList.value = value;
+  set stopOverList(List<StopOver> value) => _stopOverList.value = value;
 
-  addStopoverList(StopOver item) {
-    List<StopOver> copyList = List.from(stopoverList);
+  addStopOverList(StopOver item) {
+    List<StopOver> copyList = List.from(stopOverList);
     copyList.add(item);
-    stopoverList = copyList;
+    stopOverList = copyList;
   }
 
-  removeStopoverList(int index) {
-    List<StopOver> copyList = List.from(stopoverList);
+  removeStopOverList(int index) {
+    List<StopOver> copyList = List.from(stopOverList);
     copyList.removeAt(index);
-    stopoverList = copyList;
+    stopOverList = copyList;
   }
 
   /// 상태

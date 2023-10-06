@@ -21,17 +21,17 @@ import 'package:kdmp_cm_app/presentation/viewmodel/address/stopover_search_viewm
 import 'package:provider/provider.dart';
 
 /// 경유지 설정 검색 화면
-class StopoverSearchScreen extends StatefulWidget {
-  const StopoverSearchScreen({Key? key}) : super(key: key);
+class StopOverSearchScreen extends StatefulWidget {
+  const StopOverSearchScreen({Key? key}) : super(key: key);
 
   static const String routeName = "stopover_search";
 
   @override
-  State<StopoverSearchScreen> createState() => _StopoverSearchScreenState();
+  State<StopOverSearchScreen> createState() => _StopOverSearchScreenState();
 }
 
-class _StopoverSearchScreenState extends State<StopoverSearchScreen> with SingleTickerProviderStateMixin {
-  late final StopoverSearchViewModel _stopoverSearchViewModel;
+class _StopOverSearchScreenState extends State<StopOverSearchScreen> with SingleTickerProviderStateMixin {
+  late final StopOverSearchViewModel _stopOverSearchViewModel;
 
   final ScrollController _scrollController = ScrollController();
 
@@ -45,7 +45,7 @@ class _StopoverSearchScreenState extends State<StopoverSearchScreen> with Single
 
   /// Create
   void initViewModel() {
-    _stopoverSearchViewModel = StopoverSearchViewModel(
+    _stopOverSearchViewModel = StopOverSearchViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getNaverAddressInfoUseCase: GetIt.instance<GetNaverAddressInfoUseCase>(),
       getPlaceListUseCase: GetIt.instance<GetPlaceListUseCase>(),
@@ -63,17 +63,17 @@ class _StopoverSearchScreenState extends State<StopoverSearchScreen> with Single
   void initData() async {
     /// 키 관리 파일 가져오기
     await dotenv.load(fileName: ".env");
-    _stopoverSearchViewModel.clientId = dotenv.get("NAVER_MAP_CLIENT_ID");
-    _stopoverSearchViewModel.clientSecret = dotenv.get("NAVER_MAP_CLIENT_SECRET");
+    _stopOverSearchViewModel.clientId = dotenv.get("NAVER_MAP_CLIENT_ID");
+    _stopOverSearchViewModel.clientSecret = dotenv.get("NAVER_MAP_CLIENT_SECRET");
 
     /// 현위치 좌표 가져오기
-    _stopoverSearchViewModel.currentLatLng = await getCurrentLocation();
+    _stopOverSearchViewModel.currentLatLng = await getCurrentLocation();
 
     /// 자주 가는 장소 리스트 가져오기
-    _stopoverSearchViewModel.getPlaceList();
+    _stopOverSearchViewModel.getPlaceList();
 
     /// 최근 검색 리스트 가져오기
-    // _stopoverSearchViewModel.getRecentList();
+    // _stopOverSearchViewModel.getRecentList();
   }
 
   @override
@@ -81,15 +81,15 @@ class _StopoverSearchScreenState extends State<StopoverSearchScreen> with Single
     /// Provider
     return MultiProvider(
       providers: [
-        Provider<StopoverSearchViewModel>(
-          create: (context) => _stopoverSearchViewModel,
+        Provider<StopOverSearchViewModel>(
+          create: (context) => _stopOverSearchViewModel,
         ),
       ],
       child: Scaffold(
         /// 상단 앱바
         appBar: BaseAppBar(
           appBar: AppBar(),
-          title: StringStopoverSetup.title,
+          title: StringStopOverSetup.title,
         ),
 
         /// 화면
@@ -104,18 +104,18 @@ class _StopoverSearchScreenState extends State<StopoverSearchScreen> with Single
                   Padding(
                     padding: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 4),
                     child: ValueListenableBuilder<String>(
-                      valueListenable: _stopoverSearchViewModel.keywordNotifier,
+                      valueListenable: _stopOverSearchViewModel.keywordNotifier,
                       builder: (context, value, _) {
                         return CustomSearchField(
-                          hint: StringStopoverSetup.searchHint,
+                          hint: StringStopOverSetup.searchHint,
                           icon: Icon(
                             Icons.location_on,
                             size: 22,
                             color: Theme.of(context).disabledColor,
                           ),
                           onSearch: (value) {
-                            _stopoverSearchViewModel.keyword = value;
-                            _stopoverSearchViewModel.getSearchList();
+                            _stopOverSearchViewModel.keyword = value;
+                            _stopOverSearchViewModel.getSearchList();
                           },
                         );
                       },
@@ -129,7 +129,7 @@ class _StopoverSearchScreenState extends State<StopoverSearchScreen> with Single
                       children: [
                         /// 자주 가는 장소 리스트
                         ValueListenableBuilder<List<Place>>(
-                          valueListenable: _stopoverSearchViewModel.placeListNotifier,
+                          valueListenable: _stopOverSearchViewModel.placeListNotifier,
                           builder: (context, value, child) {
                             return Expanded(child: SizedBox(height: 40, child: getPlaceList(value)));
                           },
@@ -139,9 +139,9 @@ class _StopoverSearchScreenState extends State<StopoverSearchScreen> with Single
                         /// 지도에서 선택 버튼
                         CustomIconTextButton(
                           icon: Icons.map_outlined,
-                          text: StringStopoverSetup.selectMap,
+                          text: StringStopOverSetup.selectMap,
                           onPressed: () async {
-                            final result = await context.pushNamed(StopoverMapScreen.routeName);
+                            final result = await context.pushNamed(StopOverMapScreen.routeName);
                             if (result != null && result is MapData) {
                               context.pop(result);
                             }
@@ -155,7 +155,7 @@ class _StopoverSearchScreenState extends State<StopoverSearchScreen> with Single
 
                   /// 최근 검색 리스트 또는 검색 리스트
                   ValueListenableBuilder<bool>(
-                    valueListenable: _stopoverSearchViewModel.isRecentListValidNotifier,
+                    valueListenable: _stopOverSearchViewModel.isRecentListValidNotifier,
                     builder: (context, value, child) {
                       return value
                           ? Column(
@@ -165,11 +165,11 @@ class _StopoverSearchScreenState extends State<StopoverSearchScreen> with Single
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(StringStopoverSetup.recentKeyword, style: Theme.of(context).textTheme.titleMedium),
+                                      Text(StringStopOverSetup.recentKeyword, style: Theme.of(context).textTheme.titleMedium),
 
                                       /// 편집 버튼
                                       GestureDetector(
-                                        child: Text(StringStopoverSetup.edit, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                                        child: Text(StringStopOverSetup.edit, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
                                         onTap: () {
                                           // TODO: 도착지 검색 기록 편집 화면으로 이동
                                         },
@@ -180,7 +180,7 @@ class _StopoverSearchScreenState extends State<StopoverSearchScreen> with Single
 
                                 /// 최근 검색 리스트
                                 ValueListenableBuilder<List<String>>(
-                                  valueListenable: _stopoverSearchViewModel.recentListNotifier,
+                                  valueListenable: _stopOverSearchViewModel.recentListNotifier,
                                   builder: (context, value, _) {
                                     return getRecentListView(value);
                                   },
@@ -191,7 +191,7 @@ class _StopoverSearchScreenState extends State<StopoverSearchScreen> with Single
 
                           /// 검색 리스트
                           ValueListenableBuilder<List<Address>>(
-                              valueListenable: _stopoverSearchViewModel.searchListNotifier,
+                              valueListenable: _stopOverSearchViewModel.searchListNotifier,
                               builder: (context, value, _) {
                                 return getSearchListView(value);
                               },

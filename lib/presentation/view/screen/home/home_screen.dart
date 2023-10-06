@@ -226,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               /// 구분선
                               ValueListenableBuilder<List<StopOver>>(
-                                valueListenable: _homeViewModel.stopoverListNotifier,
+                                valueListenable: _homeViewModel.stopOverListNotifier,
                                 builder: (context, value, child) {
                                   String text = "";
                                   if (value.length > 1) {
@@ -256,10 +256,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   /// 경유지 설정 화면으로 이동
                                                   final result = await context.pushNamed(
                                                     StopOverScreen.routeName,
-                                                    extra: _homeViewModel.stopoverList,
+                                                    extra: _homeViewModel.stopOverList,
                                                   );
                                                   if (result != null && result is List<StopOver>) {
-                                                    _homeViewModel.stopoverList = result;
+                                                    _homeViewModel.stopOverList = result;
                                                   }
                                                 },
                                               ),
@@ -339,11 +339,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                       /// 도착지 검색 내 경유지 설정 버튼
                                       ValueListenableBuilder<bool>(
-                                        valueListenable: _homeViewModel.isStopoverButtonValidNotifier,
+                                        valueListenable: _homeViewModel.isStopOverButtonValidNotifier,
                                         builder: (context, value, child) {
                                           return value
                                               ? CustomRoundButton(
-                                                  text: StringHome.stopoverButton,
+                                                  text: StringHome.stopOverButton,
                                                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                                                   textColor: Theme.of(context).colorScheme.secondary,
                                                   borderColor: Theme.of(context).cardColor,
@@ -352,10 +352,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     /// 경유지 설정 화면으로 이동
                                                     final result = await context.pushNamed(
                                                       StopOverScreen.routeName,
-                                                      extra: _homeViewModel.stopoverList,
+                                                      extra: _homeViewModel.stopOverList,
                                                     );
                                                     if (result != null && result is List<StopOver>) {
-                                                      _homeViewModel.stopoverList = result;
+                                                      _homeViewModel.stopOverList = result;
                                                     }
                                                   },
                                                 )

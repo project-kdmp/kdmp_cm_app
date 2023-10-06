@@ -46,21 +46,21 @@ class HomeViewModel {
   }
 
   /// 경유지 리스트
-  final ValueNotifier<List<StopOver>> _stopoverList = ValueNotifier<List<StopOver>>(List.empty());
+  final ValueNotifier<List<StopOver>> _stopOverList = ValueNotifier<List<StopOver>>(List.empty());
 
-  ValueNotifier<List<StopOver>> get stopoverListNotifier => _stopoverList;
+  ValueNotifier<List<StopOver>> get stopOverListNotifier => _stopOverList;
 
-  List<StopOver> get stopoverList => _stopoverList.value;
+  List<StopOver> get stopOverList => _stopOverList.value;
 
-  set stopoverList(List<StopOver> value) {
-    _stopoverList.value = value;
+  set stopOverList(List<StopOver> value) {
+    _stopOverList.value = value;
     getCallPrice();
   }
 
-  addStopoverList(StopOver item) {
-    List<StopOver> copyList = List.from(stopoverList);
+  addStopOverList(StopOver item) {
+    List<StopOver> copyList = List.from(stopOverList);
     copyList.add(item);
-    stopoverList = copyList;
+    stopOverList = copyList;
   }
 
   /// 도착지 데이터 모델
@@ -76,23 +76,23 @@ class HomeViewModel {
   }
 
   /// 도착지 검색 내 경유 버튼 활성화 여부
-  final ValueNotifier<bool> _isStopoverButtonValid = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _isStopOverButtonValid = ValueNotifier<bool>(false);
 
-  ValueNotifier<bool> get isStopoverButtonValidNotifier => _isStopoverButtonValid;
+  ValueNotifier<bool> get isStopOverButtonValidNotifier => _isStopOverButtonValid;
 
-  bool get isStopoverButtonValid => _isStopoverButtonValid.value;
+  bool get isStopOverButtonValid => _isStopOverButtonValid.value;
 
-  set isStopoverButtonValid(bool value) => _isStopoverButtonValid.value = value;
+  set isStopOverButtonValid(bool value) => _isStopOverButtonValid.value = value;
 
-  _checkStopoverButtonValid() {
+  _checkStopOverButtonValid() {
     bool valid;
-    debugPrint("경유지 버튼 ${startMapData != null} ${endMapData != null} ${stopoverList.isEmpty}");
-    if (startMapData != null && endMapData != null && stopoverList.isEmpty) {
+    debugPrint("경유지 버튼 ${startMapData != null} ${endMapData != null} ${stopOverList.isEmpty}");
+    if (startMapData != null && endMapData != null && stopOverList.isEmpty) {
       valid = true;
     } else {
       valid = false;
     }
-    isStopoverButtonValid = valid;
+    isStopOverButtonValid = valid;
   }
 
   /// 요금 선택 버튼 활성화 여부
@@ -222,7 +222,7 @@ class HomeViewModel {
       final response = result.directionsResponse;
       basicPrice = response.route.traoptimal[0].summary.taxiFare + response.route.traoptimal[0].summary.tollFare; // 택시 요금 + 통행 요금(톨게이트)
     }
-    _checkStopoverButtonValid();
+    _checkStopOverButtonValid();
     _checkCallButtonValid();
   }
 
@@ -233,9 +233,9 @@ class HomeViewModel {
     final start = "${startMapData!.latLng.longitude},${startMapData!.latLng.latitude}";
     final goal = "${endMapData!.latLng.longitude},${endMapData!.latLng.latitude}";
     String waypoints = "";
-    for (int i = 0; i < stopoverList.length; i++) {
-      waypoints += "${stopoverList[i].long},${stopoverList[i].lat}";
-      if (i < stopoverList.length - 1) waypoints += "|";
+    for (int i = 0; i < stopOverList.length; i++) {
+      waypoints += "${stopOverList[i].long},${stopOverList[i].lat}";
+      if (i < stopOverList.length - 1) waypoints += "|";
     }
 
     final request = DirectionsRequest(

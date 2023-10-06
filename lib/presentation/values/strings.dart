@@ -77,7 +77,7 @@ abstract class StringHome {
   static const String callButton = "호출하기";
   static const String startPlaceHint = "출발지 검색";
   static const String endPlaceHint = "도착지 검색";
-  static const String stopoverButton = "경유";
+  static const String stopOverButton = "경유";
   static const String basicPrice = "일반요금";
   static const String basicPriceSub = "혼잡 시 긴 대기시간";
   static const String inputPrice = "요금 직접 입력";
@@ -206,8 +206,8 @@ abstract class StringEndSetup {
   static const String bottomButton = "도착지 설정";
 }
 
-abstract class StringStopoverSetup {
-  StringStopoverSetup._();
+abstract class StringStopOverSetup {
+  StringStopOverSetup._();
 
   static const String title = "경유지 설정";
   static const String addButton = "+ 경유지 추가";
@@ -244,7 +244,7 @@ abstract class StringWork {
   static const String cancel = "호출취소";
   static const String calling = "기사님 호출 진행중";
   static const String start = "출발";
-  static const String stopover = "경유";
+  static const String stopOver = "경유";
   static const String end = "도착";
   static const String payment = "결제";
   static const String price = "요금";

@@ -192,22 +192,22 @@ final GoRouter router = GoRouter(
           name: StopOverScreen.routeName,
           path: StopOverScreen.routeName,
           builder: (context, state) {
-            final List<StopOver> stopoverList = state.extra as List<StopOver>;
-            return StopOverScreen(stopoverList: stopoverList);
+            final List<StopOver> stopOverList = state.extra as List<StopOver>;
+            return StopOverScreen(stopOverList: stopOverList);
           },
           routes: [
             /// 경유지 설정 검색
             GoRoute(
-              name: StopoverSearchScreen.routeName,
-              path: StopoverSearchScreen.routeName,
-              builder: (context, state) => const StopoverSearchScreen(),
+              name: StopOverSearchScreen.routeName,
+              path: StopOverSearchScreen.routeName,
+              builder: (context, state) => const StopOverSearchScreen(),
               routes: [
                 /// 경유지 설정 지도
                 GoRoute(
-                  name: StopoverMapScreen.routeName,
-                  path: StopoverMapScreen.routeName,
+                  name: StopOverMapScreen.routeName,
+                  path: StopOverMapScreen.routeName,
                   builder: (context, state) {
-                    return const StopoverMapScreen();
+                    return const StopOverMapScreen();
                   },
                 ),
               ],

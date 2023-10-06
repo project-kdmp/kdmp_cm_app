@@ -197,7 +197,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                     SizedBox(
                                       width: 70,
                                       child: Text(
-                                        StringWork.stopover,
+                                        StringWork.stopOver,
                                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                               color: Theme.of(context).colorScheme.secondary,
                                             ),

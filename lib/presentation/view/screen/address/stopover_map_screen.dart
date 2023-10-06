@@ -20,17 +20,17 @@ import 'package:kdmp_cm_app/presentation/viewmodel/address/stopover_map_viewmode
 import 'package:provider/provider.dart';
 
 /// 경유지 설정 지도 화면
-class StopoverMapScreen extends StatefulWidget {
-  const StopoverMapScreen({Key? key}) : super(key: key);
+class StopOverMapScreen extends StatefulWidget {
+  const StopOverMapScreen({Key? key}) : super(key: key);
 
   static const String routeName = "stopover_map";
 
   @override
-  State<StopoverMapScreen> createState() => _StopoverMapScreenState();
+  State<StopOverMapScreen> createState() => _StopOverMapScreenState();
 }
 
-class _StopoverMapScreenState extends State<StopoverMapScreen> {
-  late final StopoverMapViewModel _stopoverMapViewModel;
+class _StopOverMapScreenState extends State<StopOverMapScreen> {
+  late final StopOverMapViewModel _stopOverMapViewModel;
   late final NaverMapViewModel _naverMapViewModel;
 
   late final NaverMapController _mapController;
@@ -55,7 +55,7 @@ class _StopoverMapScreenState extends State<StopoverMapScreen> {
 
   /// Create
   void initViewModel() async {
-    _stopoverMapViewModel = StopoverMapViewModel(
+    _stopOverMapViewModel = StopOverMapViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
     );
 
@@ -74,7 +74,7 @@ class _StopoverMapScreenState extends State<StopoverMapScreen> {
 
     /// 좌표로 장소 조회
     final mapData = await _naverMapViewModel.getAddress(nLatLng: nLatLng);
-    _stopoverMapViewModel.mapData = mapData;
+    _stopOverMapViewModel.mapData = mapData;
 
     /// 네이버 지도 초기화
     naverMap = initNaverMap(nLatLng: nLatLng);
@@ -84,8 +84,8 @@ class _StopoverMapScreenState extends State<StopoverMapScreen> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<StopoverMapViewModel>(
-          create: (context) => _stopoverMapViewModel,
+        Provider<StopOverMapViewModel>(
+          create: (context) => _stopOverMapViewModel,
         ),
         Provider<NaverMapViewModel>(
           create: (context) => _naverMapViewModel,
@@ -95,7 +95,7 @@ class _StopoverMapScreenState extends State<StopoverMapScreen> {
         /// 상단 앱바
         appBar: BaseAppBar(
           appBar: AppBar(),
-          title: StringStopoverSetup.title,
+          title: StringStopOverSetup.title,
         ),
 
         /// 화면
@@ -135,7 +135,7 @@ class _StopoverMapScreenState extends State<StopoverMapScreen> {
                     ),
                   ),
                   ValueListenableBuilder<MapData>(
-                    valueListenable: _stopoverMapViewModel.mapDataNotifier,
+                    valueListenable: _stopOverMapViewModel.mapDataNotifier,
                     builder: (context, value, child) {
                       return Container(
                         color: Theme.of(context).scaffoldBackgroundColor,
@@ -174,18 +174,18 @@ class _StopoverMapScreenState extends State<StopoverMapScreen> {
 
               /// 도착지 설정 버튼
               ValueListenableBuilder<bool>(
-                valueListenable: _stopoverMapViewModel.isValidNotifier,
+                valueListenable: _stopOverMapViewModel.isValidNotifier,
                 builder: (context, value, child) {
                   return Container(
                     color: Theme.of(context).scaffoldBackgroundColor,
                     padding: const EdgeInsets.all(20),
                     child: CustomElevatedButton(
                       isEnabled: value,
-                      text: StringStopoverSetup.bottomButton,
+                      text: StringStopOverSetup.bottomButton,
                       enabledBackgroundColor: Theme.of(context).colorScheme.secondary,
                       onPressed: () {
                         /// 조회한 데이터 전달
-                        final mapData = _stopoverMapViewModel.mapData;
+                        final mapData = _stopOverMapViewModel.mapData;
                         context.pop(mapData);
                       },
                     ),
@@ -296,7 +296,7 @@ class _StopoverMapScreenState extends State<StopoverMapScreen> {
 
         /// 좌표로 장소 조회
         final mapData = await _naverMapViewModel.getAddress(nLatLng: newLatLng);
-        _stopoverMapViewModel.mapData = mapData;
+        _stopOverMapViewModel.mapData = mapData;
       },
     );
   }

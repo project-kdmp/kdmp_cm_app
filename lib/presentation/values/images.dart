@@ -60,3 +60,10 @@ abstract class ImageMenu {
 
   static const String iconCar = "assets/menu/icon_car.png";
 }
+
+
+abstract class ImageWork {
+  ImageWork._();
+
+  static const String imgWork = "assets/work/img_work.png";
+}

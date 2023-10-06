@@ -10,9 +10,11 @@ class CallPriceBottomSheet extends StatelessWidget {
   CallPriceBottomSheet({
     Key? key,
     required this.minPrice,
+    this.initPrice = "",
   }) : super(key: key);
 
   final int minPrice;
+  final String initPrice;
 
   /// 요금
   final ValueNotifier<int> _price = ValueNotifier<int>(0);
@@ -86,19 +88,19 @@ class CallPriceBottomSheet extends StatelessWidget {
         child: Column(
           children: [
             /// 상단 타이틀
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   /// 타이틀
                   Text(
-                    StringCallPrice.title,
+                    initPrice.isEmpty ? StringCallPrice.title : StringCallPrice.titleChange,
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 12),
-                  Divider(thickness: 1),
+                  const SizedBox(height: 12),
+                  const Divider(thickness: 1),
                 ],
               ),
             ),
@@ -117,6 +119,7 @@ class CallPriceBottomSheet extends StatelessWidget {
                       children: [
                         /// 요금 입력
                         CustomTextField(
+                          text: initPrice,
                           inputType: TextInputType.number,
                           suffixText: StringCommon.won,
                           textAlign: TextAlign.right,

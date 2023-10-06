@@ -175,6 +175,7 @@ abstract class StringCallPrice {
   StringCallPrice._();
 
   static const String title = "요금 직접 입력";
+  static const String titleChange = "요금 변경";
   static const String bottomButton = "확인";
   static const String amount = "요금";
   static const String inputGuide0 = "  ";
@@ -234,5 +235,18 @@ abstract class StringCall {
 
   static const String callContent = "(으)로\n호출하시겠습니까?";
   static const String waitTitle = "대기료 발생 안내";
-  static const String waitContent= "대기로 발생 내용";
+  static const String waitContent = "대기료 발생 내용";
+}
+
+abstract class StringWork {
+  StringWork._();
+
+  static const String cancel = "호출취소";
+  static const String calling = "기사님 호출 진행중";
+  static const String start = "출발";
+  static const String stopover = "경유";
+  static const String end = "도착";
+  static const String payment = "결제";
+  static const String price = "요금";
+  static const String date = "일시";
 }

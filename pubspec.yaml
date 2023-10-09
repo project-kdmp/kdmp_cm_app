@@ -45,6 +45,7 @@ dependencies:
 
   # Device Info
   device_info_plus: ^9.0.3
+  android_id: ^0.3.5
 
   # For MediaType
   http_parser: ^4.0.2

@@ -264,3 +264,16 @@ abstract class StringCallCancel {
   static const String typeOTHS = "다른 서비스 이용";
   static const String typeDRVC = "기사님 사정으로 연락 후 취소";
 }
+
+abstract class StringReservation {
+  StringReservation._();
+
+  static const String title = "예약 일시";
+  static const String date = "일자";
+  static const String time = "시간";
+  static const String dateHint = "예약 일자를 선택해주세요.";
+  static const String timeHint = "예약 시간을 선택해주세요.";
+  static const String dateTitle = "예약 일자 선택";
+  static const String timeTitle = "예약 시간 선택";
+  static const String dateErrorToast = "현재 시간 이후로 선택해주세요.";
+}

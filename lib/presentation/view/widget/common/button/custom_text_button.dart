@@ -8,6 +8,7 @@ class CustomTextButton extends StatelessWidget {
     this.onPressed,
     this.isEnabled = true,
     this.backgroundColor,
+    this.icon,
   }) : super(key: key);
 
   final String text;
@@ -15,6 +16,7 @@ class CustomTextButton extends StatelessWidget {
   final Function()? onPressed;
   final bool isEnabled;
   final Color? backgroundColor;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +33,23 @@ class CustomTextButton extends StatelessWidget {
         disabledBackgroundColor: backgroundColor ?? Theme.of(context).dividerColor,
       ),
       onPressed: isEnabled ? onPressed : null,
-      child: text.isEmpty
-          ? Text(
-              hint,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).disabledColor),
-            )
-          : Text(
-              text,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
+      child: Row(
+        children: [
+          icon != null ? Icon(icon, color: Theme.of(context).disabledColor, size: 18) : const SizedBox(),
+          SizedBox(width: icon != null ? 4 : 0),
+          Expanded(
+            child: text.isEmpty
+                ? Text(
+                    hint,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).disabledColor),
+                  )
+                : Text(
+                    text,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+          )
+        ],
+      ),
     );
   }
 }

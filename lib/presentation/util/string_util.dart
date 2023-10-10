@@ -89,7 +89,7 @@ String getDateFormat({required String? date, String dateFormat = "yyyy-MM-dd"}) 
   if (date != null) {
     try {
       final dateTime = DateTime.parse(date);
-      return DateFormat(dateFormat).format(dateTime);
+      return DateFormat(dateFormat, 'ko_KR').format(dateTime);
     } catch (e) {
       debugPrint("$e");
       return "";

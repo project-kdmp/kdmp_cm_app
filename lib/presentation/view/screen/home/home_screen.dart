@@ -21,6 +21,7 @@ import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/car_select_bottom_sheet.dart';
+import 'package:kdmp_cm_app/presentation/view/bottomsheet/reservation_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/call_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
@@ -560,15 +561,30 @@ class _HomeScreenState extends State<HomeScreen> {
                             isEnabled: value,
                             text: StringHome.reservationButton,
                             onPressed: () async {
-                              // TODO: 예약하기
-                              final result = await _homeViewModel.requestReservation();
-                              if (result is Success) {
-                                // TODO: 콜 예약 성공시 처리
-                              } else if (result is Bad) {
-                                Fluttertoast.showToast(msg: StringCommon.httpBad);
-                              } else if (result is Fail) {
-                                Fluttertoast.showToast(msg: "${result.errorMessage}");
+                              /// 예약 일시 팝업 띄움
+                              final result = await showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) {
+                                  return Wrap(children: [ReservationBottomSheet()]);
+                                },
+                              );
+                              debugPrint("======$result");
+                              if (result == null) {
+                                return;
                               }
+
+                              // TODO: 예약 정보 확인 팝업 띄움
+
+                              // TODO: 예약하기
+                              // final result = await _homeViewModel.requestReservation();
+                              // if (result is Success) {
+                              //   // TODO: 콜 예약 성공시 처리
+                              // } else if (result is Bad) {
+                              //   Fluttertoast.showToast(msg: StringCommon.httpBad);
+                              // } else if (result is Fail) {
+                              //   Fluttertoast.showToast(msg: "${result.errorMessage}");
+                              // }
                             },
                           ),
                         ),

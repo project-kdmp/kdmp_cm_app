@@ -12,8 +12,8 @@ class CallRequest {
   // String drvReqNm;
   String drvReqSt;
   String reqRegDt;
+  String? drvReserveDt;
 
-  // String drvReserveDt;
   // String drvEndDt;
   // String drvStartDt;
   String reqStartAddress;
@@ -39,7 +39,7 @@ class CallRequest {
     // required this.drvReqNm,
     required this.drvReqSt,
     required this.reqRegDt,
-    // required this.drvReserveDt,
+    this.drvReserveDt,
     // required this.drvEndDt,
     // required this.drvStartDt,
     required this.reqStartAddress,
@@ -65,7 +65,7 @@ class CallRequest {
         // drvReqNm: json["drvReqNm"],
         drvReqSt: json["drvReqSt"],
         reqRegDt: json["reqRegDt"],
-        // drvReserveDt: json["drvReserveDt"],
+        drvReserveDt: json["drvReserveDt"],
         // drvEndDt: json["drvEndDt"],
         // drvStartDt: json["drvStartDt"],
         reqStartAddress: json["reqStartAddress"],
@@ -91,7 +91,7 @@ class CallRequest {
         // "drvReqNm": drvReqNm,
         "drvReqSt": drvReqSt,
         "reqRegDt": reqRegDt,
-        // "drvReserveDt": drvReserveDt,
+        "drvReserveDt": drvReserveDt,
         // "drvEndDt": drvEndDt,
         // "drvStartDt": drvStartDt,
         "reqStartAddress": reqStartAddress,

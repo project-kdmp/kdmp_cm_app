@@ -295,4 +295,6 @@ abstract class StringReservation {
 
   static const String waitTitle = "대기료 발생 안내";
   static const String waitContent = "대기료 발생 내용";
+
+  static const String reservationConfirmAlert = "예약이 접수되었습니다.";
 }

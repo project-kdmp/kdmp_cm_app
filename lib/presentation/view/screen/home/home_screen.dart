@@ -15,6 +15,7 @@ import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
@@ -79,6 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
       getCarListUseCase: GetIt.instance<GetCarListUseCase>(),
       getNaverPriceUseCase: GetIt.instance<GetNaverPriceUseCase>(),
       setCallRequestUseCase: GetIt.instance<SetCallRequestUseCase>(),
+      setReservationRequestUseCase: GetIt.instance<SetReservationRequestUseCase>(),
     );
 
     /// 키 관리 파일 가져오기
@@ -576,6 +578,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return;
                               }
 
+                              final dateTitle = result["title"];
+                              final dateValue = result["value"];
+
                               /// 예약 정보 확인 팝업 띄움
                               final resultConfirm = await showModalBottomSheet(
                                 context: context,
@@ -583,8 +588,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 useSafeArea: true,
                                 builder: (context) {
                                   return ReservationConfirmBottomSheet(
-                                    dateTitle: result["title"],
-                                    dateValue: result["value"],
+                                    dateTitle: dateTitle,
+                                    dateValue: dateValue,
                                     price: _homeViewModel.price,
                                     payment: _homeViewModel.payment,
                                     start: _homeViewModel.startMapData!,
@@ -598,15 +603,39 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return;
                               }
 
-                              // TODO: 예약하기
-                              // final result = await _homeViewModel.requestReservation();
-                              // if (result is Success) {
-                              //   // TODO: 콜 예약 성공시 처리
-                              // } else if (result is Bad) {
-                              //   Fluttertoast.showToast(msg: StringCommon.httpBad);
-                              // } else if (result is Fail) {
-                              //   Fluttertoast.showToast(msg: "${result.errorMessage}");
-                              // }
+                              /// 차량선택 팝업
+                              final carList = await _homeViewModel.getCarList();
+                              final carResult = await showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) {
+                                  return Wrap(children: [CarSelectBottomSheet(carList: carList)]);
+                                },
+                              );
+                              if (carResult != null && carResult is Car) {
+                                /// 예약하기
+                                final requestResult = await _homeViewModel.requestReservation(
+                                  carNumId: carResult.carNumId,
+                                  date: dateValue,
+                                );
+                                if (requestResult is Success) {
+                                  /// 예약 접수 성공 팝업
+                                  await _showAlertDialog(content: StringReservation.reservationConfirmAlert, isCanceled: false);
+
+                                  // TODO: 운행 정보 화면으로 이동
+                                  final drvReqSq = requestResult.drvResponse.drvReqSq;
+
+                                  /// 입력 데이터 삭제
+                                  _homeViewModel.clearData();
+
+                                  /// 지도 마커 삭제
+                                  _mapController.clearOverlays(type: NOverlayType.marker);
+                                } else if (requestResult is Bad) {
+                                  Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                } else if (requestResult is Fail) {
+                                  Fluttertoast.showToast(msg: "${requestResult.errorMessage}");
+                                }
+                              }
                             },
                           ),
                         ),
@@ -710,12 +739,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return NLatLng(position.latitude, position.longitude);
   }
 
-  showAlertDialog() {
+  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
     return showDialog(
       context: context,
-      barrierDismissible: false, // dialog 영역 외 터치 여부
+      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
       builder: (BuildContext context) {
         return CustomAlertDialog(
+          title: title,
+          content: content,
+          isCanceled: isCanceled,
+          isWarning: isWarning,
           onConfirm: () {
             Navigator.pop(context);
           },
@@ -724,15 +757,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  showConfirmDialog() {
+  _showConfirmDialog({String? title, String? content, bool isWarning = false, required Function() onConfirm}) {
     return showDialog(
       context: context,
       barrierDismissible: true, // dialog 영역 외 터치 여부
       builder: (BuildContext context) {
         return CustomConfirmDialog(
-          onConfirm: () {
-            Navigator.pop(context);
-          },
+          title: title,
+          content: content,
+          isWarning: isWarning,
+          onConfirm: onConfirm,
         );
       },
     );

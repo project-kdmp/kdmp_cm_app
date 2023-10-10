@@ -80,7 +80,7 @@ abstract class DMWorkSt {
 abstract class DrvReqSt {
   DrvReqSt._();
 
-  // static const String res = "RES"; // 예약
+  static const String res = "RES"; // 예약
   // static const String rco = "RCO"; // 예약 확정 / 기사
   // static const String rwt = "RWT"; // 예약출발지도착 - 대기중
   // static const String rst = "RST"; // 예약-운행시작

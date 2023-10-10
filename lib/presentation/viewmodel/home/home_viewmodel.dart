@@ -12,6 +12,7 @@ import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
 
 class HomeViewModel {
   HomeViewModel({
@@ -19,12 +20,14 @@ class HomeViewModel {
     required this.getCarListUseCase,
     required this.getNaverPriceUseCase,
     required this.setCallRequestUseCase,
+    required this.setReservationRequestUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final GetCarListUseCase getCarListUseCase;
   final GetNaverPriceUseCase getNaverPriceUseCase;
   final SetCallRequestUseCase setCallRequestUseCase;
+  final SetReservationRequestUseCase setReservationRequestUseCase;
 
   String clientId = "";
   String clientSecret = "";
@@ -323,39 +326,35 @@ class HomeViewModel {
   }
 
   // TODO: 예약콜 호출하기 API
-  Future<StateAPI> requestReservation() async {
+  Future<StateAPI> requestReservation({required String carNumId, required String date}) async {
     state = Loading();
 
     final mbrSq = await getMbrSqUseCase.execute();
+    final drvReserveDt = DateTime.parse(date);
 
-    // final request = CallRequest(
-    //   mbrCmSq: mbrSq,
-    //   paymKind: paymKind,
-    //   carNumId: carNumId,
-    //   drvReqNm: drvReqNm,
-    //   drvReqSt: drvReqSt,
-    //   reqRegDt: reqRegDt,
-    //   drvReserveDt: drvReserveDt,
-    //   drvEndDt: drvEndDt,
-    //   drvStartDt: drvStartDt,
-    //   reqStartAddress: reqStartAddress,
-    //   reqStartPlaceNm: reqStartPlaceNm,
-    //   reqEndAddress: reqEndAddress,
-    //   reqEndPlaceNm: reqEndPlaceNm,
-    //   stopOverLst: stopOverLst,
-    //   drvPaymPrice: drvPaymPrice,
-    //   drvDistance: drvDistance,
-    //   reqAsk: reqAsk,
-    //   gpsStartLat: gpsStartLat,
-    //   gpsStartLong: gpsStartLong,
-    //   gpsEndLat: gpsEndLat,
-    //   gpsEndLong: gpsEndLong,
-    // );
-    // final result = await setReservationRequestUseCase.execute(reservationRequestUseCase: request);
-    // state = result;
-    //
-    // return result;
-    return Fail(); // TODO: 임시값
+    final request = CallRequest(
+      mbrCmSq: mbrSq,
+      paymKind: paymKind,
+      carNumId: carNumId,
+      drvReqSt: DrvReqSt.res,
+      reqRegDt: DateTime.now().toIso8601String(),
+      drvReserveDt: drvReserveDt.toIso8601String(),
+      reqStartAddress: startMapData!.address,
+      reqStartPlaceNm: startMapData!.place,
+      reqEndAddress: endMapData!.address,
+      reqEndPlaceNm: endMapData!.place,
+      stopOverLst: stopOverList,
+      drvPaymPrice: price,
+      drvDistance: distance,
+      gpsStartLat: startMapData!.latLng.latitude,
+      gpsStartLong: startMapData!.latLng.longitude,
+      gpsEndLat: endMapData!.latLng.latitude,
+      gpsEndLong: endMapData!.latLng.longitude,
+    );
+    final result = await setReservationRequestUseCase.execute(reservationRequest: request);
+    state = result;
+
+    return result;
   }
 }
 

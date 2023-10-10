@@ -9,6 +9,7 @@ import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
@@ -55,6 +56,7 @@ class _WorkScreenState extends State<WorkScreen> {
       getCallInfoUseCase: GetIt.instance<GetCallInfoUseCase>(),
       setCallCancelUseCase: GetIt.instance<SetCallCancelUseCase>(),
       setConfirmCallCancelUseCase: GetIt.instance<SetConfirmCallCancelUseCase>(),
+      setCallFeeChangeUseCase: GetIt.instance<SetCallFeeChangeUseCase>(),
     );
   }
 
@@ -397,14 +399,24 @@ class _WorkScreenState extends State<WorkScreen> {
                                                 children: [
                                                   Padding(
                                                     padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                                    child: CallPriceBottomSheet(minPrice: value, initPrice: value.toString()),
+                                                    child: CallPriceBottomSheet(minPrice: value + 100),
                                                   ),
                                                 ],
                                               );
                                             },
                                           );
                                           if (result != null) {
-                                            // _workViewModel.inputPrice = result;
+                                            final changeCallFeeResult = await _workViewModel.changeCallFee(
+                                              drvReqSq: widget.drvReqSq,
+                                              newPrice: result,
+                                            );
+                                            if (changeCallFeeResult is Success) {
+                                              _showAlertDialog(content: StringWork.changeCallFeeAlert, isCanceled: false);
+                                            } else if (changeCallFeeResult is Bad) {
+                                              Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                            } else if (changeCallFeeResult is Fail) {
+                                              Fluttertoast.showToast(msg: "${changeCallFeeResult.errorMessage}");
+                                            }
                                           }
                                         },
                                       )

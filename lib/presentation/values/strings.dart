@@ -254,6 +254,7 @@ abstract class StringWork {
   static const String cancelSuccess = "호출이 취소되었습니다.";
   static const String callConfirmAlert = "운행이 확정되었습니다.";
   static const String callStartAlert = "기사님이 출발지에 도착했습니다.";
+  static const String changeCallFeeAlert = "호출 요금을 변경했습니다.";
 }
 
 abstract class StringCallCancel {

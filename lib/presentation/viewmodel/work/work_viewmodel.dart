@@ -4,10 +4,12 @@ import 'package:kdmp_cm_app/data/model/common/drv_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/work/call_cancel_request.dart';
+import 'package:kdmp_cm_app/data/model/work/call_fee_change_request.dart';
 import 'package:kdmp_cm_app/data/model/work/confirm_call_cancel_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
 
 class WorkViewModel {
@@ -16,12 +18,14 @@ class WorkViewModel {
     required this.getCallInfoUseCase,
     required this.setCallCancelUseCase,
     required this.setConfirmCallCancelUseCase,
+    required this.setCallFeeChangeUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final GetCallInfoUseCase getCallInfoUseCase;
   final SetCallCancelUseCase setCallCancelUseCase;
   final SetConfirmCallCancelUseCase setConfirmCallCancelUseCase;
+  final SetCallFeeChangeUseCase setCallFeeChangeUseCase;
 
   /// 기사명
   final ValueNotifier<String> _name = ValueNotifier<String>("");
@@ -182,6 +186,28 @@ class WorkViewModel {
 
     final result = await setConfirmCallCancelUseCase.execute(confirmCallCancelRequest: request);
     state = result;
+
+    return result;
+  }
+
+  /// 호출요금 변경 API
+  Future<StateAPI> changeCallFee({required int drvReqSq, required int newPrice}) async {
+    state = Loading();
+
+    final mbrSq = await getMbrSqUseCase.execute();
+
+    final request = CallFeeChangeRequest(
+      mbrSq: mbrSq,
+      drvReqSq: drvReqSq,
+      beforPrice: price,
+      price: newPrice,
+    );
+
+    final result = await setCallFeeChangeUseCase.execute(callFeeChangeRequest: request);
+    state = result;
+    if (result is Success) {
+      price = newPrice;
+    }
 
     return result;
   }

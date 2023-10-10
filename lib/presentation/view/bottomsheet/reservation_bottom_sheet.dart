@@ -9,8 +9,8 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scro
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_text_button.dart';
 
-class ReservationBottomSheet extends StatelessWidget {
-  ReservationBottomSheet({
+class ReservationBottomSheet extends StatefulWidget {
+  const ReservationBottomSheet({
     Key? key,
     this.initDate = "",
     this.initTime = "",
@@ -19,6 +19,11 @@ class ReservationBottomSheet extends StatelessWidget {
   final String initDate;
   final String initTime;
 
+  @override
+  State<ReservationBottomSheet> createState() => _ReservationBottomSheetState();
+}
+
+class _ReservationBottomSheetState extends State<ReservationBottomSheet> {
   /// 일자
   final ValueNotifier<String> _date = ValueNotifier<String>("");
 

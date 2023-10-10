@@ -6,8 +6,8 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scro
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_text_field.dart';
 
-class CallPriceBottomSheet extends StatelessWidget {
-  CallPriceBottomSheet({
+class CallPriceBottomSheet extends StatefulWidget {
+  const CallPriceBottomSheet({
     Key? key,
     required this.minPrice,
     this.initPrice = "",
@@ -16,6 +16,11 @@ class CallPriceBottomSheet extends StatelessWidget {
   final int minPrice;
   final String initPrice;
 
+  @override
+  State<CallPriceBottomSheet> createState() => _CallPriceBottomSheetState();
+}
+
+class _CallPriceBottomSheetState extends State<CallPriceBottomSheet> {
   /// 요금
   final ValueNotifier<int> _price = ValueNotifier<int>(0);
 
@@ -44,8 +49,8 @@ class CallPriceBottomSheet extends StatelessWidget {
     String errorMessage;
     if (price == 0) {
       errorMessage = StringCallPrice.inputGuide1;
-    } else if (price < minPrice) {
-      errorMessage = "${getPrice(minPrice)} ${StringCallPrice.inputGuide2}";
+    } else if (price < widget.minPrice) {
+      errorMessage = "${getPrice(widget.minPrice)} ${StringCallPrice.inputGuide2}";
     } else {
       errorMessage = " ";
     }
@@ -65,7 +70,7 @@ class CallPriceBottomSheet extends StatelessWidget {
 
   _checkIsValid() {
     bool valid;
-    if (price > 0 && price >= minPrice) {
+    if (price > 0 && price >= widget.minPrice) {
       valid = true;
     } else {
       valid = false;
@@ -96,7 +101,7 @@ class CallPriceBottomSheet extends StatelessWidget {
 
                   /// 타이틀
                   Text(
-                    initPrice.isEmpty ? StringCallPrice.title : StringCallPrice.titleChange,
+                    widget.initPrice.isEmpty ? StringCallPrice.title : StringCallPrice.titleChange,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
@@ -119,11 +124,12 @@ class CallPriceBottomSheet extends StatelessWidget {
                       children: [
                         /// 요금 입력
                         CustomTextField(
-                          text: initPrice,
+                          text: widget.initPrice,
                           inputType: TextInputType.number,
                           suffixText: StringCommon.won,
                           textAlign: TextAlign.right,
                           onChanged: (value) {
+                            debugPrint("======$value");
                             price = value.isEmpty ? 0 : int.parse(value);
                           },
                         ),

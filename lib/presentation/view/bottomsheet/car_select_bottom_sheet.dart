@@ -9,7 +9,7 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scro
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 
 /// 차량선택 팝업
-class CarSelectBottomSheet extends StatelessWidget {
+class CarSelectBottomSheet extends StatefulWidget {
   const CarSelectBottomSheet({
     Key? key,
     required this.carList,
@@ -17,6 +17,11 @@ class CarSelectBottomSheet extends StatelessWidget {
 
   final List<Car> carList;
 
+  @override
+  State<CarSelectBottomSheet> createState() => _CarSelectBottomSheetState();
+}
+
+class _CarSelectBottomSheetState extends State<CarSelectBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return ScrollConfiguration(
@@ -43,7 +48,7 @@ class CarSelectBottomSheet extends StatelessWidget {
             const Divider(thickness: 1),
 
             /// 차량정보 목록
-            getListView(carList),
+            getListView(widget.carList),
 
             /// 차량추가 버튼
             Padding(
@@ -74,7 +79,7 @@ class CarSelectBottomSheet extends StatelessWidget {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              context.pop(carList[index]);
+              context.pop(widget.carList[index]);
             },
             child: Container(
               padding: const EdgeInsets.only(top: 20, bottom: 20, left: 24, right: 16),

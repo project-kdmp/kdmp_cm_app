@@ -6,14 +6,19 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevat
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_text_field.dart';
 
 /// 차량번호 입력 팝업
-class CarAddBottomSheet extends StatelessWidget {
-  CarAddBottomSheet({
+class CarAddBottomSheet extends StatefulWidget {
+  const CarAddBottomSheet({
     Key? key,
     this.initCarNumber = "",
   }) : super(key: key);
 
   final String initCarNumber;
 
+  @override
+  State<CarAddBottomSheet> createState() => _CarAddBottomSheetState();
+}
+
+class _CarAddBottomSheetState extends State<CarAddBottomSheet> {
   /// 차량번호 네자리
   final ValueNotifier<String> _carNumber = ValueNotifier<String>("");
 
@@ -71,7 +76,7 @@ class CarAddBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    carNumber = initCarNumber;
+    carNumber = widget.initCarNumber;
     return ScrollConfiguration(
       behavior: CustomScrollBehavior(),
       child: Container(
@@ -115,7 +120,7 @@ class CarAddBottomSheet extends StatelessWidget {
 
                   /// 차량번호 입력
                   CustomTextField(
-                    text: initCarNumber,
+                    text: widget.initCarNumber,
                     inputType: TextInputType.number,
                     maxLength: 4,
                     onChanged: (value) {

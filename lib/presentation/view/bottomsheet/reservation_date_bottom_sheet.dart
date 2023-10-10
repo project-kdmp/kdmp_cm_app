@@ -7,7 +7,7 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevat
 import 'package:wheel_chooser/wheel_chooser.dart';
 
 class ReservationDateBottomSheet extends StatefulWidget {
-  ReservationDateBottomSheet({
+  const ReservationDateBottomSheet({
     Key? key,
     this.initDate = "",
   }) : super(key: key);

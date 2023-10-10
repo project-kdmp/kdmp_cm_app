@@ -11,6 +11,7 @@ import 'package:kdmp_cm_app/common/network/interceptor/token_interceptor.dart';
 import 'package:kdmp_cm_app/data/repository/auth/auth_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/mypage/mypage_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/naver/naver_repository_impl.dart';
+import 'package:kdmp_cm_app/data/repository/notice/notice_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/register/register_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/secure_storage/secure_storage_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/term/term_repository_impl.dart';
@@ -35,6 +36,8 @@ import 'package:kdmp_cm_app/domain/usecase/mypage/set_withdrawal_member_usecase.
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_detail_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_auto_refresh_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_auto_refresh_usecase.dart';
@@ -229,6 +232,13 @@ void main() async {
   getIt.registerSingleton<SetPayUseCase>(setPayUseCase);
   final setReservationRequestUseCase = SetReservationRequestUseCase(workRepository: workRepository);
   getIt.registerSingleton<SetReservationRequestUseCase>(setReservationRequestUseCase);
+
+  /// 공지사항
+  final noticeRepository = NoticeRepositoryImpl(dio);
+  final getNoticeListUseCase = GetNoticeListUseCase(noticeRepository: noticeRepository);
+  getIt.registerSingleton<GetNoticeListUseCase>(getNoticeListUseCase);
+  final getNoticeDetailUseCase = GetNoticeDetailUseCase(noticeRepository: noticeRepository);
+  getIt.registerSingleton<GetNoticeDetailUseCase>(getNoticeDetailUseCase);
 
   /// 네이버 API
   final naverRepository = NaverRepositoryImpl(dio);

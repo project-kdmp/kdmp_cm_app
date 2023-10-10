@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/cs/cs_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/car_info_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
@@ -116,8 +117,7 @@ class MenuScreen extends StatelessWidget {
                         height: 28,
                       ),
                       onPressed: () {
-                        // TODO: 고객센터 화면 이동
-                        // context.pushNamed(CSScreen.routeName);
+                        context.pushNamed(CSScreen.routeName);
                       },
                     ),
 

@@ -299,3 +299,17 @@ abstract class StringReservation {
 
   static const String reservationConfirmAlert = "예약이 접수되었습니다.";
 }
+
+abstract class StringNotice {
+  StringNotice._();
+
+  static const String title = "공지사항";
+  static const String noticeDetail = "공지사항 상세";
+}
+
+abstract class StringInquiry {
+  StringInquiry._();
+
+  static const String title = "상담문의";
+  static const String noticeDetail = "상담문의 상세";
+}

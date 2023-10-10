@@ -13,6 +13,9 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_map_screen
 import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/cs/cs_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_detail_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
@@ -260,6 +263,32 @@ final GoRouter router = GoRouter(
           name: SetupScreen.routeName,
           path: SetupScreen.routeName,
           builder: (context, state) => const SetupScreen(),
+        ),
+
+        /// 고객센터
+        GoRoute(
+          name: CSScreen.routeName,
+          path: "/${CSScreen.routeName}",
+          builder: (context, state) => const CSScreen(),
+          routes: [
+            /// 공지사항
+            GoRoute(
+              name: NoticeScreen.routeName,
+              path: NoticeScreen.routeName,
+              builder: (context, state) => const NoticeScreen(),
+              routes: [
+                /// 공지사항 상세
+                GoRoute(
+                  name: NoticeDetailScreen.routeName,
+                  path: NoticeDetailScreen.routeName,
+                  builder: (context, state) {
+                    final int notiSq = state.extra as int;
+                    return NoticeDetailScreen(notiSq: notiSq);
+                  },
+                ),
+              ],
+            ),
+          ],
         ),
       ],
     ),

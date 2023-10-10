@@ -22,6 +22,7 @@ import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/car_select_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/reservation_bottom_sheet.dart';
+import 'package:kdmp_cm_app/presentation/view/bottomsheet/reservation_confirm_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/call_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
@@ -495,7 +496,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         /// 결제수단
                         ValueListenableBuilder<String>(
-                          valueListenable: _homeViewModel.paymKindNotifier,
+                          valueListenable: _homeViewModel.paymentNotifier,
                           builder: (context, value, child) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -516,7 +517,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       /// 선택한 결제수단
                                       Expanded(
                                         child: Text(
-                                          value.isEmpty ? StringHome.empty : getPaymentKind(value),
+                                          value.isEmpty ? StringHome.empty : value,
                                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                                 color: Theme.of(context).disabledColor,
                                               ),
@@ -532,6 +533,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                                         onPressed: () {
                                           // TODO: 결제수단 선택 화면으로 이동
+                                          _homeViewModel.payment = "신한체크카드 1234";
                                           _homeViewModel.paymKind = "CARD";
                                         },
                                       ),
@@ -574,7 +576,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return;
                               }
 
-                              // TODO: 예약 정보 확인 팝업 띄움
+                              /// 예약 정보 확인 팝업 띄움
+                              final resultConfirm = await showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                useSafeArea: true,
+                                builder: (context) {
+                                  return ReservationConfirmBottomSheet(
+                                    dateTitle: result["title"],
+                                    dateValue: result["value"],
+                                    price: _homeViewModel.price,
+                                    payment: _homeViewModel.payment,
+                                    start: _homeViewModel.startMapData!,
+                                    end: _homeViewModel.endMapData!,
+                                    stopOverList: _homeViewModel.stopOverList,
+                                  );
+                                },
+                              );
+                              debugPrint("======$resultConfirm");
+                              if (resultConfirm == null) {
+                                return;
+                              }
 
                               // TODO: 예약하기
                               // final result = await _homeViewModel.requestReservation();

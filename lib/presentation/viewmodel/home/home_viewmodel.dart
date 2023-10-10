@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
@@ -157,6 +155,9 @@ class HomeViewModel {
     priceType = PriceType.input;
   }
 
+  /// 일반요금
+  int get price => priceType == PriceType.basic ? basicPrice : inputPrice;
+
   /// 결제수단
   final ValueNotifier<String> _paymKind = ValueNotifier<String>("");
 
@@ -167,6 +168,17 @@ class HomeViewModel {
   set paymKind(String value) {
     _paymKind.value = value;
     _checkCallButtonValid();
+  }
+
+  /// 결제수단
+  final ValueNotifier<String> _payment = ValueNotifier<String>("");
+
+  ValueNotifier<String> get paymentNotifier => _payment;
+
+  String get payment => _payment.value;
+
+  set payment(String value) {
+    _payment.value = value;
   }
 
   /// 운행거리
@@ -189,7 +201,7 @@ class HomeViewModel {
 
   _checkCallButtonValid() {
     bool valid;
-    if (startMapData != null && endMapData != null && paymKind.isNotEmpty && basicPrice != 0) {
+    if (startMapData != null && endMapData != null && payment.isNotEmpty && paymKind.isNotEmpty && basicPrice != 0) {
       valid = true;
     } else {
       valid = false;
@@ -211,6 +223,7 @@ class HomeViewModel {
     startMapData = null;
     endMapData = null;
     stopOverList = List.empty();
+    payment = "";
     paymKind = "";
     distance = 0;
     basicPrice = 0;
@@ -296,7 +309,7 @@ class HomeViewModel {
       reqEndAddress: endMapData!.address,
       reqEndPlaceNm: endMapData!.place,
       stopOverLst: stopOverList,
-      drvPaymPrice: priceType == PriceType.basic ? basicPrice : inputPrice,
+      drvPaymPrice: price,
       drvDistance: distance,
       gpsStartLat: startMapData!.latLng.latitude,
       gpsStartLong: startMapData!.latLng.longitude,

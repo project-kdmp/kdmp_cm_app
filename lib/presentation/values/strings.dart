@@ -276,4 +276,23 @@ abstract class StringReservation {
   static const String dateTitle = "예약 일자 선택";
   static const String timeTitle = "예약 시간 선택";
   static const String dateErrorToast = "현재 시간 이후로 선택해주세요.";
+
+  static const String confirmTitle = "예약 정보 확인";
+  static const String bottomButton = "예약 호출";
+
+  static const String dateAndTime = "일시";
+  static const String amount = "요금";
+  static const String payment = "결제";
+  static const String startSpot = "출발지";
+  static const String endSpot = "도착지";
+  static const String stopover = "경유지";
+
+  static const String warningTitle = "유의사항 안내";
+  static const String warningContent = "유의사항 내용";
+
+  static const String cancelTitle = "취소 정책 안내";
+  static const String cancelContent = "취소 정책 내용";
+
+  static const String waitTitle = "대기료 발생 안내";
+  static const String waitContent = "대기료 발생 내용";
 }

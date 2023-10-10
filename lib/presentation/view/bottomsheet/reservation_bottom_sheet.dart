@@ -188,8 +188,13 @@ class ReservationBottomSheet extends StatelessWidget {
                     isEnabled: value,
                     text: StringCommon.confirm,
                     onPressed: () {
-                      final value = "${getDateFormat(date: date)} ${time["value"]}";
-                      context.pop(value);
+                      final title = "${getDateFormat(date: date, dateFormat: "yyyy년 MM월 dd일(E)")} ${time["title"]}";
+                      final value = "$date ${time["value"]}";
+                      Map<String, String> values = {
+                        "title": title,
+                        "value": value,
+                      };
+                      context.pop(values);
                     },
                   ),
                 );

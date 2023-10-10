@@ -399,7 +399,10 @@ class _WorkScreenState extends State<WorkScreen> {
                                                 children: [
                                                   Padding(
                                                     padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                                    child: CallPriceBottomSheet(minPrice: value + 100),
+                                                    child: CallPriceBottomSheet(
+                                                      initPrice: value,
+                                                      minPrice: value + 100,
+                                                    ),
                                                   ),
                                                 ],
                                               );

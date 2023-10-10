@@ -6,15 +6,16 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scro
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_text_field.dart';
 
+/// 요금 입력 팝업
 class CallPriceBottomSheet extends StatefulWidget {
   const CallPriceBottomSheet({
     Key? key,
     required this.minPrice,
-    this.initPrice = "",
+    this.initPrice,
   }) : super(key: key);
 
   final int minPrice;
-  final String initPrice;
+  final int? initPrice;
 
   @override
   State<CallPriceBottomSheet> createState() => _CallPriceBottomSheetState();
@@ -79,6 +80,16 @@ class _CallPriceBottomSheetState extends State<CallPriceBottomSheet> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    initData();
+  }
+
+  void initData() {
+    price = widget.initPrice ?? 0;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ScrollConfiguration(
       behavior: CustomScrollBehavior(),
@@ -101,7 +112,7 @@ class _CallPriceBottomSheetState extends State<CallPriceBottomSheet> {
 
                   /// 타이틀
                   Text(
-                    widget.initPrice.isEmpty ? StringCallPrice.title : StringCallPrice.titleChange,
+                    widget.initPrice == null ? StringCallPrice.title : StringCallPrice.titleChange,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
@@ -124,12 +135,11 @@ class _CallPriceBottomSheetState extends State<CallPriceBottomSheet> {
                       children: [
                         /// 요금 입력
                         CustomTextField(
-                          text: widget.initPrice,
+                          text: "$price",
                           inputType: TextInputType.number,
                           suffixText: StringCommon.won,
                           textAlign: TextAlign.right,
                           onChanged: (value) {
-                            debugPrint("======$value");
                             price = value.isEmpty ? 0 : int.parse(value);
                           },
                         ),

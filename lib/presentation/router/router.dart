@@ -14,6 +14,8 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dar
 import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/cs_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_detail_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
@@ -284,6 +286,24 @@ final GoRouter router = GoRouter(
                   builder: (context, state) {
                     final int notiSq = state.extra as int;
                     return NoticeDetailScreen(notiSq: notiSq);
+                  },
+                ),
+              ],
+            ),
+
+            /// 상담문의
+            GoRoute(
+              name: InquiryScreen.routeName,
+              path: InquiryScreen.routeName,
+              builder: (context, state) => const InquiryScreen(),
+              routes: [
+                /// 상담문의 상세
+                GoRoute(
+                  name: InquiryDetailScreen.routeName,
+                  path: InquiryDetailScreen.routeName,
+                  builder: (context, state) {
+                    final int inqSq = state.extra as int;
+                    return InquiryDetailScreen(inqSq: inqSq);
                   },
                 ),
               ],

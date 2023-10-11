@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/term/term_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/term_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
@@ -67,7 +68,7 @@ class _CSScreenState extends State<CSScreen> {
                 CustomMoveButton(
                   text: StringInquiry.title,
                   onPressed: () {
-                    // context.pushNamed(InquiryScreen.routeName);
+                    context.pushNamed(InquiryScreen.routeName);
                   },
                 ),
                 const Divider(thickness: 6),

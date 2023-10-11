@@ -3,7 +3,8 @@ import 'package:kdmp_cm_app/data/model/auth/refresh_response.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
 import 'package:kdmp_cm_app/data/model/common/drv_response.dart';
-import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
+import 'package:kdmp_cm_app/data/model/inquiry/inquiry_detail_response.dart';
+import 'package:kdmp_cm_app/data/model/inquiry/inquiry_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_detail_response.dart';
@@ -88,6 +89,10 @@ class Success extends StateAPI {
   NoticeListResponse get noticeListResponse => _response;
 
   NoticeDetailResponse get noticeDetailResponse => _response;
+
+  InquiryListResponse get inquiryListResponse => _response;
+
+  InquiryDetailResponse get inquiryDetailResponse => _response;
 
   /// 네이버 API
   ReverseGeocodingResponse get reverseGeocodingResponse => _response;

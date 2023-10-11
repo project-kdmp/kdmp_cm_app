@@ -311,5 +311,5 @@ abstract class StringInquiry {
   StringInquiry._();
 
   static const String title = "상담문의";
-  static const String noticeDetail = "상담문의 상세";
+  static const String inquiryDetail = "상담문의 상세";
 }

@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:kdmp_cm_app/common/network/dio_singleton.dart';
 import 'package:kdmp_cm_app/common/network/interceptor/token_interceptor.dart';
 import 'package:kdmp_cm_app/data/repository/auth/auth_repository_impl.dart';
+import 'package:kdmp_cm_app/data/repository/inquiry/inquiry_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/mypage/mypage_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/naver/naver_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/notice/notice_repository_impl.dart';
@@ -18,6 +19,8 @@ import 'package:kdmp_cm_app/data/repository/term/term_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/work/work_repository_impl.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/logout/set_logout_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_detail_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_call_detail_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_call_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_called_detail_usecase.dart';
@@ -239,6 +242,13 @@ void main() async {
   getIt.registerSingleton<GetNoticeListUseCase>(getNoticeListUseCase);
   final getNoticeDetailUseCase = GetNoticeDetailUseCase(noticeRepository: noticeRepository);
   getIt.registerSingleton<GetNoticeDetailUseCase>(getNoticeDetailUseCase);
+
+  /// 상담문의
+  final inquiryRepository = InquiryRepositoryImpl(dio);
+  final getInquiryListUseCase = GetInquiryListUseCase(inquiryRepository: inquiryRepository);
+  getIt.registerSingleton<GetInquiryListUseCase>(getInquiryListUseCase);
+  final getInquiryDetailUseCase = GetInquiryDetailUseCase(inquiryRepository: inquiryRepository);
+  getIt.registerSingleton<GetInquiryDetailUseCase>(getInquiryDetailUseCase);
 
   /// 네이버 API
   final naverRepository = NaverRepositoryImpl(dio);

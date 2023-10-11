@@ -72,7 +72,7 @@ class Called {
         "drvEndDt": drvEndDt,
         "drvReqSt": drvReqSt,
         "reqStartAddress": reqStartAddress,
-        "stopOverLst": stopOverLst.isNotEmpty ? List<dynamic>.from(stopOverLst.map((x) => x.toJson())) : "",
+        "stopOverLst": stopOverLst.isNotEmpty ? List<dynamic>.from(stopOverLst.map((x) => x.toJson())).toString() : "",
         "reqEndAddress": reqEndAddress,
         "drvPaymPrice": drvPaymPrice,
         "payCardInfo": payCardInfo,

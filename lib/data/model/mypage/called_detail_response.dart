@@ -72,7 +72,7 @@ class CalledDetailResponse {
         "reqStartPlaceNm": reqStartPlaceNm,
         "reqEndAddress": reqEndAddress,
         "reqEndPlaceNm": reqEndPlaceNm,
-        "stopOverLst": stopOverLst.isNotEmpty ? List<dynamic>.from(stopOverLst.map((x) => x.toJson())) : "",
+        "stopOverLst": stopOverLst.isNotEmpty ? List<dynamic>.from(stopOverLst.map((x) => x.toJson())).toString() : "",
         "drvPaymPrice": drvPaymPrice,
         "payCardInfo": payCardInfo,
         "dmMbrNm": dmMbrNm,

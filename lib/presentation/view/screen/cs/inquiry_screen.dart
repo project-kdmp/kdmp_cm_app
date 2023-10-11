@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/inquiry/inquiry_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
@@ -121,10 +122,20 @@ class _InquiryScreenState extends State<InquiryScreen> with SingleTickerProvider
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               /// 제목
-              Text(
-                value[index].inqAskTitle ?? "(제목없음)",
-                textAlign: TextAlign.start,
-                style: Theme.of(context).textTheme.titleLarge,
+              Row(
+                children: [
+                  Text(
+                    value[index].inqAskTitle ?? "(제목없음)",
+                    textAlign: TextAlign.start,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  Expanded(
+                    child: Text(
+                      value[index].inqRtnSt == InqRtnSt.comp ? "답변완료" : "답변대기",
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
 

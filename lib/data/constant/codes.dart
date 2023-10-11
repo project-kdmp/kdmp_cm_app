@@ -110,3 +110,12 @@ abstract class IncomReqUseTp {
 
   static const String tax = "TAX"; // 신고용
 }
+
+
+/// 상담문의 답변여부
+abstract class InqRtnSt {
+  InqRtnSt._();
+
+  static const String wait = "WAIT"; // 답변 대기
+  static const String comp = "COMP"; // 답변 완료
+}

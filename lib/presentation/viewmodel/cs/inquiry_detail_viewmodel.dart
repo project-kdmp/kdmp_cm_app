@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/inquiry/inquiry_detail_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_detail_usecase.dart';
@@ -37,6 +38,33 @@ class InquiryDetailViewModel {
 
   set inquiryContent(String value) => _inquiryContent.value = value;
 
+  /// 상담문의 답변
+  final ValueNotifier<String> _answerContent = ValueNotifier<String>("");
+
+  ValueNotifier<String> get answerContentNotifier => _answerContent;
+
+  String get answerContent => _answerContent.value;
+
+  set answerContent(String value) => _answerContent.value = value;
+
+  /// 상담문의 답변자
+  final ValueNotifier<String> _answerId = ValueNotifier<String>("");
+
+  ValueNotifier<String> get answerIdNotifier => _answerId;
+
+  String get answerId => _answerId.value;
+
+  set answerId(String value) => _answerId.value = value;
+
+  /// 상담문의 답변상태
+  final ValueNotifier<bool> _isAnswer = ValueNotifier<bool>(false);
+
+  ValueNotifier<bool> get isAnswerNotifier => _isAnswer;
+
+  bool get isAnswer => _isAnswer.value;
+
+  set isAnswer(bool value) => _isAnswer.value = value;
+
   /// 상담문의 내용 조회 API
   Future<void> getInquiryDetail({required int inqSq}) async {
     state = Loading();
@@ -49,6 +77,9 @@ class InquiryDetailViewModel {
       inquiryTitle = result.inquiryDetailResponse.inqAskTitle ?? "";
       inquiryDate = result.inquiryDetailResponse.createDt ?? "";
       inquiryContent = result.inquiryDetailResponse.inqAskContent ?? "";
+      answerId = result.inquiryDetailResponse.mbrAdmId ?? "";
+      answerContent = result.inquiryDetailResponse.inqRtnContent ?? "";
+      isAnswer = (result.inquiryDetailResponse.inqRtnSt ?? "") == InqRtnSt.comp;
     }
   }
 

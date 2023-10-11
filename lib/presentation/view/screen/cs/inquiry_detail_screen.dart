@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_detail_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
@@ -7,7 +6,6 @@ import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/cs/inquiry_detail_viewmodel.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// 상담문의 상세 화면
 class InquiryDetailScreen extends StatefulWidget {
@@ -61,22 +59,39 @@ class _InquiryDetailScreenState extends State<InquiryDetailScreen> {
           children: [
             const SizedBox(height: 20),
 
-            /// 제목
             Container(
               padding: const EdgeInsets.all(20),
               width: double.infinity,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ValueListenableBuilder<String>(
-                    valueListenable: _inquiryDetailViewModel.inquiryTitleNotifier,
-                    builder: (context, value, _) {
-                      return Text(
-                        value,
-                        textAlign: TextAlign.start,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      );
-                    },
+                  Row(
+                    children: [
+                      /// 제목
+                      ValueListenableBuilder<String>(
+                        valueListenable: _inquiryDetailViewModel.inquiryTitleNotifier,
+                        builder: (context, value, _) {
+                          return Text(
+                            value,
+                            textAlign: TextAlign.start,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          );
+                        },
+                      ),
+
+                      /// 제목
+                      ValueListenableBuilder<bool>(
+                        valueListenable: _inquiryDetailViewModel.isAnswerNotifier,
+                        builder: (context, value, _) {
+                          return Expanded(
+                            child: Text(
+                              value ? "답변완료" : "답변대기",
+                              textAlign: TextAlign.right,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
 
@@ -98,33 +113,57 @@ class _InquiryDetailScreenState extends State<InquiryDetailScreen> {
             ),
 
             /// 상담문의 본문
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                color: Theme.of(context).dividerColor,
-                padding: const EdgeInsets.all(20),
-                child: ScrollConfiguration(
-                  behavior: CustomScrollBehavior(),
-                  child: SingleChildScrollView(
-                    child: ValueListenableBuilder<String>(
-                      valueListenable: _inquiryDetailViewModel.inquiryContentNotifier,
-                      builder: (context, value, _) {
-                        return Html(
-                          data: value,
-                          onLinkTap: (url, attributes, element) async {
-                            debugPrint("$url");
-                            if (url != null) {
-                              await launchUrl(
-                                Uri.parse(url),
-                                mode: LaunchMode.externalApplication,
-                              );
-                            }
-                          },
-                        );
-                      },
-                    ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              child: ScrollConfiguration(
+                behavior: CustomScrollBehavior(),
+                child: SingleChildScrollView(
+                  child: ValueListenableBuilder<String>(
+                    valueListenable: _inquiryDetailViewModel.inquiryContentNotifier,
+                    builder: (context, value, _) {
+                      return Text(value);
+                    },
                   ),
                 ),
+              ),
+            ),
+
+            const Divider(thickness: 6, height: 40),
+
+            /// 답변
+            Container(
+              padding: const EdgeInsets.all(20),
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// 답변자 아이디
+                  ValueListenableBuilder<String>(
+                    valueListenable: _inquiryDetailViewModel.answerIdNotifier,
+                    builder: (context, value, _) {
+                      return Text(
+                        value,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Theme.of(context).disabledColor,
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 10),
+
+                  /// 내용
+                  ValueListenableBuilder<String>(
+                    valueListenable: _inquiryDetailViewModel.answerContentNotifier,
+                    builder: (context, value, _) {
+                      return Text(
+                        value,
+                        textAlign: TextAlign.start,
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           ],

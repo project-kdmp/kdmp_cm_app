@@ -219,17 +219,17 @@ final GoRouter router = GoRouter(
             ),
           ],
         ),
-
-        /// 운행
-        GoRoute(
-          name: WorkScreen.routeName,
-          path: WorkScreen.routeName,
-          builder: (context, state) {
-            final int drvReqSq = state.extra as int;
-            return WorkScreen(drvReqSq: drvReqSq);
-          },
-        ),
       ],
+    ),
+
+    /// 운행
+    GoRoute(
+      name: WorkScreen.routeName,
+      path: WorkScreen.routeURL,
+      builder: (context, state) {
+        final int drvReqSq = state.extra as int;
+        return WorkScreen(drvReqSq: drvReqSq);
+      },
     ),
 
     /// 메뉴

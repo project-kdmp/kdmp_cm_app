@@ -13,6 +13,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kdmp_cm_app/common/network/dio_singleton.dart';
 import 'package:kdmp_cm_app/common/network/interceptor/token_interceptor.dart';
+import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/repository/auth/auth_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/inquiry/inquiry_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/mypage/mypage_repository_impl.dart';
@@ -81,6 +82,9 @@ import 'domain/usecase/secure_storage/jwt/set_jwt_usecase.dart';
 import 'firebase_options.dart';
 import 'presentation/router/router.dart';
 
+/// Notification 을 위한 StreamController 전역 변수 선언
+StreamController<String> streamController = StreamController.broadcast();
+
 /// Firebase Messaging
 Future<String?> fcmSetting() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -128,7 +132,38 @@ Future<String?> fcmSetting() async {
   flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
 
   /// Foreground : 앱 실행중
-  FirebaseMessaging.onMessage.listen(_onBackgroundMessage);
+  FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
+    if (message != null) {
+      if (message.notification != null) {
+        debugPrint("fcmTest=====Foreground - ${message.notification!.title}");
+        debugPrint("fcmTest=====Foreground - ${message.notification!.body}");
+        debugPrint("fcmTest=====Foreground - ${message.data["type"]}");
+
+        // if (message.data.containsKey("type")) {
+        //   final type = message.data["type"];
+        //   streamController.add(type);
+        // }
+        streamController.add(message.notification!.title ?? "");
+
+        flutterLocalNotificationsPlugin.show(
+          DateTime.now().millisecond,
+          message.notification!.title,
+          message.notification!.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              channelDescription: channel.description,
+              importance: channel.importance,
+              priority: Priority.high,
+              icon: "@mipmap/ic_launcher",
+            ),
+            iOS: const DarwinNotificationDetails(badgeNumber: 1),
+          ),
+        );
+      }
+    }
+  });
 
   /// Background
   FirebaseMessaging.onMessageOpenedApp.listen(_onBackgroundMessage);

@@ -11,6 +11,7 @@ import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
+import 'package:kdmp_cm_app/main.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
@@ -33,6 +34,7 @@ class WorkScreen extends StatefulWidget {
   }) : super(key: key);
 
   static const String routeName = "work";
+  static const String routeURL = "/work";
 
   final int drvReqSq;
 
@@ -105,7 +107,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                             await _showConfirmDialog(
                                               content: StringWork.cancelConfirm,
                                               onConfirm: () async {
-                                                Navigator.pop(context);
+                                                context.pop();
 
                                                 if (_workViewModel.drvReqSt == DrvReqSt.cal) {
                                                   /// 미확정 호출취소
@@ -113,7 +115,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                                   if (result is Success) {
                                                     await _showAlertDialog(content: StringWork.cancelSuccess, isCanceled: false);
 
-                                                    /// 홈 화면으로 이동
+                                                    /// 화면 닫기, 홈 화면 초기화
                                                     context.pop(false);
                                                   } else if (result is Bad) {
                                                     Fluttertoast.showToast(msg: StringCommon.httpBad);
@@ -126,7 +128,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                                   /// 호출취소 사유 선택 팝업 띄움
                                                   await _showCallCancelDialog(
                                                     onConfirm: (drvCancelTp) async {
-                                                      Navigator.pop(context);
+                                                      context.pop();
 
                                                       final result = await _workViewModel.cancelConfirmCall(
                                                         drvReqSq: widget.drvReqSq,
@@ -135,7 +137,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                                       if (result is Success) {
                                                         await _showAlertDialog(content: StringWork.cancelSuccess, isCanceled: false);
 
-                                                        /// 홈 화면으로 이동
+                                                        /// 화면 닫기, 홈 화면 초기화
                                                         context.pop(false);
                                                       } else if (result is Bad) {
                                                         Fluttertoast.showToast(msg: StringCommon.httpBad);
@@ -434,6 +436,15 @@ class _WorkScreenState extends State<WorkScreen> {
                   ],
                 ),
               ),
+              StreamBuilder<String>(
+                stream: streamController.stream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    _showPushDialog(snapshot);
+                  }
+                  return const SizedBox();
+                },
+              ),
             ],
           ),
         ),
@@ -441,16 +452,96 @@ class _WorkScreenState extends State<WorkScreen> {
     );
   }
 
+  _showPushDialog(AsyncSnapshot<String> snapshot) {
+    debugPrint("========${snapshot.data}");
+
+    /// 다른 팝업이 열려있으면 닫기
+    if (ModalRoute.of(context)?.isCurrent != true) {
+      context.pop();
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final drvReqSt = snapshot.data ?? "";
+      switch (drvReqSt) {
+        case DrvReqSt.cco:
+          _showCallConfirmAlert(drvReqSt);
+          break;
+        case DrvReqSt.wat:
+          _showWaitAlert(drvReqSt);
+          break;
+        case DrvReqSt.sta:
+          _showStartAlert(drvReqSt);
+          break;
+        case DrvReqSt.end:
+          _showReviewBottomSheet(drvReqSt);
+          break;
+      }
+    });
+  }
+
   /// 운행 확정 팝업
-  Future<void> showCallConfirmAlert() async {
+  Future<void> _showCallConfirmAlert(String drvReqSt) async {
+    /// 상태 변경
+    // TODO: API 재조회할지 변경된 값만 Push Data 값으로 받을지
+    // _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
+    _workViewModel.drvReqSt = drvReqSt;
+
     _showAlertDialog(content: StringWork.callConfirmAlert, isCanceled: false);
-    // TODO: 상태 변경
-    // _workViewModel.
   }
 
   /// 출발지 도착 팝업
-  Future<void> showStartAlert() async {
+  Future<void> _showWaitAlert(String drvReqSt) async {
+    /// 상태 변경
+    // TODO: API 재조회할지 변경된 값만 Push Data 값으로 받을지
+    // _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
+    _workViewModel.drvReqSt = drvReqSt;
+
+    _showAlertDialog(content: StringWork.callWaitAlert, isCanceled: false);
+  }
+
+  /// 운행 시작 팝업
+  Future<void> _showStartAlert(String drvReqSt) async {
+    /// 상태 변경
+    // TODO: API 재조회할지 변경된 값만 Push Data 값으로 받을지
+    // _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
+    _workViewModel.drvReqSt = drvReqSt;
+
     _showAlertDialog(content: StringWork.callStartAlert, isCanceled: false);
+  }
+
+  /// 리뷰 작성 팝업
+  Future<void> _showReviewBottomSheet(String drvReqSt) async {
+    /// 상태 변경
+    // TODO: API 재조회할지 변경된 값만 Push Data 값으로 받을지
+    // _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
+    _workViewModel.drvReqSt = drvReqSt;
+
+    await showModalBottomSheet(
+      context: context,
+      isDismissible: false, // bottomSheet 영역 외 터치 여부
+      isScrollControlled: true,
+      builder: (context) {
+        return Wrap(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: ReviewBottomSheet(
+                onPressed: (star, review) {
+                  debugPrint("$star, $review");
+                  // TODO: 리뷰 작성
+
+                  /// 리뷰 작성 팝업 닫기
+                  context.pop();
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    /// 화면 닫기, 홈 화면 초기화
+    context.pop(false);
   }
 
   _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
@@ -464,7 +555,7 @@ class _WorkScreenState extends State<WorkScreen> {
           isCanceled: isCanceled,
           isWarning: isWarning,
           onConfirm: () {
-            Navigator.pop(context);
+            context.pop();
           },
         );
       },
@@ -493,29 +584,6 @@ class _WorkScreenState extends State<WorkScreen> {
       builder: (BuildContext context) {
         return CallCancelDialog(
           onConfirm: onConfirm,
-        );
-      },
-    );
-  }
-
-  /// 리뷰 작성 팝업
-  _showReviewBottomSheet({required Function(int star, String review) onConfirm}) {
-    return showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return Wrap(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: ReviewBottomSheet(
-                onPressed: (star, review) {
-                  debugPrint("$star, $review");
-                  context.pop();
-                },
-              ),
-            ),
-          ],
         );
       },
     );

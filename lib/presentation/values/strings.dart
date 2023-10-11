@@ -188,7 +188,8 @@ abstract class StringReview {
 
   static const String title = "리뷰 작성";
   static const String titleChange = "리뷰 수정";
-  static const String bottomButton = "확인";
+  static const String confirmButton = "확인";
+  static const String cancelButton = "나중에 평가";
   static const String content1 = "목적지에 도착했습니다.";
   static const String content2 = "리뷰를 남겨주시겠습니까?";
   static const String messageHint = "리뷰를 작성해주세요.";
@@ -264,7 +265,8 @@ abstract class StringWork {
   static const String cancelConfirm = "호출을 취소하시겠습니까?";
   static const String cancelSuccess = "호출이 취소되었습니다.";
   static const String callConfirmAlert = "운행이 확정되었습니다.";
-  static const String callStartAlert = "기사님이 출발지에 도착했습니다.";
+  static const String callWaitAlert = "기사님이 출발지에 도착했습니다.";
+  static const String callStartAlert = "운행이 시작되었습니다.";
   static const String changeCallFeeAlert = "호출 요금을 변경했습니다.";
 }
 

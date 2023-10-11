@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_text_field.dart';
 
 /// 리뷰 작성 팝업
@@ -165,22 +167,39 @@ class _ReviewBottomSheetState extends State<ReviewBottomSheet> {
               ),
             ),
 
-            /// 확인 버튼
-            ValueListenableBuilder<bool>(
-              valueListenable: isValidNotifier,
-              builder: (context, value, child) {
-                return Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: CustomElevatedButton(
-                    isEnabled: value,
-                    text: StringReview.bottomButton,
-                    onPressed: () {
-                      widget.onPressed(star, review);
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  /// 나중에 평가 버튼
+                  Expanded(
+                    child: CustomRadiusButton(
+                      text: StringReview.cancelButton,
+                      onPressed: () {
+                        context.pop(false);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+
+                  /// 확인 버튼
+                  ValueListenableBuilder<bool>(
+                    valueListenable: isValidNotifier,
+                    builder: (context, value, child) {
+                      return Expanded(
+                        child: CustomElevatedButton(
+                          isEnabled: value,
+                          text: StringReview.confirmButton,
+                          onPressed: () {
+                            widget.onPressed(star, review);
+                          },
+                        ),
+                      );
                     },
                   ),
-                );
-              },
-            ),
+                ],
+              ),
+            )
           ],
         ),
       ),

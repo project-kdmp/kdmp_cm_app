@@ -61,7 +61,7 @@ abstract class StringLogin {
   static const String loginSuccess = "로그인 성공";
   static const String loginFail = "로그인 실패";
 
-  static const String mbrPrivilegeTpCMMB = "고객사용자입니다. 고객용 앱을 이용해주세요.";
+  // static const String mbrPrivilegeTpCMMB = "고객사용자입니다. 고객용 앱을 이용해주세요.";
   static const String mbrPrivilegeTpDMMB = "대리기사회원입니다. 기사용 앱을 이용해주세요.";
   static const String mbrPrivilegeTpADMN = "관리자입니다.";
 
@@ -181,6 +181,17 @@ abstract class StringCallPrice {
   static const String inputGuide0 = "  ";
   static const String inputGuide1 = "요금을 입력해주세요.";
   static const String inputGuide2 = "이상으로 입력해주세요.";
+}
+
+abstract class StringReview {
+  StringReview._();
+
+  static const String title = "리뷰 작성";
+  static const String titleChange = "리뷰 수정";
+  static const String bottomButton = "확인";
+  static const String content1 = "목적지에 도착했습니다.";
+  static const String content2 = "리뷰를 남겨주시겠습니까?";
+  static const String messageHint = "리뷰를 작성해주세요.";
 }
 
 abstract class StringStartSetup {

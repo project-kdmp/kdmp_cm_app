@@ -15,6 +15,7 @@ import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
+import 'package:kdmp_cm_app/presentation/view/bottomsheet/review_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/call_cancel_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
@@ -492,6 +493,29 @@ class _WorkScreenState extends State<WorkScreen> {
       builder: (BuildContext context) {
         return CallCancelDialog(
           onConfirm: onConfirm,
+        );
+      },
+    );
+  }
+
+  /// 리뷰 작성 팝업
+  _showReviewBottomSheet({required Function(int star, String review) onConfirm}) {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Wrap(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: ReviewBottomSheet(
+                onPressed: (star, review) {
+                  debugPrint("$star, $review");
+                  context.pop();
+                },
+              ),
+            ),
+          ],
         );
       },
     );

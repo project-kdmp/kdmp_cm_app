@@ -268,7 +268,7 @@ final GoRouter router = GoRouter(
         /// 고객센터
         GoRoute(
           name: CSScreen.routeName,
-          path: "/${CSScreen.routeName}",
+          path: CSScreen.routeName,
           builder: (context, state) => const CSScreen(),
           routes: [
             /// 공지사항

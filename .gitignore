@@ -44,3 +44,8 @@ app.*.map.json
 /android/app/release
 
 .env
+
+# Firebase messaging
+/android/app/google-services.json
+/ios/firebase_app_id_file.json
+/ios/Runner/GoogleService-info.plist

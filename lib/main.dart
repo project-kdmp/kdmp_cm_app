@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get_it/get_it.dart';
@@ -73,10 +78,113 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import 'domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'domain/usecase/secure_storage/jwt/set_jwt_usecase.dart';
+import 'firebase_options.dart';
 import 'presentation/router/router.dart';
+
+/// Firebase Messaging
+Future<String?> fcmSetting() async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  await messaging.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  debugPrint("fcmTest=======User granted permission: ${settings.authorizationStatus}");
+
+  FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
+
+  AndroidNotificationChannel channel = const AndroidNotificationChannel(
+    "high_importance_channel",
+    "channel_name",
+    description: "대리기사 고객용 앱 알림",
+    importance: Importance.max,
+  );
+
+  /// Foreground 푸시 알림을 위한 설정
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  flutterLocalNotificationsPlugin.initialize(
+    const InitializationSettings(
+      android: AndroidInitializationSettings("@mipmap/ic_launcher"),
+      iOS: DarwinInitializationSettings(),
+    ),
+    onDidReceiveNotificationResponse: (details) {
+      debugPrint("fcmTest=====onDidReceiveNotificationResponse");
+    },
+  );
+  flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+
+  /// Foreground : 앱 실행중
+  FirebaseMessaging.onMessage.listen(_onBackgroundMessage);
+
+  /// Background
+  FirebaseMessaging.onMessageOpenedApp.listen(_onBackgroundMessage);
+
+  /// Terminate : 앱 종료 상태
+  final remoteMessaging = await FirebaseMessaging.instance.getInitialMessage();
+  if (remoteMessaging != null) {
+    _onBackgroundMessage(remoteMessaging);
+  }
+
+  String? fcmToken = await messaging.getToken();
+  return fcmToken;
+}
+
+@pragma('vm:entry-point')
+Future<void> _onBackgroundMessage(RemoteMessage message) async {
+  await Firebase.initializeApp();
+
+  debugPrint("fcmTest=====Notification Listener - ${message.notification!.title}");
+  debugPrint("fcmTest=====Notification Listener - ${message.notification!.body}");
+  debugPrint("fcmTest=====Notification Listener - ${message.data["click_action"]}");
+
+  AndroidNotificationChannel channel = const AndroidNotificationChannel(
+    "high_importance_channel",
+    "channel_name",
+    description: "대리기사 고객용 앱 알림",
+    importance: Importance.max,
+  );
+
+  /// Foreground 푸시 알림을 위한 설정
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+
+  flutterLocalNotificationsPlugin.show(
+    DateTime.now().millisecond,
+    message.notification!.title,
+    message.notification!.body,
+    NotificationDetails(
+      android: AndroidNotificationDetails(
+        channel.id,
+        channel.name,
+        channelDescription: channel.description,
+        importance: channel.importance,
+        priority: Priority.high,
+        icon: "@mipmap/ic_launcher",
+      ),
+      iOS: const DarwinNotificationDetails(badgeNumber: 1),
+    ),
+  );
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  String? fcmToken = await fcmSetting();
+  debugPrint("======fcmToken=$fcmToken");
 
   /// 키 관리 파일 가져오기
   await dotenv.load(fileName: ".env");

@@ -14,6 +14,7 @@ import 'package:kdmp_cm_app/data/model/work/call_request.dart';
 import 'package:kdmp_cm_app/data/model/work/confirm_call_cancel_request.dart';
 import 'package:kdmp_cm_app/data/model/work/pay_request.dart';
 import 'package:kdmp_cm_app/data/model/work/reservation_info_response.dart';
+import 'package:kdmp_cm_app/data/model/work/review_write_request.dart';
 import 'package:kdmp_cm_app/domain/repository/work/work_repository.dart';
 
 class WorkRepositoryImpl extends WorkRepository {
@@ -331,6 +332,49 @@ class WorkRepositoryImpl extends WorkRepository {
       final response = await _dio.post(
         url,
         data: callFeeChangeRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      switch (response.statusCode) {
+        case 200:
+          {
+            final responseObject = DefaultResponse.fromJson(response.data);
+            final StateAPI state = Success(responseObject);
+            debugPrint("state: $state");
+            return state;
+          }
+        default:
+          {
+            final badResponse = BadResponse.fromJson(response.data);
+            final StateAPI state = Bad(badResponse);
+            debugPrint("state: $state");
+            return state;
+          }
+      }
+    } on DioException catch (e) {
+      try {
+        if (e.response != null) {
+          final badResponse = BadResponse.fromJson(e.response?.data);
+          final StateAPI state = Bad(badResponse);
+          debugPrint("state: $state");
+          return state;
+        }
+        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
+      } catch (e2) {
+        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
+      }
+    }
+  }
+
+  @override
+  Future<StateAPI> writeReview({required ReviewWriteRequest reviewWriteRequest}) async {
+    const api = '/v1/biztotal/cm/drv/regReviewCall';
+    const url = '$baseBizUrl$api';
+
+    try {
+      final response = await _dio.post(
+        url,
+        data: reviewWriteRequest.toJson(),
         options: Options(contentType: Headers.jsonContentType),
       );
 

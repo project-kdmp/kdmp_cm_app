@@ -6,11 +6,13 @@ import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/work/call_cancel_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_fee_change_request.dart';
 import 'package:kdmp_cm_app/data/model/work/confirm_call_cancel_request.dart';
+import 'package:kdmp_cm_app/data/model/work/review_write_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
 
 class WorkViewModel {
   WorkViewModel({
@@ -19,6 +21,7 @@ class WorkViewModel {
     required this.setCallCancelUseCase,
     required this.setConfirmCallCancelUseCase,
     required this.setCallFeeChangeUseCase,
+    required this.setReviewWriteUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
@@ -26,6 +29,7 @@ class WorkViewModel {
   final SetCallCancelUseCase setCallCancelUseCase;
   final SetConfirmCallCancelUseCase setConfirmCallCancelUseCase;
   final SetCallFeeChangeUseCase setCallFeeChangeUseCase;
+  final SetReviewWriteUseCase setReviewWriteUseCase;
 
   /// 기사명
   final ValueNotifier<String> _name = ValueNotifier<String>("");
@@ -126,6 +130,9 @@ class WorkViewModel {
 
   set setPriceInputVisible(bool value) => _isPriceInputVisible.value = value;
 
+  /// 운행기사 번호
+  int _mbrDmSq = 0;
+
   /// 상태
   StateAPI state = Loading();
 
@@ -150,6 +157,7 @@ class WorkViewModel {
       setPriceInputVisible = drvReqSt == DrvReqSt.cal || drvReqSt == DrvReqSt.cco;
       name = response.mbrDmNm ?? "";
       imagePath = response.mbrProfilePic ?? "";
+      _mbrDmSq = response.mbrDmSq ?? 0;
     }
 
     return result;
@@ -208,6 +216,26 @@ class WorkViewModel {
     if (result is Success) {
       price = newPrice;
     }
+
+    return result;
+  }
+
+  /// 리뷰 작성 API
+  Future<StateAPI> writeReview({required int drvReqSq, required String reviewContent, required int starPoint}) async {
+    state = Loading();
+
+    final mbrSq = await getMbrSqUseCase.execute();
+
+    final request = ReviewWriteRequest(
+      mbrCmSq: mbrSq,
+      mbrDmSq: _mbrDmSq,
+      drvReqSq: drvReqSq,
+      reviewContent: reviewContent,
+      starPoint: starPoint,
+    );
+
+    final result = await setReviewWriteUseCase.execute(reviewWriteRequest: request);
+    state = result;
 
     return result;
   }

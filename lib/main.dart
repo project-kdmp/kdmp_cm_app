@@ -13,7 +13,6 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kdmp_cm_app/common/network/dio_singleton.dart';
 import 'package:kdmp_cm_app/common/network/interceptor/token_interceptor.dart';
-import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/repository/auth/auth_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/inquiry/inquiry_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/mypage/mypage_repository_impl.dart';
@@ -74,6 +73,7 @@ import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_pay_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_text_mode.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_data.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
@@ -380,6 +380,8 @@ void main() async {
   getIt.registerSingleton<SetPayUseCase>(setPayUseCase);
   final setReservationRequestUseCase = SetReservationRequestUseCase(workRepository: workRepository);
   getIt.registerSingleton<SetReservationRequestUseCase>(setReservationRequestUseCase);
+  final setReviewWriteUseCase = SetReviewWriteUseCase(workRepository: workRepository);
+  getIt.registerSingleton<SetReviewWriteUseCase>(setReviewWriteUseCase);
 
   /// 공지사항
   final noticeRepository = NoticeRepositoryImpl(dio);

@@ -11,6 +11,7 @@ import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
 import 'package:kdmp_cm_app/main.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
@@ -60,6 +61,7 @@ class _WorkScreenState extends State<WorkScreen> {
       setCallCancelUseCase: GetIt.instance<SetCallCancelUseCase>(),
       setConfirmCallCancelUseCase: GetIt.instance<SetConfirmCallCancelUseCase>(),
       setCallFeeChangeUseCase: GetIt.instance<SetCallFeeChangeUseCase>(),
+      setReviewWriteUseCase: GetIt.instance<SetReviewWriteUseCase>(),
     );
   }
 
@@ -526,12 +528,19 @@ class _WorkScreenState extends State<WorkScreen> {
             Padding(
               padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
               child: ReviewBottomSheet(
-                onPressed: (star, review) {
+                onPressed: (star, review) async {
                   debugPrint("$star, $review");
-                  // TODO: 리뷰 작성
 
-                  /// 리뷰 작성 팝업 닫기
-                  context.pop();
+                  /// 리뷰 작성
+                  final result = await _workViewModel.writeReview(drvReqSq: widget.drvReqSq, reviewContent: review, starPoint: star);
+                  if (result is Success) {
+                    /// 리뷰 작성 팝업 닫기
+                    context.pop();
+                  } else if (result is Bad) {
+                    Fluttertoast.showToast(msg: StringCommon.httpBad);
+                  } else if (result is Fail) {
+                    Fluttertoast.showToast(msg: "${result.errorMessage}");
+                  }
                 },
               ),
             ),

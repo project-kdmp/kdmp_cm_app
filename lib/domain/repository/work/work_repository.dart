@@ -5,6 +5,7 @@ import 'package:kdmp_cm_app/data/model/work/call_fee_change_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_request.dart';
 import 'package:kdmp_cm_app/data/model/work/confirm_call_cancel_request.dart';
 import 'package:kdmp_cm_app/data/model/work/pay_request.dart';
+import 'package:kdmp_cm_app/data/model/work/review_write_request.dart';
 
 abstract class WorkRepository {
   Future<StateAPI> cancelCall({required CallCancelRequest callCancelRequest});
@@ -22,4 +23,6 @@ abstract class WorkRepository {
   Future<StateAPI> requestReservation({required CallRequest reservationRequest});
 
   Future<StateAPI> changeCallFee({required CallFeeChangeRequest callFeeChangeRequest});
+
+  Future<StateAPI> writeReview({required ReviewWriteRequest reviewWriteRequest});
 }

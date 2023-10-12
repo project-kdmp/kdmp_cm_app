@@ -66,6 +66,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         context.pop();
       },
       // 버튼이 터치가 되면 무엇을 할 지 지정, onPressed와 유사
+      /// 다음 버튼
       next: Text(
         StringCommon.next,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -83,7 +84,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         ),
         activeColor: Theme.of(context).colorScheme.secondary,
       ),
-      curve: Curves.bounceOut,
+      curve: Curves.linear,
+      animationDuration: 200,
     );
   }
 

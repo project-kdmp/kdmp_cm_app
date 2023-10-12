@@ -1,5 +1,6 @@
-import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/auth/login_request.dart';
+import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_jwt_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
@@ -52,10 +53,16 @@ class SplashViewModel {
     state = result;
 
     if (result is Success) {
-      await setJwtUseCase.execute(jwt: result.loginResponse.jwt);
-      await setMbrSqUseCase.execute(mbrSq: result.loginResponse.mbrSq);
-      await setMbrIdUseCase.execute(mbrId: mbrId);
-      await setMbrPwUseCase.execute(mbrPw: password);
+      /// 회원 유형
+      final mbrPrivilegeTp = result.loginResponse.mbrPrivilegeTp;
+
+      if (mbrPrivilegeTp == MbrPrivilegeTp.customer) {
+        // 회원 유형이 고객일 경우에만 저장
+        await setJwtUseCase.execute(jwt: result.loginResponse.jwt);
+        await setMbrSqUseCase.execute(mbrSq: result.loginResponse.mbrSq);
+        await setMbrIdUseCase.execute(mbrId: mbrId);
+        await setMbrPwUseCase.execute(mbrPw: password);
+      }
     }
     return result;
   }

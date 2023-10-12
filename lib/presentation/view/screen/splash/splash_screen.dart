@@ -94,17 +94,14 @@ class _SplashScreenState extends State<SplashScreen> {
             /// 가입상태
             switch (response.mbrSt) {
               case MbrSt.temp:
-                if (response.mbrCarCount > 0) {
-                  /// 홈 화면으로 이동
-                  context.goNamed(HomeScreen.routeName);
-                } else {
-                  /// 차량등록 화면으로 이동
-                  context.goNamed(RegisterCarScreen.routeName);
-                }
                 break;
               case MbrSt.reject: // 심사 거절이나 기사용 상태
                 break;
               case MbrSt.registerComplete:
+                if (response.mbrCarCount == 0) {
+                  /// 차량등록 화면으로 이동
+                  await context.pushNamed(RegisterCarScreen.routeName);
+                }
 
                 /// 이용약관 갱신 여부 확인
                 if (response.bagreeTrmUpdate) {

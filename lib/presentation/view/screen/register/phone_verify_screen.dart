@@ -15,6 +15,7 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrid_usecase.
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/bottomsheet/other_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
@@ -124,17 +125,14 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
                           /// 가입상태
                           switch (loginResponse.mbrSt) {
                             case MbrSt.temp:
-                              if (loginResponse.mbrCarCount > 0) {
-                                /// 홈 화면으로 이동
-                                context.goNamed(HomeScreen.routeName);
-                              } else {
-                                /// 차량등록 화면으로 이동
-                                context.goNamed(RegisterCarScreen.routeName);
-                              }
                               break;
                             case MbrSt.reject: // 심사 거절이나 기사용 상태
                               break;
                             case MbrSt.registerComplete:
+                              if (loginResponse.mbrCarCount == 0) {
+                                /// 차량등록 화면으로 이동
+                                await context.pushNamed(RegisterCarScreen.routeName);
+                              }
 
                               /// 이용약관 갱신 여부 확인
                               if (loginResponse.bagreeTrmUpdate) {

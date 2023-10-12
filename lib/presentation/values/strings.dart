@@ -326,4 +326,10 @@ abstract class StringInquiry {
 
   static const String title = "상담문의";
   static const String inquiryDetail = "상담문의 상세";
+  static const String inquiryWrite = "상담문의 작성";
+  static const String writeButton = "등록";
+  static const String titleHint = "제목을 입력해주세요.";
+  static const String contentHint = "내용을 입력해주세요.";
+  static const String inquiryDeleteAlert = "해당 상담문의를 삭제하시겠습니까?";
+  static const String inquiryWriteSuccessAlert = "상담문의가 등록되었습니다.";
 }

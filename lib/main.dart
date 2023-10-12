@@ -27,6 +27,7 @@ import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/logout/set_logout_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_detail_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/inquiry/set_inquiry_write_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_call_detail_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_call_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_called_detail_usecase.dart';
@@ -392,6 +393,8 @@ void main() async {
   getIt.registerSingleton<GetInquiryListUseCase>(getInquiryListUseCase);
   final getInquiryDetailUseCase = GetInquiryDetailUseCase(inquiryRepository: inquiryRepository);
   getIt.registerSingleton<GetInquiryDetailUseCase>(getInquiryDetailUseCase);
+  final setInquiryWriteUseCase = SetInquiryWriteUseCase(inquiryRepository: inquiryRepository);
+  getIt.registerSingleton<SetInquiryWriteUseCase>(setInquiryWriteUseCase);
 
   /// 네이버 API
   final naverRepository = NaverRepositoryImpl(dio);

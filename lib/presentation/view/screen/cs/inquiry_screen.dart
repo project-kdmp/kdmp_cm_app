@@ -8,7 +8,9 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_detail_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_write_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/cs/inquiry_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -47,12 +49,16 @@ class _InquiryScreenState extends State<InquiryScreen> with SingleTickerProvider
   void initScrollController() {
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent == _scrollController.position.pixels) {
-        initData();
+        /// 상담문의 리스트 가져오기
+        _inquiryViewModel.getInquiryList();
       }
     });
   }
 
   void initData() {
+    /// 페이지 정보 조기화
+    _inquiryViewModel.clearPagination();
+
     /// 상담문의 리스트 가져오기
     _inquiryViewModel.getInquiryList();
   }
@@ -75,27 +81,48 @@ class _InquiryScreenState extends State<InquiryScreen> with SingleTickerProvider
 
         /// 화면
         body: SafeArea(
-          child: ScrollConfiguration(
-            behavior: CustomScrollBehavior(),
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
+          child: Column(
+            children: [
+              Expanded(
+                child: ScrollConfiguration(
+                  behavior: CustomScrollBehavior(),
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
 
-                    /// 상담문의 리스트
-                    ValueListenableBuilder<List<Inquiry>>(
-                      valueListenable: _inquiryViewModel.inquiryListNotifier,
-                      builder: (context, value, _) {
-                        return getListView(value);
-                      },
+                          /// 상담문의 리스트
+                          ValueListenableBuilder<List<Inquiry>>(
+                            valueListenable: _inquiryViewModel.inquiryListNotifier,
+                            builder: (context, value, _) {
+                              return getListView(value);
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+
+              /// 하단 버튼
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: CustomRadiusButton(
+                  text: StringInquiry.inquiryWrite,
+                  onPressed: () async {
+                    final result = await context.pushNamed(InquiryWriteScreen.routeName);
+                    if (result == true) {
+                      /// 상담문의 리스트 재조회
+                      initData();
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),

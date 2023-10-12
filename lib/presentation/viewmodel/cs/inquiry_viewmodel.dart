@@ -69,4 +69,10 @@ class InquiryViewModel {
       isNextPage = response.pagination.existNextPage;
     }
   }
+
+  /// 페이지 정보 초기화
+  void clearPagination() {
+    page = 0;
+    isNextPage = true;
+  }
 }

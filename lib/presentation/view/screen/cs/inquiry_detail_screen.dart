@@ -15,7 +15,6 @@ class InquiryDetailScreen extends StatefulWidget {
   }) : super(key: key);
 
   static const String routeName = "inquiry_detail";
-  static const String routeURL = "/inquiry_detail";
 
   final int inqSq;
 
@@ -79,7 +78,7 @@ class _InquiryDetailScreenState extends State<InquiryDetailScreen> {
                         },
                       ),
 
-                      /// 제목
+                      /// 답변여부
                       ValueListenableBuilder<bool>(
                         valueListenable: _inquiryDetailViewModel.isAnswerNotifier,
                         builder: (context, value, _) {

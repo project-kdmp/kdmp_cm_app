@@ -14,6 +14,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_search_scr
 import 'package:kdmp_cm_app/presentation/view/screen/cs/cs_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_write_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
@@ -288,6 +289,13 @@ final GoRouter router = GoRouter(
                     final int inqSq = state.extra as int;
                     return InquiryDetailScreen(inqSq: inqSq);
                   },
+                ),
+
+                /// 상담문의 작성
+                GoRoute(
+                  name: InquiryWriteScreen.routeName,
+                  path: InquiryWriteScreen.routeName,
+                  builder: (context, state) => const InquiryWriteScreen(),
                 ),
               ],
             ),

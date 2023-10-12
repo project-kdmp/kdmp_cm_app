@@ -74,6 +74,9 @@ dependencies:
   firebase_messaging: ^14.6.9
   flutter_local_notifications: ^16.1.0
 
+  # IP Info
+  get_ip_address: ^0.0.6
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

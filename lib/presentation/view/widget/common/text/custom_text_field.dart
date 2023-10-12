@@ -14,6 +14,9 @@ class CustomTextField extends StatelessWidget {
     this.textAlign,
     this.inputType,
     this.maxLength,
+    this.maxLines,
+    this.isExpands = false,
+    this.backgroundColor,
   }) : super(key: key);
 
   final String text;
@@ -26,46 +29,50 @@ class CustomTextField extends StatelessWidget {
   final TextAlign? textAlign;
   final TextInputType? inputType;
   final int? maxLength;
+  final int? maxLines;
+  final bool isExpands;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: TextFormField(
-        inputFormatters: inputType == TextInputType.number ? [FilteringTextInputFormatter.digitsOnly] : [],
-        // textInputAction: TextInputAction.next,
-        // onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-        keyboardType: inputType,
-        enabled: isEnabled,
-        controller: controller,
-        initialValue: controller == null ? text : null,
-        style: Theme.of(context).textTheme.bodyLarge,
-        obscureText: isPassword,
-        textAlign: textAlign ?? TextAlign.start,
-        maxLength: maxLength,
-        decoration: InputDecoration(
-          counterText: "",
-          contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
-          hintText: hint,
-          hintStyle: TextStyle(
-            color: Theme.of(context).disabledColor,
-          ),
-          filled: true,
-          fillColor: Theme.of(context).dividerColor,
-          enabledBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(4)),
-            borderSide: BorderSide(
-              color: Theme.of(context).dividerColor,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(4)),
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.secondary,
-            ),
+    return TextFormField(
+      inputFormatters: inputType == TextInputType.number ? [FilteringTextInputFormatter.digitsOnly] : [],
+      // textInputAction: TextInputAction.next,
+      // onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
+      keyboardType: inputType,
+      enabled: isEnabled,
+      controller: controller,
+      initialValue: controller == null ? text : null,
+      style: Theme.of(context).textTheme.bodyLarge,
+      obscureText: isPassword,
+      textAlign: textAlign ?? TextAlign.start,
+      textAlignVertical: TextAlignVertical.top,
+      maxLength: maxLength,
+      maxLines: maxLines,
+      expands: isExpands,
+      decoration: InputDecoration(
+        counterText: "",
+        contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
+        hintText: hint,
+        hintStyle: TextStyle(
+          color: Theme.of(context).disabledColor,
+        ),
+        filled: true,
+        fillColor: backgroundColor ?? Theme.of(context).dividerColor,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(4)),
+          borderSide: BorderSide(
+            color: backgroundColor ?? Theme.of(context).dividerColor,
           ),
         ),
-        onChanged: controller == null ? onChanged : null,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(4)),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+        ),
       ),
+      onChanged: controller == null ? onChanged : null,
     );
   }
 }

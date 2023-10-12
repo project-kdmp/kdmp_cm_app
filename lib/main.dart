@@ -146,11 +146,11 @@ Future<String?> fcmSetting() async {
         debugPrint("fcmTest=====Foreground - ${message.notification!.body}");
         debugPrint("fcmTest=====Foreground - ${message.data["type"]}");
 
-        // if (message.data.containsKey("type")) {
-        //   final type = message.data["type"];
-        //   streamController.add(type);
-        // }
-        streamController.add(message.notification!.title ?? "");
+        if (message.data.containsKey("type")) {
+          final type = message.data["type"];
+          streamController.add(type);
+        }
+        // streamController.add(message.notification!.title ?? "");
 
         flutterLocalNotificationsPlugin.show(
           DateTime.now().millisecond,

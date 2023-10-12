@@ -341,3 +341,16 @@ abstract class StringOther {
   static const String title = "더보기";
   static const String delete = "삭제하기";
 }
+
+abstract class StringPush {
+  StringPush._();
+
+  static const String title = "대리기사";
+  static const String callTitle = "대리기사 콜";
+  static const String reservationTitle = "대리기사 예약콜";
+
+  static const String cancelBody = "운행이 취소되었습니다.";
+  static const String reviewBody = "리뷰가 등록되었습니다.";
+  static const String feeBody1 = "호출 요금이 ";
+  static const String feeBody2 = "으로 변경되었습니다.";
+}

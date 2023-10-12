@@ -6,6 +6,7 @@ import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/constant/url.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
+import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
@@ -62,6 +63,7 @@ class _WorkScreenState extends State<WorkScreen> {
       setConfirmCallCancelUseCase: GetIt.instance<SetConfirmCallCancelUseCase>(),
       setCallFeeChangeUseCase: GetIt.instance<SetCallFeeChangeUseCase>(),
       setReviewWriteUseCase: GetIt.instance<SetReviewWriteUseCase>(),
+      setFCMPushUseCase: GetIt.instance<SetFCMPushUseCase>(),
     );
   }
 
@@ -106,41 +108,38 @@ class _WorkScreenState extends State<WorkScreen> {
                                           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                                           onPressed: () async {
                                             /// 호출취소 팝업 띄움
-                                            await _showConfirmDialog(
-                                              content: StringWork.cancelConfirm,
-                                              onConfirm: () async {
-                                                context.pop();
+                                            final cancelResult = _workViewModel.drvReqSt == DrvReqSt.cal
+                                                ?
 
-                                                if (_workViewModel.drvReqSt == DrvReqSt.cal) {
-                                                  /// 미확정 호출취소
-                                                  final result = await _workViewModel.cancelCall(drvReqSq: widget.drvReqSq);
-                                                  if (result is Success) {
-                                                    await _showAlertDialog(content: StringWork.cancelSuccess, isCanceled: false);
+                                                /// 미확정 호출취소 팝업
+                                                await _showConfirmDialog(
+                                                    content: StringWork.cancelConfirm,
+                                                    onConfirm: () async {
+                                                      /// 미확정 호출취소
+                                                      final result = await _workViewModel.cancelCall(drvReqSq: widget.drvReqSq);
+                                                      if (result is Success) {
+                                                        /// 호출취소 팝업 닫기
+                                                        context.pop(true);
+                                                      } else if (result is Bad) {
+                                                        Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                                      } else if (result is Fail) {
+                                                        Fluttertoast.showToast(msg: "${result.errorMessage}");
+                                                      }
+                                                    },
+                                                  )
+                                                :
 
-                                                    /// 화면 닫기, 홈 화면 초기화
-                                                    context.pop(false);
-                                                  } else if (result is Bad) {
-                                                    Fluttertoast.showToast(msg: StringCommon.httpBad);
-                                                  } else if (result is Fail) {
-                                                    Fluttertoast.showToast(msg: "${result.errorMessage}");
-                                                  }
-                                                } else if (_workViewModel.drvReqSt == DrvReqSt.cco) {
-                                                  /// 확정 호출취소
-
-                                                  /// 호출취소 사유 선택 팝업 띄움
-                                                  await _showCallCancelDialog(
+                                                /// 호출취소 사유 선택 팝업
+                                                await _showCallCancelDialog(
                                                     onConfirm: (drvCancelTp) async {
-                                                      context.pop();
-
+                                                      /// 확정 호출취소
                                                       final result = await _workViewModel.cancelConfirmCall(
                                                         drvReqSq: widget.drvReqSq,
                                                         drvCancelTp: drvCancelTp,
                                                       );
                                                       if (result is Success) {
-                                                        await _showAlertDialog(content: StringWork.cancelSuccess, isCanceled: false);
-
-                                                        /// 화면 닫기, 홈 화면 초기화
-                                                        context.pop(false);
+                                                        /// 호출취소 사유 선택 팝업 닫기
+                                                        context.pop(true);
                                                       } else if (result is Bad) {
                                                         Fluttertoast.showToast(msg: StringCommon.httpBad);
                                                       } else if (result is Fail) {
@@ -148,9 +147,14 @@ class _WorkScreenState extends State<WorkScreen> {
                                                       }
                                                     },
                                                   );
-                                                }
-                                              },
-                                            );
+
+                                            if (cancelResult == true) {
+                                              /// 호출 취소 완료 팝업 띄움
+                                              await _showAlertDialog(content: StringWork.cancelSuccess, isCanceled: false);
+
+                                              /// 화면 닫기, 홈 화면 초기화
+                                              context.pop(false);
+                                            }
                                           },
                                         )
                                       : const SizedBox();
@@ -485,8 +489,7 @@ class _WorkScreenState extends State<WorkScreen> {
   Future<void> _showCallConfirmAlert(String drvReqSt) async {
     /// 상태 변경
     // TODO: API 재조회할지 변경된 값만 Push Data 값으로 받을지
-    // _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
-    _workViewModel.drvReqSt = drvReqSt;
+    _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
 
     _showAlertDialog(content: StringWork.callConfirmAlert, isCanceled: false);
   }

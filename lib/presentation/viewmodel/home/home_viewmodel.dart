@@ -230,6 +230,7 @@ class HomeViewModel {
     paymKind = "";
     distance = 0;
     basicPrice = 0;
+    _checkStopOverButtonValid();
   }
 
   /// 상태

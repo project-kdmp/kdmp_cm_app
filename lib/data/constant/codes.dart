@@ -86,7 +86,7 @@ abstract class DrvReqSt {
   // static const String rst = "RST"; // 예약-운행시작
   // static const String rcd = "RCD"; // 예약-카드결제완료
   // static const String ren = "REN"; // 예약-운행종료
-  // static const String rdl = "RDL"; // 예약-취소
+  static const String rdl = "RDL"; // 예약-취소
   static const String cal = "CAL"; // 호출중 / 고객
   static const String cco = "CCO"; // 호출 확정 /기사 확정
   static const String wat = "WAT"; // 출발지 도착 - 대기중 / 기사 배정후 대기중

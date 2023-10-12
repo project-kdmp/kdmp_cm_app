@@ -3,16 +3,20 @@ import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/drv_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
+import 'package:kdmp_cm_app/data/model/fcm/fcm_push_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_cancel_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_fee_change_request.dart';
 import 'package:kdmp_cm_app/data/model/work/confirm_call_cancel_request.dart';
 import 'package:kdmp_cm_app/data/model/work/review_write_request.dart';
+import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
+import 'package:kdmp_cm_app/presentation/util/string_util.dart';
+import 'package:kdmp_cm_app/presentation/values/strings.dart';
 
 class WorkViewModel {
   WorkViewModel({
@@ -22,6 +26,7 @@ class WorkViewModel {
     required this.setConfirmCallCancelUseCase,
     required this.setCallFeeChangeUseCase,
     required this.setReviewWriteUseCase,
+    required this.setFCMPushUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
@@ -30,6 +35,7 @@ class WorkViewModel {
   final SetConfirmCallCancelUseCase setConfirmCallCancelUseCase;
   final SetCallFeeChangeUseCase setCallFeeChangeUseCase;
   final SetReviewWriteUseCase setReviewWriteUseCase;
+  final SetFCMPushUseCase setFCMPushUseCase;
 
   /// 기사명
   final ValueNotifier<String> _name = ValueNotifier<String>("");
@@ -74,7 +80,11 @@ class WorkViewModel {
 
   String get drvReqSt => _drvReqSt.value;
 
-  set drvReqSt(String value) => _drvReqSt.value = value;
+  set drvReqSt(String value) {
+    _drvReqSt.value = value;
+    setCancelVisible = value == DrvReqSt.cal || value == DrvReqSt.cco;
+    setPriceInputVisible = value == DrvReqSt.cal || value == DrvReqSt.cco;
+  }
 
   /// 출발지
   final ValueNotifier<String> _start = ValueNotifier<String>("");
@@ -153,8 +163,6 @@ class WorkViewModel {
       start = response.reqStartPlaceNm.isNotEmpty ? response.reqStartPlaceNm : response.reqStartAddress;
       end = response.reqEndPlaceNm.isNotEmpty ? response.reqEndPlaceNm : response.reqEndAddress;
       stopOverList = response.stopOverLst;
-      setCancelVisible = drvReqSt == DrvReqSt.cal || drvReqSt == DrvReqSt.cco;
-      setPriceInputVisible = drvReqSt == DrvReqSt.cal || drvReqSt == DrvReqSt.cco;
       name = response.mbrDmNm ?? "";
       imagePath = response.mbrProfilePic ?? "";
       _mbrDmSq = response.mbrDmSq ?? 0;
@@ -195,6 +203,10 @@ class WorkViewModel {
     final result = await setConfirmCallCancelUseCase.execute(confirmCallCancelRequest: request);
     state = result;
 
+    if (result is Success) {
+      await _sendPush(title: StringPush.callTitle, body: StringPush.cancelBody, type: DrvReqSt.del);
+    }
+
     return result;
   }
 
@@ -213,8 +225,15 @@ class WorkViewModel {
 
     final result = await setCallFeeChangeUseCase.execute(callFeeChangeRequest: request);
     state = result;
+
     if (result is Success) {
       price = newPrice;
+
+      await _sendPush(
+        title: StringPush.callTitle,
+        body: "${StringPush.feeBody1} ${getPrice(newPrice)}${StringPush.feeBody2}",
+        type: "fee",
+      );
     }
 
     return result;
@@ -237,6 +256,25 @@ class WorkViewModel {
     final result = await setReviewWriteUseCase.execute(reviewWriteRequest: request);
     state = result;
 
+    if (result is Success) {
+      await _sendPush(title: StringPush.callTitle, body: StringPush.reviewBody);
+    }
+
     return result;
+  }
+
+  /// 푸시 알림 전송 API
+  Future<void> _sendPush({required String title, required String body, String? type}) async {
+    if (title.isEmpty || body.isEmpty) {
+      return;
+    }
+
+    final request = FCMPushRequest(
+      mbrSqTarget: _mbrDmSq,
+      title: title,
+      body: body,
+      type: type,
+    );
+    await setFCMPushUseCase.execute(fcmPushRequest: request);
   }
 }

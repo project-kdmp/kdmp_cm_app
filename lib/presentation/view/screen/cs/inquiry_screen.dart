@@ -56,7 +56,7 @@ class _InquiryScreenState extends State<InquiryScreen> with SingleTickerProvider
   }
 
   void initData() {
-    /// 페이지 정보 조기화
+    /// 페이지 정보 초기화
     _inquiryViewModel.clearPagination();
 
     /// 상담문의 리스트 가져오기

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/register/register_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_firstlogin_usecase.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
@@ -12,7 +11,6 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen
 import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_search_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/cs_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_screen.dart';
@@ -42,26 +40,18 @@ final GoRouter router = GoRouter(
   /// Default
   redirect: (context, state) async {
     final jwt = await GetIt.instance<GetJwtUseCase>().execute();
-    final isFirstLogin = await GetIt.instance<GetFirstLoginUseCase>().execute();
 
-    debugPrint("GoRouter jwt : $jwt, isFirstLogin : $isFirstLogin");
+    debugPrint("GoRouter jwt : $jwt");
 
     /// JWT를 보유중 == 로그인된 상태, 스플래시 화면으로 이동
     /// JWT가 없음 == 로그아웃된 상태, 로그인 화면으로 이동
     final isLogin = jwt.isNotEmpty;
     if (!isLogin) {
       /// 로그인 아닌 상태
-      if (isFirstLogin) {
-        /// 한번도 로그인한적이 없는 경우, 접근 권한 안내 화면으로 이동
-        debugPrint("state: ${state.matchedLocation}");
-        if (!state.matchedLocation.contains(PermissionScreen.routeURL) && !state.matchedLocation.contains(TermScreen.routeURL) && !state.matchedLocation.contains(PhoneVerifyScreen.routeURL) && !state.matchedLocation.contains(LoginScreen.routeURL)) {
-          return PermissionScreen.routeURL;
-        }
-      } else {
-        /// 로그인한적 있는 경우, 로그인 화면으로 이동
-        if (state.matchedLocation != LoginScreen.routeURL) {
-          return LoginScreen.routeURL;
-        }
+      /// 접근 권한 안내 화면으로 이동
+      debugPrint("state: ${state.matchedLocation}");
+      if (!state.matchedLocation.contains(PermissionScreen.routeURL) && !state.matchedLocation.contains(TermScreen.routeURL) && !state.matchedLocation.contains(PhoneVerifyScreen.routeURL) /*&& !state.matchedLocation.contains(LoginScreen.routeURL)*/) {
+        return PermissionScreen.routeURL;
       }
     }
     return null;
@@ -79,13 +69,6 @@ final GoRouter router = GoRouter(
       name: OnBoardingScreen.routeName,
       path: OnBoardingScreen.routeURL,
       builder: (context, state) => const OnBoardingScreen(),
-    ),
-
-    /// 로그인
-    GoRoute(
-      name: LoginScreen.routeName,
-      path: LoginScreen.routeURL,
-      builder: (context, state) => const LoginScreen(),
     ),
 
     /// 접근 권한 안내

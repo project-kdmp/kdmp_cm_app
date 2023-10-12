@@ -11,8 +11,8 @@ import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/withdraw_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/term/term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/menu/custom_move_button.dart';
@@ -136,8 +136,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
           onConfirm: () async {
             final result = await _myPageViewModel.logout();
             if (result is Success) {
-              /// 로그인 화면으로 이동
-              context.goNamed(LoginScreen.routeName);
+              /// 이용약관 화면으로 이동
+              context.goNamed(TermScreen.routeName);
             } else if (result is Bad) {
               Fluttertoast.showToast(msg: StringCommon.httpBad);
             } else if (result is Fail) {

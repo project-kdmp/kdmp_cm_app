@@ -27,24 +27,24 @@ String getPaymentKind(String? paymentKind) {
   return "";
 }
 
-/// 호출유형 한글로 반환
-String getCallType(String? drvReqSt) {
+/// 운행상태 한글로 반환
+String getDriveType(String? drvReqSt) {
   if (drvReqSt != null) {
     switch (drvReqSt) {
-      // case DrvReqSt.res:
-      //   return "예약";
-      // case DrvReqSt.rco:
-      //   return "예약 확정";
-      // case DrvReqSt.rwt:
-      //   return "예약출발지도착 - 대기중";
-      // case DrvReqSt.rst:
-      //   return "예약-운행시작";
-      // case DrvReqSt.rcd:
-      //   return "예약-카드결제완료";
-      // case DrvReqSt.ren:
-      //   return "예약-운행종료";
-      // case DrvReqSt.rdl:
-      //   return "예약-취소";
+      case DrvReqSt.res:
+        return "예약";
+      case DrvReqSt.rco:
+        return "예약 확정";
+      case DrvReqSt.rwt:
+        return "예약출발지도착 - 대기중";
+      case DrvReqSt.rst:
+        return "예약-운행시작";
+      case DrvReqSt.rcd:
+        return "예약-카드결제완료";
+      case DrvReqSt.ren:
+        return "예약-운행종료";
+      case DrvReqSt.rdl:
+        return "예약-취소";
       case DrvReqSt.cal:
         return "호출중";
       case DrvReqSt.cco:
@@ -59,6 +59,31 @@ String getCallType(String? drvReqSt) {
         return "카드결제완료";
       case DrvReqSt.end:
         return "운행종료";
+    }
+  }
+  return "";
+}
+
+/// 호출유형 한글로 반환
+String getCallType(String? drvReqSt) {
+  if (drvReqSt != null) {
+    switch (drvReqSt) {
+      case DrvReqSt.res:
+      case DrvReqSt.rco:
+      case DrvReqSt.rwt:
+      case DrvReqSt.rst:
+      case DrvReqSt.rcd:
+      case DrvReqSt.ren:
+      case DrvReqSt.rdl:
+        return "예약";
+      case DrvReqSt.cal:
+      case DrvReqSt.cco:
+      case DrvReqSt.wat:
+      case DrvReqSt.sta:
+      case DrvReqSt.del:
+      case DrvReqSt.dcd:
+      case DrvReqSt.end:
+        return "일반";
     }
   }
   return "";
@@ -96,6 +121,30 @@ String getDateFormat({required String? date, String dateFormat = "yyyy-MM-dd"}) 
     }
   }
   return "";
+}
+
+/// 날짜형식 포맷 후 반환
+String getDateAndTimeFormat({required String? startDate, required String? endDate}) {
+  if (startDate != null) {
+    try {
+      const dateFormat = "yyyy년 MM월 dd일 HH:mm";
+      final startDateTime = DateFormat(dateFormat, 'ko_KR').format(DateTime.parse(startDate));
+      if (endDate != null) {
+        final endDateTime = DateFormat(dateFormat, 'ko_KR').format(DateTime.parse(endDate));
+        final startSplit = startDateTime.split(" ");
+        final endSplit = endDateTime.split(" ");
+        if (startSplit[0] == endSplit[0] && startSplit[1] == endSplit[1] && startSplit[2] == endSplit[2]) {
+          return "$startDateTime - ${endSplit[3]}"; // 시간
+        }
+        return "$startDateTime - $endDateTime";
+      }
+      return startDateTime;
+    } catch (e) {
+      debugPrint("$e");
+      return " ";
+    }
+  }
+  return " ";
 }
 
 /// 네이버 장소 검색 주소 반환

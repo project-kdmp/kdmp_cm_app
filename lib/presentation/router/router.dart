@@ -20,6 +20,9 @@ import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_detail_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/car_info_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/withdraw_screen.dart';
@@ -296,6 +299,34 @@ final GoRouter router = GoRouter(
                   name: InquiryWriteScreen.routeName,
                   path: InquiryWriteScreen.routeName,
                   builder: (context, state) => const InquiryWriteScreen(),
+                ),
+              ],
+            ),
+
+            /// 이용내역
+            GoRoute(
+              name: CalledScreen.routeName,
+              path: CalledScreen.routeName,
+              builder: (context, state) => const CalledScreen(),
+              routes: [
+                /// 이용내역 상세
+                GoRoute(
+                  name: CalledDetailScreen.routeName,
+                  path: CalledDetailScreen.routeName,
+                  builder: (context, state) {
+                    final int drvReqSq = state.extra as int;
+                    return CalledDetailScreen(drvReqSq: drvReqSq);
+                  },
+                ),
+
+                /// 미완료 이용내역 상세
+                GoRoute(
+                  name: CallDetailScreen.routeName,
+                  path: CallDetailScreen.routeName,
+                  builder: (context, state) {
+                    final int drvReqSq = state.extra as int;
+                    return CallDetailScreen(drvReqSq: drvReqSq);
+                  },
                 ),
               ],
             ),

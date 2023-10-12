@@ -5,6 +5,7 @@ import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/cs_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/car_info_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
@@ -61,8 +62,7 @@ class MenuScreen extends StatelessWidget {
                         height: 28,
                       ),
                       onPressed: () {
-                        // TODO: 이용내역 화면으로 이동
-                        // context.pushNamed(CalledScreen.routeName);
+                        context.pushNamed(CalledScreen.routeName);
                       },
                     ),
 

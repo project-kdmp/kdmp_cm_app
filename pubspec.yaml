@@ -96,6 +96,7 @@ flutter:
     - assets/permission/icon_location.png
     - assets/permission/icon_notification.png
     - assets/common/icon_warning.png
+    - assets/common/img_warning.png
     - assets/common/app_logo.png
     - assets/register/icon_check_off.png
     - assets/register/icon_check_on.png

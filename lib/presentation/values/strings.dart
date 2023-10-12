@@ -354,3 +354,43 @@ abstract class StringPush {
   static const String feeBody1 = "호출 요금이 ";
   static const String feeBody2 = "으로 변경되었습니다.";
 }
+
+abstract class StringCalled {
+  StringCalled._();
+
+  static const String title = "이용내역";
+  static const String noList = "최근 1년 동안 이용내역이 없습니다.";
+
+  static const String date = "일시";
+  static const String callType = "호출";
+  static const String driveType = "상태";
+  static const String startSpot = "출발지";
+  static const String endSpot = "도착지";
+  static const String stopover = "경유지";
+  static const String payment = "결제";
+  static const String amount = "요금";
+  static const String delete = "삭제";
+}
+
+abstract class StringCalledDetail {
+  StringCalledDetail._();
+
+  static const String title = "이용내역 상세";
+  static const String sub1Title = "이용정보";
+  static const String sub2Title = "결제정보";
+  static const String sub3Title = "기사정보";
+
+  static const String date = "일시";
+  static const String callType = "호출";
+  static const String driveType = "상태";
+  static const String startSpot = "출발지";
+  static const String endSpot = "도착지";
+  static const String stopover = "경유지";
+  static const String payment = "결제";
+  static const String amount = "요금";
+  static const String driver = "이름";
+  static const String car = "차량번호";
+
+  static const String reviewModify = "리뷰 수정";
+  static const String reCall = "다시 호출하기";
+}

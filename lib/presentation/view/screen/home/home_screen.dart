@@ -711,10 +711,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const SizedBox(width: 18),
 
                                 /// 예약콜
-                                const Text(
-                                  StringHome.callButton,
-                                  style: TextStyle(
-                                    color: Colors.white,
+                                const Expanded(
+                                  child: Text(
+                                    StringHome.callButton,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ],

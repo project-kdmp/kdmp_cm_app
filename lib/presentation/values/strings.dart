@@ -61,9 +61,10 @@ abstract class StringLogin {
   static const String loginSuccess = "로그인 성공";
   static const String loginFail = "로그인 실패";
 
-  // static const String mbrPrivilegeTpCMMB = "고객사용자입니다. 고객용 앱을 이용해주세요.";
-  static const String mbrPrivilegeTpDMMB = "대리기사회원입니다. 기사용 앱을 이용해주세요.";
+  // static const String mbrPrivilegeTpCMMB = "고객사용자입니다.\n고객용 앱을 이용해주세요.";
+  static const String mbrPrivilegeTpDMMB = "대리기사회원입니다.\n기사용 앱을 이용해주세요.";
   static const String mbrPrivilegeTpADMN = "관리자입니다.";
+  static const String mbrPrivilegeTpUNKNOWN = "알 수 없는 회원정보입니다.";
 
   static const String mbrStD = "휴면회원입니다.";
   static const String mbrStW = "탈퇴회원입니다.";

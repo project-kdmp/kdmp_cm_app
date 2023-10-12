@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -14,9 +15,11 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrid_usecase.
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/register/phone_verify_viewmodel.dart';
@@ -108,13 +111,15 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
 
                     /// 회원구분
                     switch (loginResponse.mbrPrivilegeTp) {
-                      case MbrPrivilegeTp.customer:
-                        Fluttertoast.showToast(msg: StringLogin.mbrPrivilegeTpCMMB);
+                      case MbrPrivilegeTp.driver:
+                        await _showAlertDialog(content: StringLogin.mbrPrivilegeTpDMMB, isCanceled: false);
+                        SystemNavigator.pop();
                         return;
                       case MbrPrivilegeTp.admin:
-                        Fluttertoast.showToast(msg: StringLogin.mbrPrivilegeTpADMN);
+                        await _showAlertDialog(content: StringLogin.mbrPrivilegeTpADMN, isCanceled: false);
+                        SystemNavigator.pop();
                         return;
-                      case MbrPrivilegeTp.driver:
+                      case MbrPrivilegeTp.customer:
                         {
                           /// 가입상태
                           switch (loginResponse.mbrSt) {
@@ -127,25 +132,37 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
                                 context.goNamed(RegisterCarScreen.routeName);
                               }
                               break;
-                            case MbrSt.reject:
-                              // 심사 거절이나 기사용 상태
+                            case MbrSt.reject: // 심사 거절이나 기사용 상태
                               break;
                             case MbrSt.registerComplete:
-                              // TODO: 이용약관 갱신?
-                              final isOnBoardingCheck = await _phoneVerifyViewModel.isOnBoardingCheck();
-                              if (!isOnBoardingCheck) {
-                                await context.pushNamed(OnBoardingScreen.routeName);
+
+                              /// 이용약관 갱신 여부 확인
+                              if (loginResponse.bagreeTrmUpdate) {
+                                /// 필수 약관 모두 동의
+                                final isOnBoardingCheck = await _phoneVerifyViewModel.isOnBoardingCheck();
+                                if (!isOnBoardingCheck) {
+                                  await context.pushNamed(OnBoardingScreen.routeName);
+                                }
+                                context.goNamed(HomeScreen.routeName);
+                              } else {
+                                /// 미동의 필수 약관 갱신 필요
+                                context.goNamed(CMTermScreen.routeName);
                               }
-                              context.goNamed(HomeScreen.routeName);
                               break;
                             case MbrSt.withdrawal:
-                              Fluttertoast.showToast(msg: StringLogin.mbrStW);
+                              await _showAlertDialog(content: StringLogin.mbrStW, isCanceled: false);
+                              SystemNavigator.pop();
                               break;
                             case MbrSt.registerDormant:
-                              Fluttertoast.showToast(msg: StringLogin.mbrStD);
+                              await _showAlertDialog(content: StringLogin.mbrStD, isCanceled: false);
+                              SystemNavigator.pop();
                               break;
                           }
                         }
+                        break;
+                      default:
+                        await _showAlertDialog(content: StringLogin.mbrPrivilegeTpUNKNOWN, isCanceled: false);
+                        SystemNavigator.pop();
                     }
                   } else if (loginResult is Bad) {
                     // TODO: 로그인 - 에러코드 처리
@@ -171,6 +188,24 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: title,
+          content: content,
+          isCanceled: isCanceled,
+          isWarning: isWarning,
+          onConfirm: () {
+            context.pop();
+          },
+        );
+      },
     );
   }
 }

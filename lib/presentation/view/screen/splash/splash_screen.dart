@@ -15,7 +15,7 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrpw_usecase.
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/auth/login_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_screen.dart';
@@ -81,15 +81,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
       /// 회원구분
       switch (response.mbrPrivilegeTp) {
-        case MbrPrivilegeTp.customer:
-          Fluttertoast.showToast(msg: StringLogin.mbrPrivilegeTpCMMB);
-          context.goNamed(LoginScreen.routeName);
+        case MbrPrivilegeTp.driver:
+          await _showAlertDialog(content: StringLogin.mbrPrivilegeTpDMMB, isCanceled: false);
+          SystemNavigator.pop();
           return;
         case MbrPrivilegeTp.admin:
-          Fluttertoast.showToast(msg: StringLogin.mbrPrivilegeTpADMN);
-          context.goNamed(LoginScreen.routeName);
+          await _showAlertDialog(content: StringLogin.mbrPrivilegeTpADMN, isCanceled: false);
+          SystemNavigator.pop();
           return;
-        case MbrPrivilegeTp.driver:
+        case MbrPrivilegeTp.customer:
           {
             /// 가입상태
             switch (response.mbrSt) {
@@ -102,8 +102,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   context.goNamed(RegisterCarScreen.routeName);
                 }
                 break;
-              case MbrSt.reject:
-                // 심사 거절이나 기사용 상태
+              case MbrSt.reject: // 심사 거절이나 기사용 상태
                 break;
               case MbrSt.registerComplete:
 
@@ -121,13 +120,19 @@ class _SplashScreenState extends State<SplashScreen> {
                 }
                 break;
               case MbrSt.withdrawal:
-                Fluttertoast.showToast(msg: StringLogin.mbrStW);
+                await _showAlertDialog(content: StringLogin.mbrStW, isCanceled: false);
+                SystemNavigator.pop();
                 break;
               case MbrSt.registerDormant:
-                Fluttertoast.showToast(msg: StringLogin.mbrStD);
+                await _showAlertDialog(content: StringLogin.mbrStD, isCanceled: false);
+                SystemNavigator.pop();
                 break;
             }
           }
+          break;
+        default:
+          await _showAlertDialog(content: StringLogin.mbrPrivilegeTpUNKNOWN, isCanceled: false);
+          SystemNavigator.pop();
       }
     } else if (result is Bad) {
       // TODO: 로그인 - 에러코드 처리
@@ -136,7 +141,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
       Fluttertoast.showToast(msg: StringLogin.loginFail);
     } else if (result is Fail) {
-      context.goNamed(LoginScreen.routeName);
+      Fluttertoast.showToast(msg: "${result.errorMessage}");
     }
   }
 
@@ -144,5 +149,23 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<bool> _onBackPressed() async {
     SystemNavigator.pop();
     return true;
+  }
+
+  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: title,
+          content: content,
+          isCanceled: isCanceled,
+          isWarning: isWarning,
+          onConfirm: () {
+            context.pop();
+          },
+        );
+      },
+    );
   }
 }

@@ -7,7 +7,9 @@ import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/register/register_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_jwt_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_firstlogin_usecase.dart';
@@ -61,6 +63,8 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
       setMbrPwUseCase: GetIt.instance<SetMbrPwUseCase>(),
       setFirstLoginUseCase: GetIt.instance<SetFirstLoginUseCase>(),
       getOnBoardingCheckUseCase: GetIt.instance<GetOnBoardingCheckUseCase>(),
+      getFCMUseCase: GetIt.instance<GetFCMUseCase>(),
+      setFCMTokenUseCase: GetIt.instance<SetFCMTokenUseCase>(),
     );
   }
 

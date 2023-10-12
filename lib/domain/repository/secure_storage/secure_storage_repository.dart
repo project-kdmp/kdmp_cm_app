@@ -29,6 +29,12 @@ abstract class SecureStorageRepository {
 
   Future<void> deleteMbrPw();
 
+  Future<String> getFCM();
+
+  Future<void> setFCM({required String fcm});
+
+  Future<void> deleteFCM();
+
   Future<void> setThemeMode({required String themeMode});
 
   Future<String> getThemeMode();

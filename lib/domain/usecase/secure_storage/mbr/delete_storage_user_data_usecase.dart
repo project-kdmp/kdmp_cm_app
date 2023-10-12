@@ -11,6 +11,7 @@ class DeleteStorageUserDataUseCase {
     await _secureStorageRepository.deleteMbrSq();
     await _secureStorageRepository.deleteMbrId();
     await _secureStorageRepository.deleteMbrPw();
+    await _secureStorageRepository.deleteFCM();
   }
 
   Future<void> withdrawal() async {
@@ -19,6 +20,7 @@ class DeleteStorageUserDataUseCase {
     await _secureStorageRepository.deleteMbrSq();
     await _secureStorageRepository.deleteMbrId();
     await _secureStorageRepository.deleteMbrPw();
+    await _secureStorageRepository.deleteFCM();
     await _secureStorageRepository.deleteFirstLogin();
     await _secureStorageRepository.deleteOnBoardingCheck();
   }

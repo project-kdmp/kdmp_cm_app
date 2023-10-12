@@ -14,6 +14,7 @@ import 'package:get_it/get_it.dart';
 import 'package:kdmp_cm_app/common/network/dio_singleton.dart';
 import 'package:kdmp_cm_app/common/network/interceptor/token_interceptor.dart';
 import 'package:kdmp_cm_app/data/repository/auth/auth_repository_impl.dart';
+import 'package:kdmp_cm_app/data/repository/fcm/fcm_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/inquiry/inquiry_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/mypage/mypage_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/naver/naver_repository_impl.dart';
@@ -24,6 +25,8 @@ import 'package:kdmp_cm_app/data/repository/term/term_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/work/work_repository_impl.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/logout/set_logout_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_detail_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/set_inquiry_delete_usecase.dart';
@@ -49,6 +52,8 @@ import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_detail_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/set_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_auto_refresh_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_auto_refresh_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_storage_user_data_usecase.dart';
@@ -220,9 +225,6 @@ Future<void> _onBackgroundMessage(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  String? fcmToken = await fcmSetting();
-  debugPrint("======fcmToken=$fcmToken");
-
   /// 키 관리 파일 가져오기
   await dotenv.load(fileName: ".env");
 
@@ -274,6 +276,14 @@ void main() async {
   getIt.registerSingleton<SetOnBoardingCheckUseCase>(setOnBoardingCheckUseCase);
   final getOnBoardingCheckUseCase = GetOnBoardingCheckUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<GetOnBoardingCheckUseCase>(getOnBoardingCheckUseCase);
+  final setFCMUseCase = SetFCMUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<SetFCMUseCase>(setFCMUseCase);
+  final getFCMUseCase = GetFCMUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<GetFCMUseCase>(getFCMUseCase);
+
+  String? fcmToken = await fcmSetting();
+  debugPrint("======fcmToken=$fcmToken");
+  setFCMUseCase.execute(fcm: fcmToken ?? "");
 
   /// 환경설정값
   final themeMode = await setupUseCase.getThemeMode();
@@ -316,6 +326,13 @@ void main() async {
   getIt.registerSingleton<GetLoginUseCase>(getLoginUseCase);
   final setLogoutUseCase = SetLogoutUseCase(authRepository: authRepository);
   getIt.registerSingleton<SetLogoutUseCase>(setLogoutUseCase);
+
+  /// FCM
+  final fcmRepository = FCMRepositoryImpl(dio);
+  final setFCMTokenUseCase = SetFCMTokenUseCase(fcmRepository: fcmRepository);
+  getIt.registerSingleton<SetFCMTokenUseCase>(setFCMTokenUseCase);
+  final setFCMPushUseCase = SetFCMPushUseCase(fcmRepository: fcmRepository);
+  getIt.registerSingleton<SetFCMPushUseCase>(setFCMPushUseCase);
 
   /// 이용약관
   final termRepository = TermRepositoryImpl(dio);

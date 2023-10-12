@@ -100,6 +100,25 @@ class SecureStorageRepositoryImpl extends SecureStorageRepository {
     await _storage.delete(key: 'mbrPw');
   }
 
+  /// 로컬에 저장된 FCM 반환
+  @override
+  Future<String> getFCM() async {
+    String fcm = await _storage.read(key: 'fcm') ?? '';
+    return fcm;
+  }
+
+  /// 로컬에 FCM 저장
+  @override
+  Future<void> setFCM({required String fcm}) async {
+    await _storage.write(key: 'fcm', value: fcm);
+  }
+
+  /// 로컬에서 FCM 삭제
+  @override
+  Future<void> deleteFCM() async {
+    await _storage.delete(key: 'fcm');
+  }
+
   /// 로컬에 '테마' 저장
   @override
   Future<void> setThemeMode({required String themeMode}) async {

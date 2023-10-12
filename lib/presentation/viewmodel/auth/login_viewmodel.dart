@@ -2,7 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/auth/login_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/data/model/fcm/fcm_token_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_auto_refresh_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_jwt_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
@@ -12,14 +15,6 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrsq_usecase.
 import 'package:kdmp_cm_app/presentation/util/device_info_util.dart';
 
 class LoginViewModel {
-  final GetLoginUseCase getLoginUseCase;
-  final SetJwtUseCase setJwtUseCase;
-  final SetAutoRefreshUseCase setAutoRefreshUseCase;
-  final SetMbrSqUseCase setMbrSqUseCase;
-  final SetMbrIdUseCase setMbrIdUseCase;
-  final SetMbrPwUseCase setMbrPwUseCase;
-  final GetOnBoardingCheckUseCase getOnBoardingCheckUseCase;
-
   LoginViewModel({
     required this.getLoginUseCase,
     required this.setJwtUseCase,
@@ -28,7 +23,19 @@ class LoginViewModel {
     required this.setMbrIdUseCase,
     required this.setMbrPwUseCase,
     required this.getOnBoardingCheckUseCase,
+    required this.getFCMUseCase,
+    required this.setFCMTokenUseCase,
   });
+
+  final GetLoginUseCase getLoginUseCase;
+  final SetJwtUseCase setJwtUseCase;
+  final SetAutoRefreshUseCase setAutoRefreshUseCase;
+  final SetMbrSqUseCase setMbrSqUseCase;
+  final SetMbrIdUseCase setMbrIdUseCase;
+  final SetMbrPwUseCase setMbrPwUseCase;
+  final GetOnBoardingCheckUseCase getOnBoardingCheckUseCase;
+  final GetFCMUseCase getFCMUseCase;
+  final SetFCMTokenUseCase setFCMTokenUseCase;
 
   /// 상태
   StateAPI state = Loading();
@@ -101,8 +108,26 @@ class LoginViewModel {
         await setMbrSqUseCase.execute(mbrSq: result.loginResponse.mbrSq);
         await setMbrIdUseCase.execute(mbrId: mbrId);
         await setMbrPwUseCase.execute(mbrPw: password);
+
+        await _setFcmToken(mbrSq: result.loginResponse.mbrSq);
       }
     }
+    return result;
+  }
+
+  /// FCM 토큰 등록 API
+  Future<StateAPI> _setFcmToken({required int mbrSq}) async {
+    state = Loading();
+
+    final fcmToken = await getFCMUseCase.execute();
+
+    final request = FCMTokenRequest(
+      mbrSq: mbrSq,
+      mbrFcmToken: fcmToken,
+    );
+    final result = await setFCMTokenUseCase.execute(fcmTokenRequest: request);
+    state = result;
+
     return result;
   }
 

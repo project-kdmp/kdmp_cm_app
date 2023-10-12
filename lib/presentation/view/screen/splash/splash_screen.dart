@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_jwt_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
@@ -56,6 +58,8 @@ class _SplashScreenState extends State<SplashScreen> {
       setMbrPwUseCase: GetIt.instance<SetMbrPwUseCase>(),
       getMbrPwUseCase: GetIt.instance<GetMbrPwUseCase>(),
       getOnBoardingCheckUseCase: GetIt.instance<GetOnBoardingCheckUseCase>(),
+      getFCMUseCase: GetIt.instance<GetFCMUseCase>(),
+      setFCMTokenUseCase: GetIt.instance<SetFCMTokenUseCase>(),
     );
   }
 

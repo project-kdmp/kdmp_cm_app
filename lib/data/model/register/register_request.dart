@@ -17,7 +17,7 @@ class RegisterRequest {
     this.clientVersion = "",
     this.clientId = "",
     required this.mbrNm,
-    this.mbrSt = MbrSt.temp,
+    this.mbrSt = MbrSt.registerComplete,
     required this.mbrMobilePhone,
     required this.mbrDeviceId,
     this.mbrRegprogressSt = MbrRegprogressSt.cm10,

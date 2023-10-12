@@ -330,6 +330,14 @@ abstract class StringInquiry {
   static const String writeButton = "등록";
   static const String titleHint = "제목을 입력해주세요.";
   static const String contentHint = "내용을 입력해주세요.";
-  static const String inquiryDeleteAlert = "해당 상담문의를 삭제하시겠습니까?";
   static const String inquiryWriteSuccessAlert = "상담문의가 등록되었습니다.";
+  static const String inquiryDeleteAlert = "해당 상담문의를 삭제하시겠습니까?";
+  static const String inquiryDeleteSuccessAlert = "상담문의가 삭제되었습니다.";
+}
+
+abstract class StringOther {
+  StringOther._();
+
+  static const String title = "더보기";
+  static const String delete = "삭제하기";
 }

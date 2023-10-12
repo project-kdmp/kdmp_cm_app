@@ -1,23 +1,23 @@
-class InquiryWriteResponse {
-  String serverVersion;
-  String serverId;
+class InquiryDeleteRequest {
+  String clientVersion;
+  String clientId;
   int inqSq;
 
-  InquiryWriteResponse({
-    required this.serverVersion,
-    required this.serverId,
+  InquiryDeleteRequest({
+    this.clientVersion = "",
+    this.clientId = "",
     required this.inqSq,
   });
 
-  factory InquiryWriteResponse.fromJson(Map<String, dynamic> json) => InquiryWriteResponse(
-        serverVersion: json["serverVersion"],
-        serverId: json["serverId"],
+  factory InquiryDeleteRequest.fromJson(Map<String, dynamic> json) => InquiryDeleteRequest(
+        clientVersion: json["clientVersion"],
+        clientId: json["clientId"],
         inqSq: json["inqSq"],
       );
 
   Map<String, dynamic> toJson() => {
-        "serverVersion": serverVersion,
-        "serverId": serverId,
+        "clientVersion": clientVersion,
+        "clientId": clientId,
         "inqSq": inqSq,
       };
 }

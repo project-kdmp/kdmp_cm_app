@@ -74,5 +74,6 @@ class InquiryViewModel {
   void clearPagination() {
     page = 0;
     isNextPage = true;
+    inquiryList = List.empty();
   }
 }

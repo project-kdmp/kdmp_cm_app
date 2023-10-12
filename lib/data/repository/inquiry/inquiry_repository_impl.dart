@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
 import 'package:kdmp_cm_app/data/constant/url.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
+import 'package:kdmp_cm_app/data/model/common/default_response.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/data/model/inquiry/inquiry_delete_response.dart';
 import 'package:kdmp_cm_app/data/model/inquiry/inquiry_detail_request.dart';
 import 'package:kdmp_cm_app/data/model/inquiry/inquiry_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/inquiry/inquiry_list_request.dart';
@@ -142,6 +144,23 @@ class InquiryRepositoryImpl extends InquiryRepository {
       }
     }
   }
+
+  @override
+  Future<StateAPI> deleteInquiry({required InquiryDeleteRequest inquiryDeleteRequest}) async {
+    const api = '/v1/biztotal/cm/cs/delInquiry';
+    const url = '$baseBizUrl$api';
+
+    try {
+      final response = await _dio.post(
+        url,
+        data: inquiryDeleteRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      switch (response.statusCode) {
+        case 200:
+          {
+            final responseObject = DefaultResponse.fromJson(response.data);
+            final StateAPI state = Success(responseObject);
             debugPrint("state: $state");
             return state;
           }

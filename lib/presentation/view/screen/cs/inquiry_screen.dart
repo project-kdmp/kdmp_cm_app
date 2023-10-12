@@ -118,6 +118,19 @@ class _InquiryScreenState extends State<InquiryScreen> with SingleTickerProvider
                     if (result == true) {
                       /// 상담문의 리스트 재조회
                       initData();
+                    } else if (result is int) {
+                      /// 상담문의 리스트 재조회
+                      initData();
+
+                      /// 상담문의 상세 화면으로 이동
+                      final detailResult = await context.pushNamed(
+                        InquiryDetailScreen.routeName,
+                        extra: result,
+                      );
+                      if (detailResult == true) {
+                        /// 상담문의 리스트 재조회
+                        initData();
+                      }
                     }
                   },
                 ),
@@ -140,10 +153,15 @@ class _InquiryScreenState extends State<InquiryScreen> with SingleTickerProvider
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 상담문의 리스트 아이템 클릭
-            context.pushNamed(
+            /// 상담문의 상세 화면으로 이동
+            final detailResult = await context.pushNamed(
               InquiryDetailScreen.routeName,
               extra: value[index].inqSq,
             );
+            if (detailResult == true) {
+              /// 상담문의 리스트 재조회
+              initData();
+            }
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

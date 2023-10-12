@@ -7,7 +7,6 @@ import 'package:kdmp_cm_app/domain/usecase/inquiry/set_inquiry_write_usecase.dar
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
@@ -132,14 +131,11 @@ class _InquiryWriteScreenState extends State<InquiryWriteScreen> {
                               /// 상담문의 등록 성공 팝업 띄움
                               await _showAlertDialog(content: StringInquiry.inquiryWriteSuccessAlert, isCanceled: false);
 
-                              /// 화면 닫기, 상담문의 리스트 재조회
-                              context.pop(true);
-
+                              /// 등록된 상담문의 번호
                               final inqSq = result.inquiryWriteResponse.inqSq;
-                              context.pushNamed(
-                                InquiryDetailScreen.routeName,
-                                extra: inqSq,
-                              );
+
+                              /// 화면 닫기, 상담문의 리스트 재조회 후 상세 화면으로 이동
+                              context.pop(inqSq);
                             } else if (result is Bad) {
                               Fluttertoast.showToast(msg: StringCommon.httpBad);
                             } else if (result is Fail) {

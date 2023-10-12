@@ -1,15 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/data/model/inquiry/inquiry_delete_response.dart';
 import 'package:kdmp_cm_app/data/model/inquiry/inquiry_detail_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_detail_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/inquiry/set_inquiry_delete_usecase.dart';
 
 class InquiryDetailViewModel {
   InquiryDetailViewModel({
     required this.getInquiryDetailUseCase,
+    required this.setInquiryDeleteUseCase,
   });
 
   final GetInquiryDetailUseCase getInquiryDetailUseCase;
+  final SetInquiryDeleteUseCase setInquiryDeleteUseCase;
 
   /// 상담문의 제목
   final ValueNotifier<String> _inquiryTitle = ValueNotifier<String>("");
@@ -81,6 +85,17 @@ class InquiryDetailViewModel {
       answerContent = result.inquiryDetailResponse.inqRtnContent ?? "";
       isAnswer = (result.inquiryDetailResponse.inqRtnSt ?? "") == InqRtnSt.comp;
     }
+  }
+
+  /// 상담문의 삭제 API
+  Future<StateAPI> deleteInquiry({required int inqSq}) async {
+    state = Loading();
+
+    final request = InquiryDeleteRequest(inqSq: inqSq);
+    final result = await setInquiryDeleteUseCase.execute(inquiryDeleteRequest: request);
+    state = result;
+
+    return result;
   }
 
   /// 상태

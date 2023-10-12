@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_detail_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/inquiry/set_inquiry_delete_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/bottomsheet/other_bottom_sheet.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/cs/inquiry_detail_viewmodel.dart';
@@ -36,6 +43,7 @@ class _InquiryDetailScreenState extends State<InquiryDetailScreen> {
   void initViewModel() {
     _inquiryDetailViewModel = InquiryDetailViewModel(
       getInquiryDetailUseCase: GetIt.instance<GetInquiryDetailUseCase>(),
+      setInquiryDeleteUseCase: GetIt.instance<SetInquiryDeleteUseCase>(),
     );
   }
 
@@ -50,6 +58,84 @@ class _InquiryDetailScreenState extends State<InquiryDetailScreen> {
       appBar: BaseAppBar(
         appBar: AppBar(),
         title: StringInquiry.inquiryDetail,
+        actions: [
+          /// 더보기 버튼
+          InkWell(
+            child: Icon(
+              Icons.more_vert,
+              color: Theme.of(context).disabledColor,
+              size: 30,
+            ),
+            onTap: () async {
+              /// 더보기 팝업 띄움
+              final result = await showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) {
+                  return Wrap(children: [
+                    OtherBottomSheet(
+                      onDeletePressed: () async {
+                        /// 상담문의 삭제 확인팝업 띄움
+                        final deleteAlertResult = await _showConfirmDialog(
+                          content: StringInquiry.inquiryDeleteAlert,
+                          onConfirm: () async {
+                            /// 상담문의 삭제
+                            final result = await _inquiryDetailViewModel.deleteInquiry(inqSq: widget.inqSq);
+
+                            if (result is Success) {
+                              /// 팝업 닫기
+                              context.pop(true);
+                            } else if (result is Bad) {
+                              Fluttertoast.showToast(msg: StringCommon.httpBad);
+                            } else if (result is Fail) {
+                              Fluttertoast.showToast(msg: "${result.errorMessage}");
+                            }
+                          },
+                        );
+
+                        if (deleteAlertResult == true) {
+                          /// 상담문의 삭제 성공 팝업 띄움
+                          await _showAlertDialog(content: StringInquiry.inquiryDeleteSuccessAlert, isCanceled: false);
+
+                          /// 팝업 닫기
+                          context.pop(deleteAlertResult);
+                        }
+                      },
+                    )
+                  ]);
+                },
+              );
+
+              if (result == true) {
+                /// 화면 닫기, 상담문의 리스트 재조회
+                context.pop(result);
+              }
+            },
+          ),
+          // ClipOval(
+          //   child: Container(
+          //     width: 30,
+          //     height: 30,
+          //     decoration: BoxDecoration(
+          //       border: Border.all(color: Theme.of(context).disabledColor, width: 1),
+          //       color: Theme.of(context).scaffoldBackgroundColor,
+          //       shape: BoxShape.circle,
+          //     ),
+          //     child: Material(
+          //       color: Colors.transparent,
+          //       child: InkWell(
+          //         child: Icon(
+          //           Icons.more_vert,
+          //           color: Theme.of(context).disabledColor,
+          //           size: 24,
+          //         ),
+          //         onTap: () async {},
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          const SizedBox(width: 20),
+        ],
       ),
 
       /// 화면
@@ -168,6 +254,39 @@ class _InquiryDetailScreenState extends State<InquiryDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: title,
+          content: content,
+          isCanceled: isCanceled,
+          isWarning: isWarning,
+          onConfirm: () {
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
+  _showConfirmDialog({String? title, String? content, bool isWarning = false, required Function() onConfirm}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: true, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomConfirmDialog(
+          title: title,
+          content: content,
+          isWarning: isWarning,
+          onConfirm: onConfirm,
+        );
+      },
     );
   }
 }

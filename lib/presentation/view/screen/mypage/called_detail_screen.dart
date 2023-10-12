@@ -10,6 +10,7 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/horizontal_dashed_divider.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_tag.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_text_field.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/mypage/called_detail_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -261,7 +262,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.amount, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalledDetail.driver, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _calledDetailViewModel.driverNotifier,
@@ -277,7 +278,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.payment, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalledDetail.car, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _calledDetailViewModel.carNumIdNotifier,
@@ -287,7 +288,54 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                               ),
                             ],
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 14),
+
+                          /// 리뷰
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(StringCalledDetail.review, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    /// 별점
+                                    ValueListenableBuilder<int>(
+                                      valueListenable: _calledDetailViewModel.starNotifier,
+                                      builder: (context, value, child) {
+                                        return Row(
+                                          children: [
+                                            Icon(Icons.star, color: value > 0 ? Theme.of(context).colorScheme.secondary : Theme.of(context).dividerColor, size: 20),
+                                            Icon(Icons.star, color: value > 1 ? Theme.of(context).colorScheme.secondary : Theme.of(context).dividerColor, size: 20),
+                                            Icon(Icons.star, color: value > 2 ? Theme.of(context).colorScheme.secondary : Theme.of(context).dividerColor, size: 20),
+                                            Icon(Icons.star, color: value > 3 ? Theme.of(context).colorScheme.secondary : Theme.of(context).dividerColor, size: 20),
+                                            Icon(Icons.star, color: value > 4 ? Theme.of(context).colorScheme.secondary : Theme.of(context).dividerColor, size: 20),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(height: 12),
+
+                                    /// 내용
+                                    ValueListenableBuilder<String>(
+                                      valueListenable: _calledDetailViewModel.reviewNotifier,
+                                      builder: (context, value, _) {
+                                        return SizedBox(
+                                          height: 80,
+                                          child: CustomTextField(
+                                            text: value,
+                                            isEnabled: false,
+                                            isExpands: true,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
                         ],
                       ),
                     ),
@@ -351,6 +399,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                                 style: TextStyle(
                                   color: Colors.white,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ],

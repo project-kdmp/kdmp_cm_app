@@ -256,7 +256,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(StringCalledDetail.amount, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                        Text(StringCalledDetail.driver, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                         const SizedBox(width: 14),
                         ValueListenableBuilder<String>(
                           valueListenable: _callDetailViewModel.driverNotifier,
@@ -272,7 +272,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(StringCalledDetail.payment, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                        Text(StringCalledDetail.car, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                         const SizedBox(width: 14),
                         ValueListenableBuilder<String>(
                           valueListenable: _callDetailViewModel.carNumIdNotifier,

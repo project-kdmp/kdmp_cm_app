@@ -114,6 +114,24 @@ class CalledDetailViewModel {
 
   set carNumId(String value) => _carNumId.value = value;
 
+  /// 리뷰 점수
+  final ValueNotifier<int> _star = ValueNotifier<int>(0);
+
+  ValueNotifier<int> get starNotifier => _star;
+
+  int get star => _star.value;
+
+  set star(int value) => _star.value = value;
+
+  /// 리뷰 메세지
+  final ValueNotifier<String> _review = ValueNotifier<String>("");
+
+  ValueNotifier<String> get reviewNotifier => _review;
+
+  String get review => _review.value;
+
+  set review(String value) => _review.value = value;
+
   /// 리뷰 수정 버튼 활성화 여부
   final ValueNotifier<bool> _isReviewEnabled = ValueNotifier<bool>(false);
 
@@ -158,6 +176,8 @@ class CalledDetailViewModel {
       amount = response.drvPaymPrice ?? 0;
       driver = response.dmMbrNm ?? "";
       carNumId = response.carNumId ?? "";
+      star = response.starPoint ?? 0;
+      review = response.reviewContent ?? "";
     }
 
     return result;

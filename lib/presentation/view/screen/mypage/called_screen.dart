@@ -159,7 +159,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
             /// 미완료 이용내역 리스트 아이템 클릭
             /// 미완료 이용내역 화면으로 이동
             context.pushNamed(
-              CallDetailScreen.routeName,
+              CalledDetailScreen.routeName,
               extra: value[index].drvReqSq,
             );
           },

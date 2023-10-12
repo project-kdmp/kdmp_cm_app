@@ -389,7 +389,8 @@ abstract class StringCalledDetail {
   static const String payment = "결제";
   static const String amount = "요금";
   static const String driver = "이름";
-  static const String car = "차량번호";
+  static const String car = "차량";
+  static const String review = "리뷰";
 
   static const String reviewModify = "리뷰 수정";
   static const String reCall = "다시 호출하기";

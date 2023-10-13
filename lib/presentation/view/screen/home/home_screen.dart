@@ -275,6 +275,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   },
                                                 ),
                                               ),
+
+                                              /// 경유지 삭제 버튼
+                                              GestureDetector(
+                                                child: Icon(Icons.close, size: 16, color: Theme.of(context).disabledColor),
+                                                onTap: () {
+                                                  /// 경유지 삭제
+                                                  _homeViewModel.clearStopOverList();
+                                                },
+                                              ),
                                             ],
                                           )
                                         : Row(

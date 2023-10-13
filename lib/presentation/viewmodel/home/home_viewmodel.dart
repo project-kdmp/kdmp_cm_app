@@ -71,6 +71,10 @@ class HomeViewModel {
     stopOverList = copyList;
   }
 
+  clearStopOverList() {
+    stopOverList = List.empty();
+  }
+
   /// 도착지 데이터 모델
   final ValueNotifier<MapData?> _endMapData = ValueNotifier<MapData?>(null);
 

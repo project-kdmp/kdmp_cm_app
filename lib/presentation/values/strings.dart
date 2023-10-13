@@ -372,6 +372,9 @@ abstract class StringCalled {
   static const String payment = "결제";
   static const String amount = "요금";
   static const String delete = "삭제";
+
+  static const String deleteAlert = "이용정보를 삭제하시겠습니까?";
+  static const String deleteSuccess = "이용정보가 삭제되었습니다.";
 }
 
 abstract class StringCalledDetail {

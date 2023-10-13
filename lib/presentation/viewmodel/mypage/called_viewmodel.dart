@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:kdmp_cm_app/data/model/common/drv_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_list_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_list_response.dart';
@@ -6,6 +7,7 @@ import 'package:kdmp_cm_app/data/model/mypage/called_list_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_call_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_called_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/mypage/set_called_delete_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 
 class CalledViewModel {
@@ -13,11 +15,13 @@ class CalledViewModel {
     required this.getMbrSqUseCase,
     required this.getCallListUseCase,
     required this.getCalledListUseCase,
+    required this.setCalledDeleteUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final GetCallListUseCase getCallListUseCase;
   final GetCalledListUseCase getCalledListUseCase;
+  final SetCalledDeleteUseCase setCalledDeleteUseCase;
 
   /// 현재 페이지
   final ValueNotifier<int> _page = ValueNotifier<int>(0);
@@ -114,5 +118,29 @@ class CalledViewModel {
       page = response.pagination.page;
       isNextPage = response.pagination.existNextPage;
     }
+  }
+
+  /// 페이지 정보 초기화
+  void clearPagination() {
+    page = 0;
+    isNextPage = true;
+    callList = List.empty();
+    calledList = List.empty();
+  }
+
+  /// 이용내역 삭제 API
+  Future<StateAPI> deleteCalled({required int drvReqSq}) async {
+    state = Loading();
+
+    final request = DrvRequest(drvReqSq: drvReqSq);
+    final result = await setCalledDeleteUseCase.execute(calledDeleteRequest: request);
+    state = result;
+
+    if (result is Success) {
+      clearPagination();
+      await getCallList();
+      await getCalledList();
+    }
+    return result;
   }
 }

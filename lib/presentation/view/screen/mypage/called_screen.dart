@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_call_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_called_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/mypage/set_called_delete_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
@@ -46,6 +51,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getCallListUseCase: GetIt.instance<GetCallListUseCase>(),
       getCalledListUseCase: GetIt.instance<GetCalledListUseCase>(),
+      setCalledDeleteUseCase: GetIt.instance<SetCalledDeleteUseCase>(),
     );
   }
 
@@ -59,6 +65,9 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
   }
 
   void initData() {
+    /// 페이지 정보 초기화
+    _calledViewModel.clearPagination();
+
     /// 미완료 이용내역 리스트 가져오기
     _calledViewModel.getCallList();
 
@@ -99,6 +108,8 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                         return getCallListView(value);
                       },
                     ),
+
+                    const SizedBox(height: 16),
 
                     /// 이용내역 리스트
                     ValueListenableBuilder<List<Called>>(
@@ -159,7 +170,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
             /// 미완료 이용내역 리스트 아이템 클릭
             /// 미완료 이용내역 화면으로 이동
             context.pushNamed(
-              CalledDetailScreen.routeName,
+              CallDetailScreen.routeName,
               extra: value[index].drvReqSq,
             );
           },
@@ -226,7 +237,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                         children: [
                           Text(StringCalled.startSpot, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                           const SizedBox(width: 12),
-                          Expanded(child: Text(value[index].reqStartAddress ?? "", textAlign: TextAlign.start)),
+                          Expanded(child: Text(value[index].reqStartPlaceNm ?? value[index].reqStartAddress ?? "", textAlign: TextAlign.start)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -250,7 +261,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                         children: [
                           Text(StringCalled.endSpot, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                           const SizedBox(width: 12),
-                          Expanded(child: Text(value[index].reqEndAddress ?? "", textAlign: TextAlign.start)),
+                          Expanded(child: Text(value[index].reqEndPlaceNm ?? value[index].reqEndAddress ?? "", textAlign: TextAlign.start)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -339,14 +350,38 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                 Expanded(
                   child: Column(
                     children: [
-                      /// 일시
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          /// 일시
                           Expanded(child: Text(getDateAndTimeFormat(startDate: value[index].drvStartDt, endDate: value[index].drvEndDt), textAlign: TextAlign.start)),
+
+                          /// 삭제 버튼
                           GestureDetector(
-                            onTap: () {
-                              /// TODO: 이용내역 삭제
+                            onTap: () async {
+                              /// 이용내역 삭제 확인 팝업
+                              final deleteResult = await _showConfirmDialog(
+                                content: StringCalled.deleteAlert,
+                                onConfirm: () async {
+                                  /// 이용내역 삭제
+                                  final deleteResult = await _calledViewModel.deleteCalled(drvReqSq: value[index].drvReqSq);
+                                  if (deleteResult is Success) {
+                                    /// 이용내역 삭제 확인 팝업 닫기
+                                    context.pop(true);
+                                  } else if (deleteResult is Bad) {
+                                    Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                  } else if (deleteResult is Fail) {
+                                    Fluttertoast.showToast(msg: "${deleteResult.errorMessage}");
+                                  }
+                                },
+                              );
+                              if (deleteResult == true) {
+                                /// 이용내역 삭제 완료 팝업
+                                await _showAlertDialog(content: StringCalled.deleteSuccess, isCanceled: false);
+
+                                /// 리스트 갱신
+                                initData();
+                              }
                             },
                             child: Text(StringCalled.delete, style: TextStyle(color: Theme.of(context).disabledColor)),
                           ),
@@ -451,6 +486,39 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
           children: [
             SizedBox(height: 16),
           ],
+        );
+      },
+    );
+  }
+
+  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: title,
+          content: content,
+          isCanceled: isCanceled,
+          isWarning: isWarning,
+          onConfirm: () {
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
+  _showConfirmDialog({String? title, String? content, bool isWarning = false, required Function() onConfirm}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: true, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomConfirmDialog(
+          title: title,
+          content: content,
+          isWarning: isWarning,
+          onConfirm: onConfirm,
         );
       },
     );

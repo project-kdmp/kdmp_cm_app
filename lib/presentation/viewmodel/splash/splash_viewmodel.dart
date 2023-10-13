@@ -51,8 +51,8 @@ class SplashViewModel {
     final mbrDeviceId = await getDeviceId();
 
     if (mbrId.isEmpty || password.isEmpty) {
-      state = Fail();
-      return Fail();
+      state = Fail(errorMessage: "아이디 비밀번호가 존재하지 않습니다.");
+      return state;
     }
 
     final request = LoginRequest(mbrId: mbrId, mbrDeviceId: mbrDeviceId, password: password);

@@ -73,6 +73,8 @@ abstract class StringLogin {
 abstract class StringHome {
   StringHome._();
 
+  static const String onBackPressed = "뒤로가기를 한번 더 누르면 종료됩니다.";
+
   static const String title = "타이틀";
   static const String reservationButton = "예약하기";
   static const String callButton = "호출하기";

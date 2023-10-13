@@ -170,7 +170,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                 ValueListenableBuilder<String>(
                                   valueListenable: _workViewModel.callNumberNotifier,
                                   builder: (context, value, child) {
-                                    return getCallButton(value);
+                                    return value.isNotEmpty ? getCallButton(value) : const SizedBox();
                                   },
                                 ),
                               ],
@@ -475,12 +475,11 @@ class _WorkScreenState extends State<WorkScreen> {
   _showPushDialog(AsyncSnapshot<String> snapshot) {
     debugPrint("========${snapshot.data}");
 
-    /// 다른 팝업이 열려있으면 닫기
-    if (ModalRoute.of(context)?.isCurrent != true) {
-      context.pop();
-    }
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      /// 다른 팝업이 열려있으면 닫기
+      if (ModalRoute.of(context)?.isCurrent != true) {
+        context.pop();
+      }
       final drvReqSt = snapshot.data ?? "";
       switch (drvReqSt) {
         case DrvReqSt.cco:

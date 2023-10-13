@@ -683,15 +683,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 WorkScreen.routeName,
                                                 extra: drvReqSq,
                                               );
-                                              if (callResult is bool) {
-                                                if (callResult == false) {
-                                                  /// 운행취소
-                                                  /// 입력 데이터 삭제
-                                                  _homeViewModel.clearData();
+                                              if (callResult == false) {
+                                                /// 운행취소
+                                                /// 입력 데이터 삭제
+                                                _homeViewModel.clearData();
 
-                                                  /// 지도 마커 삭제
-                                                  _mapController.clearOverlays(type: NOverlayType.marker);
-                                                }
+                                                /// 지도 마커 삭제
+                                                _mapController.clearOverlays(type: NOverlayType.marker);
                                               }
                                             } else if (requestResult is Bad) {
                                               Fluttertoast.showToast(msg: StringCommon.httpBad);

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
@@ -27,6 +29,7 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/vertical_dashed_divider.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/work/work_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// 운행 화면
 class WorkScreen extends StatefulWidget {
@@ -96,7 +99,7 @@ class _WorkScreenState extends State<WorkScreen> {
                         child: Column(
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 /// 호출취소 버튼
                                 ValueListenableBuilder<bool>(
@@ -160,6 +163,14 @@ class _WorkScreenState extends State<WorkScreen> {
                                             },
                                           )
                                         : const SizedBox();
+                                  },
+                                ),
+
+                                /// 전화 버튼
+                                ValueListenableBuilder<String>(
+                                  valueListenable: _workViewModel.callNumberNotifier,
+                                  builder: (context, value, child) {
+                                    return getCallButton(value);
                                   },
                                 ),
                               ],
@@ -571,6 +582,33 @@ class _WorkScreenState extends State<WorkScreen> {
   /// 운행 종료 여부 체크
   bool isWorkEnd() {
     return _workViewModel.drvReqSt == DrvReqSt.end || _workViewModel.drvReqSt == DrvReqSt.ren;
+  }
+
+  /// 전화 버튼
+  Widget getCallButton(String callNumber) {
+    return CustomRoundButton(
+      text: StringWork.call,
+      icon: Icons.call,
+      backgroundColor: Theme.of(context).toggleButtonsTheme.fillColor,
+      textColor: Theme.of(context).colorScheme.secondary,
+      onPressed: () async {
+        /// 전화걸기 다이얼 화면 띄움
+        if (callNumber.trim().isNotEmpty) {
+          makePhoneCall(callNumber);
+        }
+      },
+    );
+  }
+
+  /// 전화걸기
+  void makePhoneCall(String url) async {
+    var telUrl = 'tel:$url';
+    if (Platform.isIOS) {
+      telUrl = telUrl.replaceAll((RegExp(r'-')), '');
+    }
+    if (await canLaunchUrl(Uri(scheme: 'tel', path: url))) {
+      await launchUrl(Uri(scheme: 'tel', path: url));
+    }
   }
 
   _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {

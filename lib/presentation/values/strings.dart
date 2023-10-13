@@ -256,6 +256,7 @@ abstract class StringCall {
 abstract class StringWork {
   StringWork._();
 
+  static const String call = "전화";
   static const String cancel = "호출취소";
   static const String calling = "기사님 호출 진행중";
   static const String start = "출발";

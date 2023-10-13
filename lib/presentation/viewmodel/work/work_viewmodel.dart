@@ -37,6 +37,15 @@ class WorkViewModel {
   final SetReviewWriteUseCase setReviewWriteUseCase;
   final SetFCMPushUseCase setFCMPushUseCase;
 
+  /// 전화
+  final ValueNotifier<String> _callNumber = ValueNotifier<String>("");
+
+  ValueNotifier<String> get callNumberNotifier => _callNumber;
+
+  String get callNumber => _callNumber.value;
+
+  set callNumber(String value) => _callNumber.value = value;
+
   /// 기사명
   final ValueNotifier<String> _name = ValueNotifier<String>("");
 
@@ -165,6 +174,7 @@ class WorkViewModel {
       stopOverList = response.stopOverLst;
       name = response.mbrDmNm ?? "";
       imagePath = response.mbrProfilePic ?? "";
+      callNumber = response.drvSafeCall ?? "";
       _mbrDmSq = response.mbrDmSq ?? 0;
     }
 

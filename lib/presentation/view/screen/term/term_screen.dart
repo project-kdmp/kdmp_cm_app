@@ -82,25 +82,18 @@ class _TermScreenState extends State<TermScreen> {
                             ),
 
                             /// 전체 이용약관
-                            Row(
-                              children: [
-                                /// ValueNotifier 는 안드로이드로 치면 LiveData 라고 생각하시면 됩니다
-                                /// 안드로이드에서 LiveData 의 상태변화를 observe 를 통해서 관찰하는 것처럼,
-                                /// 플러터의 ValueNotifier 상태변화는 하기 ValueListenableBuilder 를 통해서 관찰할 수 있습니다
-                                ValueListenableBuilder<bool>(
-                                  valueListenable: _termViewModel.isAllCheckNotifier,
-                                  builder: (context, value, _) {
-                                    return CustomCheckBox(
-                                      isChecked: value,
-                                      isBold: true,
-                                      message: StringTerm.allAgree,
-                                      onPressed: (isChecked) {
-                                        _termViewModel.setAgreeTermToAll(isAgreeYn: isChecked);
-                                      },
-                                    );
+                            ValueListenableBuilder<bool>(
+                              valueListenable: _termViewModel.isAllCheckNotifier,
+                              builder: (context, value, _) {
+                                return CustomCheckBox(
+                                  isChecked: value,
+                                  isBold: true,
+                                  message: StringTerm.allAgree,
+                                  onPressed: (isChecked) {
+                                    _termViewModel.setAgreeTermToAll(isAgreeYn: isChecked);
                                   },
-                                ),
-                              ],
+                                );
+                              },
                             ),
 
                             /// 경계선

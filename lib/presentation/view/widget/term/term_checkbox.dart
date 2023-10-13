@@ -35,6 +35,7 @@ class TermCheckBox extends StatelessWidget {
               },
             ),
           ),
+          const SizedBox(width: 10),
           Text(
             StringTerm.detail,
             style: TextStyle(

@@ -35,9 +35,11 @@ class CustomCheckBox extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        Text(
-          message,
-          style: isBold ? Theme.of(context).textTheme.titleLarge : Theme.of(context).textTheme.bodyLarge,
+        Expanded(
+          child: Text(
+            message,
+            style: isBold ? Theme.of(context).textTheme.titleLarge : Theme.of(context).textTheme.bodyLarge,
+          ),
         ),
       ],
     );

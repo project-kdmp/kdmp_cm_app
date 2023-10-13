@@ -66,7 +66,7 @@ class CallDetailResponse {
         "reqStartPlaceNm": reqStartPlaceNm,
         "reqEndAddress": reqEndAddress,
         "reqEndPlaceNm": reqEndPlaceNm,
-        "stopOverLst": stopOverLst.isNotEmpty ? List<dynamic>.from(stopOverLst.map((x) => x.toJson())).toString() : "",
+        "stopOverLst": stopOverLst.isNotEmpty ? jsonEncode(stopOverLst) : "",
         "drvPaymPrice": drvPaymPrice,
         "paymKind": paymKind,
         "dmMbrNm": dmMbrNm,

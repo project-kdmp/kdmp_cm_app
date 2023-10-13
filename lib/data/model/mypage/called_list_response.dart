@@ -79,7 +79,7 @@ class Called {
         "drvReqSt": drvReqSt,
         "reqStartAddress": reqStartAddress,
         "reqStartPlaceNm": reqStartPlaceNm,
-        "stopOverLst": stopOverLst.isNotEmpty ? List<dynamic>.from(stopOverLst.map((x) => x.toJson())).toString() : "",
+        "stopOverLst": stopOverLst.isNotEmpty ? jsonEncode(stopOverLst) : "",
         "reqEndAddress": reqEndAddress,
         "reqEndPlaceNm": reqEndPlaceNm,
         "drvPaymPrice": drvPaymPrice,

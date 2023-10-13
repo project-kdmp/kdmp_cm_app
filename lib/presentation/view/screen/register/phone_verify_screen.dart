@@ -17,7 +17,6 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrid_usecase.
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
-import 'package:kdmp_cm_app/presentation/view/bottomsheet/other_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
@@ -25,6 +24,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_scree
 import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_text_field.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/register/phone_verify_viewmodel.dart';
 
 /// 본인인증 화면
@@ -45,6 +45,10 @@ class PhoneVerifyScreen extends StatefulWidget {
 
 class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
   late final PhoneVerifyViewModel _phoneVerifyViewModel;
+
+  String mbrNm = "";
+  String mbrMobilePhone = "";
+  String mbrCi = "";
 
   @override
   void initState() {
@@ -83,13 +87,18 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
           children: [
             Text("본인인증 WebView\n\n이용약관 목록 개수 : ${widget.agreeTermList.length}"),
             // TODO: 임시 버튼. 본인인증 기능 구현 후 제거
+
+            CustomTextField(hint: "이름 입력", onChanged: (value) => mbrNm = value),
+            CustomTextField(hint: "휴대폰번호 입력", onChanged: (value) => mbrMobilePhone = value),
+            CustomTextField(hint: "CI 입력", onChanged: (value) => mbrCi = value),
+
             CustomElevatedButton(
               onPressed: () async {
                 /// 회원가입 처리
                 /// TODO: mbrNm, mbrDeviceId, mbrCi, mbrMobilePhone 임시값. 본인인증 후 가져와야함
-                final mbrNm = "김유현";
-                final mbrMobilePhone = "01012341234";
-                final mbrCi = "yuhyeon_test_ci23";
+                // final mbrNm = "김민수";
+                // final mbrMobilePhone = "01011113334";
+                // final mbrCi = "ci_yuhyeon_test2";
 
                 final registerResult = await _phoneVerifyViewModel.register(
                   mbrNm: mbrNm,
@@ -101,8 +110,6 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
                 if (registerResult is Success) {
                   /// 회원가입 - 성공시 처리
                   final registerResponse = registerResult.registerResponse;
-
-                  final password = mbrMobilePhone.substring(mbrMobilePhone.length - 4, mbrMobilePhone.length);
 
                   /// 로그인 처리
                   final loginResult = await _phoneVerifyViewModel.login(

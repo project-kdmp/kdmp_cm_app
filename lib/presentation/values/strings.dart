@@ -172,6 +172,7 @@ abstract class StringWithdraw {
   static const String bottomButton = "탈퇴하기";
 
   static const String withdrawalConfirm = "정말 탈퇴하시겠습니까?";
+  static const String withdrawalSuccess = "탈퇴가 완료되었습니다.";
 }
 
 abstract class StringCallPrice {

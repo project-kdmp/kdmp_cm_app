@@ -7,6 +7,7 @@ import 'package:kdmp_cm_app/domain/usecase/mypage/set_withdrawal_member_usecase.
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_storage_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/splash/splash_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
@@ -97,7 +98,9 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                   CustomElevatedButton(
                     text: StringWithdraw.bottomButton,
                     onPressed: () async {
-                      _showWithdrawalDialog();
+                      await _showWithdrawalDialog();
+                      await _showAlertDialog(content: StringWithdraw.withdrawalSuccess, isCanceled: false);
+                      context.goNamed(SplashScreen.routeName);
                     },
                     backgroundColor: Theme.of(context).colorScheme.secondary,
                     minimumSize: const Size(double.minPositive, double.minPositive),
@@ -130,6 +133,24 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
             } else if (result is Fail) {
               Fluttertoast.showToast(msg: "${result.errorMessage}");
             }
+          },
+        );
+      },
+    );
+  }
+
+  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: title,
+          content: content,
+          isCanceled: isCanceled,
+          isWarning: isWarning,
+          onConfirm: () {
+            Navigator.pop(context);
           },
         );
       },

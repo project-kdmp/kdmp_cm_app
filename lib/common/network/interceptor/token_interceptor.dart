@@ -1,13 +1,16 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/data/constant/url.dart';
 import 'package:kdmp_cm_app/data/model/auth/refresh_request.dart';
 import 'package:kdmp_cm_app/data/model/auth/refresh_response.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_auto_refresh_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_auto_refresh_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_jwt_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrpw_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_auto_refresh_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_auto_refresh_usecase.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../../domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 
@@ -41,6 +44,8 @@ class TokenInterceptor extends InterceptorsWrapper {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
+    debugPrint("TokenInterceptor onError");
+
     /// 인증 오류, AccessToken 만료
     if (err.response?.statusCode == 401) {
       final accessToken = await getJwtUseCase.execute();
@@ -48,20 +53,32 @@ class TokenInterceptor extends InterceptorsWrapper {
       final mbrId = await getMbrIdUseCase.execute();
 
       dio.interceptors.clear();
+
+      /// Dio Log Interceptor
+      /// 디버그 모드에서만 Dio 인스턴스의 모든 로그를 출력
+      if (kDebugMode) {
+        dio.interceptors.add(PrettyDioLogger(
+          requestHeader: true,
+          requestBody: true,
+          responseBody: true,
+          responseHeader: true,
+          compact: true,
+        ));
+      }
       dio.interceptors.add(
         InterceptorsWrapper(
           onError: (err, handler) async {
             // 다시 인증 오류가 발생했을 경우: RefreshToken 만료
-            if (err.response?.statusCode == 401) {
-              // 기기의 자동 로그인 정보 삭제
-              await setMbrIdUseCase.execute(mbrId: "");
-              await setMbrPwUseCase.execute(mbrPw: "");
-              await setJwtUseCase.execute(jwt: "");
+            // if (err.response?.statusCode == 401) {
+            // 기기의 자동 로그인 정보 삭제
+            await setMbrIdUseCase.execute(mbrId: "");
+            await setMbrPwUseCase.execute(mbrPw: "");
+            await setJwtUseCase.execute(jwt: "");
 
-              // . . .
-              // 로그인 만료 dialog 발생 후 로그인 페이지로 이동
-              // . . .
-            }
+            // . . .
+            // 로그인 만료 dialog 발생 후 로그인 페이지로 이동
+            // . . .
+            // }
             return handler.next(err);
           },
         ),
@@ -101,6 +118,8 @@ class TokenInterceptor extends InterceptorsWrapper {
       );
       // API 복사본으로 재요청
       return handler.resolve(clonedRequest);
+    } else {
+      Fluttertoast.showToast(msg: "인증오류 외 오류 발생");
     }
     super.onError(err, handler);
   }

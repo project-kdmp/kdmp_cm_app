@@ -82,376 +82,379 @@ class _WorkScreenState extends State<WorkScreen> {
       ],
       child: Scaffold(
         /// 화면
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: ScrollConfiguration(
-                  behavior: CustomScrollBehavior(),
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              /// 호출취소 버튼
-                              ValueListenableBuilder<bool>(
-                                valueListenable: _workViewModel.isCancelVisibleNotifier,
-                                builder: (context, value, child) {
-                                  return value
-                                      ? CustomRoundButton(
-                                          text: StringWork.cancel,
-                                          backgroundColor: Theme.of(context).toggleButtonsTheme.fillColor,
-                                          textColor: Theme.of(context).colorScheme.secondary,
-                                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                          onPressed: () async {
-                                            /// 호출취소 팝업 띄움
-                                            final cancelResult = _workViewModel.drvReqSt == DrvReqSt.cal
-                                                ?
+        body: WillPopScope(
+          onWillPop: _onBackPressed,
+          child: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: ScrollConfiguration(
+                    behavior: CustomScrollBehavior(),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                /// 호출취소 버튼
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: _workViewModel.isCancelVisibleNotifier,
+                                  builder: (context, value, child) {
+                                    return value
+                                        ? CustomRoundButton(
+                                            text: StringWork.cancel,
+                                            backgroundColor: Theme.of(context).toggleButtonsTheme.fillColor,
+                                            textColor: Theme.of(context).colorScheme.secondary,
+                                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                                            onPressed: () async {
+                                              /// 호출취소 팝업 띄움
+                                              final cancelResult = _workViewModel.drvReqSt == DrvReqSt.cal
+                                                  ?
 
-                                                /// 미확정 호출취소 팝업
-                                                await _showConfirmDialog(
-                                                    content: StringWork.cancelConfirm,
-                                                    onConfirm: () async {
-                                                      /// 미확정 호출취소
-                                                      final result = await _workViewModel.cancelCall(drvReqSq: widget.drvReqSq);
-                                                      if (result is Success) {
-                                                        /// 호출취소 팝업 닫기
-                                                        context.pop(true);
-                                                      } else if (result is Bad) {
-                                                        Fluttertoast.showToast(msg: StringCommon.httpBad);
-                                                      } else if (result is Fail) {
-                                                        Fluttertoast.showToast(msg: "${result.errorMessage}");
-                                                      }
-                                                    },
-                                                  )
-                                                :
+                                                  /// 미확정 호출취소 팝업
+                                                  await _showConfirmDialog(
+                                                      content: StringWork.cancelConfirm,
+                                                      onConfirm: () async {
+                                                        /// 미확정 호출취소
+                                                        final result = await _workViewModel.cancelCall(drvReqSq: widget.drvReqSq);
+                                                        if (result is Success) {
+                                                          /// 호출취소 팝업 닫기
+                                                          context.pop(true);
+                                                        } else if (result is Bad) {
+                                                          Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                                        } else if (result is Fail) {
+                                                          Fluttertoast.showToast(msg: "${result.errorMessage}");
+                                                        }
+                                                      },
+                                                    )
+                                                  :
 
-                                                /// 호출취소 사유 선택 팝업
-                                                await _showCallCancelDialog(
-                                                    onConfirm: (drvCancelTp) async {
-                                                      /// 확정 호출취소
-                                                      final result = await _workViewModel.cancelConfirmCall(
-                                                        drvReqSq: widget.drvReqSq,
-                                                        drvCancelTp: drvCancelTp,
+                                                  /// 호출취소 사유 선택 팝업
+                                                  await _showCallCancelDialog(
+                                                      onConfirm: (drvCancelTp) async {
+                                                        /// 확정 호출취소
+                                                        final result = await _workViewModel.cancelConfirmCall(
+                                                          drvReqSq: widget.drvReqSq,
+                                                          drvCancelTp: drvCancelTp,
+                                                        );
+                                                        if (result is Success) {
+                                                          /// 호출취소 사유 선택 팝업 닫기
+                                                          context.pop(true);
+                                                        } else if (result is Bad) {
+                                                          Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                                        } else if (result is Fail) {
+                                                          Fluttertoast.showToast(msg: "${result.errorMessage}");
+                                                        }
+                                                      },
+                                                    );
+
+                                              if (cancelResult == true) {
+                                                /// 호출 취소 완료 팝업 띄움
+                                                await _showAlertDialog(content: StringWork.cancelSuccess, isCanceled: false);
+
+                                                /// 화면 닫기, 홈 화면 초기화
+                                                context.pop(false);
+                                              }
+                                            },
+                                          )
+                                        : const SizedBox();
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 80),
+
+                            ValueListenableBuilder<String>(
+                              valueListenable: _workViewModel.drvReqStNotifier,
+                              builder: (context, value, child) {
+                                return value == DrvReqSt.cal
+                                    ? Column(
+                                        children: [
+                                          Image.asset(ImageWork.imgWork, width: 90, height: 90),
+                                          const SizedBox(height: 24),
+                                          Text(StringWork.calling, style: Theme.of(context).textTheme.displaySmall),
+                                        ],
+                                      )
+                                    : Column(
+                                        children: [
+                                          /// 프로필 사진
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(66),
+                                              border: Border.all(color: Theme.of(context).colorScheme.primary, width: 3),
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(60),
+                                              child: ValueListenableBuilder<String>(
+                                                valueListenable: _workViewModel.imagePathNotifier,
+                                                builder: (context, value, _) {
+                                                  return Image.network(
+                                                    "$baseImageUrl$value",
+                                                    fit: BoxFit.cover,
+                                                    width: 88,
+                                                    height: 88,
+                                                    errorBuilder: (context, error, stackTrace) {
+                                                      return Container(
+                                                        width: 88,
+                                                        height: 88,
+                                                        color: Theme.of(context).scaffoldBackgroundColor,
                                                       );
-                                                      if (result is Success) {
-                                                        /// 호출취소 사유 선택 팝업 닫기
-                                                        context.pop(true);
-                                                      } else if (result is Bad) {
-                                                        Fluttertoast.showToast(msg: StringCommon.httpBad);
-                                                      } else if (result is Fail) {
-                                                        Fluttertoast.showToast(msg: "${result.errorMessage}");
-                                                      }
                                                     },
                                                   );
-
-                                            if (cancelResult == true) {
-                                              /// 호출 취소 완료 팝업 띄움
-                                              await _showAlertDialog(content: StringWork.cancelSuccess, isCanceled: false);
-
-                                              /// 화면 닫기, 홈 화면 초기화
-                                              context.pop(false);
-                                            }
-                                          },
-                                        )
-                                      : const SizedBox();
-                                },
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 80),
-
-                          ValueListenableBuilder<String>(
-                            valueListenable: _workViewModel.drvReqStNotifier,
-                            builder: (context, value, child) {
-                              return value == DrvReqSt.cal
-                                  ? Column(
-                                      children: [
-                                        Image.asset(ImageWork.imgWork, width: 90, height: 90),
-                                        const SizedBox(height: 24),
-                                        Text(StringWork.calling, style: Theme.of(context).textTheme.displaySmall),
-                                      ],
-                                    )
-                                  : Column(
-                                      children: [
-                                        /// 프로필 사진
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(66),
-                                            border: Border.all(color: Theme.of(context).colorScheme.primary, width: 3),
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(60),
-                                            child: ValueListenableBuilder<String>(
-                                              valueListenable: _workViewModel.imagePathNotifier,
-                                              builder: (context, value, _) {
-                                                return Image.network(
-                                                  "$baseImageUrl$value",
-                                                  fit: BoxFit.cover,
-                                                  width: 88,
-                                                  height: 88,
-                                                  errorBuilder: (context, error, stackTrace) {
-                                                    return Container(
-                                                      width: 88,
-                                                      height: 88,
-                                                      color: Theme.of(context).scaffoldBackgroundColor,
-                                                    );
-                                                  },
-                                                );
-                                              },
+                                                },
+                                              ),
                                             ),
                                           ),
-                                        ),
 
-                                        const SizedBox(height: 24),
+                                          const SizedBox(height: 24),
 
-                                        /// 기사명
-                                        ValueListenableBuilder(
-                                          valueListenable: _workViewModel.nameNotifier,
-                                          builder: (context, value, _) {
-                                            return Text("$value ${StringCommon.driver}", style: Theme.of(context).textTheme.displaySmall);
-                                          },
-                                        ),
-                                      ],
-                                    );
-                            },
-                          ),
+                                          /// 기사명
+                                          ValueListenableBuilder(
+                                            valueListenable: _workViewModel.nameNotifier,
+                                            builder: (context, value, _) {
+                                              return Text("$value ${StringCommon.driver}", style: Theme.of(context).textTheme.displaySmall);
+                                            },
+                                          ),
+                                        ],
+                                      );
+                              },
+                            ),
 
-                          const SizedBox(height: 60),
-                          const Divider(thickness: 1, height: 72),
+                            const SizedBox(height: 60),
+                            const Divider(thickness: 1, height: 72),
 
-                          /// 출발지
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                size: 22,
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                              const SizedBox(width: 10),
-                              SizedBox(
-                                width: 70,
-                                child: Text(
-                                  StringWork.start,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: Theme.of(context).colorScheme.secondary,
-                                      ),
-                                  textAlign: TextAlign.left,
+                            /// 출발지
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on,
+                                  size: 22,
+                                  color: Theme.of(context).colorScheme.secondary,
                                 ),
-                              ),
-                              ValueListenableBuilder<String>(
-                                valueListenable: _workViewModel.startNotifier,
-                                builder: (context, value, child) {
-                                  return Expanded(child: Text(value, style: Theme.of(context).textTheme.titleMedium));
-                                },
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-
-                          /// 경유지
-                          ValueListenableBuilder<List<StopOver>>(
-                            valueListenable: _workViewModel.stopOverListNotifier,
-                            builder: (context, value, child) {
-                              String text = value.isNotEmpty
-                                  ? value[0].placeName.isNotEmpty
-                                      ? value[0].placeName
-                                      : value[0].address
-                                  : "";
-                              if (value.length > 1) {
-                                text += " 외 ${value.length - 1}";
-                              }
-                              return value.isNotEmpty
-                                  ? Row(
-                                      children: [
-                                        SizedBox(
-                                          height: 60,
-                                          child: VerticalDashedDivider(
-                                            thickness: 1,
-                                            color: Theme.of(context).colorScheme.secondary,
-                                            space: 22,
-                                            length: 2,
-                                          ),
+                                const SizedBox(width: 10),
+                                SizedBox(
+                                  width: 70,
+                                  child: Text(
+                                    StringWork.start,
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: Theme.of(context).colorScheme.secondary,
                                         ),
-                                        const SizedBox(width: 10),
-                                        SizedBox(
-                                          width: 70,
-                                          child: Text(
-                                            StringWork.stopOver,
-                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                  color: Theme.of(context).colorScheme.secondary,
-                                                ),
-                                            textAlign: TextAlign.left,
-                                          ),
-                                        ),
-                                        Expanded(child: Text(text, style: Theme.of(context).textTheme.titleMedium)),
-                                      ],
-                                    )
-                                  : Row(
-                                      children: [
-                                        SizedBox(
-                                          height: 24,
-                                          child: VerticalDashedDivider(
-                                            thickness: 1,
-                                            color: Theme.of(context).colorScheme.secondary,
-                                            space: 22,
-                                            length: 2,
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                            },
-                          ),
-                          const SizedBox(height: 12),
-
-                          /// 도착지
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.flag,
-                                size: 22,
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                              const SizedBox(width: 10),
-                              SizedBox(
-                                width: 70,
-                                child: Text(
-                                  StringWork.end,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: Theme.of(context).colorScheme.secondary,
-                                      ),
-                                  textAlign: TextAlign.left,
+                                    textAlign: TextAlign.left,
+                                  ),
                                 ),
-                              ),
-                              ValueListenableBuilder<String>(
-                                valueListenable: _workViewModel.endNotifier,
-                                builder: (context, value, child) {
-                                  return Expanded(child: Text(value, style: Theme.of(context).textTheme.titleMedium));
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
+                                ValueListenableBuilder<String>(
+                                  valueListenable: _workViewModel.startNotifier,
+                                  builder: (context, value, child) {
+                                    return Expanded(child: Text(value, style: Theme.of(context).textTheme.titleMedium));
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+
+                            /// 경유지
+                            ValueListenableBuilder<List<StopOver>>(
+                              valueListenable: _workViewModel.stopOverListNotifier,
+                              builder: (context, value, child) {
+                                String text = value.isNotEmpty
+                                    ? value[0].placeName.isNotEmpty
+                                        ? value[0].placeName
+                                        : value[0].address
+                                    : "";
+                                if (value.length > 1) {
+                                  text += " 외 ${value.length - 1}";
+                                }
+                                return value.isNotEmpty
+                                    ? Row(
+                                        children: [
+                                          SizedBox(
+                                            height: 60,
+                                            child: VerticalDashedDivider(
+                                              thickness: 1,
+                                              color: Theme.of(context).colorScheme.secondary,
+                                              space: 22,
+                                              length: 2,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          SizedBox(
+                                            width: 70,
+                                            child: Text(
+                                              StringWork.stopOver,
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                    color: Theme.of(context).colorScheme.secondary,
+                                                  ),
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ),
+                                          Expanded(child: Text(text, style: Theme.of(context).textTheme.titleMedium)),
+                                        ],
+                                      )
+                                    : Row(
+                                        children: [
+                                          SizedBox(
+                                            height: 24,
+                                            child: VerticalDashedDivider(
+                                              thickness: 1,
+                                              color: Theme.of(context).colorScheme.secondary,
+                                              space: 22,
+                                              length: 2,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                              },
+                            ),
+                            const SizedBox(height: 12),
+
+                            /// 도착지
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.flag,
+                                  size: 22,
+                                  color: Theme.of(context).colorScheme.secondary,
+                                ),
+                                const SizedBox(width: 10),
+                                SizedBox(
+                                  width: 70,
+                                  child: Text(
+                                    StringWork.end,
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: Theme.of(context).colorScheme.secondary,
+                                        ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                                ValueListenableBuilder<String>(
+                                  valueListenable: _workViewModel.endNotifier,
+                                  builder: (context, value, child) {
+                                    return Expanded(child: Text(value, style: Theme.of(context).textTheme.titleMedium));
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const Divider(thickness: 6, height: 72),
+                const Divider(thickness: 6, height: 72),
 
-              /// 결제
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 24),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: 60,
-                          child: Text(
-                            StringWork.payment,
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  color: Theme.of(context).colorScheme.secondary,
-                                ),
-                            textAlign: TextAlign.left,
+                /// 결제
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20, bottom: 24),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 60,
+                            child: Text(
+                              StringWork.payment,
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Theme.of(context).colorScheme.secondary,
+                                  ),
+                              textAlign: TextAlign.left,
+                            ),
                           ),
-                        ),
-                        ValueListenableBuilder<String>(
-                          valueListenable: _workViewModel.paymKindNotifier,
-                          builder: (context, value, child) {
-                            return Expanded(child: Text(getPaymentKind(value), style: Theme.of(context).textTheme.bodyLarge));
-                          },
-                        ),
-                      ],
-                    ),
+                          ValueListenableBuilder<String>(
+                            valueListenable: _workViewModel.paymKindNotifier,
+                            builder: (context, value, child) {
+                              return Expanded(child: Text(getPaymentKind(value), style: Theme.of(context).textTheme.bodyLarge));
+                            },
+                          ),
+                        ],
+                      ),
 
-                    /// 요금
-                    ValueListenableBuilder<int>(
-                      valueListenable: _workViewModel.priceNotifier,
-                      builder: (context, value, child) {
-                        return Row(
-                          children: [
-                            SizedBox(
-                              width: 60,
-                              child: Text(
-                                StringWork.price,
-                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: Theme.of(context).colorScheme.secondary,
-                                    ),
-                                textAlign: TextAlign.left,
+                      /// 요금
+                      ValueListenableBuilder<int>(
+                        valueListenable: _workViewModel.priceNotifier,
+                        builder: (context, value, child) {
+                          return Row(
+                            children: [
+                              SizedBox(
+                                width: 60,
+                                child: Text(
+                                  StringWork.price,
+                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                        color: Theme.of(context).colorScheme.secondary,
+                                      ),
+                                  textAlign: TextAlign.left,
+                                ),
                               ),
-                            ),
 
-                            Expanded(child: Text(getPrice(value), style: Theme.of(context).textTheme.bodyLarge)),
+                              Expanded(child: Text(getPrice(value), style: Theme.of(context).textTheme.bodyLarge)),
 
-                            /// 요금 변경 버튼
-                            ValueListenableBuilder<bool>(
-                              valueListenable: _workViewModel.isPriceInputVisibleNotifier,
-                              builder: (context, buttonValue, child) {
-                                return buttonValue
-                                    ? CustomRoundButton(
-                                        text: StringHome.changeButton,
-                                        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                                        textColor: Theme.of(context).colorScheme.secondary,
-                                        borderColor: Theme.of(context).cardColor,
-                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                        onPressed: () async {
-                                          /// 요금 직접 입력 팝업 띄움
-                                          final result = await showModalBottomSheet(
-                                            context: context,
-                                            isScrollControlled: true,
-                                            builder: (context) {
-                                              return Wrap(
-                                                children: [
-                                                  Padding(
-                                                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                                    child: CallPriceBottomSheet(
-                                                      initPrice: value,
-                                                      minPrice: value + 100,
+                              /// 요금 변경 버튼
+                              ValueListenableBuilder<bool>(
+                                valueListenable: _workViewModel.isPriceInputVisibleNotifier,
+                                builder: (context, buttonValue, child) {
+                                  return buttonValue
+                                      ? CustomRoundButton(
+                                          text: StringHome.changeButton,
+                                          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                          textColor: Theme.of(context).colorScheme.secondary,
+                                          borderColor: Theme.of(context).cardColor,
+                                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                                          onPressed: () async {
+                                            /// 요금 직접 입력 팝업 띄움
+                                            final result = await showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              builder: (context) {
+                                                return Wrap(
+                                                  children: [
+                                                    Padding(
+                                                      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                                      child: CallPriceBottomSheet(
+                                                        initPrice: value,
+                                                        minPrice: value + 100,
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
-                                          if (result != null) {
-                                            final changeCallFeeResult = await _workViewModel.changeCallFee(
-                                              drvReqSq: widget.drvReqSq,
-                                              newPrice: result,
+                                                  ],
+                                                );
+                                              },
                                             );
-                                            if (changeCallFeeResult is Success) {
-                                              _showAlertDialog(content: StringWork.changeCallFeeAlert, isCanceled: false);
-                                            } else if (changeCallFeeResult is Bad) {
-                                              Fluttertoast.showToast(msg: StringCommon.httpBad);
-                                            } else if (changeCallFeeResult is Fail) {
-                                              Fluttertoast.showToast(msg: "${changeCallFeeResult.errorMessage}");
+                                            if (result != null) {
+                                              final changeCallFeeResult = await _workViewModel.changeCallFee(
+                                                drvReqSq: widget.drvReqSq,
+                                                newPrice: result,
+                                              );
+                                              if (changeCallFeeResult is Success) {
+                                                _showAlertDialog(content: StringWork.changeCallFeeAlert, isCanceled: false);
+                                              } else if (changeCallFeeResult is Bad) {
+                                                Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                              } else if (changeCallFeeResult is Fail) {
+                                                Fluttertoast.showToast(msg: "${changeCallFeeResult.errorMessage}");
+                                              }
                                             }
-                                          }
-                                        },
-                                      )
-                                    : const SizedBox(height: 40);
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ],
+                                          },
+                                        )
+                                      : const SizedBox(height: 40);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              StreamBuilder<String>(
-                stream: streamController.stream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    _showPushDialog(snapshot);
-                  }
-                  return const SizedBox();
-                },
-              ),
-            ],
+                StreamBuilder<String>(
+                  stream: streamController.stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      _showPushDialog(snapshot);
+                    }
+                    return const SizedBox();
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -554,6 +557,20 @@ class _WorkScreenState extends State<WorkScreen> {
 
     /// 화면 닫기, 홈 화면 초기화
     context.pop(false);
+  }
+
+  /// 앱 뒤로가기
+  Future<bool> _onBackPressed() async {
+    /// 운행이 종료된 경우에만 뒤로가기
+    if (_workViewModel.drvReqSt == DrvReqSt.end || _workViewModel.drvReqSt == DrvReqSt.ren) {
+      return true;
+    }
+    return false;
+  }
+
+  /// 운행 종료 여부 체크
+  bool isWorkEnd() {
+    return _workViewModel.drvReqSt == DrvReqSt.end || _workViewModel.drvReqSt == DrvReqSt.ren;
   }
 
   _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {

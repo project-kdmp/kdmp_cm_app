@@ -9,10 +9,10 @@ class CallDetailResponse {
   String? drvStartDt;
   String? drvEndDt;
   String? drvReqSt;
-  String? reqStartAddress;
-  String? reqStartPlaceNm;
-  String? reqEndAddress;
-  String? reqEndPlaceNm;
+  String reqStartAddress;
+  String reqStartPlaceNm;
+  String reqEndAddress;
+  String reqEndPlaceNm;
   List<StopOver> stopOverLst;
   int? drvPaymPrice;
   String? paymKind;
@@ -26,10 +26,10 @@ class CallDetailResponse {
     this.drvStartDt,
     this.drvEndDt,
     this.drvReqSt,
-    this.reqStartAddress,
-    this.reqStartPlaceNm,
-    this.reqEndAddress,
-    this.reqEndPlaceNm,
+    required this.reqStartAddress,
+    required this.reqStartPlaceNm,
+    required this.reqEndAddress,
+    required this.reqEndPlaceNm,
     required this.stopOverLst,
     this.drvPaymPrice,
     this.paymKind,

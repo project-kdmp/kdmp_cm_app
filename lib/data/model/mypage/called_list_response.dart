@@ -37,8 +37,10 @@ class Called {
   String? drvEndDt;
   String? drvReqSt;
   String? reqStartAddress;
+  String? reqStartPlaceNm;
   List<StopOver> stopOverLst;
   String? reqEndAddress;
+  String? reqEndPlaceNm;
   int? drvPaymPrice;
   String? payCardInfo;
 
@@ -48,8 +50,10 @@ class Called {
     this.drvEndDt,
     this.drvReqSt,
     this.reqStartAddress,
+    this.reqStartPlaceNm,
     required this.stopOverLst,
     this.reqEndAddress,
+    this.reqEndPlaceNm,
     this.drvPaymPrice,
     this.payCardInfo,
   });
@@ -60,8 +64,10 @@ class Called {
         drvEndDt: json["drvEndDt"],
         drvReqSt: json["drvReqSt"],
         reqStartAddress: json["reqStartAddress"],
+        reqStartPlaceNm: json["reqStartPlaceNm"],
         stopOverLst: json["stopOverLst"] != null && json["stopOverLst"] != "" ? List<StopOver>.from(jsonDecode(json["stopOverLst"]).map((x) => StopOver.fromJson(x))) : List.empty(),
         reqEndAddress: json["reqEndAddress"],
+        reqEndPlaceNm: json["reqEndPlaceNm"],
         drvPaymPrice: json["drvPaymPrice"],
         payCardInfo: json["payCardInfo"],
       );
@@ -72,8 +78,10 @@ class Called {
         "drvEndDt": drvEndDt,
         "drvReqSt": drvReqSt,
         "reqStartAddress": reqStartAddress,
+        "reqStartPlaceNm": reqStartPlaceNm,
         "stopOverLst": stopOverLst.isNotEmpty ? List<dynamic>.from(stopOverLst.map((x) => x.toJson())).toString() : "",
         "reqEndAddress": reqEndAddress,
+        "reqEndPlaceNm": reqEndPlaceNm,
         "drvPaymPrice": drvPaymPrice,
         "payCardInfo": payCardInfo,
       };

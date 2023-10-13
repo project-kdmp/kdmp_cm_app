@@ -167,8 +167,8 @@ class CalledDetailViewModel {
       startDate = response.drvStartDt ?? "";
       date = getDateAndTimeFormat(startDate: response.drvStartDt, endDate: response.drvEndDt);
       drvReqSt = response.drvReqSt ?? "";
-      startPlace = response.reqStartPlaceNm ?? response.reqStartAddress ?? "";
-      endPlace = response.reqEndPlaceNm ?? response.reqEndAddress ?? "";
+      startPlace = response.reqStartPlaceNm.isNotEmpty ? response.reqStartPlaceNm : response.reqStartAddress;
+      endPlace = response.reqEndPlaceNm.isNotEmpty ? response.reqEndPlaceNm : response.reqEndAddress;
       stopoverList = response.stopOverLst;
 
       /// TODO: 결제수단 paymKind 안내려옴

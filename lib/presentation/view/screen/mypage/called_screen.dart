@@ -388,7 +388,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                         children: [
                           Text(StringCalled.startSpot, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                           const SizedBox(width: 12),
-                          Expanded(child: Text(value[index].reqStartAddress ?? "", textAlign: TextAlign.start)),
+                          Expanded(child: Text(value[index].reqStartPlaceNm ?? value[index].reqStartAddress ?? "", textAlign: TextAlign.start)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -412,7 +412,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                         children: [
                           Text(StringCalled.endSpot, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                           const SizedBox(width: 12),
-                          Expanded(child: Text(value[index].reqEndAddress ?? "", textAlign: TextAlign.start)),
+                          Expanded(child: Text(value[index].reqEndPlaceNm ?? value[index].reqEndAddress ?? "", textAlign: TextAlign.start)),
                         ],
                       ),
                       const SizedBox(height: 10),

@@ -5,11 +5,11 @@ class DioSingleton {
 
   static Dio getInstance() {
     _instance ??= Dio(
-        BaseOptions(
-          connectTimeout: const Duration(seconds: 5),
-          receiveTimeout: const Duration(seconds: 5),
-        ),
-      );
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 20),
+        receiveTimeout: const Duration(seconds: 20),
+      ),
+    );
     return _instance!;
   }
 }

@@ -25,6 +25,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_detail_screen
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/car_info_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/place_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/withdraw_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
@@ -238,6 +239,13 @@ final GoRouter router = GoRouter(
               builder: (context, state) => const WithdrawScreen(),
             ),
           ],
+        ),
+
+        /// 자주 가는 장소
+        GoRoute(
+          name: PlaceScreen.routeName,
+          path: PlaceScreen.routeName,
+          builder: (context, state) => const PlaceScreen(),
         ),
 
         /// 차량정보

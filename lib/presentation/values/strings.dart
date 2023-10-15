@@ -234,6 +234,17 @@ abstract class StringStopOverSetup {
   static const String bottomButton = "경유지 등록";
 }
 
+abstract class StringPlace {
+  StringPlace._();
+
+  static const String title = "자주 가는 장소";
+  static const String bottomButton = "장소 추가";
+  static const String delete = "삭제";
+  static const String modify = "수정";
+  static const String deleteAlert = "자주 가는 장소를 삭제하시겠습니까?";
+  static const String deleteSuccess = "자주 가는 장소가 삭제되었습니다.";
+}
+
 abstract class StringCar {
   StringCar._();
 

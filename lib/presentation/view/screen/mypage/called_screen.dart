@@ -168,7 +168,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 미완료 이용내역 리스트 아이템 클릭
-            /// 미완료 이용내역 화면으로 이동
+            /// 미완료 이용 정보 화면으로 이동
             final result = await context.pushNamed(
               CallDetailScreen.routeName,
               extra: value[index].drvReqSq,
@@ -328,7 +328,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 이용내역 리스트 아이템 클릭
-            /// 이용내역 화면으로 이동
+            /// 이용 정보 화면으로 이동
             final result = await context.pushNamed(
               CalledDetailScreen.routeName,
               extra: value[index].drvReqSq,

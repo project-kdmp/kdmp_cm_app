@@ -14,7 +14,7 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_text_fie
 import 'package:kdmp_cm_app/presentation/viewmodel/mypage/called_detail_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-/// 이용내역 상세 화면
+/// 이용 정보 화면
 class CalledDetailScreen extends StatefulWidget {
   const CalledDetailScreen({
     Key? key,
@@ -47,7 +47,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
   }
 
   void initData() async {
-    /// 이용내역 상세정보 조회
+    /// 이용 정보정보 조회
     await _calledDetailViewModel.getCalledDetail(widget.drvReqSq);
   }
 
@@ -64,7 +64,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
         /// 상단 앱바
         appBar: BaseAppBar(
           appBar: AppBar(),
-          title: StringCalledDetail.callTitle,
+          title: StringCalled.callTitle,
         ),
 
         /// 화면
@@ -81,10 +81,10 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                         children: [
                           const SizedBox(height: 16),
 
-                          /// 이용정보
+                          /// 이용 정보
                           SizedBox(
                             width: double.maxFinite,
-                            child: Text(StringCalledDetail.infoTitle, style: Theme.of(context).textTheme.displaySmall),
+                            child: Text(StringCalled.infoTitle, style: Theme.of(context).textTheme.displaySmall),
                           ),
                           const SizedBox(height: 28),
 
@@ -92,7 +92,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.date, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.date, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _calledDetailViewModel.dateNotifier,
@@ -108,7 +108,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.callType, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.callType, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _calledDetailViewModel.drvReqStNotifier,
@@ -124,7 +124,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.driveType, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.driveType, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _calledDetailViewModel.drvReqStNotifier,
@@ -147,7 +147,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                               Icon(Icons.location_on, color: Theme.of(context).colorScheme.secondary, size: 24),
                               const SizedBox(width: 4),
                               Text(
-                                StringCalledDetail.startSpot,
+                                StringCalled.startSpot,
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.secondary,
                                 ),
@@ -185,7 +185,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                               Icon(Icons.flag_sharp, color: Theme.of(context).colorScheme.secondary, size: 24),
                               const SizedBox(width: 4),
                               Text(
-                                StringCalledDetail.endSpot,
+                                StringCalled.endSpot,
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.secondary,
                                 ),
@@ -207,17 +207,17 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                             length: 2,
                           ),
 
-                          /// 결제정보
+                          /// 결제 정보
                           SizedBox(
                             width: double.maxFinite,
-                            child: Text(StringCalledDetail.paymentTitle, style: Theme.of(context).textTheme.displaySmall),
+                            child: Text(StringCalled.paymentTitle, style: Theme.of(context).textTheme.displaySmall),
                           ),
                           const SizedBox(height: 28),
 
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.amount, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.amount, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<int>(
                                 valueListenable: _calledDetailViewModel.amountNotifier,
@@ -233,7 +233,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.payment, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.payment, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _calledDetailViewModel.paymentNotifier,
@@ -251,10 +251,10 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                             length: 2,
                           ),
 
-                          /// 기사정보
+                          /// 기사 정보
                           SizedBox(
                             width: double.maxFinite,
-                            child: Text(StringCalledDetail.driverTitle, style: Theme.of(context).textTheme.displaySmall),
+                            child: Text(StringCalled.driverTitle, style: Theme.of(context).textTheme.displaySmall),
                           ),
                           const SizedBox(height: 28),
 
@@ -262,7 +262,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.driver, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.driver, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _calledDetailViewModel.driverNotifier,
@@ -278,7 +278,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.car, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.car, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _calledDetailViewModel.carNumIdNotifier,
@@ -294,7 +294,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(StringCalledDetail.review, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.review, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               Expanded(
                                 child: Column(
@@ -355,7 +355,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                         return value
                             ? Expanded(
                                 child: CustomRadiusButton(
-                                  text: StringCalledDetail.reviewModify,
+                                  text: StringCalled.reviewModify,
                                   onPressed: () async {},
                                 ),
                               )
@@ -395,7 +395,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                             /// 예약콜
                             const Expanded(
                               child: Text(
-                                StringCalledDetail.reCall,
+                                StringCalled.reCall,
                                 style: TextStyle(
                                   color: Colors.white,
                                 ),
@@ -439,7 +439,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
             ),
             const SizedBox(width: 4),
             Text(
-              "${StringCalledDetail.stopover} ${index + 1}",
+              "${StringCalled.stopover} ${index + 1}",
               style: TextStyle(
                 color: Theme.of(context).colorScheme.secondary,
               ),

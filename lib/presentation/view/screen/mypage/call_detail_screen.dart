@@ -25,7 +25,7 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_tag.dart
 import 'package:kdmp_cm_app/presentation/viewmodel/mypage/call_detail_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-/// 미완료 이용내역 상세 화면
+/// 미완료 이용 정보 화면
 class CallDetailScreen extends StatefulWidget {
   const CallDetailScreen({
     Key? key,
@@ -62,7 +62,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
   }
 
   void initData() async {
-    /// 미완료 이용내역 상세정보 조회
+    /// 미완료 이용 정보정보 조회
     await _callDetailViewModel.getCallDetail(widget.drvReqSq);
   }
 
@@ -84,7 +84,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
             builder: (context, value, _) {
               return BaseAppBar(
                 appBar: AppBar(),
-                title: _callDetailViewModel.isReservation() ? StringCalledDetail.reservationTitle : StringCalledDetail.infoTitle,
+                title: _callDetailViewModel.isReservation() ? StringCalled.reservationTitle : StringCalled.infoTitle,
               );
             },
           ),
@@ -118,7 +118,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                         /// 접수 완료
                                         SizedBox(
                                           width: double.maxFinite,
-                                          child: Text(StringCalledDetail.reservationStateTitle, style: Theme.of(context).textTheme.displaySmall),
+                                          child: Text(StringCalled.reservationStateTitle, style: Theme.of(context).textTheme.displaySmall),
                                         ),
                                         const SizedBox(height: 28),
 
@@ -128,7 +128,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                             Icon(Icons.check_circle, size: 26, color: primaryColor),
                                             const SizedBox(width: 10),
                                             Text(
-                                              StringCalledDetail.reservationState1,
+                                              StringCalled.reservationState1,
                                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: primaryColor),
                                             ),
                                           ],
@@ -141,7 +141,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                             Icon(Icons.check_circle, size: 26, color: primaryColor),
                                             const SizedBox(width: 10),
                                             Text(
-                                              StringCalledDetail.reservationState2,
+                                              StringCalled.reservationState2,
                                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: primaryColor),
                                             ),
                                           ],
@@ -154,7 +154,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                             Icon(Icons.check_circle, size: 26, color: isWait ? primaryColor : disabledColor),
                                             const SizedBox(width: 10),
                                             Text(
-                                              StringCalledDetail.reservationState3,
+                                              StringCalled.reservationState3,
                                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: isWait ? primaryColor : disabledColor),
                                             ),
                                           ],
@@ -167,7 +167,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                             Icon(Icons.check_circle, size: 26, color: isStart ? primaryColor : disabledColor),
                                             const SizedBox(width: 10),
                                             Text(
-                                              StringCalledDetail.reservationState4,
+                                              StringCalled.reservationState4,
                                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: isStart ? primaryColor : disabledColor),
                                             ),
                                           ],
@@ -185,13 +185,13 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                             },
                           ),
 
-                          /// 이용정보 또는 예약정보
+                          /// 이용 정보 또는 예약 정보
                           ValueListenableBuilder<String>(
                             valueListenable: _callDetailViewModel.drvReqStNotifier,
                             builder: (context, value, child) {
                               return SizedBox(
                                 width: double.maxFinite,
-                                child: Text(_callDetailViewModel.isReservation() ? StringCalledDetail.reservationTitle : StringCalledDetail.infoTitle, style: Theme.of(context).textTheme.displaySmall),
+                                child: Text(_callDetailViewModel.isReservation() ? StringCalled.reservationTitle : StringCalled.infoTitle, style: Theme.of(context).textTheme.displaySmall),
                               );
                             },
                           ),
@@ -201,7 +201,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.date, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.date, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _callDetailViewModel.dateNotifier,
@@ -217,7 +217,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.callType, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.callType, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _callDetailViewModel.drvReqStNotifier,
@@ -233,7 +233,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.driveType, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.driveType, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _callDetailViewModel.drvReqStNotifier,
@@ -256,7 +256,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                               Icon(Icons.location_on, color: Theme.of(context).colorScheme.secondary, size: 24),
                               const SizedBox(width: 4),
                               Text(
-                                StringCalledDetail.startSpot,
+                                StringCalled.startSpot,
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.secondary,
                                 ),
@@ -294,7 +294,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                               Icon(Icons.flag_sharp, color: Theme.of(context).colorScheme.secondary, size: 24),
                               const SizedBox(width: 4),
                               Text(
-                                StringCalledDetail.endSpot,
+                                StringCalled.endSpot,
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.secondary,
                                 ),
@@ -316,17 +316,17 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                             length: 2,
                           ),
 
-                          /// 결제정보
+                          /// 결제 정보
                           SizedBox(
                             width: double.maxFinite,
-                            child: Text(StringCalledDetail.paymentTitle, style: Theme.of(context).textTheme.displaySmall),
+                            child: Text(StringCalled.paymentTitle, style: Theme.of(context).textTheme.displaySmall),
                           ),
                           const SizedBox(height: 28),
 
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.amount, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.amount, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<int>(
                                 valueListenable: _callDetailViewModel.amountNotifier,
@@ -342,7 +342,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.payment, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.payment, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _callDetailViewModel.paymentNotifier,
@@ -360,10 +360,10 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                             length: 2,
                           ),
 
-                          /// 기사정보
+                          /// 기사 정보
                           SizedBox(
                             width: double.maxFinite,
-                            child: Text(StringCalledDetail.driverTitle, style: Theme.of(context).textTheme.displaySmall),
+                            child: Text(StringCalled.driverTitle, style: Theme.of(context).textTheme.displaySmall),
                           ),
                           const SizedBox(height: 28),
 
@@ -371,7 +371,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.driver, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.driver, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _callDetailViewModel.driverNotifier,
@@ -387,7 +387,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalledDetail.car, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              Text(StringCalled.car, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _callDetailViewModel.carNumIdNotifier,
@@ -456,7 +456,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                               value == DrvReqSt.rco
                                   ? Expanded(
                                       child: CustomRadiusButton(
-                                        text: StringCalledDetail.reservationCancel,
+                                        text: StringCalled.reservationCancel,
                                         onPressed: () async {
                                           // TODO: 예약 취소 API 별도로 있는지 확인 후 예약 취소 기능 구현
 
@@ -466,7 +466,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
 
                                               /// 미확정 호출취소 팝업
                                               await _showConfirmDialog(
-                                                  content: StringCalledDetail.reservationCancelConfirm,
+                                                  content: StringCalled.reservationCancelConfirm,
                                                   onConfirm: () async {
                                                     /// 미확정 호출취소
                                                     final result = await _callDetailViewModel.cancelCall(drvReqSq: widget.drvReqSq);
@@ -503,7 +503,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
 
                                           if (cancelResult == true) {
                                             /// 호출 취소 완료 팝업 띄움
-                                            await _showAlertDialog(content: StringCalledDetail.reservationCancelSuccess, isCanceled: false);
+                                            await _showAlertDialog(content: StringCalled.reservationCancelSuccess, isCanceled: false);
 
                                             /// 화면 닫기, 이전 화면 갱신
                                             context.pop(true);
@@ -517,7 +517,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                               /// 대리 추가 호출 버튼
                               Expanded(
                                 child: CustomElevatedButton(
-                                  text: StringCalledDetail.reservationAdd,
+                                  text: StringCalled.reservationAdd,
                                   onPressed: () {
                                     /// 홈 화면으로 이동
                                     context.goNamed(HomeScreen.routeName);
@@ -560,7 +560,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
             ),
             const SizedBox(width: 4),
             Text(
-              "${StringCalledDetail.stopover} ${index + 1}",
+              "${StringCalled.stopover} ${index + 1}",
               style: TextStyle(
                 color: Theme.of(context).colorScheme.secondary,
               ),

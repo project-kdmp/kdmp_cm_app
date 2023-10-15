@@ -309,7 +309,7 @@ final GoRouter router = GoRouter(
               path: CalledScreen.routeName,
               builder: (context, state) => const CalledScreen(),
               routes: [
-                /// 이용내역 상세
+                /// 이용 정보
                 GoRoute(
                   name: CalledDetailScreen.routeName,
                   path: CalledDetailScreen.routeName,
@@ -319,7 +319,7 @@ final GoRouter router = GoRouter(
                   },
                 ),
 
-                /// 미완료 이용내역 상세
+                /// 미완료 이용 정보
                 GoRoute(
                   name: CallDetailScreen.routeName,
                   path: CallDetailScreen.routeName,

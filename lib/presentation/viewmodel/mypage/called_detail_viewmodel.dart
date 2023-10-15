@@ -154,7 +154,7 @@ class CalledDetailViewModel {
   /// 상태
   StateAPI state = Loading();
 
-  /// 이용내역 상세 조회 API
+  /// 이용 정보 조회 API
   Future<StateAPI> getCalledDetail(int drvReqSq) async {
     state = Loading();
 

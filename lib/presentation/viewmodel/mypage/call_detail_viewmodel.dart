@@ -130,7 +130,7 @@ class CallDetailViewModel {
   /// 상태
   StateAPI state = Loading();
 
-  /// 미완료 이용내역 상세 조회 API
+  /// 미완료 이용 정보 조회 API
   Future<StateAPI> getCallDetail(int drvReqSq) async {
     state = Loading();
 

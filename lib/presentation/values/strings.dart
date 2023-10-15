@@ -365,6 +365,14 @@ abstract class StringCalled {
   static const String title = "이용내역";
   static const String noList = "최근 1년 동안 이용내역이 없습니다.";
 
+  static const String callTitle = "이용 정보";
+  static const String reservationTitle = "예약 정보";
+
+  static const String infoTitle = "이용 정보";
+  static const String paymentTitle = "결제 정보";
+  static const String driverTitle = "기사 정보";
+  static const String reservationStateTitle = "접수 완료";
+
   static const String date = "일시";
   static const String callType = "호출";
   static const String driveType = "상태";
@@ -374,30 +382,6 @@ abstract class StringCalled {
   static const String payment = "결제";
   static const String amount = "요금";
   static const String delete = "삭제";
-
-  static const String deleteAlert = "이용정보를 삭제하시겠습니까?";
-  static const String deleteSuccess = "이용정보가 삭제되었습니다.";
-}
-
-abstract class StringCalledDetail {
-  StringCalledDetail._();
-
-  static const String callTitle = "이용내역 상세";
-  static const String reservationTitle = "예약정보";
-
-  static const String infoTitle = "이용정보";
-  static const String paymentTitle = "결제정보";
-  static const String driverTitle = "기사정보";
-  static const String reservationStateTitle = "접수완료";
-
-  static const String date = "일시";
-  static const String callType = "호출";
-  static const String driveType = "상태";
-  static const String startSpot = "출발지";
-  static const String endSpot = "도착지";
-  static const String stopover = "경유지";
-  static const String payment = "결제";
-  static const String amount = "요금";
   static const String driver = "이름";
   static const String car = "차량";
   static const String review = "리뷰";
@@ -414,4 +398,6 @@ abstract class StringCalledDetail {
 
   static const String reservationCancelConfirm = "예악을 취소하시겠습니까?";
   static const String reservationCancelSuccess = "예약이 취소되었습니다.";
+  static const String deleteAlert = "이용 정보를 삭제하시겠습니까?";
+  static const String deleteSuccess = "이용 정보가 삭제되었습니다.";
 }

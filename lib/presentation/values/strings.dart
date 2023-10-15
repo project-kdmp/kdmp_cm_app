@@ -382,10 +382,13 @@ abstract class StringCalled {
 abstract class StringCalledDetail {
   StringCalledDetail._();
 
-  static const String title = "이용내역 상세";
-  static const String sub1Title = "이용정보";
-  static const String sub2Title = "결제정보";
-  static const String sub3Title = "기사정보";
+  static const String callTitle = "이용내역 상세";
+  static const String reservationTitle = "예약정보";
+
+  static const String infoTitle = "이용정보";
+  static const String paymentTitle = "결제정보";
+  static const String driverTitle = "기사정보";
+  static const String reservationStateTitle = "접수완료";
 
   static const String date = "일시";
   static const String callType = "호출";
@@ -401,4 +404,14 @@ abstract class StringCalledDetail {
 
   static const String reviewModify = "리뷰 수정";
   static const String reCall = "다시 호출하기";
+
+  static const String reservationState1 = "예약 접수";
+  static const String reservationState2 = "기사님 호출중";
+  static const String reservationState3 = "운행 준비";
+  static const String reservationState4 = "운행중";
+  static const String reservationCancel = "예약 취소";
+  static const String reservationAdd = "대리 추가 호출";
+
+  static const String reservationCancelConfirm = "예악을 취소하시겠습니까?";
+  static const String reservationCancelSuccess = "예약이 취소되었습니다.";
 }

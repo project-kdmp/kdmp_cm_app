@@ -32,7 +32,7 @@ String getDriveType(String? drvReqSt) {
   if (drvReqSt != null) {
     switch (drvReqSt) {
       case DrvReqSt.res:
-        return "예약";
+        return "예약 접수";
       case DrvReqSt.rco:
         return "예약 확정";
       case DrvReqSt.rwt:

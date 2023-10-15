@@ -169,10 +169,14 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
           onTap: () async {
             /// 미완료 이용내역 리스트 아이템 클릭
             /// 미완료 이용내역 화면으로 이동
-            context.pushNamed(
+            final result = await context.pushNamed(
               CallDetailScreen.routeName,
               extra: value[index].drvReqSq,
             );
+            if (result == true) {
+              /// 이용내역 재조회
+              initData();
+            }
           },
           child: Container(
             padding: const EdgeInsets.all(24),
@@ -325,10 +329,14 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
           onTap: () async {
             /// 이용내역 리스트 아이템 클릭
             /// 이용내역 화면으로 이동
-            context.pushNamed(
+            final result = await context.pushNamed(
               CalledDetailScreen.routeName,
               extra: value[index].drvReqSq,
             );
+            if (result == true) {
+              /// 이용내역 재조회
+              initData();
+            }
           },
           child: Container(
             padding: const EdgeInsets.all(24),

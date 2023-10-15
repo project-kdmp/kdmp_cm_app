@@ -1,16 +1,36 @@
 import 'package:flutter/foundation.dart';
+import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/drv_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
+import 'package:kdmp_cm_app/data/model/fcm/fcm_push_request.dart';
+import 'package:kdmp_cm_app/data/model/work/call_cancel_request.dart';
+import 'package:kdmp_cm_app/data/model/work/confirm_call_cancel_request.dart';
+import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_call_detail_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
+import 'package:kdmp_cm_app/presentation/values/strings.dart';
 
 class CallDetailViewModel {
   CallDetailViewModel({
+    required this.getMbrSqUseCase,
     required this.getCallDetailUseCase,
+    required this.setCallCancelUseCase,
+    required this.setConfirmCallCancelUseCase,
+    required this.setFCMPushUseCase,
   });
 
+  final GetMbrSqUseCase getMbrSqUseCase;
   final GetCallDetailUseCase getCallDetailUseCase;
+  final SetCallCancelUseCase setCallCancelUseCase;
+  final SetConfirmCallCancelUseCase setConfirmCallCancelUseCase;
+  final SetFCMPushUseCase setFCMPushUseCase;
+
+  /// 운행기사 번호
+  int _mbrDmSq = 0;
 
   /// 일시
   final ValueNotifier<String> _date = ValueNotifier<String>("");
@@ -102,6 +122,11 @@ class CallDetailViewModel {
 
   set carNumId(String value) => _carNumId.value = value;
 
+  /// 예약 상태값 체크
+  bool isReservation() {
+    return drvReqSt == DrvReqSt.res || drvReqSt == DrvReqSt.rco || drvReqSt == DrvReqSt.rwt || drvReqSt == DrvReqSt.rst || drvReqSt == DrvReqSt.rcd || drvReqSt == DrvReqSt.ren || drvReqSt == DrvReqSt.rdl;
+  }
+
   /// 상태
   StateAPI state = Loading();
 
@@ -117,15 +142,71 @@ class CallDetailViewModel {
       final response = result.callDetailResponse;
       date = getDateAndTimeFormat(startDate: response.drvStartDt, endDate: response.drvEndDt);
       drvReqSt = response.drvReqSt ?? "";
-      startPlace = response.reqStartPlaceNm ?? response.reqStartAddress ?? "";
-      endPlace = response.reqEndPlaceNm ?? response.reqEndAddress ?? "";
+      startPlace = response.reqStartPlaceNm;
+      endPlace = response.reqEndPlaceNm;
       stopoverList = response.stopOverLst;
       payment = response.paymKind ?? "";
       amount = response.drvPaymPrice ?? 0;
       driver = response.dmMbrNm ?? "";
       carNumId = response.carNumId ?? "";
+      // TODO: 서버에서 mbrDmSq 내려줘야함
+      // _mbrDmSq = response.mbrDmSq ?? 0;
     }
 
     return result;
+  }
+
+  /// 미확정 호출취소 API
+  Future<StateAPI> cancelCall({required int drvReqSq}) async {
+    state = Loading();
+
+    final mbrSq = await getMbrSqUseCase.execute();
+
+    final request = CallCancelRequest(
+      mbrCmSq: mbrSq,
+      drvReqSq: drvReqSq,
+    );
+
+    final result = await setCallCancelUseCase.execute(callCancelRequest: request);
+    state = result;
+
+    return result;
+  }
+
+  /// 확정 호출취소 API
+  Future<StateAPI> cancelConfirmCall({required int drvReqSq, required String drvCancelTp}) async {
+    state = Loading();
+
+    final mbrSq = await getMbrSqUseCase.execute();
+
+    final request = ConfirmCallCancelRequest(
+      mbrCmSq: mbrSq,
+      drvReqSq: drvReqSq,
+      drvCancelTp: drvCancelTp,
+    );
+
+    final result = await setConfirmCallCancelUseCase.execute(confirmCallCancelRequest: request);
+    state = result;
+
+    if (result is Success) {
+      await _sendPush(title: StringPush.reservationTitle, body: StringPush.cancelBody, type: DrvReqSt.rdl);
+    }
+
+    return result;
+  }
+
+  /// 푸시 알림 전송 API
+  Future<void> _sendPush({required String title, required String body, String? type}) async {
+    if (title.isEmpty || body.isEmpty) {
+      return;
+    }
+
+    final request = FCMPushRequest(
+      mbrSqTarget: _mbrDmSq,
+      title: title,
+      body: body,
+      type: type,
+    );
+    await setFCMPushUseCase.execute(fcmPushRequest: request);
   }
 }

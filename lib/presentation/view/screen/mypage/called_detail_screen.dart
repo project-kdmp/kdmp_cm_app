@@ -64,7 +64,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
         /// 상단 앱바
         appBar: BaseAppBar(
           appBar: AppBar(),
-          title: StringCalledDetail.title,
+          title: StringCalledDetail.callTitle,
         ),
 
         /// 화면
@@ -84,7 +84,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           /// 이용정보
                           SizedBox(
                             width: double.maxFinite,
-                            child: Text(StringCalledDetail.sub1Title, style: Theme.of(context).textTheme.displaySmall),
+                            child: Text(StringCalledDetail.infoTitle, style: Theme.of(context).textTheme.displaySmall),
                           ),
                           const SizedBox(height: 28),
 
@@ -210,7 +210,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           /// 결제정보
                           SizedBox(
                             width: double.maxFinite,
-                            child: Text(StringCalledDetail.sub2Title, style: Theme.of(context).textTheme.displaySmall),
+                            child: Text(StringCalledDetail.paymentTitle, style: Theme.of(context).textTheme.displaySmall),
                           ),
                           const SizedBox(height: 28),
 
@@ -254,7 +254,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           /// 기사정보
                           SizedBox(
                             width: double.maxFinite,
-                            child: Text(StringCalledDetail.sub3Title, style: Theme.of(context).textTheme.displaySmall),
+                            child: Text(StringCalledDetail.driverTitle, style: Theme.of(context).textTheme.displaySmall),
                           ),
                           const SizedBox(height: 28),
 

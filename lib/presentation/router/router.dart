@@ -24,6 +24,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.d
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/car_info_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/modify_place_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/place_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/withdraw_screen.dart';
@@ -246,6 +247,14 @@ final GoRouter router = GoRouter(
           name: PlaceScreen.routeName,
           path: PlaceScreen.routeName,
           builder: (context, state) => const PlaceScreen(),
+          routes: [
+            /// 자주 가는 장소 등록/수정
+            GoRoute(
+              name: ModifyPlaceScreen.routeName,
+              path: ModifyPlaceScreen.routeName,
+              builder: (context, state) => const ModifyPlaceScreen(),
+            ),
+          ],
         ),
 
         /// 차량정보

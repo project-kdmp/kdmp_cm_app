@@ -238,11 +238,20 @@ abstract class StringPlace {
   StringPlace._();
 
   static const String title = "자주 가는 장소";
+  static const String addTitle = "자주 가는 장소 등록";
+  static const String modifyTitle = "자주 가는 장소 수정";
   static const String bottomButton = "장소 추가";
   static const String delete = "삭제";
   static const String modify = "수정";
   static const String deleteAlert = "자주 가는 장소를 삭제하시겠습니까?";
   static const String deleteSuccess = "자주 가는 장소가 삭제되었습니다.";
+  static const String addSuccess = "등록이 완료되었습니다.";
+  static const String modifySuccess = "수정이 완료되었습니다.";
+
+  static const String placeNm = "장소 별명";
+  static const String placeAddress = "장소 지정";
+  static const String placeNmHint = "장소 별명을 입력해주세요.";
+  static const String placeAddressHint = "장소를 지정해주세요.";
 }
 
 abstract class StringCar {

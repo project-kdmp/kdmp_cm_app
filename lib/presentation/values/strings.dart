@@ -234,6 +234,17 @@ abstract class StringStopOverSetup {
   static const String bottomButton = "경유지 등록";
 }
 
+abstract class StringPlaceSetup {
+  StringPlaceSetup._();
+
+  static const String title = "장소 설정";
+  static const String searchHint = "장소 검색";
+  static const String selectMap = "지도에서 선택";
+  static const String edit = "편집";
+  static const String recentKeyword = "최근 검색";
+  static const String bottomButton = "장소 설정";
+}
+
 abstract class StringPlace {
   StringPlace._();
 
@@ -241,6 +252,8 @@ abstract class StringPlace {
   static const String addTitle = "자주 가는 장소 등록";
   static const String modifyTitle = "자주 가는 장소 수정";
   static const String bottomButton = "장소 추가";
+  static const String noList = "등록된 정보가 없습니다.";
+
   static const String delete = "삭제";
   static const String modify = "수정";
   static const String deleteAlert = "자주 가는 장소를 삭제하시겠습니까?";

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_place_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_place_delete_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/modify_place_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
@@ -46,21 +49,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
 
   void initData() {
     /// 자주 가는 장소 리스트 가져오기
-    // _placeViewModel.getPlaceList();
-
-    _placeViewModel.placeList = List<Place>.from({
-      Place(fplaceSq: 1, fplaceNicknm: "집", fplaceAddress: "주소"),
-      Place(fplaceSq: 1, fplaceNicknm: "집", fplaceAddress: "주소"),
-      Place(fplaceSq: 1, fplaceNicknm: "집", fplaceAddress: "주소"),
-      Place(fplaceSq: 1, fplaceNicknm: "집", fplaceAddress: "주소"),
-      Place(fplaceSq: 1, fplaceNicknm: "집", fplaceAddress: "주소"),
-      Place(fplaceSq: 1, fplaceNicknm: "집", fplaceAddress: "주소"),
-      Place(fplaceSq: 1, fplaceNicknm: "집", fplaceAddress: "주소"),
-      Place(fplaceSq: 1, fplaceNicknm: "집", fplaceAddress: "주소"),
-      Place(fplaceSq: 1, fplaceNicknm: "집", fplaceAddress: "주소"),
-      Place(fplaceSq: 1, fplaceNicknm: "집", fplaceAddress: "주소"),
-      Place(fplaceSq: 1, fplaceNicknm: "집", fplaceAddress: "주소"),
-    });
+    _placeViewModel.getPlaceList();
   }
 
   @override
@@ -90,8 +79,26 @@ class _PlaceScreenState extends State<PlaceScreen> {
                     children: [
                       ValueListenableBuilder<List<Place>>(
                         valueListenable: _placeViewModel.placeListNotifier,
-                        builder: (context, value, _) {
-                          return getListView(value);
+                        builder: (cntext, value, _) {
+
+                          /// 자주 가는 장소 리스트 없음
+                          return value.isEmpty ? SizedBox(
+                            height: 500,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(ImageCommon.imgWarning, width: 72, height: 72),
+                                const SizedBox(height: 20),
+                                Text(
+                                  StringPlace.noList,
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).disabledColor,
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                          : getListView(value);
                         },
                       ),
                     ],
@@ -105,7 +112,8 @@ class _PlaceScreenState extends State<PlaceScreen> {
                 child: CustomRadiusButton(
                   text: StringPlace.bottomButton,
                   onPressed: () async {
-                    // TODO: 자주 가는 장소 등록 화면으로 이동
+                    /// 자주 가는 장소 등록 화면으로 이동
+                    context.pushNamed(ModifyPlaceScreen.routeName);
                   },
                 ),
               ),

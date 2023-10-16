@@ -115,7 +115,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                     ValueListenableBuilder<List<Called>>(
                       valueListenable: _calledViewModel.calledListNotifier,
                       builder: (context, value, _) {
-                        return _calledViewModel.callList.isEmpty && value.isEmpty
+                        return value.isEmpty && value.isEmpty
                             ?
 
                             /// 이용내역 없음

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_management_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_password_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/set_payment_password_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
@@ -59,7 +60,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 CustomMoveButton(
                   text: StringPayment.paymentManagement,
                   onPressed: () {
-                    // context.pushNamed(PaymentManagement.routeName);
+                    context.pushNamed(PaymentManagementScreen.routeName);
                   },
                 ),
 

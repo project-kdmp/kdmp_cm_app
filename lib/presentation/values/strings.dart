@@ -441,7 +441,16 @@ abstract class StringPayment {
   static const String title = "결제 관리";
 
   static const String paymentManagement = "결제수단 관리";
+  static const String selectPaymentManagement = "결제수단 선택";
   static const String paymentSetPassword = "결제 비밀번호 설정";
+}
+
+abstract class StringPaymentManagement {
+  StringPaymentManagement._();
+
+  static const String payTitle = "결제 정보";
+  static const String paymentTitle = "결제 수단";
+  static const String pay = "결제하기";
 }
 
 abstract class StringPaymentPassword {

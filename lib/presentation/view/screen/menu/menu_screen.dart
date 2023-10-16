@@ -9,6 +9,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/car_info_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/place_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/menu/custom_move_button.dart';
@@ -89,8 +90,7 @@ class MenuScreen extends StatelessWidget {
                         height: 28,
                       ),
                       onPressed: () {
-                        // TODO: 결제관리 화면 이동
-                        // context.pushNamed(PaymentScreen.routeName);
+                        context.pushNamed(PaymentScreen.routeName);
                       },
                     ),
 

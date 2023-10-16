@@ -42,7 +42,7 @@ class CustomMoveButton extends StatelessWidget {
             shadowColor: Colors.transparent,
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: iconImage != null ? CrossAxisAlignment.center : CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               iconImage != null ? iconImage! : const SizedBox(),

@@ -434,3 +434,12 @@ abstract class StringCalled {
   static const String deleteAlert = "이용 정보를 삭제하시겠습니까?";
   static const String deleteSuccess = "이용 정보가 삭제되었습니다.";
 }
+
+abstract class StringPayment {
+  StringPayment._();
+
+  static const String title = "결제 관리";
+
+  static const String paymentManagement = "결제수단 관리";
+  static const String paymentPassword = "결제 비밀번호 설정";
+}

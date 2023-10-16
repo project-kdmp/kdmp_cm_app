@@ -31,6 +31,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/place_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/withdraw_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/no_permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/phone_verify_screen.dart';
@@ -242,6 +243,13 @@ final GoRouter router = GoRouter(
               builder: (context, state) => const WithdrawScreen(),
             ),
           ],
+        ),
+
+        /// 결제 관리
+        GoRoute(
+          name: PaymentScreen.routeName,
+          path: PaymentScreen.routeName,
+          builder: (context, state) => const PaymentScreen(),
         ),
 
         /// 자주 가는 장소

@@ -257,6 +257,12 @@ final GoRouter router = GoRouter(
               path: PaymentPasswordScreen.routeName,
               builder: (context, state) => const PaymentPasswordScreen(),
             ),
+            /// 결제 비밀번호 설정
+            GoRoute(
+              name: SetPaymentPasswordScreen.routeName,
+              path: SetPaymentPasswordScreen.routeName,
+              builder: (context, state) => const SetPaymentPasswordScreen(),
+            ),
           ],
         ),
 

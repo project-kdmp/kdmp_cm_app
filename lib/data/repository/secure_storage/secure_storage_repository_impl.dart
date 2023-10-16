@@ -169,4 +169,23 @@ class SecureStorageRepositoryImpl extends SecureStorageRepository {
   Future<void> deleteOnBoardingCheck() async {
     await _storage.delete(key: 'isOnBoardingCheck');
   }
+
+  /// 로컬에 저장된 '결제 비밀번호' 반환
+  @override
+  Future<String> getPaymentPassword() async {
+    String paymentPassword = await _storage.read(key: 'paymentPassword') ?? '';
+    return paymentPassword;
+  }
+
+  /// 로컬에 '결제 비밀번호' 저장
+  @override
+  Future<void> setPaymentPassword({required String paymentPassword}) async {
+    await _storage.write(key: 'paymentPassword', value: paymentPassword);
+  }
+
+  /// 로컬에서 '결제 비밀번호' 삭제
+  @override
+  Future<void> deletePaymentPassword() async {
+    await _storage.delete(key: 'paymentPassword');
+  }
 }

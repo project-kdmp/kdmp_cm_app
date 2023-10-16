@@ -5,7 +5,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
-import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/geocoding_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_place_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
@@ -14,7 +13,6 @@ import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/place_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_icon_text_button.dart';
-import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_search_field.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/address/place_search_viewmodel.dart';
@@ -192,31 +190,6 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
           ),
         ),
       ),
-    );
-  }
-
-  /// 장소 리스트
-  Widget getPlaceList(List<Place> value) {
-    return ListView.separated(
-      itemCount: value.length,
-      shrinkWrap: true,
-      primary: false,
-      scrollDirection: Axis.horizontal,
-      itemBuilder: (context, index) {
-        return CustomRoundButton(
-          text: value[index].fplaceNicknm ?? "",
-          backgroundColor: Theme.of(context).toggleButtonsTheme.fillColor,
-          textColor: Theme.of(context).colorScheme.secondary,
-          textSize: 16,
-          // 텍스트 사이즈 고정
-          onPressed: () async {
-            // TODO: 해당 장소로 장소 설정
-          },
-        );
-      },
-      separatorBuilder: (context, index) {
-        return const SizedBox(width: 8);
-      },
     );
   }
 

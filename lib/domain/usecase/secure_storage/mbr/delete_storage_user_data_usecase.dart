@@ -11,6 +11,7 @@ class DeleteStorageUserDataUseCase {
     await _secureStorageRepository.deleteMbrSq();
     await _secureStorageRepository.deleteMbrId();
     await _secureStorageRepository.deleteMbrPw();
+    await _secureStorageRepository.deletePaymentPassword();
     await _secureStorageRepository.deleteFCM();
   }
 
@@ -20,6 +21,7 @@ class DeleteStorageUserDataUseCase {
     await _secureStorageRepository.deleteMbrSq();
     await _secureStorageRepository.deleteMbrId();
     await _secureStorageRepository.deleteMbrPw();
+    await _secureStorageRepository.deletePaymentPassword();
     await _secureStorageRepository.deleteFCM();
     await _secureStorageRepository.deleteFirstLogin();
     await _secureStorageRepository.deleteOnBoardingCheck();

@@ -62,11 +62,13 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_firstlogin_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_onboarding_check_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_payment_password_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/setup/setup_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/set_my_term_usecase.dart';
@@ -280,6 +282,10 @@ void main() async {
   getIt.registerSingleton<SetFCMUseCase>(setFCMUseCase);
   final getFCMUseCase = GetFCMUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<GetFCMUseCase>(getFCMUseCase);
+  final getPaymentPasswordUseCase = GetPaymentPasswordUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<GetPaymentPasswordUseCase>(getPaymentPasswordUseCase);
+  final setPaymentPasswordUseCase = SetPaymentPasswordUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<SetPaymentPasswordUseCase>(setPaymentPasswordUseCase);
 
   String? fcmToken = await fcmSetting();
   debugPrint("======fcmToken=$fcmToken");

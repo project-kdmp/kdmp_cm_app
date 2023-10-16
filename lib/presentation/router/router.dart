@@ -250,6 +250,14 @@ final GoRouter router = GoRouter(
           name: PaymentScreen.routeName,
           path: PaymentScreen.routeName,
           builder: (context, state) => const PaymentScreen(),
+          routes: [
+            /// 결제 비밀번호 입력
+            GoRoute(
+              name: PaymentPasswordScreen.routeName,
+              path: PaymentPasswordScreen.routeName,
+              builder: (context, state) => const PaymentPasswordScreen(),
+            ),
+          ],
         ),
 
         /// 자주 가는 장소

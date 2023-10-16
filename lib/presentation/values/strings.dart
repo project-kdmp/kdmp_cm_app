@@ -441,5 +441,19 @@ abstract class StringPayment {
   static const String title = "결제 관리";
 
   static const String paymentManagement = "결제수단 관리";
-  static const String paymentPassword = "결제 비밀번호 설정";
+  static const String paymentSetPassword = "결제 비밀번호 설정";
+}
+
+abstract class StringPaymentPassword {
+  StringPaymentPassword._();
+
+  static const String inputTitle = "결제 비밀번호 입력";
+  static const String setTitle = "결제 비밀번호 설정";
+
+  static const String inputPassword = "결제 비밀번호 6자리를 입력해주세요.";
+  static const String inputNewPassword = "새로운 결제 비밀번호 6자리를 등록해주세요.";
+  static const String inputRePassword = "다시 한 번 입력해주세요.";
+  static const String inputPasswordError = "입력된 결제 비밀번호가 일치하지 않습니다.\n다시 입력해주세요.";
+
+  static const String setPasswordSuccess = "결제 비밀번호가 등록되었습니다.";
 }

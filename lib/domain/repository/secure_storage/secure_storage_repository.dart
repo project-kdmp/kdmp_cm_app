@@ -50,4 +50,10 @@ abstract class SecureStorageRepository {
   Future<void> setOnBoardingCheck({required bool isOnBoardingCheck});
 
   Future<void> deleteOnBoardingCheck();
+
+  Future<String> getPaymentPassword();
+
+  Future<void> setPaymentPassword({required String paymentPassword});
+
+  Future<void> deletePaymentPassword();
 }

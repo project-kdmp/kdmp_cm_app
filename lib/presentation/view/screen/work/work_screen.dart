@@ -572,7 +572,7 @@ class _WorkScreenState extends State<WorkScreen> {
   /// 앱 뒤로가기
   Future<bool> _onBackPressed() async {
     /// 운행이 종료된 경우에만 뒤로가기
-    if (_workViewModel.drvReqSt == DrvReqSt.end || _workViewModel.drvReqSt == DrvReqSt.ren) {
+    if (isWorkEnd()) {
       return true;
     }
     return false;

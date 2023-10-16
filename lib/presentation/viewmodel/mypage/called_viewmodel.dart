@@ -136,11 +136,6 @@ class CalledViewModel {
     final result = await setCalledDeleteUseCase.execute(calledDeleteRequest: request);
     state = result;
 
-    if (result is Success) {
-      clearPagination();
-      await getCallList();
-      await getCalledList();
-    }
     return result;
   }
 }

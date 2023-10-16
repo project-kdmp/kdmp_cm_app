@@ -451,6 +451,29 @@ abstract class StringPaymentManagement {
   static const String payTitle = "결제 정보";
   static const String paymentTitle = "결제 수단";
   static const String pay = "결제하기";
+
+  static const String paymentAddSuccess = "결제수단을 등록했습니다.";
+  static const String paymentDeleteSuccess = "결제수단을 삭제했습니다.";
+}
+
+abstract class StringSetPaymentManagement {
+  StringSetPaymentManagement._();
+
+  static const String title = "결제수단 등록";
+  static const String bottomButton = "다음";
+
+  static const String payContent1 = "결제수단 정보를 입력해주세요.";
+  static const String payContent2 = "체크카드 신용카드 모두 가능합니다.";
+  static const String password = "비밀번호 앞 2자리";
+  static const String passwordHint = "00";
+  static const String cvc = "CVC";
+  static const String cvcHint = "000";
+  static const String mmyy = "유효기간";
+  static const String mmyyHint = "MMYY";
+  static const String card = "카드번호";
+  static const String cardHint = "1234";
+  static const String cardNm = "카드별칭";
+  static const String cardNmHint = "카드별칭을 입력해주세요.";
 }
 
 abstract class StringPaymentPassword {

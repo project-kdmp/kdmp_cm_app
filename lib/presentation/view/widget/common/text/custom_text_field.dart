@@ -17,6 +17,7 @@ class CustomTextField extends StatelessWidget {
     this.maxLines,
     this.isExpands = false,
     this.backgroundColor,
+    this.textInputAction,
   }) : super(key: key);
 
   final String text;
@@ -32,12 +33,13 @@ class CustomTextField extends StatelessWidget {
   final int? maxLines;
   final bool isExpands;
   final Color? backgroundColor;
+  final TextInputAction? textInputAction;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       inputFormatters: inputType == TextInputType.number ? [FilteringTextInputFormatter.digitsOnly] : [],
-      // textInputAction: TextInputAction.next,
+      textInputAction: textInputAction,
       // onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
       keyboardType: inputType,
       enabled: isEnabled,
@@ -48,7 +50,7 @@ class CustomTextField extends StatelessWidget {
       textAlign: textAlign ?? TextAlign.start,
       textAlignVertical: TextAlignVertical.top,
       maxLength: maxLength,
-      maxLines: maxLines,
+      maxLines: maxLength != null ? 1 : maxLines,
       expands: isExpands,
       decoration: InputDecoration(
         counterText: "",

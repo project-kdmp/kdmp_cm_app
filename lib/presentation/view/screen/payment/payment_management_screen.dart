@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:kdmp_cm_app/presentation/util/string_util.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/payment/add_payment_management_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
-import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/payment/payment_management_viewmodel.dart';
 
@@ -11,10 +13,10 @@ import 'package:kdmp_cm_app/presentation/viewmodel/payment/payment_management_vi
 class PaymentManagementScreen extends StatefulWidget {
   const PaymentManagementScreen({
     Key? key,
-    this.price = 0,
+    this.isPay = false,
   }) : super(key: key);
 
-  final int price;
+  final bool isPay;
 
   static const String routeName = "payment_management";
 
@@ -54,7 +56,7 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
       /// 상단 앱바
       appBar: BaseAppBar(
         appBar: AppBar(),
-        title: widget.price == 0 ? StringPayment.paymentManagement : StringPayment.selectPaymentManagement,
+        title: widget.isPay ? StringPayment.selectPaymentManagement : StringPayment.paymentManagement,
       ),
 
       /// 화면
@@ -73,7 +75,7 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: SizedBox(
                         width: double.maxFinite,
-                        child: Text(widget.price != 0 ? StringPaymentManagement.payTitle : StringPaymentManagement.paymentTitle, style: Theme.of(context).textTheme.displaySmall),
+                        child: Text(widget.isPay ? StringPaymentManagement.payTitle : StringPaymentManagement.paymentTitle, style: Theme.of(context).textTheme.displaySmall),
                       ),
                     ),
                     const SizedBox(height: 28),
@@ -108,13 +110,14 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
             ),
 
             /// 하단 버튼
-            widget.price != 0
+            widget.isPay
                 ? Padding(
                     padding: const EdgeInsets.all(20),
-                    child: CustomRadiusButton(
-                      text: "${getPrice(widget.price)} ${StringPaymentManagement.pay}",
+                    child: CustomElevatedButton(
+                      text: StringCommon.confirm,
                       onPressed: () async {
-                        // TODO: 결제하기
+                        // TODO: 이전 화면으로 선택한 결제수단 전달
+                        context.pop(true);
                       },
                     ),
                   )
@@ -149,8 +152,16 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                 ),
               )
             : GestureDetector(
-                onTap: () {
-                  // TODO: 결제수단 등록 화면으로 이동
+                onTap: () async {
+                  /// 결제수단 등록 화면으로 이동
+                  final result = await context.pushNamed(AddPaymentManagementScreen.routeName);
+                  if (result == true) {
+                    /// 결제수단 등록 성공 팝업
+                    await _showAlertDialog(content: StringPaymentManagement.paymentAddSuccess, isCanceled: false);
+
+                    /// 결제수단 리스트 갱신
+                    initData();
+                  }
                 },
                 child: Container(
                   margin: const EdgeInsets.all(10),
@@ -167,6 +178,24 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                   ),
                 ),
               );
+      },
+    );
+  }
+
+  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: title,
+          content: content,
+          isCanceled: isCanceled,
+          isWarning: isWarning,
+          onConfirm: () {
+            context.pop();
+          },
+        );
       },
     );
   }

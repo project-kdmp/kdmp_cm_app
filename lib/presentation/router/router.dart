@@ -31,6 +31,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/place_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/withdraw_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/payment/add_payment_management_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_management_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_password_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_screen.dart';
@@ -258,7 +259,18 @@ final GoRouter router = GoRouter(
             GoRoute(
               name: PaymentManagementScreen.routeName,
               path: PaymentManagementScreen.routeName,
-              builder: (context, state) => const PaymentManagementScreen(),
+              builder: (context, state) {
+                final Object isPay = state.extra ?? false;
+                return PaymentManagementScreen(isPay: isPay as bool);
+              },
+              routes: [
+                /// 결제수단 등록
+                GoRoute(
+                  name: AddPaymentManagementScreen.routeName,
+                  path: AddPaymentManagementScreen.routeName,
+                  builder: (context, state) => const AddPaymentManagementScreen(),
+                ),
+              ],
             ),
 
             /// 결제 비밀번호 입력
@@ -267,6 +279,7 @@ final GoRouter router = GoRouter(
               path: PaymentPasswordScreen.routeName,
               builder: (context, state) => const PaymentPasswordScreen(),
             ),
+
             /// 결제 비밀번호 설정
             GoRoute(
               name: SetPaymentPasswordScreen.routeName,

@@ -31,6 +31,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.d
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_management_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/work/work_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
@@ -545,10 +546,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                           textColor: Theme.of(context).colorScheme.secondary,
                                           borderColor: Theme.of(context).cardColor,
                                           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                          onPressed: () {
-                                            // TODO: 결제수단 선택 화면으로 이동
-                                            _homeViewModel.payment = "신한체크카드 1234";
-                                            _homeViewModel.paymKind = "CARD";
+                                          onPressed: () async {
+                                            /// 결제수단 화면으로 이동
+                                            final result = await context.pushNamed(
+                                              PaymentManagementScreen.routeName,
+                                              extra: true, // 결제선택 여부
+                                            );
+                                            if (result == true) {
+                                              // TODO: 선택한 결제수단 데이터 받기
+                                              _homeViewModel.payment = "신한체크카드 1234";
+                                              _homeViewModel.paymKind = "CARD";
+                                            }
                                           },
                                         ),
                                       ],

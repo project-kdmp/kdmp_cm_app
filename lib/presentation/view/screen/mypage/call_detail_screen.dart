@@ -453,7 +453,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                           child: Row(
                             children: [
                               /// 예약 취소 버튼
-                              value == DrvReqSt.rco
+                              value == DrvReqSt.res || value == DrvReqSt.rco
                                   ? Expanded(
                                       child: CustomRadiusButton(
                                         text: StringCalled.reservationCancel,
@@ -512,7 +512,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                       ),
                                     )
                                   : const SizedBox(),
-                              value == DrvReqSt.rco ? const SizedBox(width: 8) : const SizedBox(),
+                              value == DrvReqSt.res || value == DrvReqSt.rco ? const SizedBox(width: 8) : const SizedBox(),
 
                               /// 대리 추가 호출 버튼
                               Expanded(

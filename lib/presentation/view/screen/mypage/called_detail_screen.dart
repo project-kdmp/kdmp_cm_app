@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
+import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
+import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_called_detail_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/bottomsheet/review_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/horizontal_dashed_divider.dart';
@@ -42,7 +49,10 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
   /// Create
   void initViewModel() {
     _calledDetailViewModel = CalledDetailViewModel(
+      getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getCalledDetailUseCase: GetIt.instance<GetCalledDetailUseCase>(),
+      setReviewWriteUseCase: GetIt.instance<SetReviewWriteUseCase>(),
+      setFCMPushUseCase: GetIt.instance<SetFCMPushUseCase>(),
     );
   }
 
@@ -356,7 +366,13 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                             ? Expanded(
                                 child: CustomRadiusButton(
                                   text: StringCalled.reviewModify,
-                                  onPressed: () async {},
+                                  onPressed: () async {
+                                    /// 리뷰 작성 팝업 띄움
+                                    final result = await _showReviewBottomSheet();
+                                    if (result == true) {
+                                      initData();
+                                    }
+                                  },
                                 ),
                               )
                             : const SizedBox();
@@ -457,5 +473,42 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
         );
       },
     );
+  }
+
+  /// 리뷰 작성 팝업
+  Future<bool> _showReviewBottomSheet() async {
+    return await showModalBottomSheet(
+      context: context,
+      isDismissible: false, // bottomSheet 영역 외 터치 여부
+      isScrollControlled: true,
+      builder: (context) {
+        return Wrap(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: ReviewBottomSheet(
+                onPressed: (star, review) async {
+                  debugPrint("$star, $review");
+
+                  /// 리뷰 작성
+                  final result = await _calledDetailViewModel.writeReview(drvReqSq: widget.drvReqSq, reviewContent: review, starPoint: star);
+                  if (result is Success) {
+                    /// 리뷰 작성 팝업 닫기
+                    context.pop(true);
+                  } else if (result is Bad) {
+                    Fluttertoast.showToast(msg: StringCommon.httpBad);
+                  } else if (result is Fail) {
+                    Fluttertoast.showToast(msg: "${result.errorMessage}");
+                  }
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    /// 화면 닫기, 홈 화면 초기화
+    context.pop(false);
   }
 }

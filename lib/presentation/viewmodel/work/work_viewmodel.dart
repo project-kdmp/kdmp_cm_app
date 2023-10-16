@@ -253,11 +253,7 @@ class WorkViewModel {
   Future<StateAPI> writeReview({required int drvReqSq, required String reviewContent, required int starPoint}) async {
     state = Loading();
 
-    final mbrSq = await getMbrSqUseCase.execute();
-
     final request = ReviewWriteRequest(
-      mbrCmSq: mbrSq,
-      mbrDmSq: _mbrDmSq,
       drvReqSq: drvReqSq,
       reviewContent: reviewContent,
       starPoint: starPoint,
@@ -267,14 +263,14 @@ class WorkViewModel {
     state = result;
 
     if (result is Success) {
-      await _sendPush(title: StringPush.callTitle, body: StringPush.reviewBody);
+      await _sendPush(title: StringPush.callTitle, body: StringPush.reviewBody, type: "review");
     }
 
     return result;
   }
 
   /// 푸시 알림 전송 API
-  Future<void> _sendPush({required String title, required String body, String? type}) async {
+  Future<void> _sendPush({required String title, required String body, required String type}) async {
     if (title.isEmpty || body.isEmpty) {
       return;
     }

@@ -2,15 +2,30 @@ import 'package:flutter/foundation.dart';
 import 'package:kdmp_cm_app/data/model/common/drv_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
+import 'package:kdmp_cm_app/data/model/fcm/fcm_push_request.dart';
+import 'package:kdmp_cm_app/data/model/work/review_write_request.dart';
+import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_called_detail_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
+import 'package:kdmp_cm_app/presentation/values/strings.dart';
 
 class CalledDetailViewModel {
   CalledDetailViewModel({
+    required this.getMbrSqUseCase,
     required this.getCalledDetailUseCase,
+    required this.setReviewWriteUseCase,
+    required this.setFCMPushUseCase,
   });
 
+  final GetMbrSqUseCase getMbrSqUseCase;
   final GetCalledDetailUseCase getCalledDetailUseCase;
+  final SetReviewWriteUseCase setReviewWriteUseCase;
+  final SetFCMPushUseCase setFCMPushUseCase;
+
+  /// 운행기사 번호
+  int _mbrDmSq = 0;
 
   /// 일시
   final ValueNotifier<String> _date = ValueNotifier<String>("");
@@ -146,7 +161,7 @@ class CalledDetailViewModel {
   _checkIsReviewEnabled() {
     var valid = false;
     if (startDate.isNotEmpty) {
-      DateTime.parse(startDate).isAfter(DateTime.now().subtract(const Duration(days: 7)));
+      valid = DateTime.parse(startDate).isAfter(DateTime.now().subtract(const Duration(days: 7)));
     }
     _setIsReviewEnabled(value: valid);
   }
@@ -178,8 +193,45 @@ class CalledDetailViewModel {
       carNumId = response.carNumId ?? "";
       star = response.starPoint ?? 0;
       review = response.reviewContent ?? "";
+      // TODO: 서버에서 mbrDmSq 내려줘야함
+      // _mbrDmSq = response.mbrDmSq ?? 0;
     }
 
     return result;
+  }
+
+  /// 리뷰 작성 API
+  Future<StateAPI> writeReview({required int drvReqSq, required String reviewContent, required int starPoint}) async {
+    state = Loading();
+
+    final request = ReviewWriteRequest(
+      drvReqSq: drvReqSq,
+      reviewContent: reviewContent,
+      starPoint: starPoint,
+    );
+
+    final result = await setReviewWriteUseCase.execute(reviewWriteRequest: request);
+    state = result;
+
+    if (result is Success) {
+      await _sendPush(title: StringPush.callTitle, body: StringPush.reviewBody, type: "review");
+    }
+
+    return result;
+  }
+
+  /// 푸시 알림 전송 API
+  Future<void> _sendPush({required String title, required String body, required String type}) async {
+    if (title.isEmpty || body.isEmpty) {
+      return;
+    }
+
+    final request = FCMPushRequest(
+      mbrSqTarget: _mbrDmSq,
+      title: title,
+      body: body,
+      type: type,
+    );
+    await setFCMPushUseCase.execute(fcmPushRequest: request);
   }
 }

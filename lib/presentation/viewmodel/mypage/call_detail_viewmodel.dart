@@ -196,7 +196,7 @@ class CallDetailViewModel {
   }
 
   /// 푸시 알림 전송 API
-  Future<void> _sendPush({required String title, required String body, String? type}) async {
+  Future<void> _sendPush({required String title, required String body, required String type}) async {
     if (title.isEmpty || body.isEmpty) {
       return;
     }

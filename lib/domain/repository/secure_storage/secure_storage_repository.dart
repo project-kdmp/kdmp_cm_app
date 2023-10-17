@@ -29,6 +29,12 @@ abstract class SecureStorageRepository {
 
   Future<void> deleteMbrPw();
 
+  Future<String> getMbrCi();
+
+  Future<void> setMbrCi({required String mbrCi});
+
+  Future<void> deleteMbrCi();
+
   Future<String> getFCM();
 
   Future<void> setFCM({required String fcm});

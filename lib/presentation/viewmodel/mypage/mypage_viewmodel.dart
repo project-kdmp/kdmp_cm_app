@@ -3,7 +3,7 @@ import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/logout/set_logout_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_profile_detail_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_storage_user_data_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 
 class MyPageViewModel {
@@ -11,13 +11,13 @@ class MyPageViewModel {
     required this.getMbrSqUseCase,
     required this.setLogoutUseCase,
     required this.getProfileDetailUseCase,
-    required this.deleteStorageUserDataUseCase,
+    required this.deleteUserDataUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final SetLogoutUseCase setLogoutUseCase;
   final GetProfileDetailUseCase getProfileDetailUseCase;
-  final DeleteStorageUserDataUseCase deleteStorageUserDataUseCase;
+  final DeleteUserDataUseCase deleteUserDataUseCase;
 
   /// 이름
   final ValueNotifier<String> _name = ValueNotifier<String>("");
@@ -50,7 +50,7 @@ class MyPageViewModel {
     state = result;
 
     if (result is Success) {
-      await deleteStorageUserDataUseCase.logout();
+      await deleteUserDataUseCase.logout();
     }
 
     return result;

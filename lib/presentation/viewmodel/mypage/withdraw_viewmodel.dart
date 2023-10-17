@@ -1,19 +1,19 @@
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_withdrawal_member_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_storage_user_data_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 
 class WithdrawViewModel {
   WithdrawViewModel({
     required this.getMbrSqUseCase,
     required this.setWithdrawalMemberUseCase,
-    required this.deleteStorageUserDataUseCase,
+    required this.deleteUserDataUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final SetWithdrawalMemberUseCase setWithdrawalMemberUseCase;
-  final DeleteStorageUserDataUseCase deleteStorageUserDataUseCase;
+  final DeleteUserDataUseCase deleteUserDataUseCase;
 
   /// 상태
   StateAPI state = Loading();
@@ -29,7 +29,7 @@ class WithdrawViewModel {
     state = result;
 
     if (result is Success) {
-      await deleteStorageUserDataUseCase.withdrawal();
+      await deleteUserDataUseCase.withdrawal();
     }
 
     return result;

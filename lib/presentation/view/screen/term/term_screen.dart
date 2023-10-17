@@ -7,7 +7,7 @@ import 'package:kdmp_cm_app/data/model/term/term_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/register/phone_verify_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/register_verify_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/checkbox/custom_checkbox.dart';
@@ -160,7 +160,7 @@ class _TermScreenState extends State<TermScreen> {
                           onPressed: () {
                             /// 본인인증 화면으로 이동
                             context.pushNamed(
-                              PhoneVerifyScreen.routeName,
+                              RegisterVerifyScreen.routeName,
                               extra: _termViewModel.agreeTermList,
                             );
                           },

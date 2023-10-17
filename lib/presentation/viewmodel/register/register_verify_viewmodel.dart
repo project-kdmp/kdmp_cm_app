@@ -2,29 +2,27 @@ import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/auth/login_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/fcm/fcm_token_request.dart';
+import 'package:kdmp_cm_app/data/model/register/register_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_user_data_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/device_info_util.dart';
 
-class SplashViewModel {
-  SplashViewModel({
+class RegisterVerifyViewModel {
+  RegisterVerifyViewModel({
+    required this.setRegisterUseCase,
     required this.getLoginUseCase,
-    required this.getMbrIdUseCase,
-    required this.getMbrPwUseCase,
     required this.setUserDataUseCase,
     required this.getOnBoardingCheckUseCase,
     required this.getFCMUseCase,
     required this.setFCMTokenUseCase,
   });
 
+  final SetRegisterUseCase setRegisterUseCase;
   final GetLoginUseCase getLoginUseCase;
-  final GetMbrIdUseCase getMbrIdUseCase;
-  final GetMbrPwUseCase getMbrPwUseCase;
   final SetUserDataUseCase setUserDataUseCase;
   final GetOnBoardingCheckUseCase getOnBoardingCheckUseCase;
   final GetFCMUseCase getFCMUseCase;
@@ -33,20 +31,43 @@ class SplashViewModel {
   /// 상태
   StateAPI state = Loading();
 
-  /// 로그인 API (자동로그인)
-  Future<StateAPI> autoLogin() async {
+  /// 회원가입 API
+  Future<StateAPI> register({
+    required String mbrNm,
+    required String mbrMobilePhone,
+    required String mbrCi,
+    required List<TempAgreeTerm> tempAgreeTermList,
+  }) async {
     state = Loading();
 
-    final mbrId = await getMbrIdUseCase.execute();
-    final password = await getMbrPwUseCase.execute();
     final mbrDeviceId = await getDeviceId();
-
-    if (mbrId.isEmpty || password.isEmpty) {
-      state = Fail(errorMessage: "아이디 비밀번호가 존재하지 않습니다.");
-      return state;
+    final agreeTermList = List<AgreeTerm>.from({});
+    for (int i = 0; i < tempAgreeTermList.length; i++) {
+      agreeTermList.add(AgreeTerm(trmSq: tempAgreeTermList[i].trmSq, agreeYn: tempAgreeTermList[i].agreeYn));
     }
+    final request = RegisterRequest(
+      mbrNm: mbrNm,
+      mbrDeviceId: mbrDeviceId,
+      mbrMobilePhone: mbrMobilePhone,
+      mbrCi: mbrCi,
+      agreeTermList: agreeTermList,
+    );
+    final result = await setRegisterUseCase.execute(registerRequest: request);
+    state = result;
 
-    final request = LoginRequest(mbrId: mbrId, mbrDeviceId: mbrDeviceId, password: password);
+    return result;
+  }
+
+  /// 로그인 API
+  Future<StateAPI> login({
+    required String mbrId,
+    required String mbrPw,
+    required String mbrCi,
+  }) async {
+    state = Loading();
+
+    final mbrDeviceId = await getDeviceId();
+    final request = LoginRequest(mbrId: mbrId, mbrDeviceId: mbrDeviceId, password: mbrPw);
     final result = await getLoginUseCase.execute(loginRequest: request);
     state = result;
 
@@ -56,9 +77,14 @@ class SplashViewModel {
 
       if (mbrPrivilegeTp == MbrPrivilegeTp.customer) {
         // 회원 유형이 고객일 경우에만 저장
-        await setUserDataUseCase.autoLogin(
+        await setUserDataUseCase.login(
           jwt: result.loginResponse.jwt,
           autoRefresh: result.loginResponse.autoRefresh,
+          mbrSq: result.loginResponse.mbrSq,
+          mbrId: mbrId,
+          mbrPw: mbrPw,
+          mbrCi: mbrCi,
+          isFirstLogin: false,
         );
 
         await _setFcmToken(mbrSq: result.loginResponse.mbrSq);

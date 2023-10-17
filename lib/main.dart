@@ -55,20 +55,17 @@ import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/set_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_auto_refresh_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_auto_refresh_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_storage_user_data_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_firstlogin_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrci_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_firstlogin_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrid_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrpw_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_payment_password_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/setup/setup_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/set_my_term_usecase.dart';
@@ -87,7 +84,6 @@ import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import 'domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
-import 'domain/usecase/secure_storage/jwt/set_jwt_usecase.dart';
 import 'firebase_options.dart';
 import 'presentation/router/router.dart';
 
@@ -248,32 +244,24 @@ void main() async {
   final secureStorageRepository = SecureStorageRepositoryImpl();
   final getJwtUseCase = GetJwtUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<GetJwtUseCase>(getJwtUseCase);
-  final setJwtUseCase = SetJwtUseCase(secureStorageRepository: secureStorageRepository);
-  getIt.registerSingleton<SetJwtUseCase>(setJwtUseCase);
   final getAutoRefreshUseCase = GetAutoRefreshUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<GetAutoRefreshUseCase>(getAutoRefreshUseCase);
-  final setAutoRefreshUseCase = SetAutoRefreshUseCase(secureStorageRepository: secureStorageRepository);
-  getIt.registerSingleton<SetAutoRefreshUseCase>(setAutoRefreshUseCase);
   final getMbrSqUseCase = GetMbrSqUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<GetMbrSqUseCase>(getMbrSqUseCase);
-  final setMbrSqUseCase = SetMbrSqUseCase(secureStorageRepository: secureStorageRepository);
-  getIt.registerSingleton<SetMbrSqUseCase>(setMbrSqUseCase);
   final getMbrIdUseCase = GetMbrIdUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<GetMbrIdUseCase>(getMbrIdUseCase);
-  final setMbrIdUseCase = SetMbrIdUseCase(secureStorageRepository: secureStorageRepository);
-  getIt.registerSingleton<SetMbrIdUseCase>(setMbrIdUseCase);
   final getMbrPwUseCase = GetMbrPwUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<GetMbrPwUseCase>(getMbrPwUseCase);
-  final setMbrPwUseCase = SetMbrPwUseCase(secureStorageRepository: secureStorageRepository);
-  getIt.registerSingleton<SetMbrPwUseCase>(setMbrPwUseCase);
+  final getMbrCiUseCase = GetMbrCiUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<GetMbrCiUseCase>(getMbrCiUseCase);
+  final setUserDataUseCase = SetUserDataUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<SetUserDataUseCase>(setUserDataUseCase);
   final setupUseCase = SetupUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<SetupUseCase>(setupUseCase);
   final getFirstLoginUseCase = GetFirstLoginUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<GetFirstLoginUseCase>(getFirstLoginUseCase);
-  final setFirstLoginUseCase = SetFirstLoginUseCase(secureStorageRepository: secureStorageRepository);
-  getIt.registerSingleton<SetFirstLoginUseCase>(setFirstLoginUseCase);
-  final deleteStorageUserDataUseCase = DeleteStorageUserDataUseCase(secureStorageRepository: secureStorageRepository);
-  getIt.registerSingleton<DeleteStorageUserDataUseCase>(deleteStorageUserDataUseCase);
+  final deleteUserDataUseCase = DeleteUserDataUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<DeleteUserDataUseCase>(deleteUserDataUseCase);
   final setOnBoardingCheckUseCase = SetOnBoardingCheckUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<SetOnBoardingCheckUseCase>(setOnBoardingCheckUseCase);
   final getOnBoardingCheckUseCase = GetOnBoardingCheckUseCase(secureStorageRepository: secureStorageRepository);
@@ -308,10 +296,8 @@ void main() async {
     getJwtUseCase: getJwtUseCase,
     getAutoRefreshUseCase: getAutoRefreshUseCase,
     getMbrIdUseCase: getMbrIdUseCase,
-    setMbrIdUseCase: setMbrIdUseCase,
-    setMbrPwUseCase: setMbrPwUseCase,
-    setJwtUseCase: setJwtUseCase,
-    setAutoRefreshUseCase: setAutoRefreshUseCase,
+    setUserDataUseCase: setUserDataUseCase,
+    deleteUserDataUseCase: deleteUserDataUseCase,
   ));
 
   /// Dio Log Interceptor

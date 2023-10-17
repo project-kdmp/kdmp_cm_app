@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_withdrawal_member_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_storage_user_data_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
@@ -40,7 +40,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
     _withdrawViewModel = WithdrawViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       setWithdrawalMemberUseCase: GetIt.instance<SetWithdrawalMemberUseCase>(),
-      deleteStorageUserDataUseCase: GetIt.instance<DeleteStorageUserDataUseCase>(),
+      deleteUserDataUseCase: GetIt.instance<DeleteUserDataUseCase>(),
     );
   }
 

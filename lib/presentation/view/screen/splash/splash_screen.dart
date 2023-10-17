@@ -8,13 +8,10 @@ import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_jwt_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrid_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrpw_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_user_data_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
@@ -43,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     initViewModel();
     Future.delayed(const Duration(milliseconds: 1000), () {
-      _login();
+      _autoLogin();
     });
   }
 
@@ -51,12 +48,9 @@ class _SplashScreenState extends State<SplashScreen> {
   void initViewModel() {
     _splashViewModel = SplashViewModel(
       getLoginUseCase: GetIt.instance<GetLoginUseCase>(),
-      setJwtUseCase: GetIt.instance<SetJwtUseCase>(),
-      setMbrSqUseCase: GetIt.instance<SetMbrSqUseCase>(),
-      setMbrIdUseCase: GetIt.instance<SetMbrIdUseCase>(),
       getMbrIdUseCase: GetIt.instance<GetMbrIdUseCase>(),
-      setMbrPwUseCase: GetIt.instance<SetMbrPwUseCase>(),
       getMbrPwUseCase: GetIt.instance<GetMbrPwUseCase>(),
+      setUserDataUseCase: GetIt.instance<SetUserDataUseCase>(),
       getOnBoardingCheckUseCase: GetIt.instance<GetOnBoardingCheckUseCase>(),
       getFCMUseCase: GetIt.instance<GetFCMUseCase>(),
       setFCMTokenUseCase: GetIt.instance<SetFCMTokenUseCase>(),
@@ -75,9 +69,9 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  _login() async {
+  _autoLogin() async {
     /// 로그인 처리
-    final result = await _splashViewModel.login();
+    final result = await _splashViewModel.autoLogin();
 
     if (result is Success) {
       /// 로그인 - 성공시 처리

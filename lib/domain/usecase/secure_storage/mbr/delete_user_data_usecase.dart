@@ -1,9 +1,9 @@
 import '../../../repository/secure_storage/secure_storage_repository.dart';
 
-class DeleteStorageUserDataUseCase {
+class DeleteUserDataUseCase {
   final SecureStorageRepository _secureStorageRepository;
 
-  DeleteStorageUserDataUseCase({required SecureStorageRepository secureStorageRepository}) : _secureStorageRepository = secureStorageRepository;
+  DeleteUserDataUseCase({required SecureStorageRepository secureStorageRepository}) : _secureStorageRepository = secureStorageRepository;
 
   Future<void> logout() async {
     await _secureStorageRepository.deleteJwt();
@@ -11,6 +11,7 @@ class DeleteStorageUserDataUseCase {
     await _secureStorageRepository.deleteMbrSq();
     await _secureStorageRepository.deleteMbrId();
     await _secureStorageRepository.deleteMbrPw();
+    await _secureStorageRepository.deleteMbrCi();
     await _secureStorageRepository.deletePaymentPassword();
     await _secureStorageRepository.deleteFCM();
   }
@@ -21,6 +22,7 @@ class DeleteStorageUserDataUseCase {
     await _secureStorageRepository.deleteMbrSq();
     await _secureStorageRepository.deleteMbrId();
     await _secureStorageRepository.deleteMbrPw();
+    await _secureStorageRepository.deleteMbrCi();
     await _secureStorageRepository.deletePaymentPassword();
     await _secureStorageRepository.deleteFCM();
     await _secureStorageRepository.deleteFirstLogin();

@@ -1,15 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/data/constant/url.dart';
 import 'package:kdmp_cm_app/data/model/auth/refresh_request.dart';
 import 'package:kdmp_cm_app/data/model/auth/refresh_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_auto_refresh_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_auto_refresh_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/set_jwt_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrid_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrpw_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_user_data_usecase.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../../domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
@@ -17,22 +16,18 @@ import '../../../domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 class TokenInterceptor extends InterceptorsWrapper {
   final Dio dio;
   final GetJwtUseCase getJwtUseCase;
-  final SetJwtUseCase setJwtUseCase;
   final GetAutoRefreshUseCase getAutoRefreshUseCase;
-  final SetAutoRefreshUseCase setAutoRefreshUseCase;
   final GetMbrIdUseCase getMbrIdUseCase;
-  final SetMbrIdUseCase setMbrIdUseCase;
-  final SetMbrPwUseCase setMbrPwUseCase;
+  final SetUserDataUseCase setUserDataUseCase;
+  final DeleteUserDataUseCase deleteUserDataUseCase;
 
   TokenInterceptor({
     required this.dio,
     required this.getJwtUseCase,
-    required this.setJwtUseCase,
     required this.getAutoRefreshUseCase,
-    required this.setAutoRefreshUseCase,
     required this.getMbrIdUseCase,
-    required this.setMbrIdUseCase,
-    required this.setMbrPwUseCase,
+    required this.setUserDataUseCase,
+    required this.deleteUserDataUseCase,
   });
 
   @override
@@ -71,14 +66,17 @@ class TokenInterceptor extends InterceptorsWrapper {
             // 다시 인증 오류가 발생했을 경우: RefreshToken 만료
             // if (err.response?.statusCode == 401) {
             // 기기의 자동 로그인 정보 삭제
-            await setMbrIdUseCase.execute(mbrId: "");
-            await setMbrPwUseCase.execute(mbrPw: "");
-            await setJwtUseCase.execute(jwt: "");
+            await deleteUserDataUseCase.logout();
 
-            // . . .
-            // 로그인 만료 dialog 발생 후 로그인 페이지로 이동
-            // . . .
-            // }
+            if (err.response?.statusCode == 401) {
+              Fluttertoast.showToast(msg: "로그인이 만료되었습니다.\n다시 로그인해주세요.");
+            } else {
+              Fluttertoast.showToast(msg: "401 외 오류발생 : ${err.response?.statusCode}");
+            }
+
+            /// 앱 종료
+            SystemNavigator.pop();
+
             return handler.next(err);
           },
         ),
@@ -103,8 +101,7 @@ class TokenInterceptor extends InterceptorsWrapper {
       final autoRefresh = refreshResponse.autoRefresh;
 
       // 기기에 저장된 AccessToken과 RefreshToken 갱신
-      await setJwtUseCase.execute(jwt: jwt);
-      await setAutoRefreshUseCase.execute(autoRefresh: autoRefresh);
+      await setUserDataUseCase.autoLogin(jwt: jwt, autoRefresh: autoRefresh);
 
       // AccessToken의 만료로 수행하지 못했던 API 요청에 담겼던 AccessToken 갱신
       err.requestOptions.headers['Authorization'] = 'Bearer $jwt';

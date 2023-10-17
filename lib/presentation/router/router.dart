@@ -40,6 +40,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_scree
 import 'package:kdmp_cm_app/presentation/view/screen/register/no_permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/phone_verify_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/register_verify_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/splash/splash_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/driver_term_screen.dart';
@@ -63,7 +64,7 @@ final GoRouter router = GoRouter(
       /// 로그인 아닌 상태
       /// 접근 권한 안내 화면으로 이동
       debugPrint("state: ${state.matchedLocation}");
-      if (!state.matchedLocation.contains(PermissionScreen.routeURL) && !state.matchedLocation.contains(TermScreen.routeURL) && !state.matchedLocation.contains(PhoneVerifyScreen.routeURL) /*&& !state.matchedLocation.contains(LoginScreen.routeURL)*/) {
+      if (!state.matchedLocation.contains(PermissionScreen.routeURL) && !state.matchedLocation.contains(TermScreen.routeURL) && !state.matchedLocation.contains(RegisterVerifyScreen.routeURL) /*&& !state.matchedLocation.contains(LoginScreen.routeURL)*/) {
         return PermissionScreen.routeURL;
       }
     }
@@ -117,14 +118,21 @@ final GoRouter router = GoRouter(
       },
     ),
 
-    /// 본인인증 확인
+    /// 회원가입 본인인증 확인
+    GoRoute(
+      name: RegisterVerifyScreen.routeName,
+      path: RegisterVerifyScreen.routeURL,
+      builder: (context, state) {
+        final List<TempAgreeTerm> agreeTermList = state.extra as List<TempAgreeTerm>;
+        return RegisterVerifyScreen(agreeTermList: agreeTermList);
+      },
+    ),
+
+    /// 회원가입 본인인증 확인
     GoRoute(
       name: PhoneVerifyScreen.routeName,
       path: PhoneVerifyScreen.routeURL,
-      builder: (context, state) {
-        final List<TempAgreeTerm> agreeTermList = state.extra as List<TempAgreeTerm>;
-        return PhoneVerifyScreen(agreeTermList: agreeTermList);
-      },
+      builder: (context, state) => const PhoneVerifyScreen(),
     ),
 
     /// 초기 차량정보 등록

@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/logout/set_logout_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_profile_detail_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_storage_user_data_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
@@ -44,7 +44,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       setLogoutUseCase: GetIt.instance<SetLogoutUseCase>(),
       getProfileDetailUseCase: GetIt.instance<GetProfileDetailUseCase>(),
-      deleteStorageUserDataUseCase: GetIt.instance<DeleteStorageUserDataUseCase>(),
+      deleteUserDataUseCase: GetIt.instance<DeleteUserDataUseCase>(),
     );
   }
 

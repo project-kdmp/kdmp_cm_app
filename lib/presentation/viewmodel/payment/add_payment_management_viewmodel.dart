@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
 
 class AddPaymentManagementViewModel {
-  AddPaymentManagementViewModel();
+  AddPaymentManagementViewModel({
+    required this.getPaymentPasswordUseCase,
+  });
+
+  final GetPaymentPasswordUseCase getPaymentPasswordUseCase;
 
   /// 비밀번호
   final ValueNotifier<String> _password = ValueNotifier<String>("");
@@ -124,4 +129,10 @@ class AddPaymentManagementViewModel {
 
   /// 상태
   StateAPI state = Loading();
+
+  /// 결제 비밀번호 설정 여부
+  Future<bool> isSetPaymentPassword() async {
+    final password = await getPaymentPasswordUseCase.execute();
+    return password.isNotEmpty;
+  }
 }

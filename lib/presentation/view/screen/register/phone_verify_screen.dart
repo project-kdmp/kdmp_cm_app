@@ -46,7 +46,7 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
       /// 상단 앱바
       appBar: BaseAppBar(
         appBar: AppBar(),
-        title: StringRegister.phoneVerify,
+        title: StringPhoneVerify.title,
       ),
 
       /// 화면
@@ -74,11 +74,11 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
                 );
                 if (registerResult == true) {
                   /// 본인확인 성공
-                  context.pop(true);
                 } else {
                   /// 본인확인 실패
-                  context.pop(false);
+                  await _showAlertDialog(content: StringPhoneVerify.verifyFail, isCanceled: false);
                 }
+                context.pop(registerResult);
               },
               text: "다음",
             ),

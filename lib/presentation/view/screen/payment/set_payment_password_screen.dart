@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_payment_password_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/payment/set_payment_password_viewmodel.dart';
 
@@ -339,6 +340,8 @@ class _SetPaymentPasswordScreenState extends State<SetPaymentPasswordScreen> {
   _addPasswordChar(int value) async {
     final result = await _setPaymentPasswordViewModel.addPasswordChar(value);
     if (result == true) {
+      await _showAlertDialog(content: StringPaymentPassword.setPasswordSuccess, isCanceled: false);
+
       /// 화면 닫기, 비밀번호 설정 여부 전달
       context.pop(result);
     }
@@ -382,5 +385,23 @@ class _SetPaymentPasswordScreenState extends State<SetPaymentPasswordScreen> {
       }
     }
     return numbers;
+  }
+
+  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: title,
+          content: content,
+          isCanceled: isCanceled,
+          isWarning: isWarning,
+          onConfirm: () {
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
   }
 }

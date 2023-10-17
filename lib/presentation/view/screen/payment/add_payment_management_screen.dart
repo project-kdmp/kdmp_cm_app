@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/payment/set_payment_password_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/phone_verify_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
@@ -28,7 +35,9 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
 
   /// Create
   void initViewModel() {
-    _addPaymentManagementViewModel = AddPaymentManagementViewModel();
+    _addPaymentManagementViewModel = AddPaymentManagementViewModel(
+      getPaymentPasswordUseCase: GetIt.instance<GetPaymentPasswordUseCase>(),
+    );
   }
 
   @override
@@ -285,8 +294,39 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
                     isEnabled: value,
                     text: StringSetPaymentManagement.bottomButton,
                     onPressed: () async {
-                      // TODO: 본인인증 화면으로 이동
-                      context.pop(true);
+                      /// 본인인증 화면으로 이동
+                      final verifyResult = await context.pushNamed(PhoneVerifyScreen.routeName);
+                      if (verifyResult == true) {
+                        /// 본인인증 성공
+
+                        /// 결제 비밀번호 설정 여부 확인
+                        if (await _addPaymentManagementViewModel.isSetPaymentPassword()) {
+                          /// 결제 비밀번호 설정 화면으로 이동
+                          final passwordResult = await context.pushNamed(SetPaymentPasswordScreen.routeName);
+                          if (passwordResult == true) {
+                            /// 결제 비밀번호 설정 성공
+                          } else {
+                            return;
+                          }
+                        }
+
+                        // TODO: 결제수단 등록
+                        final addResult = true;
+                        if (addResult == true) {
+                          // if (addResult is Success) {
+                          /// 결제수단 등록 성공 팝업
+                          await _showAlertDialog(content: StringPaymentManagement.paymentAddSuccess, isCanceled: false);
+
+                          /// 화면 닫기
+                          context.pop(true);
+                        } else if (addResult is Bad) {
+                          Fluttertoast.showToast(msg: StringCommon.httpBad);
+                        } else if (addResult is Fail) {
+                          // Fluttertoast.showToast(msg: "${addResult.errorMessage}");
+                        }
+                      } else if (verifyResult == false) {
+                        /// 본인인증 실패
+                      }
                     },
                   ),
                 );
@@ -295,6 +335,24 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
           ],
         ),
       ),
+    );
+  }
+
+  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: title,
+          content: content,
+          isCanceled: isCanceled,
+          isWarning: isWarning,
+          onConfirm: () {
+            context.pop();
+          },
+        );
+      },
     );
   }
 }

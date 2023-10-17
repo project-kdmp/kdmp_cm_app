@@ -103,7 +103,7 @@ abstract class StringSetup {
 abstract class StringRegister {
   StringRegister._();
 
-  static const String phoneVerify = "본인확인";
+  static const String phoneVerify = "본인인증";
   static const String registerSuccess = "회원가입 성공";
   static const String registerFail = "회원가입 실패";
   static const String registerCarTitle = "차량정보 등록";
@@ -114,6 +114,13 @@ abstract class StringRegister {
 
   static const String noPermission = "정지 회원 안내";
   static const String noPermissionContent = "사용이 정지되었습니다.";
+}
+
+abstract class StringPhoneVerify {
+  StringPhoneVerify._();
+
+  static const String title = "본인인증";
+  static const String verifyFail = "본인 확인에 실패하였습니다.";
 }
 
 abstract class StringOnBoarding {

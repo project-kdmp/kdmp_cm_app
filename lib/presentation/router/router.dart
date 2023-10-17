@@ -128,7 +128,7 @@ final GoRouter router = GoRouter(
       },
     ),
 
-    /// 회원가입 본인인증 확인
+    /// 본인인증 확인
     GoRoute(
       name: PhoneVerifyScreen.routeName,
       path: PhoneVerifyScreen.routeURL,

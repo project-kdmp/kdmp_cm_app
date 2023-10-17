@@ -156,9 +156,6 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                   /// 결제수단 등록 화면으로 이동
                   final result = await context.pushNamed(AddPaymentManagementScreen.routeName);
                   if (result == true) {
-                    /// 결제수단 등록 성공 팝업
-                    await _showAlertDialog(content: StringPaymentManagement.paymentAddSuccess, isCanceled: false);
-
                     /// 결제수단 리스트 갱신
                     initData();
                   }
@@ -178,24 +175,6 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                   ),
                 ),
               );
-      },
-    );
-  }
-
-  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
-    return showDialog(
-      context: context,
-      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
-      builder: (BuildContext context) {
-        return CustomAlertDialog(
-          title: title,
-          content: content,
-          isCanceled: isCanceled,
-          isWarning: isWarning,
-          onConfirm: () {
-            context.pop();
-          },
-        );
       },
     );
   }

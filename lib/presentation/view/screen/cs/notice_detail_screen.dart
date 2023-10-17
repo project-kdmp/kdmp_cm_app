@@ -85,7 +85,7 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                     valueListenable: _noticeDetailViewModel.noticeDateNotifier,
                     builder: (context, value, _) {
                       return Text(
-                        getDateFormat(date: value, dateFormat: "yyyy.MM.dd"),
+                        getDateFormat(date: value, dateFormat: "yyyy.MM.dd HH:mm"),
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           color: Theme.of(context).disabledColor,

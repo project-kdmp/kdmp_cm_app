@@ -185,7 +185,7 @@ class _InquiryDetailScreenState extends State<InquiryDetailScreen> {
                     valueListenable: _inquiryDetailViewModel.inquiryDateNotifier,
                     builder: (context, value, _) {
                       return Text(
-                        getDateFormat(date: value, dateFormat: "yyyy.MM.dd"),
+                        getDateFormat(date: value, dateFormat: "yyyy.MM.dd HH:mm"),
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           color: Theme.of(context).disabledColor,
@@ -238,13 +238,28 @@ class _InquiryDetailScreenState extends State<InquiryDetailScreen> {
                   ),
                   const SizedBox(height: 10),
 
-                  /// 내용
+                  /// 답변 내용
                   ValueListenableBuilder<String>(
                     valueListenable: _inquiryDetailViewModel.answerContentNotifier,
                     builder: (context, value, _) {
                       return Text(
                         value,
                         textAlign: TextAlign.start,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 10),
+
+                  /// 답변 시간
+                  ValueListenableBuilder<String>(
+                    valueListenable: _inquiryDetailViewModel.answerDtNotifier,
+                    builder: (context, value, _) {
+                      return Text(
+                        getDateFormat(date: value, dateFormat: "yyyy.MM.dd HH:mm"),
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Theme.of(context).disabledColor,
+                        ),
                       );
                     },
                   ),

@@ -6,7 +6,7 @@ class InquiryDetailResponse {
   String? inqAskTitle;
   String? inqAskContent;
   String? createDt;
-  String? mbrAdmId;
+  String? mbrAdmNm;
   String? inqRtnContent;
   String? updateDt;
 
@@ -18,7 +18,7 @@ class InquiryDetailResponse {
     this.inqAskTitle,
     this.inqAskContent,
     this.createDt,
-    this.mbrAdmId,
+    this.mbrAdmNm,
     this.inqRtnContent,
     this.updateDt,
   });
@@ -31,7 +31,7 @@ class InquiryDetailResponse {
         inqAskTitle: json["inqAskTitle"],
         inqAskContent: json["inqAskContent"],
         createDt: json["createDt"],
-        mbrAdmId: json["mbrAdmId"],
+        mbrAdmNm: json["mbrAdmNm"],
         inqRtnContent: json["inqRtnContent"],
         updateDt: json["updateDt"],
       );
@@ -44,7 +44,7 @@ class InquiryDetailResponse {
         "inqAskTitle": inqAskTitle,
         "inqAskContent": inqAskContent,
         "createDt": createDt,
-        "mbrAdmId": mbrAdmId,
+        "mbrAdmNm": mbrAdmNm,
         "inqRtnContent": inqRtnContent,
         "updateDt": updateDt,
       };

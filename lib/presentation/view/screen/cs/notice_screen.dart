@@ -128,7 +128,7 @@ class _NoticeScreenState extends State<NoticeScreen> with SingleTickerProviderSt
 
               /// 날짜
               Text(
-                getDateFormat(date: value[index].createDt, dateFormat: "yyyy.MM.dd"),
+                getDateFormat(date: value[index].createDt, dateFormat:"yyyy.MM.dd HH:mm"),
                 textAlign: TextAlign.start,
                 style: TextStyle(
                   color: Theme.of(context).disabledColor,

@@ -51,6 +51,15 @@ class InquiryDetailViewModel {
 
   set answerContent(String value) => _answerContent.value = value;
 
+  /// 상담문의 답변
+  final ValueNotifier<String> _answerDt = ValueNotifier<String>("");
+
+  ValueNotifier<String> get answerDtNotifier => _answerDt;
+
+  String get answerDt => _answerDt.value;
+
+  set answerDt(String value) => _answerDt.value = value;
+
   /// 상담문의 답변자
   final ValueNotifier<String> _answerId = ValueNotifier<String>("");
 
@@ -78,12 +87,14 @@ class InquiryDetailViewModel {
     state = result;
 
     if (result is Success) {
-      inquiryTitle = result.inquiryDetailResponse.inqAskTitle ?? "";
-      inquiryDate = result.inquiryDetailResponse.createDt ?? "";
-      inquiryContent = result.inquiryDetailResponse.inqAskContent ?? "";
-      answerId = result.inquiryDetailResponse.mbrAdmId ?? "";
-      answerContent = result.inquiryDetailResponse.inqRtnContent ?? "";
-      isAnswer = (result.inquiryDetailResponse.inqRtnSt ?? "") == InqRtnSt.comp;
+      final response = result.inquiryDetailResponse;
+      inquiryTitle = response.inqAskTitle ?? "";
+      inquiryDate = response.createDt ?? "";
+      inquiryContent = response.inqAskContent ?? "";
+      answerId = response.mbrAdmNm ?? "";
+      answerContent = response.inqRtnContent ?? "";
+      answerDt = response.updateDt ?? "";
+      isAnswer = (response.inqRtnSt ?? "") == InqRtnSt.comp;
     }
   }
 

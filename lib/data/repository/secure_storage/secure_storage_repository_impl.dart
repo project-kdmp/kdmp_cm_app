@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
 
 import '../../../domain/repository/secure_storage/secure_storage_repository.dart';
 
@@ -117,6 +120,26 @@ class SecureStorageRepositoryImpl extends SecureStorageRepository {
   @override
   Future<void> deleteMbrCi() async {
     await _storage.delete(key: 'mbrCi');
+  }
+
+  /// 로컬에 저장된 결제수단 리스트 반환
+  @override
+  Future<List<Payment>> getPaymentList() async {
+    final json = await _storage.read(key: 'paymentList') ?? '[]';
+    List<Payment> paymentList = List<Payment>.from(jsonDecode(json).map((x) => Payment.fromJson(x)));
+    return paymentList;
+  }
+
+  /// 로컬에 결제수단 리스트 저장
+  @override
+  Future<void> setPaymentList({required List<Payment> paymentList}) async {
+    await _storage.write(key: 'paymentList', value: jsonEncode(paymentList));
+  }
+
+  /// 로컬에서 결제수단 리스트 삭제
+  @override
+  Future<void> deletePaymentList() async {
+    await _storage.delete(key: 'paymentList');
   }
 
   /// 로컬에 저장된 FCM 반환

@@ -11,6 +11,7 @@ import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
+import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
@@ -552,10 +553,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                               PaymentManagementScreen.routeName,
                                               extra: true, // 결제선택 여부
                                             );
-                                            if (result == true) {
-                                              // TODO: 선택한 결제수단 데이터 받기
-                                              _homeViewModel.payment = "신한체크카드 1234";
-                                              _homeViewModel.paymKind = "CARD";
+                                            if (result is Payment) {
+                                              /// 선택한 결제수단 데이터 받기
+                                              _homeViewModel.payment = result.paymentNm;
+                                              _homeViewModel.paymKind = result.customKey == "CASH" ? "CASH" : "CARD";
                                             }
                                           },
                                         ),

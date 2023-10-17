@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_payment_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/add_payment_management_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
@@ -37,17 +42,14 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
   /// Create
   void initViewModel() {
     _paymentManagementViewModel = PaymentManagementViewModel(
-        // getPaymentManagementUseCase: GetIt.instance<GetPaymentManagementUseCase>(),
-        );
+      getPaymentListUseCase: GetIt.instance<GetPaymentListUseCase>(),
+      deletePaymentUseCase: GetIt.instance<DeletePaymentUseCase>(),
+    );
   }
 
   void initData() async {
-    // TODO: 결제수단 리스트 조회
-    // await _paymentManagementViewModel.getPaymentList();
-    _paymentManagementViewModel.paymentList = List.from({"신한", "우리"});
-
-    /// 결제수단 추가 버튼
-    _paymentManagementViewModel.paymentList = List.from({"+ 신용/체크카드 결제수단 추가"});
+    /// 결제수단 리스트 조회
+    await _paymentManagementViewModel.getPaymentList();
   }
 
   @override
@@ -80,7 +82,7 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                     ),
                     const SizedBox(height: 28),
 
-                    ValueListenableBuilder<List<String>>(
+                    ValueListenableBuilder<List<Payment>>(
                       valueListenable: _paymentManagementViewModel.paymentListNotifier,
                       builder: (context, value, _) {
                         /// 자주 가는 장소 리스트 없음
@@ -116,8 +118,12 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                     child: CustomElevatedButton(
                       text: StringCommon.confirm,
                       onPressed: () async {
-                        // TODO: 이전 화면으로 선택한 결제수단 전달
-                        context.pop(true);
+                        /// 화면 닫기, 선택한 결제수단 전달
+                        if (_paymentManagementViewModel.currentPayment?.customKey != "ADD") {
+                          context.pop(_paymentManagementViewModel.currentPayment);
+                        } else {
+                          context.pop();
+                        }
                       },
                     ),
                   )
@@ -129,12 +135,12 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
   }
 
   /// 결제수단 리스트
-  Widget getPageView(List<String> value) {
+  Widget getPageView(List<Payment> value) {
     return PageView.builder(
       itemCount: value.length,
       controller: PageController(viewportFraction: 0.85),
       onPageChanged: (index) {
-        _paymentManagementViewModel.current = index;
+        _paymentManagementViewModel.currentPayment = value[index];
       },
       itemBuilder: (context, index) {
         return index < value.length - 1
@@ -145,10 +151,49 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                   color: Theme.of(context).colorScheme.primary,
                   borderRadius: const BorderRadius.all(Radius.circular(4.0)),
                 ),
-                child: Text(
-                  value[index],
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
-                  textAlign: TextAlign.start,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// 결제수단 별칭
+                    Expanded(
+                      child: Text(
+                        value[index].paymentNm,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+
+                    value[index].customKey != "CASH"
+                        ?
+
+                        /// 결제수단 삭제 버튼
+                        GestureDetector(
+                            child: const Icon(
+                              Icons.close,
+                              size: 22,
+                              color: Colors.white,
+                            ),
+                            onTap: () async {
+                              /// 결제수단 삭제 확인 팝업
+                              final result = await _showConfirmDialog(
+                                content: StringPaymentManagement.paymentDeleteConfirm,
+                                onConfirm: () async {
+                                  /// 결제수단 삭제
+                                  final deleteResult = await _paymentManagementViewModel.deletePayment();
+                                  context.pop(deleteResult);
+                                },
+                              );
+                              if (result == true) {
+                                /// 결제수단 삭제 성공 팝업
+                                await _showAlertDialog(content: StringPaymentManagement.paymentDeleteSuccess, isCanceled: false);
+
+                                /// 결제수단 리스트 갱신
+                                initData();
+                              }
+                            },
+                          )
+                        : const SizedBox(),
+                  ],
                 ),
               )
             : GestureDetector(
@@ -169,12 +214,45 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    value[index],
+                    value[index].paymentNm,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
                 ),
               );
+      },
+    );
+  }
+
+  _showConfirmDialog({String? title, String? content, bool isWarning = false, required Function() onConfirm}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: true, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomConfirmDialog(
+          title: title,
+          content: content,
+          isWarning: isWarning,
+          onConfirm: onConfirm,
+        );
+      },
+    );
+  }
+
+  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: title,
+          content: content,
+          isCanceled: isCanceled,
+          isWarning: isWarning,
+          onConfirm: () {
+            context.pop();
+          },
+        );
       },
     );
   }

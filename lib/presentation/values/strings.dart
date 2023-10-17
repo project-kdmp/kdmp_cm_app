@@ -460,6 +460,7 @@ abstract class StringPaymentManagement {
   static const String pay = "결제하기";
 
   static const String paymentAddSuccess = "결제수단을 등록했습니다.";
+  static const String paymentDeleteConfirm = "해당 결제수단을 삭제하시겠습니까?";
   static const String paymentDeleteSuccess = "결제수단을 삭제했습니다.";
 }
 

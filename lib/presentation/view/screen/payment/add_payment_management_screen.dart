@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_payment_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
@@ -37,6 +36,7 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
   void initViewModel() {
     _addPaymentManagementViewModel = AddPaymentManagementViewModel(
       getPaymentPasswordUseCase: GetIt.instance<GetPaymentPasswordUseCase>(),
+      addPaymentUseCase: GetIt.instance<AddPaymentUseCase>(),
     );
   }
 
@@ -300,7 +300,7 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
                         /// 본인인증 성공
 
                         /// 결제 비밀번호 설정 여부 확인
-                        if (await _addPaymentManagementViewModel.isSetPaymentPassword()) {
+                        if (!await _addPaymentManagementViewModel.isSetPaymentPassword()) {
                           /// 결제 비밀번호 설정 화면으로 이동
                           final passwordResult = await context.pushNamed(SetPaymentPasswordScreen.routeName);
                           if (passwordResult == true) {
@@ -311,19 +311,18 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
                         }
 
                         // TODO: 결제수단 등록
-                        final addResult = true;
-                        if (addResult == true) {
-                          // if (addResult is Success) {
-                          /// 결제수단 등록 성공 팝업
-                          await _showAlertDialog(content: StringPaymentManagement.paymentAddSuccess, isCanceled: false);
+                        final addResult = await _addPaymentManagementViewModel.addPayment();
+                        // if (addResult is Success) {
+                        /// 결제수단 등록 성공 팝업
+                        await _showAlertDialog(content: StringPaymentManagement.paymentAddSuccess, isCanceled: false);
 
-                          /// 화면 닫기
-                          context.pop(true);
-                        } else if (addResult is Bad) {
-                          Fluttertoast.showToast(msg: StringCommon.httpBad);
-                        } else if (addResult is Fail) {
-                          // Fluttertoast.showToast(msg: "${addResult.errorMessage}");
-                        }
+                        /// 화면 닫기
+                        context.pop(true);
+                        // } else if (addResult is Bad) {
+                        //   Fluttertoast.showToast(msg: StringCommon.httpBad);
+                        // } else if (addResult is Fail) {
+                        //   // Fluttertoast.showToast(msg: "${addResult.errorMessage}");
+                        // }
                       } else if (verifyResult == false) {
                         /// 본인인증 실패
                       }

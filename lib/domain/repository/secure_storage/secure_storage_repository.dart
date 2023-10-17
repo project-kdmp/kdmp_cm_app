@@ -1,3 +1,5 @@
+import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
+
 abstract class SecureStorageRepository {
   Future<String> getJwt();
 
@@ -34,6 +36,12 @@ abstract class SecureStorageRepository {
   Future<void> setMbrCi({required String mbrCi});
 
   Future<void> deleteMbrCi();
+
+  Future<List<Payment>> getPaymentList();
+
+  Future<void> setPaymentList({required List<Payment> paymentList});
+
+  Future<void> deletePaymentList();
 
   Future<String> getFCM();
 

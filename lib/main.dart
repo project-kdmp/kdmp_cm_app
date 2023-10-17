@@ -55,6 +55,8 @@ import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/set_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_auto_refresh_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_payment_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_payment_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_firstlogin_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrci_usecase.dart';
@@ -62,6 +64,7 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_payment_password_usecase.dart';
@@ -274,6 +277,12 @@ void main() async {
   getIt.registerSingleton<GetPaymentPasswordUseCase>(getPaymentPasswordUseCase);
   final setPaymentPasswordUseCase = SetPaymentPasswordUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<SetPaymentPasswordUseCase>(setPaymentPasswordUseCase);
+  final getPaymentListUseCase = GetPaymentListUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<GetPaymentListUseCase>(getPaymentListUseCase);
+  final addPaymentUseCase = AddPaymentUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<AddPaymentUseCase>(addPaymentUseCase);
+  final deletePaymentUseCase = DeletePaymentUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<DeletePaymentUseCase>(deletePaymentUseCase);
 
   String? fcmToken = await fcmSetting();
   debugPrint("======fcmToken=$fcmToken");

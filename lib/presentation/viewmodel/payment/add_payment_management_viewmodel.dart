@@ -1,13 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_payment_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
 
 class AddPaymentManagementViewModel {
   AddPaymentManagementViewModel({
     required this.getPaymentPasswordUseCase,
+    required this.addPaymentUseCase,
   });
 
   final GetPaymentPasswordUseCase getPaymentPasswordUseCase;
+  final AddPaymentUseCase addPaymentUseCase;
 
   /// 비밀번호
   final ValueNotifier<String> _password = ValueNotifier<String>("");
@@ -134,5 +138,19 @@ class AddPaymentManagementViewModel {
   Future<bool> isSetPaymentPassword() async {
     final password = await getPaymentPasswordUseCase.execute();
     return password.isNotEmpty;
+  }
+
+  /// 결제수단 등록 API
+  Future<StateAPI> addPayment() async {
+    // state = Loading();
+    // TODO: 결제수단 등록
+
+    await _addPayment(payment: Payment(paymentNm: cardNm, customKey: "cm$card1$card2$card3$card4"));
+    return Fail();
+  }
+
+  /// 결제수단 로컬에 저장
+  Future<void> _addPayment({required Payment payment}) async {
+    await addPaymentUseCase.execute(payment: payment);
   }
 }

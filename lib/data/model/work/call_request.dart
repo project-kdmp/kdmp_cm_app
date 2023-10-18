@@ -30,6 +30,8 @@ class CallRequest {
   double gpsEndLat;
   double gpsEndLong;
 
+  String tossCardId;
+
   CallRequest({
     this.clientVersion = "",
     this.clientId = "",
@@ -54,6 +56,7 @@ class CallRequest {
     required this.gpsStartLong,
     required this.gpsEndLat,
     required this.gpsEndLong,
+    required this.tossCardId,
   });
 
   factory CallRequest.fromJson(Map<String, dynamic> json) => CallRequest(
@@ -80,6 +83,7 @@ class CallRequest {
         gpsStartLong: json["gpsStartLong"],
         gpsEndLat: json["gpsEndLat"],
         gpsEndLong: json["gpsEndLong"],
+        tossCardId: json["tossCardId"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -106,5 +110,6 @@ class CallRequest {
         "gpsStartLong": gpsStartLong,
         "gpsEndLat": gpsEndLat,
         "gpsEndLong": gpsEndLong,
+        "tossCardId": tossCardId,
       };
 }

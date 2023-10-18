@@ -512,7 +512,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           /// 결제수단
                           ValueListenableBuilder<String>(
-                            valueListenable: _homeViewModel.paymentNotifier,
+                            valueListenable: _homeViewModel.paymentNmNotifier,
                             builder: (context, value, child) {
                               return Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -555,7 +555,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             );
                                             if (result is Payment) {
                                               /// 선택한 결제수단 데이터 받기
-                                              _homeViewModel.payment = result.paymentNm;
+                                              _homeViewModel.cardId = result.cardId == "CASH" ? "" : result.cardId;
+                                              _homeViewModel.paymentNm = result.paymentNm;
                                               _homeViewModel.paymKind = result.cardId == "CASH" ? "CASH" : "CARD";
                                             }
                                           },
@@ -612,7 +613,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       dateTitle: dateTitle,
                                       dateValue: dateValue,
                                       price: _homeViewModel.price,
-                                      payment: _homeViewModel.payment,
+                                      paymentNm: _homeViewModel.paymentNm,
                                       start: _homeViewModel.startMapData!,
                                       end: _homeViewModel.endMapData!,
                                       stopOverList: _homeViewModel.stopOverList,

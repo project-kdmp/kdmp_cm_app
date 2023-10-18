@@ -178,14 +178,25 @@ class HomeViewModel {
   }
 
   /// 결제수단
-  final ValueNotifier<String> _payment = ValueNotifier<String>("");
+  final ValueNotifier<String> _paymentNm = ValueNotifier<String>("");
 
-  ValueNotifier<String> get paymentNotifier => _payment;
+  ValueNotifier<String> get paymentNmNotifier => _paymentNm;
 
-  String get payment => _payment.value;
+  String get paymentNm => _paymentNm.value;
 
-  set payment(String value) {
-    _payment.value = value;
+  set paymentNm(String value) {
+    _paymentNm.value = value;
+  }
+
+  /// 결제 카드 아이디
+  final ValueNotifier<String> _cardId = ValueNotifier<String>("");
+
+  ValueNotifier<String> get cardIdNotifier => _cardId;
+
+  String get cardId => _cardId.value;
+
+  set cardId(String value) {
+    _cardId.value = value;
   }
 
   /// 운행거리
@@ -207,8 +218,9 @@ class HomeViewModel {
   set isCallButtonValid(bool value) => _isCallButtonValid.value = value;
 
   _checkCallButtonValid() {
+    debugPrint("=== $paymentNm, $paymKind, $cardId");
     bool valid;
-    if (startMapData != null && endMapData != null && payment.isNotEmpty && paymKind.isNotEmpty && basicPrice != 0) {
+    if (startMapData != null && endMapData != null && paymentNm.isNotEmpty && paymKind.isNotEmpty && basicPrice != 0) {
       valid = true;
     } else {
       valid = false;
@@ -230,7 +242,7 @@ class HomeViewModel {
     startMapData = null;
     endMapData = null;
     stopOverList = List.empty();
-    payment = "";
+    paymentNm = "";
     paymKind = "";
     distance = 0;
     basicPrice = 0;
@@ -323,6 +335,7 @@ class HomeViewModel {
       gpsStartLong: startMapData!.latLng.longitude,
       gpsEndLat: endMapData!.latLng.latitude,
       gpsEndLong: endMapData!.latLng.longitude,
+      tossCardId: cardId,
     );
     final result = await setCallRequestUseCase.execute(callRequest: request);
     state = result;
@@ -355,6 +368,7 @@ class HomeViewModel {
       gpsStartLong: startMapData!.latLng.longitude,
       gpsEndLat: endMapData!.latLng.latitude,
       gpsEndLong: endMapData!.latLng.longitude,
+      tossCardId: cardId,
     );
     final result = await setReservationRequestUseCase.execute(reservationRequest: request);
     state = result;

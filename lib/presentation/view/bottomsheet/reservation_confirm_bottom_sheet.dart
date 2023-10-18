@@ -13,7 +13,7 @@ class ReservationConfirmBottomSheet extends StatefulWidget {
     required this.dateTitle,
     required this.dateValue,
     required this.price,
-    required this.payment,
+    required this.paymentNm,
     required this.start,
     required this.end,
     required this.stopOverList,
@@ -22,7 +22,7 @@ class ReservationConfirmBottomSheet extends StatefulWidget {
   final String dateTitle;
   final String dateValue;
   final int price;
-  final String payment;
+  final String paymentNm;
   final MapData start;
   final MapData end;
   final List<StopOver> stopOverList;
@@ -138,7 +138,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                             children: [
                               Text(StringReservation.payment, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                               SizedBox(height: 12, child: VerticalDivider(thickness: 1, width: 40, color: Theme.of(context).disabledColor)),
-                              Expanded(child: Text(widget.payment, textAlign: TextAlign.start)),
+                              Expanded(child: Text(widget.paymentNm, textAlign: TextAlign.start)),
                             ],
                           ),
                         ],

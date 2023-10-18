@@ -13,6 +13,7 @@ class DeleteUserDataUseCase {
     await _secureStorageRepository.deleteMbrPw();
     await _secureStorageRepository.deleteMbrCi();
     await _secureStorageRepository.deletePaymentPassword();
+    await _secureStorageRepository.deletePaymentList();
     await _secureStorageRepository.deleteFCM();
   }
 
@@ -24,6 +25,7 @@ class DeleteUserDataUseCase {
     await _secureStorageRepository.deleteMbrPw();
     await _secureStorageRepository.deleteMbrCi();
     await _secureStorageRepository.deletePaymentPassword();
+    await _secureStorageRepository.deletePaymentList();
     await _secureStorageRepository.deleteFCM();
     await _secureStorageRepository.deleteFirstLogin();
     await _secureStorageRepository.deleteOnBoardingCheck();

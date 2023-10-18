@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_place_add_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_place_modify_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
@@ -22,15 +24,13 @@ import 'package:provider/provider.dart';
 class ModifyPlaceScreen extends StatefulWidget {
   const ModifyPlaceScreen({
     Key? key,
-    this.fplaceSq = 0,
-    this.placeMapData,
+    this.place,
   }) : super(key: key);
 
   static const String routeName = "modify_place";
   static const String routeURL = "/modify_place";
 
-  final int fplaceSq;
-  final MapData? placeMapData;
+  final Place? place;
 
   @override
   State<ModifyPlaceScreen> createState() => _ModifyPlaceScreenState();
@@ -56,8 +56,15 @@ class _ModifyPlaceScreenState extends State<ModifyPlaceScreen> {
   }
 
   void initData() async {
-    _modifyPlaceViewModel.placeNm = widget.placeMapData != null ? widget.placeMapData!.place : "";
-    _modifyPlaceViewModel.placeAddress = widget.placeMapData != null ? widget.placeMapData!.address : "";
+    final data = widget.place;
+    if (data != null) {
+      _modifyPlaceViewModel.placeNicknm = data.fplaceNicknm;
+      _modifyPlaceViewModel.placeMapData = MapData(
+        place: data.fplacePlaceNm,
+        address: data.fplaceAddress,
+        latLng: NLatLng(data.gpsLat, data.gpsLat),
+      );
+    }
   }
 
   @override
@@ -73,7 +80,7 @@ class _ModifyPlaceScreenState extends State<ModifyPlaceScreen> {
         /// 상단 앱바
         appBar: BaseAppBar(
           appBar: AppBar(),
-          title: widget.fplaceSq == 0 ? StringPlace.addTitle : StringPlace.modifyTitle,
+          title: widget.place == null ? StringPlace.addTitle : StringPlace.modifyTitle,
         ),
 
         /// 화면
@@ -103,10 +110,10 @@ class _ModifyPlaceScreenState extends State<ModifyPlaceScreen> {
                               ),
                               const SizedBox(height: 6),
                               CustomTextField(
-                                text: _modifyPlaceViewModel.placeNm,
+                                text: _modifyPlaceViewModel.placeNicknm,
                                 hint: StringPlace.placeNmHint,
                                 onChanged: (value) {
-                                  _modifyPlaceViewModel.placeNm = value;
+                                  _modifyPlaceViewModel.placeNicknm = value;
                                 },
                               ),
                               const SizedBox(height: 24),
@@ -153,10 +160,10 @@ class _ModifyPlaceScreenState extends State<ModifyPlaceScreen> {
                   valueListenable: _modifyPlaceViewModel.isValidNotifier,
                   builder: (context, value, _) {
                     return CustomElevatedButton(
-                      text: widget.placeMapData == null ? StringCommon.confirm : StringPlace.modify,
+                      text: widget.place == null ? StringCommon.confirm : StringPlace.modify,
                       isEnabled: value,
                       onPressed: () async {
-                        if (widget.placeMapData == null) {
+                        if (widget.place == null) {
                           /// 자주 가는 장소 등록
                           final result = await _modifyPlaceViewModel.addPlace();
                           if (result is Success) {
@@ -171,7 +178,7 @@ class _ModifyPlaceScreenState extends State<ModifyPlaceScreen> {
                           }
                         } else {
                           /// 자주 가는 장소 수정
-                          final result = await _modifyPlaceViewModel.modifyPlace(fplaceSq: widget.fplaceSq);
+                          final result = await _modifyPlaceViewModel.modifyPlace(fplaceSq: widget.place!.fplaceSq);
                           if (result is Success) {
                             await _showAlertDialog(content: StringPlace.modifySuccess, isCanceled: false);
 

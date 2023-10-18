@@ -24,24 +24,36 @@ class PlaceListResponse {
 
 class Place {
   int fplaceSq;
-  String? fplaceNicknm;
-  String? fplaceAddress;
+  String fplaceNicknm;
+  String fplaceAddress;
+  String fplacePlaceNm;
+  double gpsLat;
+  double gpsLong;
 
   Place({
     required this.fplaceSq,
-    this.fplaceNicknm,
-    this.fplaceAddress,
+    required this.fplaceNicknm,
+    required this.fplaceAddress,
+    required this.fplacePlaceNm,
+    required this.gpsLat,
+    required this.gpsLong,
   });
 
   factory Place.fromJson(Map<String, dynamic> json) => Place(
         fplaceSq: json["fplaceSq"],
         fplaceNicknm: json["fplaceNicknm"],
         fplaceAddress: json["fplaceAddress"],
+        fplacePlaceNm: json["fplacePlaceNm"],
+        gpsLat: json["gpsLat"],
+        gpsLong: json["gpsLong"],
       );
 
   Map<String, dynamic> toJson() => {
         "fplaceSq": fplaceSq,
         "fplaceNicknm": fplaceNicknm,
         "fplaceAddress": fplaceAddress,
+        "fplacePlaceNm": fplacePlaceNm,
+        "gpsLat": gpsLat,
+        "gpsLong": gpsLong,
       };
 }

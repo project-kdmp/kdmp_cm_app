@@ -80,25 +80,25 @@ class _PlaceScreenState extends State<PlaceScreen> {
                       ValueListenableBuilder<List<Place>>(
                         valueListenable: _placeViewModel.placeListNotifier,
                         builder: (cntext, value, _) {
-
                           /// 자주 가는 장소 리스트 없음
-                          return value.isEmpty ? SizedBox(
-                            height: 500,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(ImageCommon.imgWarning, width: 72, height: 72),
-                                const SizedBox(height: 20),
-                                Text(
-                                  StringPlace.noList,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context).disabledColor,
+                          return value.isEmpty
+                              ? SizedBox(
+                                  height: 500,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(ImageCommon.imgWarning, width: 72, height: 72),
+                                      const SizedBox(height: 20),
+                                      Text(
+                                        StringPlace.noList,
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: Theme.of(context).disabledColor,
+                                            ),
+                                      )
+                                    ],
                                   ),
                                 )
-                              ],
-                            ),
-                          )
-                          : getListView(value);
+                              : getListView(value);
                         },
                       ),
                     ],
@@ -113,7 +113,10 @@ class _PlaceScreenState extends State<PlaceScreen> {
                   text: StringPlace.bottomButton,
                   onPressed: () async {
                     /// 자주 가는 장소 등록 화면으로 이동
-                    context.pushNamed(ModifyPlaceScreen.routeName);
+                    final result = await context.pushNamed(ModifyPlaceScreen.routeName);
+                    if (result == true) {
+                      initData();
+                    }
                   },
                 ),
               ),
@@ -179,7 +182,13 @@ class _PlaceScreenState extends State<PlaceScreen> {
                     child: Text(StringPlace.modify, style: Theme.of(context).textTheme.titleMedium),
                     onTap: () async {
                       /// 자주 가는 장소 등록 화면으로 이동
-                      // context.pushNamed(ModifyPlaceScreen.routeName);
+                      final result = await context.pushNamed(
+                        ModifyPlaceScreen.routeName,
+                        extra: value[index],
+                      );
+                      if (result == true) {
+                        initData();
+                      }
                     },
                   ),
                   const SizedBox(width: 8),

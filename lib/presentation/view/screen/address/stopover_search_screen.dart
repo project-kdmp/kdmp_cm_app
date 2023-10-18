@@ -222,7 +222,13 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
           textSize: 16,
           // 텍스트 사이즈 고정
           onPressed: () async {
-            // TODO: 해당 장소로 도착지 설정
+            /// 해당 장소로 경유지 설정
+            final result = MapData(
+              place: value[index].fplacePlaceNm,
+              address: value[index].fplaceAddress,
+              latLng: NLatLng(value[index].gpsLat, value[index].gpsLong),
+            );
+            context.pop(result);
           },
         );
       },

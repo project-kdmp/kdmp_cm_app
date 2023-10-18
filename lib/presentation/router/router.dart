@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
+import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/data/model/register/register_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_map_screen.dart';
@@ -307,7 +308,10 @@ final GoRouter router = GoRouter(
             GoRoute(
               name: ModifyPlaceScreen.routeName,
               path: ModifyPlaceScreen.routeName,
-              builder: (context, state) => const ModifyPlaceScreen(),
+              builder: (context, state) {
+                final Place? place = state.extra != null ? state.extra as Place : null;
+                return ModifyPlaceScreen(place: place);
+              },
               routes: [
                 /// 장소 설정 검색
                 GoRoute(

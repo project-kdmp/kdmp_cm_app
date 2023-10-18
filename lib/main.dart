@@ -19,6 +19,7 @@ import 'package:kdmp_cm_app/data/repository/inquiry/inquiry_repository_impl.dart
 import 'package:kdmp_cm_app/data/repository/mypage/mypage_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/naver/naver_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/notice/notice_repository_impl.dart';
+import 'package:kdmp_cm_app/data/repository/payment/payment_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/register/register_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/secure_storage/secure_storage_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/term/term_repository_impl.dart';
@@ -51,6 +52,7 @@ import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart'
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_detail_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/payment/set_toss_billingkey_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/set_fcm_usecase.dart';
@@ -400,6 +402,11 @@ void main() async {
   getIt.registerSingleton<SetReservationRequestUseCase>(setReservationRequestUseCase);
   final setReviewWriteUseCase = SetReviewWriteUseCase(workRepository: workRepository);
   getIt.registerSingleton<SetReviewWriteUseCase>(setReviewWriteUseCase);
+
+  /// 결제
+  final paymentRepository = PaymentRepositoryImpl(dio);
+  final setTossBillingKeyUseCase = SetTossBillingKeyUseCase(paymentRepository: paymentRepository);
+  getIt.registerSingleton<SetTossBillingKeyUseCase>(setTossBillingKeyUseCase);
 
   /// 공지사항
   final noticeRepository = NoticeRepositoryImpl(dio);

@@ -9,16 +9,6 @@ class AddPaymentUseCase {
 
   Future<void> execute({required Payment payment}) async {
     final paymentList = await _secureStorageRepository.getPaymentList();
-    int paymentSq = payment.paymentSq;
-    if (paymentSq == 0) {
-      for (int i = 0; i < paymentList.length; i++) {
-        int lastSq = paymentList[i].paymentSq;
-        if (paymentSq < lastSq) {
-          paymentSq = lastSq + 1;
-        }
-      }
-      payment.paymentSq = paymentSq;
-    }
     paymentList.add(payment);
     await _secureStorageRepository.setPaymentList(paymentList: paymentList);
   }

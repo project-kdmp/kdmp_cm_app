@@ -32,10 +32,13 @@ class PaymentManagementScreen extends StatefulWidget {
 class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
   late final PaymentManagementViewModel _paymentManagementViewModel;
 
+  late final PageController _pageController;
+
   @override
   void initState() {
     super.initState();
     initViewModel();
+    initPageController();
     initData();
   }
 
@@ -45,6 +48,10 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
       getPaymentListUseCase: GetIt.instance<GetPaymentListUseCase>(),
       deletePaymentUseCase: GetIt.instance<DeletePaymentUseCase>(),
     );
+  }
+
+  void initPageController() {
+    _pageController = PageController(viewportFraction: 0.85);
   }
 
   void initData() async {
@@ -119,7 +126,7 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                       text: StringCommon.confirm,
                       onPressed: () async {
                         /// 화면 닫기, 선택한 결제수단 전달
-                        if (_paymentManagementViewModel.currentPayment?.customKey != "ADD") {
+                        if (_paymentManagementViewModel.currentPayment?.cardId != "ADD") {
                           context.pop(_paymentManagementViewModel.currentPayment);
                         } else {
                           context.pop();
@@ -138,7 +145,7 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
   Widget getPageView(List<Payment> value) {
     return PageView.builder(
       itemCount: value.length,
-      controller: PageController(viewportFraction: 0.85),
+      controller: _pageController,
       onPageChanged: (index) {
         _paymentManagementViewModel.currentPayment = value[index];
       },
@@ -163,7 +170,7 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                       ),
                     ),
 
-                    value[index].customKey != "CASH"
+                    value[index].cardId != "CASH"
                         ?
 
                         /// 결제수단 삭제 버튼
@@ -203,6 +210,9 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                   if (result == true) {
                     /// 결제수단 리스트 갱신
                     initData();
+
+                    /// 등록한 결제수단 보이도록 첫번재 페이지로 이동
+                    _pageController.jumpToPage(0);
                   }
                 },
                 child: Container(

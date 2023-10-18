@@ -126,7 +126,7 @@ class SecureStorageRepositoryImpl extends SecureStorageRepository {
   @override
   Future<List<Payment>> getPaymentList() async {
     final json = await _storage.read(key: 'paymentList') ?? '[]';
-    List<Payment> paymentList = List<Payment>.from(jsonDecode(json).map((x) => Payment.fromJson(x)));
+    List<Payment> paymentList = List.from(List<Payment>.from(jsonDecode(json).map((x) => Payment.fromJson(x))).reversed);
     return paymentList;
   }
 

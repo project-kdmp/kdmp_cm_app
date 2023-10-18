@@ -556,7 +556,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             if (result is Payment) {
                                               /// 선택한 결제수단 데이터 받기
                                               _homeViewModel.payment = result.paymentNm;
-                                              _homeViewModel.paymKind = result.customKey == "CASH" ? "CASH" : "CARD";
+                                              _homeViewModel.paymKind = result.cardId == "CASH" ? "CASH" : "CARD";
                                             }
                                           },
                                         ),

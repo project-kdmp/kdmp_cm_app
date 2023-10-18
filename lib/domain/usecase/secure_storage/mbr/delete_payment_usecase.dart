@@ -5,10 +5,10 @@ class DeletePaymentUseCase {
 
   DeletePaymentUseCase({required SecureStorageRepository secureStorageRepository}) : _secureStorageRepository = secureStorageRepository;
 
-  Future<void> execute({required int paymentSq}) async {
+  Future<void> execute({required String cardId}) async {
     final paymentList = await _secureStorageRepository.getPaymentList();
     for (int i = 0; i < paymentList.length; i++) {
-      if (paymentList[i].paymentSq == paymentSq) {
+      if (paymentList[i].cardId == cardId) {
         paymentList.removeAt(i);
       }
     }

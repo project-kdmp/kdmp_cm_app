@@ -1,16 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
+import 'package:kdmp_cm_app/data/model/payment/toss_billingkey_request.dart';
+import 'package:kdmp_cm_app/domain/usecase/payment/set_toss_billingkey_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_payment_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
+import 'package:uuid/uuid.dart';
 
 class AddPaymentManagementViewModel {
   AddPaymentManagementViewModel({
+    required this.getMbrSqUseCase,
     required this.getPaymentPasswordUseCase,
+    required this.setTossBillingKeyUseCase,
     required this.addPaymentUseCase,
   });
 
+  final GetMbrSqUseCase getMbrSqUseCase;
   final GetPaymentPasswordUseCase getPaymentPasswordUseCase;
+  final SetTossBillingKeyUseCase setTossBillingKeyUseCase;
   final AddPaymentUseCase addPaymentUseCase;
 
   /// 비밀번호
@@ -98,14 +106,14 @@ class AddPaymentManagementViewModel {
   }
 
   /// 카드별칭
-  final ValueNotifier<String> _cardNm = ValueNotifier<String>("");
+  final ValueNotifier<String> _paymentNm = ValueNotifier<String>("");
 
-  ValueNotifier<String> get cardNmNotifier => _cardNm;
+  ValueNotifier<String> get paymentNmNotifier => _paymentNm;
 
-  String get cardNm => _cardNm.value;
+  String get paymentNm => _paymentNm.value;
 
-  set cardNm(String value) {
-    _cardNm.value = value;
+  set paymentNm(String value) {
+    _paymentNm.value = value;
     _checkIsValid();
   }
 
@@ -122,8 +130,8 @@ class AddPaymentManagementViewModel {
 
   _checkIsValid() {
     bool valid;
-    debugPrint("$password, $cvc, $mmyy, $card1$card2$card3$card4, $cardNm");
-    if (password.length == 2 && cvc.length == 3 && mmyy.length == 4 && card1.length == 4 && card2.length == 4 && card3.length == 4 && card4.length == 4 && cardNm.isNotEmpty) {
+    debugPrint("$password, $cvc, $mmyy, $card1$card2$card3$card4, $paymentNm");
+    if (password.length == 2 && cvc.length == 3 && mmyy.length == 4 && card1.length == 4 && card2.length == 4 && card3.length == 4 && card4.length == 4 && paymentNm.isNotEmpty) {
       valid = true;
     } else {
       valid = false;
@@ -141,12 +149,32 @@ class AddPaymentManagementViewModel {
   }
 
   /// 결제수단 등록 API
-  Future<StateAPI> addPayment() async {
-    // state = Loading();
-    // TODO: 결제수단 등록
+  Future<StateAPI> addPayment({required String identityNumber}) async {
+    state = Loading();
 
-    await _addPayment(payment: Payment(paymentNm: cardNm, customKey: "cm$card1$card2$card3$card4"));
-    return Fail();
+    final mbrSq = await getMbrSqUseCase.execute();
+    final uuid = const Uuid().v1();
+
+    final request = TossBillingKeyRequest(
+      mbrSq: mbrSq,
+      aliasNm: paymentNm,
+      cardNumber: "$card1$card2$card3$card4",
+      cardExpirationYear: mmyy.substring(2, 4),
+      cardExpirationMonth: mmyy.substring(0, 2),
+      // 앞 두 자리만 입력받음
+      cardPassword: password,
+      customerIdentityNumber: identityNumber,
+      customerKey: uuid,
+      breGenerate: false,
+    );
+    final result = await setTossBillingKeyUseCase.execute(tossBillingKeyRequest: request);
+    state = result;
+
+    if (result is Success) {
+      final response = result.tossBillingKeyResponse;
+      await _addPayment(payment: Payment(paymentNm: paymentNm, cardId: response.cardId));
+    }
+    return result;
   }
 
   /// 결제수단 로컬에 저장

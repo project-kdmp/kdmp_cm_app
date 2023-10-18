@@ -1,23 +1,19 @@
 class Payment {
-  int paymentSq;
   String paymentNm;
-  String customKey;
+  String cardId;
 
   Payment({
-    this.paymentSq = 0,
     required this.paymentNm,
-    required this.customKey,
+    required this.cardId,
   });
 
   factory Payment.fromJson(Map<String, dynamic> json) => Payment(
-        paymentSq: json["paymentSq"],
         paymentNm: json["paymentNm"],
-        customKey: json["customKey"],
+        cardId: json["cardId"],
       );
 
   Map<String, dynamic> toJson() => {
-        "paymentSq": paymentSq,
         "paymentNm": paymentNm,
-        "customKey": customKey,
+        "cardId": cardId,
       };
 }

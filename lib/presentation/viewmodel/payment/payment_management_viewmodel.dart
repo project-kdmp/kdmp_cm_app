@@ -39,10 +39,10 @@ class PaymentManagementViewModel {
     final newPaymentList = await getPaymentListUseCase.execute();
 
     /// 현금결제 결제수단 추가
-    newPaymentList.add(Payment(paymentSq: 998, paymentNm: "현금결제", customKey: "CASH"));
+    newPaymentList.add(Payment(paymentNm: "현금결제", cardId: "CASH"));
 
     /// 결제수단 추가
-    newPaymentList.add(Payment(paymentSq: 999, paymentNm: "+ 신용/체크카드 결제수단 추가", customKey: "ADD"));
+    newPaymentList.add(Payment(paymentNm: "+ 신용/체크카드 결제수단 추가", cardId: "ADD"));
 
     paymentList = newPaymentList;
     currentPayment = paymentList[0];
@@ -50,10 +50,10 @@ class PaymentManagementViewModel {
 
   /// 로컬에 저장된 결제수단 삭제
   Future<bool> deletePayment() async {
-    if (currentPayment == null && currentPayment!.customKey != "CASH" && currentPayment!.customKey != "ADD") {
+    if (currentPayment == null && currentPayment!.cardId != "CASH" && currentPayment!.cardId != "ADD") {
       return false;
     }
-    await deletePaymentUseCase.execute(paymentSq: currentPayment!.paymentSq);
+    await deletePaymentUseCase.execute(cardId: currentPayment!.cardId);
     return true;
   }
 }

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/domain/usecase/payment/set_toss_billingkey_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_payment_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
@@ -35,8 +39,10 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
   /// Create
   void initViewModel() {
     _addPaymentManagementViewModel = AddPaymentManagementViewModel(
+      getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getPaymentPasswordUseCase: GetIt.instance<GetPaymentPasswordUseCase>(),
       addPaymentUseCase: GetIt.instance<AddPaymentUseCase>(),
+      setTossBillingKeyUseCase: GetIt.instance<SetTossBillingKeyUseCase>(),
     );
   }
 
@@ -266,12 +272,12 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
                         const SizedBox(height: 6),
 
                         ValueListenableBuilder<String>(
-                          valueListenable: _addPaymentManagementViewModel.cardNmNotifier,
+                          valueListenable: _addPaymentManagementViewModel.paymentNmNotifier,
                           builder: (context, value, _) {
                             return CustomTextField(
                               hint: StringSetPaymentManagement.cardNmHint,
                               onChanged: (value) {
-                                _addPaymentManagementViewModel.cardNm = value;
+                                _addPaymentManagementViewModel.paymentNm = value;
                               },
                             );
                           },
@@ -295,8 +301,8 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
                     text: StringSetPaymentManagement.bottomButton,
                     onPressed: () async {
                       /// 본인인증 화면으로 이동
-                      final verifyResult = await context.pushNamed(PhoneVerifyScreen.routeName);
-                      if (verifyResult == true) {
+                      final identityNumber = await context.pushNamed(PhoneVerifyScreen.routeName);
+                      if (identityNumber is String && identityNumber.length == 6) {
                         /// 본인인증 성공
 
                         /// 결제 비밀번호 설정 여부 확인
@@ -310,20 +316,20 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
                           }
                         }
 
-                        // TODO: 결제수단 등록
-                        final addResult = await _addPaymentManagementViewModel.addPayment();
-                        // if (addResult is Success) {
-                        /// 결제수단 등록 성공 팝업
-                        await _showAlertDialog(content: StringPaymentManagement.paymentAddSuccess, isCanceled: false);
+                        /// 결제수단 등록
+                        final addResult = await _addPaymentManagementViewModel.addPayment(identityNumber: identityNumber);
+                        if (addResult is Success) {
+                          /// 결제수단 등록 성공 팝업
+                          await _showAlertDialog(content: StringPaymentManagement.paymentAddSuccess, isCanceled: false);
 
-                        /// 화면 닫기
-                        context.pop(true);
-                        // } else if (addResult is Bad) {
-                        //   Fluttertoast.showToast(msg: StringCommon.httpBad);
-                        // } else if (addResult is Fail) {
-                        //   // Fluttertoast.showToast(msg: "${addResult.errorMessage}");
-                        // }
-                      } else if (verifyResult == false) {
+                          /// 화면 닫기
+                          context.pop(true);
+                        } else if (addResult is Bad) {
+                          Fluttertoast.showToast(msg: StringCommon.httpBad);
+                        } else if (addResult is Fail) {
+                          // Fluttertoast.showToast(msg: "${addResult.errorMessage}");
+                        }
+                      } else {
                         /// 본인인증 실패
                       }
                     },

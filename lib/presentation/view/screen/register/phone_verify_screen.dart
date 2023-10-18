@@ -26,6 +26,7 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
   String mbrNm = "김유현";
   String mbrMobilePhone = "01088889999";
   String mbrCi = "ci8888";
+  String identityNumber = "800808";
 
   @override
   void initState() {
@@ -59,6 +60,7 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
             CustomTextField(hint: "이름 입력", onChanged: (value) => mbrNm = value, text: mbrNm),
             CustomTextField(hint: "휴대폰번호 입력", onChanged: (value) => mbrMobilePhone = value, text: mbrMobilePhone),
             CustomTextField(hint: "CI 입력", onChanged: (value) => mbrCi = value, text: mbrCi),
+            CustomTextField(hint: "주민번호 앞 6자리 입력", maxLength: 6, onChanged: (value) => identityNumber = value, text: identityNumber),
 
             CustomElevatedButton(
               onPressed: () async {
@@ -74,11 +76,13 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
                 );
                 if (registerResult == true) {
                   /// 본인확인 성공
+                  /// 화면 닫기, 주민등록번호 앞 6자리 전달
+                  context.pop(identityNumber);
                 } else {
                   /// 본인확인 실패
                   await _showAlertDialog(content: StringPhoneVerify.verifyFail, isCanceled: false);
+                  context.pop();
                 }
-                context.pop(registerResult);
               },
               text: "다음",
             ),

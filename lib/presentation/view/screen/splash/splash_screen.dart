@@ -103,15 +103,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
                 /// 이용약관 갱신 여부 확인
                 if (response.bagreeTrmUpdate) {
+                  /// 미동의 필수 약관 갱신 필요
+                  context.goNamed(CMTermScreen.routeName);
+                } else {
                   /// 필수 약관 모두 동의
                   final isOnBoardingCheck = await _splashViewModel.isOnBoardingCheck();
                   if (!isOnBoardingCheck) {
                     await context.pushNamed(OnBoardingScreen.routeName);
                   }
                   context.goNamed(HomeScreen.routeName);
-                } else {
-                  /// 미동의 필수 약관 갱신 필요
-                  context.goNamed(CMTermScreen.routeName);
                 }
                 break;
               case MbrSt.withdrawal:

@@ -50,7 +50,7 @@ class CustomTextField extends StatelessWidget {
       textAlign: textAlign ?? TextAlign.start,
       textAlignVertical: TextAlignVertical.top,
       maxLength: maxLength,
-      maxLines: maxLength != null ? 1 : maxLines,
+      maxLines: maxLength != null || isPassword ? 1 : maxLines,
       expands: isExpands,
       decoration: InputDecoration(
         counterText: "",

@@ -56,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
   late final HomeViewModel _homeViewModel;
   DateTime? _lastOnPressed;
 
-  late final NaverMapController? _mapController;
   late final NMarker currentMarker;
 
   /// 네이버 지도
@@ -67,15 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
   NaverMap? get naverMap => _naverMap.value;
 
   set naverMap(NaverMap? value) => _naverMap.value = value;
-
-  /// 네이버 지도 노출 여부
-  final ValueNotifier<bool> _isNaverMapVisible = ValueNotifier<bool>(true);
-
-  ValueNotifier<bool> get isNaverMapVisibleNotifier => _isNaverMapVisible;
-
-  bool get isNaverMapVisible => _isNaverMapVisible.value;
-
-  set isNaverMapVisible(bool value) => _isNaverMapVisible.value = value;
 
   @override
   void initState() {
@@ -860,30 +850,30 @@ class _HomeScreenState extends State<HomeScreen> {
         final endMapData = _homeViewModel.endMapData;
         final stopOverList = _homeViewModel.stopOverList;
 
+        Set<NAddableOverlay> markers = Set.from({});
+
         if (startMapData != null) {
           /// 출발지 마커 추가
-          final startMarker = NMarker(
+          markers.add(NMarker(
             id: "start",
             position: startMapData.latLng,
             icon: const NOverlayImage.fromAssetImage(ImageCommon.icStart),
-          );
-          controller.addOverlay(startMarker);
+          ));
         }
 
         if (endMapData != null) {
           /// 도착지 마커 추가
-          final endMarker = NMarker(
+          markers.add(NMarker(
             id: "end",
             position: endMapData.latLng,
             icon: const NOverlayImage.fromAssetImage(ImageCommon.icEnd),
-          );
-          controller.addOverlay(endMarker);
+          ));
         }
 
         if (stopOverList.isNotEmpty) {
           /// 경유지 마커 추가
           for (int i = 0; i < stopOverList.length; i++) {
-            final endMarker = NMarker(
+            final stopOverMarker = NMarker(
               id: "stopover$i",
               position: NLatLng(stopOverList[i].lat, stopOverList[i].long),
               icon: await NOverlayImage.fromWidget(
@@ -895,9 +885,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   size: const Size(10, 10),
                   context: context),
             );
-            controller.addOverlay(endMarker);
+            markers.add(stopOverMarker);
           }
         }
+        controller.addOverlayAll(markers);
 
         var target = _homeViewModel.currentLatLng;
         if (startMapData != null && endMapData != null) {
@@ -918,12 +909,6 @@ class _HomeScreenState extends State<HomeScreen> {
             zoom: 12, // 0.0 ~ 21.0
           ),
         );
-
-        try {
-          _mapController = controller;
-        } on Exception catch (e) {
-          debugPrint("error==================== ${e.toString()}");
-        }
       },
       onCameraChange: (reason, animated) async {
         /// 카메라 위치 변경에 따른 위치값 변경

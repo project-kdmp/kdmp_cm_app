@@ -33,15 +33,15 @@ class TokenInterceptor extends InterceptorsWrapper {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     final token = await getJwtUseCase.execute();
-    options.headers['Authorization'] = 'Bearer $token';
+    options.headers['SCLAuthorization'] = 'Bearer $token';
     super.onRequest(options, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    debugPrint("TokenInterceptor onError");
+    super.onError(err, handler);
 
-    /// 인증 오류, AccessToken 만료
+    /// 인증 오류
     if (err.response?.statusCode == 401) {
       final accessToken = await getJwtUseCase.execute();
       final refreshToken = await getAutoRefreshUseCase.execute();
@@ -83,7 +83,7 @@ class TokenInterceptor extends InterceptorsWrapper {
       );
 
       // 토큰 갱신 API 요청 시 AccessToken(만료), RefreshToken 포함
-      dio.options.headers['Authorization'] = 'Bearer $accessToken';
+      dio.options.headers['SCLAuthorization'] = 'Bearer $accessToken';
 
       // 토큰 갱신 API 요청
       const api = '/v1/auth-svr/refreshToken';
@@ -104,7 +104,7 @@ class TokenInterceptor extends InterceptorsWrapper {
       await setUserDataUseCase.autoLogin(jwt: jwt, autoRefresh: autoRefresh);
 
       // AccessToken의 만료로 수행하지 못했던 API 요청에 담겼던 AccessToken 갱신
-      err.requestOptions.headers['Authorization'] = 'Bearer $jwt';
+      err.requestOptions.headers['SCLAuthorization'] = 'Bearer $jwt';
 
       // 수행하지 못했던 API 요청 복사본 생성
       final clonedRequest = await dio.request(
@@ -118,6 +118,5 @@ class TokenInterceptor extends InterceptorsWrapper {
     } else {
       Fluttertoast.showToast(msg: "인증오류 외 오류 발생");
     }
-    super.onError(err, handler);
   }
 }

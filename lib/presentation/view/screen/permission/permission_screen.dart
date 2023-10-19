@@ -125,26 +125,6 @@ class _PermissionScreenState extends State<PermissionScreen> {
                         ),
                         const SizedBox(height: 24),
 
-                        /// 저장공간 권한
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Image.asset(ImagePermission.iconFile, width: 40, height: 40),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(StringPermission.permissionTitle3, style: Theme.of(context).textTheme.bodyLarge),
-                                  const SizedBox(height: 4),
-                                  Text(StringPermission.permissionContent3, style: Theme.of(context).textTheme.bodySmall),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-
                         /// 알림 권한
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,6 +138,26 @@ class _PermissionScreenState extends State<PermissionScreen> {
                                   Text(StringPermission.permissionTitle4, style: Theme.of(context).textTheme.bodyLarge),
                                   const SizedBox(height: 4),
                                   Text(StringPermission.permissionContent4, style: Theme.of(context).textTheme.bodySmall),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        /// 저장공간 권한
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image.asset(ImagePermission.iconFile, width: 40, height: 40),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(StringPermission.permissionTitle3, style: Theme.of(context).textTheme.bodyLarge),
+                                  const SizedBox(height: 4),
+                                  Text(StringPermission.permissionContent3, style: Theme.of(context).textTheme.bodySmall),
                                 ],
                               ),
                             )

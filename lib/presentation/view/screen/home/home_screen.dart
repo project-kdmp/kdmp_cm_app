@@ -56,8 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late final HomeViewModel _homeViewModel;
   DateTime? _lastOnPressed;
 
-  late final NaverMapController _mapController;
-  final Completer<NaverMapController> mapControllerCompleter = Completer();
+  late final NaverMapController? _mapController;
   late final NMarker currentMarker;
 
   /// 네이버 지도
@@ -68,6 +67,15 @@ class _HomeScreenState extends State<HomeScreen> {
   NaverMap? get naverMap => _naverMap.value;
 
   set naverMap(NaverMap? value) => _naverMap.value = value;
+
+  /// 네이버 지도 노출 여부
+  final ValueNotifier<bool> _isNaverMapVisible = ValueNotifier<bool>(true);
+
+  ValueNotifier<bool> get isNaverMapVisibleNotifier => _isNaverMapVisible;
+
+  bool get isNaverMapVisible => _isNaverMapVisible.value;
+
+  set isNaverMapVisible(bool value) => _isNaverMapVisible.value = value;
 
   @override
   void initState() {
@@ -121,8 +129,14 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: [
             /// 메뉴 버튼
             IconButton(
-              onPressed: () {
-                context.pushNamed(MenuScreen.routeName);
+              onPressed: () async {
+                /// 화면 이동 전 네이버지도 가림
+                naverMap = null;
+
+                await context.pushNamed(MenuScreen.routeName);
+
+                /// 화면 이동 완료 후 네이버 지도 보여줌
+                initData();
               },
               padding: const EdgeInsets.only(right: 10),
               icon: const Icon(Icons.menu),
@@ -136,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: SafeArea(
             child: Column(
               children: [
-                /// 지도
+                /// 네이버 지도
                 ValueListenableBuilder<NaverMap?>(
                   valueListenable: naverMapNotifier,
                   builder: (context, value, child) {
@@ -201,32 +215,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 : "",
                                             backgroundColor: Colors.transparent,
                                             onPressed: () async {
+                                              /// 화면 이동 전 네이버지도 가림
+                                              naverMap = null;
+
                                               /// 출발지 설정 검색 화면으로 이동
                                               final result = await context.pushNamed(StartSearchScreen.routeName);
                                               if (result != null && result is MapData) {
                                                 _homeViewModel.startMapData = result;
-
-                                                /// 출발지 마커 추가
-                                                final startMarker = NMarker(
-                                                  id: "start",
-                                                  position: result.latLng,
-                                                  icon: const NOverlayImage.fromAssetImage(ImageCommon.icStart),
-                                                );
-                                                _mapController.addOverlay(startMarker);
-
-                                                /// 카메라 위치 변경
-                                                _mapController.updateCamera(
-                                                  NCameraUpdate.scrollAndZoomTo(
-                                                    target: _homeViewModel.endMapData != null
-                                                        ? NLatLng(
-                                                            (_homeViewModel.endMapData!.latLng.latitude + result.latLng.latitude) / 2,
-                                                            (_homeViewModel.endMapData!.latLng.longitude + result.latLng.longitude) / 2,
-                                                          )
-                                                        : result.latLng,
-                                                    zoom: 12, // 0.0 ~ 21.0
-                                                  ),
-                                                );
                                               }
+
+                                              /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                              initData();
                                             },
                                           ),
                                         ),
@@ -266,14 +265,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   text: text,
                                                   backgroundColor: Colors.transparent,
                                                   onPressed: () async {
+                                                    /// 화면 이동 전 네이버지도 가림
+                                                    naverMap = null;
+
                                                     /// 경유지 설정 화면으로 이동
                                                     final result = await context.pushNamed(
                                                       StopOverScreen.routeName,
                                                       extra: _homeViewModel.stopOverList,
                                                     );
+
                                                     if (result != null && result is List<StopOver>) {
                                                       _homeViewModel.stopOverList = result;
                                                     }
+
+                                                    /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                                    initData();
                                                   },
                                                 ),
                                               ),
@@ -284,6 +290,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 onTap: () {
                                                   /// 경유지 삭제
                                                   _homeViewModel.clearStopOverList();
+
+                                                  /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                                  naverMap = null;
+                                                  initData();
                                                 },
                                               ),
                                             ],
@@ -329,32 +339,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 : "",
                                             backgroundColor: Colors.transparent,
                                             onPressed: () async {
+                                              /// 화면 이동 전 네이버지도 가림
+                                              naverMap = null;
+
                                               /// 도착지 설정 검색 화면으로 이동
                                               final result = await context.pushNamed(EndSearchScreen.routeName);
                                               if (result != null && result is MapData) {
                                                 _homeViewModel.endMapData = result;
-
-                                                /// 도착지 마커 추가
-                                                final endMarker = NMarker(
-                                                  id: "end",
-                                                  position: result.latLng,
-                                                  icon: const NOverlayImage.fromAssetImage(ImageCommon.icEnd),
-                                                );
-                                                _mapController.addOverlay(endMarker);
-
-                                                /// 카메라 위치 변경
-                                                _mapController.updateCamera(
-                                                  NCameraUpdate.scrollAndZoomTo(
-                                                    target: _homeViewModel.startMapData != null
-                                                        ? NLatLng(
-                                                            (_homeViewModel.startMapData!.latLng.latitude + result.latLng.latitude) / 2,
-                                                            (_homeViewModel.startMapData!.latLng.longitude + result.latLng.longitude) / 2,
-                                                          )
-                                                        : result.latLng,
-                                                    zoom: 12, // 0.0 ~ 21.0
-                                                  ),
-                                                );
                                               }
+
+                                              /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                              initData();
                                             },
                                           ),
                                         ),
@@ -371,14 +366,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     borderColor: Theme.of(context).cardColor,
                                                     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                                                     onPressed: () async {
+                                                      /// 화면 이동 전 네이버지도 가림
+                                                      naverMap = null;
+
                                                       /// 경유지 설정 화면으로 이동
                                                       final result = await context.pushNamed(
                                                         StopOverScreen.routeName,
                                                         extra: _homeViewModel.stopOverList,
                                                       );
+
                                                       if (result != null && result is List<StopOver>) {
                                                         _homeViewModel.stopOverList = result;
                                                       }
+
+                                                      /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                                      initData();
                                                     },
                                                   )
                                                 : const SizedBox();
@@ -548,6 +550,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           borderColor: Theme.of(context).cardColor,
                                           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                                           onPressed: () async {
+                                            /// 화면 이동 전 네이버지도 가림
+                                            naverMap = null;
+
                                             /// 결제수단 화면으로 이동
                                             final result = await context.pushNamed(
                                               PaymentManagementScreen.routeName,
@@ -559,6 +564,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                               _homeViewModel.paymentNm = result.paymentNm;
                                               _homeViewModel.paymKind = result.cardId == "CASH" ? "CASH" : "CARD";
                                             }
+
+                                            /// 화면 이동 완료 후 네이버 지도 보여줌
+                                            initData();
                                           },
                                         ),
                                       ],
@@ -592,7 +600,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   context: context,
                                   isScrollControlled: true,
                                   builder: (context) {
-                                    return Wrap(children: [ReservationBottomSheet()]);
+                                    return const Wrap(children: [ReservationBottomSheet()]);
                                   },
                                 );
                                 debugPrint("======$result");
@@ -650,8 +658,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     /// 입력 데이터 삭제
                                     _homeViewModel.clearData();
 
-                                    /// 지도 마커 삭제
-                                    _mapController.clearOverlays(type: NOverlayType.marker);
+                                    /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                    naverMap = null;
+                                    initData();
                                   } else if (requestResult is Bad) {
                                     Fluttertoast.showToast(msg: StringCommon.httpBad);
                                   } else if (requestResult is Fail) {
@@ -687,6 +696,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             /// 호출하기
                                             final requestResult = await _homeViewModel.requestCall(carNumId: result.carNumId);
                                             if (requestResult is Success) {
+                                              /// 화면 이동 전 네이버지도 가림
+                                              naverMap = null;
+
                                               /// 운행 화면으로 이동
                                               final drvReqSq = requestResult.drvResponse.drvReqSq;
                                               final callResult = await context.pushNamed(
@@ -697,10 +709,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 /// 운행취소
                                                 /// 입력 데이터 삭제
                                                 _homeViewModel.clearData();
-
-                                                /// 지도 마커 삭제
-                                                _mapController.clearOverlays(type: NOverlayType.marker);
                                               }
+
+                                              /// 화면 이동 완료 후 네이버 지도 보여줌
+                                              initData();
                                             } else if (requestResult is Bad) {
                                               Fluttertoast.showToast(msg: StringCommon.httpBad);
                                             } else if (requestResult is Fail) {
@@ -842,10 +854,76 @@ class _HomeScreenState extends State<HomeScreen> {
         nightModeEnable: CustomThemeMode.getThemeMode == ThemeMode.dark, // mapType이 네비게이션일 경우에만 제공
       ),
       onMapReady: (controller) async {
-        // 지도 준비 완료 시 호출되는 콜백 함수
-        _mapController = controller;
-        mapControllerCompleter.complete(controller); // completer에 지도 컨트롤러 완료 신호 전송
-        debugPrint("onMapReady");
+        debugPrint("========== onMapReady ===========");
+
+        final startMapData = _homeViewModel.startMapData;
+        final endMapData = _homeViewModel.endMapData;
+        final stopOverList = _homeViewModel.stopOverList;
+
+        if (startMapData != null) {
+          /// 출발지 마커 추가
+          final startMarker = NMarker(
+            id: "start",
+            position: startMapData.latLng,
+            icon: const NOverlayImage.fromAssetImage(ImageCommon.icStart),
+          );
+          controller.addOverlay(startMarker);
+        }
+
+        if (endMapData != null) {
+          /// 도착지 마커 추가
+          final endMarker = NMarker(
+            id: "end",
+            position: endMapData.latLng,
+            icon: const NOverlayImage.fromAssetImage(ImageCommon.icEnd),
+          );
+          controller.addOverlay(endMarker);
+        }
+
+        if (stopOverList.isNotEmpty) {
+          /// 경유지 마커 추가
+          for (int i = 0; i < stopOverList.length; i++) {
+            final endMarker = NMarker(
+              id: "stopover$i",
+              position: NLatLng(stopOverList[i].lat, stopOverList[i].long),
+              icon: await NOverlayImage.fromWidget(
+                  widget: Icon(
+                    Icons.circle,
+                    size: 10,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                  size: const Size(10, 10),
+                  context: context),
+            );
+            controller.addOverlay(endMarker);
+          }
+        }
+
+        var target = _homeViewModel.currentLatLng;
+        if (startMapData != null && endMapData != null) {
+          target = NLatLng(
+            (startMapData.latLng.latitude + endMapData.latLng.latitude) / 2,
+            (startMapData.latLng.longitude + endMapData.latLng.longitude) / 2,
+          );
+        } else if (startMapData != null) {
+          target = NLatLng(startMapData.latLng.latitude, startMapData.latLng.longitude);
+        } else if (endMapData != null) {
+          target = NLatLng(endMapData.latLng.latitude, endMapData.latLng.longitude);
+        }
+
+        /// 카메라 위치 변경
+        controller.updateCamera(
+          NCameraUpdate.scrollAndZoomTo(
+            target: target,
+            zoom: 12, // 0.0 ~ 21.0
+          ),
+        );
+
+        try {
+          _mapController = controller;
+        } on Exception catch (e) {
+          debugPrint("error==================== ${e.toString()}");
+        }
       },
       onCameraChange: (reason, animated) async {
         /// 카메라 위치 변경에 따른 위치값 변경

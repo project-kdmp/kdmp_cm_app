@@ -107,18 +107,6 @@ Future<String?> fcmSetting() async {
     sound: true,
   );
 
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
-
-  debugPrint("fcmTest=======User granted permission: ${settings.authorizationStatus}");
-
   FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
 
   AndroidNotificationChannel channel = const AndroidNotificationChannel(

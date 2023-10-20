@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,6 +9,7 @@ import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
@@ -17,9 +19,12 @@ import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/term/term_screen.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/splash/splash_viewmodel.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// 스플래시 화면
 class SplashScreen extends StatefulWidget {
@@ -39,8 +44,36 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     initViewModel();
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      _autoLogin();
+    checkPermission();
+  }
+
+  void checkPermission() async {
+    final isLogin = (await GetIt.instance<GetJwtUseCase>().execute()).isNotEmpty;
+
+    /// 위치 권한 상태 조회
+    var locationStatus = await Permission.location.isGranted;
+
+    /// 전화 권한 상태 조회
+    var phoneStatus = await Permission.phone.isGranted;
+
+    /// 알림 권한 상태 조회
+    var notificationStatus = await FirebaseMessaging.instance.getNotificationSettings();
+
+    debugPrint("필수 권한 - location: $locationStatus, phone: $phoneStatus, notification: ${notificationStatus.authorizationStatus}");
+
+    Future.delayed(const Duration(milliseconds: 1000), () async {
+      if (!locationStatus || !phoneStatus || notificationStatus.authorizationStatus != AuthorizationStatus.authorized) {
+        await context.pushNamed(PermissionScreen.routeName);
+      }
+
+      if (isLogin) {
+        /// 로그인 상태, 자동 로그인 처리
+        _autoLogin();
+      } else {
+        /// 로그아웃 상태
+        /// 첫 로그인 여부 상관 없이, 이용약관 화면으로 이동
+        context.pushNamed(TermScreen.routeName);
+      }
     });
   }
 

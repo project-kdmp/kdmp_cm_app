@@ -1,9 +1,9 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/permission_dialog.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/term/term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
@@ -28,13 +28,27 @@ class _PermissionScreenState extends State<PermissionScreen> {
 
   void checkPermission() async {
     /// 위치 권한
-    var requestStatusLocation = await Permission.location.request();
+    var locationStatus = await Permission.location.request().isGranted;
 
     /// 전화 권한
-    var requestStatuePhone = await Permission.phone.request();
+    var phoneStatus = await Permission.phone.request().isGranted;
 
-    if (requestStatusLocation.isGranted && requestStatuePhone.isGranted) {
-      context.pushNamed(TermScreen.routeName);
+    /// 알림 권한
+    var notificationStatus = await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    debugPrint("필수 권한 - location: $locationStatus, phone: $phoneStatus, notification: ${notificationStatus.authorizationStatus}");
+
+    if (locationStatus && phoneStatus && notificationStatus.authorizationStatus == AuthorizationStatus.authorized) {
+      /// 필수 권한 동의 시, 화면 닫기
+      context.pop();
     } else {
       showPermissionDialog();
     }
@@ -143,26 +157,26 @@ class _PermissionScreenState extends State<PermissionScreen> {
                             )
                           ],
                         ),
-                        const SizedBox(height: 24),
-
-                        /// 저장공간 권한
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Image.asset(ImagePermission.iconFile, width: 40, height: 40),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(StringPermission.permissionTitle3, style: Theme.of(context).textTheme.bodyLarge),
-                                  const SizedBox(height: 4),
-                                  Text(StringPermission.permissionContent3, style: Theme.of(context).textTheme.bodySmall),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
+                        // const SizedBox(height: 24),
+                        //
+                        // /// 저장공간 권한
+                        // Row(
+                        //   crossAxisAlignment: CrossAxisAlignment.start,
+                        //   children: [
+                        //     Image.asset(ImagePermission.iconFile, width: 40, height: 40),
+                        //     const SizedBox(width: 16),
+                        //     Expanded(
+                        //       child: Column(
+                        //         crossAxisAlignment: CrossAxisAlignment.start,
+                        //         children: [
+                        //           Text(StringPermission.permissionTitle3, style: Theme.of(context).textTheme.bodyLarge),
+                        //           const SizedBox(height: 4),
+                        //           Text(StringPermission.permissionContent3, style: Theme.of(context).textTheme.bodySmall),
+                        //         ],
+                        //       ),
+                        //     )
+                        //   ],
+                        // ),
                         const SizedBox(height: 40),
                         Container(
                           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),

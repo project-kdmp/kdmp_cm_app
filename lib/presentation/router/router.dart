@@ -54,20 +54,14 @@ final GoRouter router = GoRouter(
 
   /// Default
   redirect: (context, state) async {
-    final jwt = await GetIt.instance<GetJwtUseCase>().execute();
+    final isLogin = (await GetIt.instance<GetJwtUseCase>().execute()).isNotEmpty;
 
-    debugPrint("GoRouter jwt : $jwt");
-
-    /// JWT를 보유중 == 로그인된 상태, 스플래시 화면으로 이동
-    /// JWT가 없음 == 로그아웃된 상태, 로그인 화면으로 이동
-    final isLogin = jwt.isNotEmpty;
-    if (!isLogin) {
-      /// 로그인 아닌 상태
-      /// 접근 권한 안내 화면으로 이동
-      debugPrint("state: ${state.matchedLocation}");
-      if (!state.matchedLocation.contains(PermissionScreen.routeURL) && !state.matchedLocation.contains(TermScreen.routeURL) && !state.matchedLocation.contains(RegisterVerifyScreen.routeURL) /*&& !state.matchedLocation.contains(LoginScreen.routeURL)*/) {
-        return PermissionScreen.routeURL;
-      }
+    /// 로그인 상태가 아니고, 스플래시 화면이 아닐 경우
+    if (!isLogin &&
+        !state.matchedLocation.contains(PermissionScreen.routeURL) &&
+        !state.matchedLocation.contains(TermScreen.routeURL) &&
+        !state.matchedLocation.contains(RegisterVerifyScreen.routeURL)) {
+      return SplashScreen.routeURL;
     }
     return null;
   },

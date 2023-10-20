@@ -33,8 +33,8 @@ abstract class StringPermission {
   static const String permissionContent1 = "출발지 위치를 안내하기 위해 필요한 권한";
   static const String permissionTitle2 = "전화";
   static const String permissionContent2 = "전화를 걸기위해 필요한 권한";
-  static const String permissionTitle3 = "저장공간 (선택)";
-  static const String permissionContent3 = "(미정)";
+  // static const String permissionTitle3 = "저장공간 (선택)";
+  // static const String permissionContent3 = "(미정)";
   static const String permissionTitle4 = "알림";
   static const String permissionContent4 = "기사님 호출 및 배정 결과 등 대리 서비스 이용 상태 안내를 위해 필요한 권한";
   static const String permissionGuide = "선택 권한은 서비스 사용 중 필요한 시점에 동의를 받고 있습니다. 허용하지 않아도 해당 기능 외 서비스를 이용할 수 있습니다.\n\n접근 권한 변경 휴대폰 설정 > 앱(애플리케이션) > OOOO";
@@ -42,7 +42,7 @@ abstract class StringPermission {
 
   static const String alertTitle = "접근 권한이 없어\nOOOO을 사용할 수 없습니다.";
   static const String alertContent1 = "아래 확인 버튼을 눌러\n필요한 권한을 허용해주세요.";
-  static const String alertContent2 = "필요권한 : 위치, 전화";
+  static const String alertContent2 = "필요 권한 : 위치, 전화, 알림";
 }
 
 abstract class StringTerm {

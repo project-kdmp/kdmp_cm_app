@@ -32,8 +32,13 @@ class TokenInterceptor extends InterceptorsWrapper {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-    final token = await getJwtUseCase.execute();
-    options.headers['SCLAuthorization'] = 'Bearer $token';
+    if (!options.path.contains("/v1/auth-svr/cmLogin")
+        && !options.path.contains("/v1/biztotal/cm/mbr/newMember")
+        && !options.path.contains("/v1/biztotal/cm/listTerm")
+        && !options.path.contains("/v1/biztotal/cm/getTerm")) {
+      final token = await getJwtUseCase.execute();
+      options.headers['SCLAuthorization'] = 'Bearer $token';
+    }
     super.onRequest(options, handler);
   }
 

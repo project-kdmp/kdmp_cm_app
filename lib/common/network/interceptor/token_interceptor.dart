@@ -121,7 +121,7 @@ class TokenInterceptor extends InterceptorsWrapper {
       // API 복사본으로 재요청
       return handler.resolve(clonedRequest);
     } else {
-      Fluttertoast.showToast(msg: "인증오류 외 오류 발생");
+      if (kDebugMode) Fluttertoast.showToast(msg: "인증오류 외 오류 발생");
     }
   }
 }

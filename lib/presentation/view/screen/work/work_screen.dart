@@ -23,7 +23,7 @@ import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_shee
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/review_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/call_cancel_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
-import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/vertical_dashed_divider.dart';

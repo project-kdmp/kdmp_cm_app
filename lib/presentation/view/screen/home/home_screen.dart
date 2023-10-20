@@ -27,7 +27,7 @@ import 'package:kdmp_cm_app/presentation/view/bottomsheet/reservation_bottom_she
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/reservation_confirm_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/call_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
-import 'package:kdmp_cm_app/presentation/view/dialog/custon_confirm_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dart';

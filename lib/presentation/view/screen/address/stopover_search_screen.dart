@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
+import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/data/model/juso/juso_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
-import 'package:kdmp_cm_app/data/model/naver/geocoding_response.dart';
+import 'package:kdmp_cm_app/domain/usecase/juso/get_juso_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_place_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
@@ -48,6 +51,7 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
     _stopOverSearchViewModel = StopOverSearchViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getNaverAddressInfoUseCase: GetIt.instance<GetNaverAddressInfoUseCase>(),
+      getJusoListUseCase: GetIt.instance<GetJusoListUseCase>(),
       getPlaceListUseCase: GetIt.instance<GetPlaceListUseCase>(),
     );
   }
@@ -55,7 +59,8 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
   void initScrollController() {
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent == _scrollController.position.pixels) {
-        initData();
+        /// 검색 리스트 조회
+        _stopOverSearchViewModel.getSearchList();
       }
     });
   }
@@ -65,9 +70,7 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
     await dotenv.load(fileName: ".env");
     _stopOverSearchViewModel.clientId = dotenv.get("NAVER_MAP_CLIENT_ID");
     _stopOverSearchViewModel.clientSecret = dotenv.get("NAVER_MAP_CLIENT_SECRET");
-
-    /// 현위치 좌표 가져오기
-    _stopOverSearchViewModel.currentLatLng = await getCurrentLocation();
+    _stopOverSearchViewModel.jusoApiKey = dotenv.get("JUSO_API_KEY");
 
     /// 자주 가는 장소 리스트 가져오기
     _stopOverSearchViewModel.getPlaceList();
@@ -113,9 +116,20 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
                             size: 22,
                             color: Theme.of(context).disabledColor,
                           ),
-                          onSearch: (value) {
+                          onSearch: (value) async {
                             _stopOverSearchViewModel.keyword = value;
-                            _stopOverSearchViewModel.getSearchList();
+
+                            /// 페이지 정보 초기화
+                            _stopOverSearchViewModel.clearPagination();
+
+                            /// 검색 리스트 조회
+                            final result = await _stopOverSearchViewModel.getSearchList();
+                            if (result is Success) {
+                            } else if (result is Bad) {
+                              Fluttertoast.showToast(msg: result.badResponse.detailMessage);
+                            } else if (result is Fail) {
+                              Fluttertoast.showToast(msg: "${result.errorMessage}");
+                            }
                           },
                         );
                       },
@@ -190,7 +204,7 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
                           :
 
                           /// 검색 리스트
-                          ValueListenableBuilder<List<Address>>(
+                          ValueListenableBuilder<List<Juso>>(
                               valueListenable: _stopOverSearchViewModel.searchListNotifier,
                               builder: (context, value, _) {
                                 return getSearchListView(value);
@@ -239,31 +253,35 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
   }
 
   /// 검색 리스트
-  Widget getSearchListView(List<Address> value) {
+  Widget getSearchListView(List<Juso> value) {
     return ListView.separated(
       itemCount: value.length,
       shrinkWrap: true,
       primary: false,
       itemBuilder: (context, index) {
         final item = value[index];
-        final address = item.roadAddress.isNotEmpty ? item.roadAddress : item.jibunAddress;
-        String place = address;
-        for (int i = 0; i < item.addressElements.length; i++) {
-          if (item.addressElements[i].types.isNotEmpty && item.addressElements[i].types[0] == "BUILDING_NAME") {
-            place = item.addressElements[i].longName;
-          }
-        }
+        final address = item.roadAddrPart1;
+        final place = item.bdNm;
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 검색 리스트 아이템 클릭
-            context.pop(
-              MapData(
-                latLng: NLatLng(double.parse(item.y), double.parse(item.x)),
-                address: address,
-                place: place,
-              ),
-            );
+            /// 검색된 주소로 장소 정보 검색
+            final result = await _stopOverSearchViewModel.getAddressInfo(address: item.roadAddrPart1);
+            if (result is Success) {
+              final addressInfo = result.geocodingResponse.addresses![0];
+              context.pop(
+                MapData(
+                  latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
+                  address: address,
+                  place: place,
+                ),
+              );
+            } else if (result is Bad) {
+              Fluttertoast.showToast(msg: result.badResponse.detailMessage);
+            } else if (result is Fail) {
+              Fluttertoast.showToast(msg: "${result.errorMessage}");
+            }
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -271,7 +289,7 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 /// 장소명
-                Text(place, style: Theme.of(context).textTheme.titleLarge),
+                Text(place.isNotEmpty ? place : "장소명 없음", style: Theme.of(context).textTheme.titleLarge),
 
                 /// 주소
                 const SizedBox(height: 10),

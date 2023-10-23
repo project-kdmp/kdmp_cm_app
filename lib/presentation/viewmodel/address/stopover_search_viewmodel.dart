@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/data/model/juso/juso_list_request.dart';
+import 'package:kdmp_cm_app/data/model/juso/juso_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/geocoding_request.dart';
-import 'package:kdmp_cm_app/data/model/naver/geocoding_response.dart';
+import 'package:kdmp_cm_app/domain/usecase/juso/get_juso_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_place_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
@@ -13,18 +14,18 @@ class StopOverSearchViewModel {
   StopOverSearchViewModel({
     required this.getMbrSqUseCase,
     required this.getNaverAddressInfoUseCase,
+    required this.getJusoListUseCase,
     required this.getPlaceListUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final GetNaverAddressInfoUseCase getNaverAddressInfoUseCase;
+  final GetJusoListUseCase getJusoListUseCase;
   final GetPlaceListUseCase getPlaceListUseCase;
 
   String clientId = "";
   String clientSecret = "";
-
-  /// 현위치 좌표
-  NLatLng? currentLatLng;
+  String jusoApiKey = "";
 
   /// 자주 가는 장소 리스트
   final ValueNotifier<List<Place>> _placeList = ValueNotifier<List<Place>>(List.empty());
@@ -44,15 +45,6 @@ class StopOverSearchViewModel {
 
   set page(int value) => _page.value = value;
 
-  /// 다음 페이지 유무
-  final ValueNotifier<bool> _isNextPage = ValueNotifier<bool>(true);
-
-  ValueNotifier<bool> get isNextPageNotifier => _isNextPage;
-
-  bool get isNextPage => _isNextPage.value;
-
-  set isNextPage(bool value) => _isNextPage.value = value;
-
   /// 검색어
   final ValueNotifier<String> _keyword = ValueNotifier<String>("");
 
@@ -66,13 +58,13 @@ class StopOverSearchViewModel {
   }
 
   /// 검색 리스트
-  final ValueNotifier<List<Address>> _searchList = ValueNotifier<List<Address>>(List.empty());
+  final ValueNotifier<List<Juso>> _searchList = ValueNotifier<List<Juso>>(List.empty());
 
-  ValueNotifier<List<Address>> get searchListNotifier => _searchList;
+  ValueNotifier<List<Juso>> get searchListNotifier => _searchList;
 
-  List<Address> get searchList => _searchList.value;
+  List<Juso> get searchList => _searchList.value;
 
-  set searchList(List<Address> value) => _searchList.value = value;
+  set searchList(List<Juso> value) => _searchList.value = value;
 
   /// 최근 검색 리스트
   final ValueNotifier<List<String>> _recentList = ValueNotifier<List<String>>(List.empty());
@@ -123,20 +115,14 @@ class StopOverSearchViewModel {
     return result;
   }
 
-  /// 검색 리스트 조회 API
-  Future<void> getSearchList() async {
+  /// 검색한 장소 정보 조회 API
+  Future<StateAPI> getAddressInfo({required String address}) async {
     state = Loading();
 
-    String coordinate = "";
-    if (currentLatLng != null) {
-      coordinate = "${currentLatLng!.longitude},${currentLatLng!.latitude}";
-    }
-
     final request = GeocodingRequest(
-      query: keyword,
-      page: page,
-      count: 20,
-      coordinate: coordinate,
+      query: address,
+      page: 1,
+      count: 1,
     );
     final result = await getNaverAddressInfoUseCase.execute(
       clientId: clientId,
@@ -145,16 +131,44 @@ class StopOverSearchViewModel {
     );
     state = result;
 
-    if (result is Success) {
-      final response = result.geocodingResponse;
+    if (result is Success && result.geocodingResponse.addresses != null && result.geocodingResponse.addresses!.isNotEmpty) {
+      return result;
+    }
+    return Fail(errorMessage: "해당 장소 정보를 조회할 수 없습니다.");
+  }
 
-      if (response.addresses != null && response.addresses!.isNotEmpty) {
+  /// 검색 리스트 조회 API
+  Future<StateAPI> getSearchList() async {
+    state = Loading();
+
+    final request = JusoListRequest(
+      countPerPage: 10,
+      currentPage: page + 1,
+      keyword: keyword,
+      confmKey: jusoApiKey,
+    );
+    final result = await getJusoListUseCase.execute(jusoListRequest: request);
+    state = result;
+
+    if (result is Success) {
+      final response = result.jusoListResponse;
+      final jusoList = response.results.juso;
+      if (jusoList.isNotEmpty) {
         page++;
       }
-
-      searchList = response.addresses ?? List.empty();
-      _checkRecentListValid();
+      List<Juso> copyList = List.from(searchList);
+      copyList.addAll(jusoList);
+      searchList = copyList;
     }
+    _checkRecentListValid();
+
+    return result;
+  }
+
+  /// 페이지 정보 초기화
+  void clearPagination() {
+    page = 0;
+    searchList = List.empty();
   }
 
   // TODO: 최근 검색 리스트 조회

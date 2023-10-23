@@ -6,6 +6,7 @@ import 'package:kdmp_cm_app/data/model/common/drv_response.dart';
 import 'package:kdmp_cm_app/data/model/inquiry/inquiry_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/inquiry/inquiry_list_response.dart';
 import 'package:kdmp_cm_app/data/model/inquiry/inquiry_write_response.dart';
+import 'package:kdmp_cm_app/data/model/juso/juso_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_detail_response.dart';
@@ -107,4 +108,7 @@ class Success extends StateAPI {
   GeocodingResponse get geocodingResponse => _response;
 
   DirectionsResponse get directionsResponse => _response;
+
+  /// 도로명주소 API
+  JusoListResponse get jusoListResponse => _response;
 }

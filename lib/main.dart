@@ -16,6 +16,7 @@ import 'package:kdmp_cm_app/common/network/interceptor/token_interceptor.dart';
 import 'package:kdmp_cm_app/data/repository/auth/auth_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/fcm/fcm_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/inquiry/inquiry_repository_impl.dart';
+import 'package:kdmp_cm_app/data/repository/juso/juso_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/mypage/mypage_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/naver/naver_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/notice/notice_repository_impl.dart';
@@ -32,6 +33,7 @@ import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_detail_usecase.da
 import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/set_inquiry_delete_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/set_inquiry_write_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/juso/get_juso_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_call_detail_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_call_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_called_detail_usecase.dart';
@@ -422,6 +424,11 @@ void main() async {
   getIt.registerSingleton<GetNaverAddressInfoUseCase>(getNaverAddressInfoUseCase);
   final getNaverPriceUseCase = GetNaverPriceUseCase(naverRepository: naverRepository);
   getIt.registerSingleton<GetNaverPriceUseCase>(getNaverPriceUseCase);
+
+  /// 도로명주소 검색 API
+  final jusoRepository = JusoRepositoryImpl(dio);
+  final getJusoListUseCase = GetJusoListUseCase(jusoRepository: jusoRepository);
+  getIt.registerSingleton<GetJusoListUseCase>(getJusoListUseCase);
 
   runApp(const MyApp());
 }

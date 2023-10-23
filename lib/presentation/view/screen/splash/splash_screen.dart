@@ -163,11 +163,7 @@ class _SplashScreenState extends State<SplashScreen> {
           SystemNavigator.pop();
       }
     } else if (result is Bad) {
-      // TODO: 로그인 - 에러코드 처리
-      switch (result.badResponse.bizErrCode) {
-        case 22001:
-      }
-      Fluttertoast.showToast(msg: StringLogin.loginFail);
+      Fluttertoast.showToast(msg: result.badResponse.detailMessage);
     } else if (result is Fail) {
       Fluttertoast.showToast(msg: "${result.errorMessage}");
     }

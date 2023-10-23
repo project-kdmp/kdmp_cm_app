@@ -167,20 +167,12 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
                         SystemNavigator.pop();
                     }
                   } else if (loginResult is Bad) {
-                    // TODO: 로그인 - 에러코드 처리
-                    switch (loginResult.badResponse.bizErrCode) {
-                      case 22001:
-                    }
-                    Fluttertoast.showToast(msg: StringLogin.loginFail);
+                    Fluttertoast.showToast(msg: loginResult.badResponse.detailMessage);
                   } else if (loginResult is Fail) {
                     Fluttertoast.showToast(msg: "${loginResult.errorMessage}");
                   }
                 } else if (registerResult is Bad) {
-                  // TODO: 회원가입 - 에러코드 처리
-                  switch (registerResult.badResponse.bizErrCode) {
-                    // case 22001:
-                  }
-                  Fluttertoast.showToast(msg: StringRegister.registerFail);
+                  Fluttertoast.showToast(msg: registerResult.badResponse.detailMessage);
                 } else if (registerResult is Fail) {
                   Fluttertoast.showToast(msg: "${registerResult.errorMessage}");
                 }

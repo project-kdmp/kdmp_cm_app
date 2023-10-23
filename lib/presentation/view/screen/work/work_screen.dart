@@ -9,6 +9,7 @@ import 'package:kdmp_cm_app/data/constant/url.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
@@ -50,6 +51,8 @@ class WorkScreen extends StatefulWidget {
 class _WorkScreenState extends State<WorkScreen> {
   late final WorkViewModel _workViewModel;
 
+  String accessToken = "";
+
   @override
   void initState() {
     super.initState();
@@ -70,7 +73,10 @@ class _WorkScreenState extends State<WorkScreen> {
     );
   }
 
-  void initData() {
+  void initData() async {
+    /// 저장된 인증 토큰 가져오기
+    accessToken = await GetIt.instance<GetJwtUseCase>().execute();
+
     /// 호출정보 조회
     _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
   }
@@ -203,6 +209,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                                 builder: (context, value, _) {
                                                   return Image.network(
                                                     "$baseImageUrl$value",
+                                                    headers: Map.from({"SCLAuthorization": "Bearer $accessToken"}),
                                                     fit: BoxFit.cover,
                                                     width: 88,
                                                     height: 88,

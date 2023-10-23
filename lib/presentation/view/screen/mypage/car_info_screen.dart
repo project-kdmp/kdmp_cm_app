@@ -147,7 +147,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                         await _showAlertDialog(content: StringCarAdd.carAddSuccess, isCanceled: false);
                         initData();
                       } else if (addResult is Bad) {
-                        Fluttertoast.showToast(msg: StringCommon.httpBad);
+                        Fluttertoast.showToast(msg: addResult.badResponse.detailMessage);
                       } else if (addResult is Fail) {
                         Fluttertoast.showToast(msg: "${addResult.errorMessage}");
                       }
@@ -215,7 +215,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                                     /// 차량정보 리스트 갱신
                                     initData();
                                   } else if (result is Bad) {
-                                    Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                    Fluttertoast.showToast(msg: result.badResponse.detailMessage);
                                   } else if (result is Fail) {
                                     Fluttertoast.showToast(msg: "${result.errorMessage}");
                                   }
@@ -259,7 +259,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                             /// 차량정보 리스트 갱신
                             initData();
                           } else if (modifyResult is Bad) {
-                            Fluttertoast.showToast(msg: StringCommon.httpBad);
+                            Fluttertoast.showToast(msg: modifyResult.badResponse.detailMessage);
                           } else if (modifyResult is Fail) {
                             Fluttertoast.showToast(msg: "${modifyResult.errorMessage}");
                           }

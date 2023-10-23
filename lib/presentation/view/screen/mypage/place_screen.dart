@@ -167,7 +167,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
                             /// 자주 가는 장소 리스트 갱신
                             initData();
                           } else if (result is Bad) {
-                            Fluttertoast.showToast(msg: StringCommon.httpBad);
+                            Fluttertoast.showToast(msg: result.badResponse.detailMessage);
                           } else if (result is Fail) {
                             Fluttertoast.showToast(msg: "${result.errorMessage}");
                           }

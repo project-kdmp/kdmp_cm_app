@@ -1,9 +1,9 @@
 class BadResponse {
   int bizErrCode;
-  String? message;
-  String? detailMessage;
-  String? path;
-  String? messageKey;
+  String message;
+  String detailMessage;
+  String path;
+  String messageKey;
 
   BadResponse({
     required this.bizErrCode,

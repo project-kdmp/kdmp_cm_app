@@ -137,7 +137,7 @@ class _InquiryWriteScreenState extends State<InquiryWriteScreen> {
                               /// 화면 닫기, 상담문의 리스트 재조회 후 상세 화면으로 이동
                               context.pop(inqSq);
                             } else if (result is Bad) {
-                              Fluttertoast.showToast(msg: StringCommon.httpBad);
+                              Fluttertoast.showToast(msg: result.badResponse.detailMessage);
                             } else if (result is Fail) {
                               Fluttertoast.showToast(msg: "${result.errorMessage}");
                             }

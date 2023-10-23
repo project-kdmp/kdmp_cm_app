@@ -129,7 +129,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
             if (result is Success) {
               context.goNamed(SplashScreen.routeName);
             } else if (result is Bad) {
-              Fluttertoast.showToast(msg: StringCommon.httpBad);
+              Fluttertoast.showToast(msg: result.badResponse.detailMessage);
             } else if (result is Fail) {
               Fluttertoast.showToast(msg: "${result.errorMessage}");
             }

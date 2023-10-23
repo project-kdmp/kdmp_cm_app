@@ -179,7 +179,7 @@ class _CMTermScreenState extends State<CMTermScreen> {
                               /// 홈 화면으로 이동
                               context.goNamed(HomeScreen.routeName);
                             } else if (result is Bad) {
-                              Fluttertoast.showToast(msg: StringCommon.httpBad);
+                              Fluttertoast.showToast(msg: result.badResponse.detailMessage);
                             } else if (result is Fail) {
                               Fluttertoast.showToast(msg: "${result.errorMessage}");
                             }

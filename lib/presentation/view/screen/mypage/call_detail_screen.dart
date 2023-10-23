@@ -474,7 +474,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                                       /// 호출취소 팝업 닫기
                                                       context.pop(true);
                                                     } else if (result is Bad) {
-                                                      Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                                      Fluttertoast.showToast(msg: result.badResponse.detailMessage);
                                                     } else if (result is Fail) {
                                                       Fluttertoast.showToast(msg: "${result.errorMessage}");
                                                     }
@@ -494,7 +494,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                                       /// 호출취소 사유 선택 팝업 닫기
                                                       context.pop(true);
                                                     } else if (result is Bad) {
-                                                      Fluttertoast.showToast(msg: StringCommon.httpBad);
+                                                      Fluttertoast.showToast(msg: result.badResponse.detailMessage);
                                                     } else if (result is Fail) {
                                                       Fluttertoast.showToast(msg: "${result.errorMessage}");
                                                     }

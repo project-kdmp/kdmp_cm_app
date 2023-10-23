@@ -135,7 +135,7 @@ class _RegisterCarScreenState extends State<RegisterCarScreen> {
                             /// 화면 닫기
                             context.pop();
                           } else if (addCarInfoResult is Bad) {
-                            Fluttertoast.showToast(msg: StringCommon.httpBad);
+                            Fluttertoast.showToast(msg: addCarInfoResult.badResponse.detailMessage);
                           } else if (addCarInfoResult is Fail) {
                             Fluttertoast.showToast(msg: "${result.errorMessage}");
                           }

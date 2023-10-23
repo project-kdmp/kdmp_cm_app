@@ -172,7 +172,7 @@ class _ModifyPlaceScreenState extends State<ModifyPlaceScreen> {
                             /// 화면 닫기, 이전 화면 갱신
                             context.pop(true);
                           } else if (result is Bad) {
-                            Fluttertoast.showToast(msg: StringCommon.httpBad);
+                            Fluttertoast.showToast(msg: result.badResponse.detailMessage);
                           } else if (result is Fail) {
                             Fluttertoast.showToast(msg: "${result.errorMessage}");
                           }
@@ -185,7 +185,7 @@ class _ModifyPlaceScreenState extends State<ModifyPlaceScreen> {
                             /// 화면 닫기, 이전 화면 갱신
                             context.pop(true);
                           } else if (result is Bad) {
-                            Fluttertoast.showToast(msg: StringCommon.httpBad);
+                            Fluttertoast.showToast(msg: result.badResponse.detailMessage);
                           } else if (result is Fail) {
                             Fluttertoast.showToast(msg: "${result.errorMessage}");
                           }

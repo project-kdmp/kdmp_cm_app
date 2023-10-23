@@ -325,7 +325,7 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
                           /// 화면 닫기
                           context.pop(true);
                         } else if (addResult is Bad) {
-                          Fluttertoast.showToast(msg: StringCommon.httpBad);
+                          Fluttertoast.showToast(msg: addResult.badResponse.detailMessage);
                         } else if (addResult is Fail) {
                           // Fluttertoast.showToast(msg: "${addResult.errorMessage}");
                         }

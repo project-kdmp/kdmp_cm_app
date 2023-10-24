@@ -8,9 +8,11 @@ import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/directions_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_request.dart';
+import 'package:kdmp_cm_app/data/model/work/driving_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
 
@@ -21,6 +23,7 @@ class HomeViewModel {
     required this.getNaverPriceUseCase,
     required this.setCallRequestUseCase,
     required this.setReservationRequestUseCase,
+    required this.getDrivingUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
@@ -28,6 +31,7 @@ class HomeViewModel {
   final GetNaverPriceUseCase getNaverPriceUseCase;
   final SetCallRequestUseCase setCallRequestUseCase;
   final SetReservationRequestUseCase setReservationRequestUseCase;
+  final GetDrivingUseCase getDrivingUseCase;
 
   String clientId = "";
   String clientSecret = "";
@@ -343,7 +347,7 @@ class HomeViewModel {
     return result;
   }
 
-  // TODO: 예약콜 호출하기 API
+  /// 예약콜 호출하기 API
   Future<StateAPI> requestReservation({required String carNumId, required String date}) async {
     state = Loading();
 
@@ -374,6 +378,20 @@ class HomeViewModel {
     state = result;
 
     return result;
+  }
+
+  /// 현재 진행중인 콜 여부 조회 API
+  Future<int?> getDriving() async {
+    final mbrSq = await getMbrSqUseCase.execute();
+
+    final request = DrivingRequest(cmMbrSq: mbrSq);
+    final result = await getDrivingUseCase.execute(drivingRequest: request);
+
+    if (result is Success) {
+      final response = result.drivingResponse;
+      return response.driving ? response.drvReqSq : null;
+    }
+    return null;
   }
 }
 

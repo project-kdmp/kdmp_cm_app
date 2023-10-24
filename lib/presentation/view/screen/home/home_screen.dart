@@ -15,6 +15,7 @@ import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
@@ -83,6 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
       getNaverPriceUseCase: GetIt.instance<GetNaverPriceUseCase>(),
       setCallRequestUseCase: GetIt.instance<SetCallRequestUseCase>(),
       setReservationRequestUseCase: GetIt.instance<SetReservationRequestUseCase>(),
+      getDrivingUseCase: GetIt.instance<GetDrivingUseCase>(),
     );
 
     /// 키 관리 파일 가져오기
@@ -92,6 +94,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void initData() async {
+    /// 현재 진행중인 콜 여부 조회, 운행 화면으로 이동
+    final drvReqSq = await _homeViewModel.getDriving();
+    if (drvReqSq != null) {
+      await context.pushNamed(
+        WorkScreen.routeName,
+        extra: drvReqSq,
+      );
+    }
+
     /// 현위치 좌표 가져오기
     _homeViewModel.currentLatLng = await getCurrentLocation();
 

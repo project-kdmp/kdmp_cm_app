@@ -121,7 +121,7 @@ class TokenInterceptor extends InterceptorsWrapper {
         // API 복사본으로 재요청
         return handler.resolve(clonedRequest);
       } else if (badResponse.detailMessage.isNotEmpty) {
-
+        Fluttertoast.showToast(msg: badResponse.detailMessage);
       } else {
         Fluttertoast.showToast(msg: "서버 오류가 발생했습니다.\n앱을 다시 실행해주세요.");
 

@@ -80,6 +80,7 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/setup/setup_usecase.da
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/set_my_term_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_reservation_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart';
@@ -401,6 +402,8 @@ void main() async {
   getIt.registerSingleton<SetReservationRequestUseCase>(setReservationRequestUseCase);
   final setReviewWriteUseCase = SetReviewWriteUseCase(workRepository: workRepository);
   getIt.registerSingleton<SetReviewWriteUseCase>(setReviewWriteUseCase);
+  final getDrivingUseCase = GetDrivingUseCase(workRepository: workRepository);
+  getIt.registerSingleton<GetDrivingUseCase>(getDrivingUseCase);
 
   /// 결제
   final paymentRepository = PaymentRepositoryImpl(dio);

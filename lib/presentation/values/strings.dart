@@ -33,6 +33,7 @@ abstract class StringPermission {
   static const String permissionContent1 = "출발지 위치를 안내하기 위해 필요한 권한";
   static const String permissionTitle2 = "전화";
   static const String permissionContent2 = "전화를 걸기위해 필요한 권한";
+
   // static const String permissionTitle3 = "저장공간 (선택)";
   // static const String permissionContent3 = "(미정)";
   static const String permissionTitle4 = "알림";
@@ -250,6 +251,15 @@ abstract class StringPlaceSetup {
   static const String edit = "편집";
   static const String recentKeyword = "최근 검색";
   static const String bottomButton = "장소 설정";
+}
+
+abstract class StringRecentSearch {
+  StringRecentSearch._();
+
+  static const String title = "최근 검색 기록 편집";
+  static const String allSelect = "전체 선택";
+  static const String delete = "삭제";
+  static const String noList = "최근 검색 기록이 없습니다.";
 }
 
 abstract class StringPlace {

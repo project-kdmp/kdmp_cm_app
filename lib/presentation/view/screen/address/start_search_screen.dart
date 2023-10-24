@@ -14,6 +14,7 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_mapdata_usecas
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mapdata_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/recent_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_icon_text_button.dart';
@@ -187,8 +188,12 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
                                       /// 편집 버튼
                                       GestureDetector(
                                         child: Text(StringStartSetup.edit, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
-                                        onTap: () {
-                                          // TODO: 출발지 검색 기록 편집 화면으로 이동
+                                        onTap: () async {
+                                          /// 최근 검색 기록 편집 화면으로 이동
+                                          await context.pushNamed(RecentSearchScreen.routeName);
+
+                                          /// 최근 검색 리스트 가져오기
+                                          _startSearchViewModel.getRecentList();
                                         },
                                       ),
                                     ],

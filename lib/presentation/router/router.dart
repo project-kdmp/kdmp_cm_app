@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
@@ -9,6 +8,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/end_map_screen.dart
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/place_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/place_search_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/recent_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_map_screen.dart';
@@ -57,10 +57,7 @@ final GoRouter router = GoRouter(
     final isLogin = (await GetIt.instance<GetJwtUseCase>().execute()).isNotEmpty;
 
     /// 로그인 상태가 아니고, 스플래시 화면이 아닐 경우
-    if (!isLogin &&
-        !state.matchedLocation.contains(PermissionScreen.routeURL) &&
-        !state.matchedLocation.contains(TermScreen.routeURL) &&
-        !state.matchedLocation.contains(RegisterVerifyScreen.routeURL)) {
+    if (!isLogin && !state.matchedLocation.contains(PermissionScreen.routeURL) && !state.matchedLocation.contains(TermScreen.routeURL) && !state.matchedLocation.contains(RegisterVerifyScreen.routeURL)) {
       return SplashScreen.routeURL;
     }
     return null;
@@ -219,6 +216,13 @@ final GoRouter router = GoRouter(
           ],
         ),
       ],
+    ),
+
+    /// 최근 검색 기록 편집
+    GoRoute(
+      name: RecentSearchScreen.routeName,
+      path: RecentSearchScreen.routeURL,
+      builder: (context, state) => const RecentSearchScreen(),
     ),
 
     /// 운행

@@ -1,3 +1,4 @@
+import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
 
 abstract class SecureStorageRepository {
@@ -42,6 +43,12 @@ abstract class SecureStorageRepository {
   Future<void> setPaymentList({required List<Payment> paymentList});
 
   Future<void> deletePaymentList();
+
+  Future<List<MapData>> getMapDataList();
+
+  Future<void> setMapDataList({required List<MapData> mapDataList});
+
+  Future<void> deleteMapDataList();
 
   Future<String> getFCM();
 

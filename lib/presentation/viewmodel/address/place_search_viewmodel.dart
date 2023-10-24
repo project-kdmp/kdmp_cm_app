@@ -1,10 +1,13 @@
 import 'package:flutter/foundation.dart';
+import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/juso/juso_list_request.dart';
 import 'package:kdmp_cm_app/data/model/juso/juso_list_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/geocoding_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/juso/get_juso_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_mapdata_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mapdata_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 
 class PlaceSearchViewModel {
@@ -12,11 +15,15 @@ class PlaceSearchViewModel {
     required this.getMbrSqUseCase,
     required this.getNaverAddressInfoUseCase,
     required this.getJusoListUseCase,
+    required this.getMapDataListUseCase,
+    required this.addMapDataUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final GetNaverAddressInfoUseCase getNaverAddressInfoUseCase;
   final GetJusoListUseCase getJusoListUseCase;
+  final GetMapDataListUseCase getMapDataListUseCase;
+  final AddMapDataUseCase addMapDataUseCase;
 
   String clientId = "";
   String clientSecret = "";
@@ -50,16 +57,22 @@ class PlaceSearchViewModel {
 
   List<Juso> get searchList => _searchList.value;
 
-  set searchList(List<Juso> value) => _searchList.value = value;
+  set searchList(List<Juso> value) {
+    _searchList.value = value;
+    _checkRecentListValid();
+  }
 
   /// 최근 검색 리스트
-  final ValueNotifier<List<String>> _recentList = ValueNotifier<List<String>>(List.empty());
+  final ValueNotifier<List<MapData>> _recentList = ValueNotifier<List<MapData>>(List.empty());
 
-  ValueNotifier<List<String>> get recentListNotifier => _recentList;
+  ValueNotifier<List<MapData>> get recentListNotifier => _recentList;
 
-  List<String> get recentList => _recentList.value;
+  List<MapData> get recentList => _recentList.value;
 
-  set recentList(List<String> value) => _recentList.value = value;
+  set recentList(List<MapData> value) {
+    _recentList.value = value;
+    _checkRecentListValid();
+  }
 
   /// 최근 검색 리스트 활성화 여부
   final ValueNotifier<bool> _isRecentListValid = ValueNotifier<bool>(false);
@@ -128,7 +141,6 @@ class PlaceSearchViewModel {
       copyList.addAll(jusoList);
       searchList = copyList;
     }
-    _checkRecentListValid();
 
     return result;
   }
@@ -139,6 +151,13 @@ class PlaceSearchViewModel {
     searchList = List.empty();
   }
 
-  // TODO: 최근 검색 리스트 조회
-  Future<void> getRecentList() async {}
+  /// 최근 검색 장소 리스트 조회
+  Future<void> getRecentList() async {
+    recentList = await getMapDataListUseCase.execute();
+  }
+
+  /// 최근 검색 장소 추가
+  Future<void> addRecentMapData({required MapData mapData}) async {
+    await addMapDataUseCase.execute(mapData: mapData);
+  }
 }

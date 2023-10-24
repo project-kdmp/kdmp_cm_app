@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
 
 import '../../../domain/repository/secure_storage/secure_storage_repository.dart';
@@ -140,6 +141,26 @@ class SecureStorageRepositoryImpl extends SecureStorageRepository {
   @override
   Future<void> deletePaymentList() async {
     await _storage.delete(key: 'paymentList');
+  }
+
+  /// 로컬에 저장된 최근 검색 리스트 반환
+  @override
+  Future<List<MapData>> getMapDataList() async {
+    final json = await _storage.read(key: 'mapDataList') ?? '[]';
+    List<MapData> mapDataList = List.from(List<MapData>.from(jsonDecode(json).map((x) => MapData.fromJson(x))));
+    return mapDataList;
+  }
+
+  /// 로컬에 최근 검색 리스트 저장
+  @override
+  Future<void> setMapDataList({required List<MapData> mapDataList}) async {
+    await _storage.write(key: 'mapDataList', value: jsonEncode(mapDataList));
+  }
+
+  /// 로컬에서 최근 검색 리스트 삭제
+  @override
+  Future<void> deleteMapDataList() async {
+    await _storage.delete(key: 'mapDataList');
   }
 
   /// 로컬에 저장된 FCM 반환

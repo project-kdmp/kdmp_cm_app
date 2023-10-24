@@ -12,6 +12,8 @@ import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/juso/get_juso_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_place_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_mapdata_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mapdata_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_map_screen.dart';
@@ -53,6 +55,8 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
       getNaverAddressInfoUseCase: GetIt.instance<GetNaverAddressInfoUseCase>(),
       getJusoListUseCase: GetIt.instance<GetJusoListUseCase>(),
       getPlaceListUseCase: GetIt.instance<GetPlaceListUseCase>(),
+      getMapDataListUseCase: GetIt.instance<GetMapDataListUseCase>(),
+      addMapDataUseCase: GetIt.instance<AddMapDataUseCase>(),
     );
   }
 
@@ -76,7 +80,7 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
     _stopOverSearchViewModel.getPlaceList();
 
     /// 최근 검색 리스트 가져오기
-    // _stopOverSearchViewModel.getRecentList();
+    _stopOverSearchViewModel.getRecentList();
   }
 
   @override
@@ -157,6 +161,8 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
                           onPressed: () async {
                             final result = await context.pushNamed(StopOverMapScreen.routeName);
                             if (result != null && result is MapData) {
+                              /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+                              _stopOverSearchViewModel.addRecentMapData(mapData: result);
                               context.pop(result);
                             }
                           },
@@ -193,7 +199,7 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
                                 ),
 
                                 /// 최근 검색 리스트
-                                ValueListenableBuilder<List<String>>(
+                                ValueListenableBuilder<List<MapData>>(
                                   valueListenable: _stopOverSearchViewModel.recentListNotifier,
                                   builder: (context, value, _) {
                                     return getRecentListView(value);
@@ -237,12 +243,15 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
           // 텍스트 사이즈 고정
           onPressed: () async {
             /// 해당 장소로 경유지 설정
-            final result = MapData(
+            final mapData = MapData(
               place: value[index].fplacePlaceNm,
               address: value[index].fplaceAddress,
               latLng: NLatLng(value[index].gpsLat, value[index].gpsLong),
             );
-            context.pop(result);
+
+            /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+            _stopOverSearchViewModel.addRecentMapData(mapData: mapData);
+            context.pop(mapData);
           },
         );
       },
@@ -270,13 +279,15 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
             final result = await _stopOverSearchViewModel.getAddressInfo(address: item.roadAddrPart1);
             if (result is Success) {
               final addressInfo = result.geocodingResponse.addresses![0];
-              context.pop(
-                MapData(
-                  latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
-                  address: address,
-                  place: place,
-                ),
+
+              /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+              final mapData = MapData(
+                latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
+                address: address,
+                place: place,
               );
+              await _stopOverSearchViewModel.addRecentMapData(mapData: mapData);
+              context.pop(mapData);
             } else if (result is Bad) {
               Fluttertoast.showToast(msg: result.badResponse.detailMessage);
             } else if (result is Fail) {
@@ -309,32 +320,37 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
   }
 
   /// 최근 검색 리스트
-  Widget getRecentListView(List<String> value) {
+  Widget getRecentListView(List<MapData> value) {
     return ListView.separated(
       itemCount: value.length,
       shrinkWrap: true,
       primary: false,
       itemBuilder: (context, index) {
+        final item = value[index];
+        final address = item.address;
+        final place = item.place;
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 최근 검색 리스트 아이템 클릭
-            // TODO: 값 전달
-            context.pop();
+
+            /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+            await _stopOverSearchViewModel.addRecentMapData(mapData: value[index]);
+            context.pop(value[index]);
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(Icons.access_time_outlined, color: Theme.of(context).disabledColor, size: 22),
                 const SizedBox(width: 10),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("우림라이온스밸리", style: Theme.of(context).textTheme.titleLarge),
+                    Text(place.isNotEmpty ? place : "장소명 없음", style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 10),
-                    Text("우림라이온스밸리", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                    Text(address, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
                   ],
                 ),
               ],

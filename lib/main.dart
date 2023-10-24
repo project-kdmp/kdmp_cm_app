@@ -59,10 +59,13 @@ import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/set_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_auto_refresh_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_mapdata_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_payment_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_mapdata_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_payment_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_firstlogin_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mapdata_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrci_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
@@ -275,6 +278,12 @@ void main() async {
   getIt.registerSingleton<AddPaymentUseCase>(addPaymentUseCase);
   final deletePaymentUseCase = DeletePaymentUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<DeletePaymentUseCase>(deletePaymentUseCase);
+  final getMapDataListUseCase = GetMapDataListUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<GetMapDataListUseCase>(getMapDataListUseCase);
+  final addMapDataUseCase = AddMapDataUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<AddMapDataUseCase>(addMapDataUseCase);
+  final deleteMapDataUseCase = DeleteMapDataUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<DeleteMapDataUseCase>(deleteMapDataUseCase);
 
   String? fcmToken = await fcmSetting();
   debugPrint("======fcmToken=$fcmToken");

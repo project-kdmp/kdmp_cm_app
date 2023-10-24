@@ -10,6 +10,8 @@ import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/juso/juso_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/juso/get_juso_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_mapdata_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mapdata_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/place_map_screen.dart';
@@ -49,6 +51,8 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getNaverAddressInfoUseCase: GetIt.instance<GetNaverAddressInfoUseCase>(),
       getJusoListUseCase: GetIt.instance<GetJusoListUseCase>(),
+      getMapDataListUseCase: GetIt.instance<GetMapDataListUseCase>(),
+      addMapDataUseCase: GetIt.instance<AddMapDataUseCase>(),
     );
   }
 
@@ -69,7 +73,7 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
     _placeSearchViewModel.jusoApiKey = dotenv.get("JUSO_API_KEY");
 
     /// 최근 검색 리스트 가져오기
-    // _placeSearchViewModel.getRecentList();
+    _placeSearchViewModel.getRecentList();
   }
 
   @override
@@ -141,6 +145,8 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
                           onPressed: () async {
                             final result = await context.pushNamed(PlaceMapScreen.routeName);
                             if (result != null && result is MapData) {
+                              /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+                              await _placeSearchViewModel.addRecentMapData(mapData: result);
                               context.pop(result);
                             }
                           },
@@ -177,7 +183,7 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
                                 ),
 
                                 /// 최근 검색 리스트
-                                ValueListenableBuilder<List<String>>(
+                                ValueListenableBuilder<List<MapData>>(
                                   valueListenable: _placeSearchViewModel.recentListNotifier,
                                   builder: (context, value, _) {
                                     return getRecentListView(value);
@@ -223,13 +229,15 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
             final result = await _placeSearchViewModel.getAddressInfo(address: item.roadAddrPart1);
             if (result is Success) {
               final addressInfo = result.geocodingResponse.addresses![0];
-              context.pop(
-                MapData(
-                  latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
-                  address: address,
-                  place: place,
-                ),
+
+              /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+              final mapData = MapData(
+                latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
+                address: address,
+                place: place,
               );
+              await _placeSearchViewModel.addRecentMapData(mapData: mapData);
+              context.pop(mapData);
             } else if (result is Bad) {
               Fluttertoast.showToast(msg: result.badResponse.detailMessage);
             } else if (result is Fail) {
@@ -262,32 +270,37 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
   }
 
   /// 최근 검색 리스트
-  Widget getRecentListView(List<String> value) {
+  Widget getRecentListView(List<MapData> value) {
     return ListView.separated(
       itemCount: value.length,
       shrinkWrap: true,
       primary: false,
       itemBuilder: (context, index) {
+        final item = value[index];
+        final address = item.address;
+        final place = item.place;
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 최근 검색 리스트 아이템 클릭
-            // TODO: 값 전달
-            context.pop();
+
+            /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+            await _placeSearchViewModel.addRecentMapData(mapData: value[index]);
+            context.pop(value[index]);
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(Icons.access_time_outlined, color: Theme.of(context).disabledColor, size: 22),
                 const SizedBox(width: 10),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("우림라이온스밸리", style: Theme.of(context).textTheme.titleLarge),
+                    Text(place.isNotEmpty ? place : "장소명 없음", style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 10),
-                    Text("우림라이온스밸리", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                    Text(address, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
                   ],
                 ),
               ],

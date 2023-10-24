@@ -98,9 +98,11 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                   CustomElevatedButton(
                     text: StringWithdraw.bottomButton,
                     onPressed: () async {
-                      await _showWithdrawalDialog();
-                      await _showAlertDialog(content: StringWithdraw.withdrawalSuccess, isCanceled: false);
-                      context.goNamed(SplashScreen.routeName);
+                      final result = await _showWithdrawalDialog();
+                      if (result == true) {
+                        await _showAlertDialog(content: StringWithdraw.withdrawalSuccess, isCanceled: false);
+                        context.goNamed(SplashScreen.routeName);
+                      }
                     },
                     backgroundColor: Theme.of(context).colorScheme.secondary,
                     minimumSize: const Size(double.minPositive, double.minPositive),
@@ -127,7 +129,8 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
             /// 탈퇴하기 처리
             final result = await _withdrawViewModel.withdraw();
             if (result is Success) {
-              context.goNamed(SplashScreen.routeName);
+              /// 팝업 닫기
+              context.pop();
             } else if (result is Bad) {
               Fluttertoast.showToast(msg: result.badResponse.detailMessage);
             } else if (result is Fail) {

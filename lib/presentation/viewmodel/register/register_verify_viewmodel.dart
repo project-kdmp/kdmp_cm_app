@@ -7,6 +7,7 @@ import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_user_data_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/device_info_util.dart';
@@ -19,6 +20,7 @@ class RegisterVerifyViewModel {
     required this.getOnBoardingCheckUseCase,
     required this.getFCMUseCase,
     required this.setFCMTokenUseCase,
+    required this.deleteUserDataUseCase,
   });
 
   final SetRegisterUseCase setRegisterUseCase;
@@ -27,6 +29,7 @@ class RegisterVerifyViewModel {
   final GetOnBoardingCheckUseCase getOnBoardingCheckUseCase;
   final GetFCMUseCase getFCMUseCase;
   final SetFCMTokenUseCase setFCMTokenUseCase;
+  final DeleteUserDataUseCase deleteUserDataUseCase;
 
   /// 상태
   StateAPI state = Loading();
@@ -112,5 +115,10 @@ class RegisterVerifyViewModel {
   /// 온보딩 확인 여부 가져오기
   Future<bool> isOnBoardingCheck() async {
     return await getOnBoardingCheckUseCase.execute();
+  }
+
+  /// 로그아웃
+  Future<void> logout() async {
+    await deleteUserDataUseCase.withdrawal();
   }
 }

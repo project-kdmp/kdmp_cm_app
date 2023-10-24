@@ -10,6 +10,7 @@ import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
@@ -87,6 +88,7 @@ class _SplashScreenState extends State<SplashScreen> {
       getOnBoardingCheckUseCase: GetIt.instance<GetOnBoardingCheckUseCase>(),
       getFCMUseCase: GetIt.instance<GetFCMUseCase>(),
       setFCMTokenUseCase: GetIt.instance<SetFCMTokenUseCase>(),
+      deleteUserDataUseCase: GetIt.instance<DeleteUserDataUseCase>(),
     );
   }
 
@@ -113,10 +115,12 @@ class _SplashScreenState extends State<SplashScreen> {
       /// 회원구분
       switch (response.mbrPrivilegeTp) {
         case MbrPrivilegeTp.driver:
+          _splashViewModel.logout();
           await _showAlertDialog(content: StringLogin.mbrPrivilegeTpDMMB, isCanceled: false);
           SystemNavigator.pop();
           return;
         case MbrPrivilegeTp.admin:
+          _splashViewModel.logout();
           await _showAlertDialog(content: StringLogin.mbrPrivilegeTpADMN, isCanceled: false);
           SystemNavigator.pop();
           return;
@@ -148,10 +152,12 @@ class _SplashScreenState extends State<SplashScreen> {
                 }
                 break;
               case MbrSt.withdrawal:
+                _splashViewModel.logout();
                 await _showAlertDialog(content: StringLogin.mbrStW, isCanceled: false);
                 SystemNavigator.pop();
                 break;
               case MbrSt.registerDormant:
+                _splashViewModel.logout();
                 await _showAlertDialog(content: StringLogin.mbrStD, isCanceled: false);
                 SystemNavigator.pop();
                 break;
@@ -159,6 +165,7 @@ class _SplashScreenState extends State<SplashScreen> {
           }
           break;
         default:
+          _splashViewModel.logout();
           await _showAlertDialog(content: StringLogin.mbrPrivilegeTpUNKNOWN, isCanceled: false);
           SystemNavigator.pop();
       }

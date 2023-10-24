@@ -5,6 +5,7 @@ import 'package:kdmp_cm_app/data/model/fcm/fcm_token_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
@@ -20,6 +21,7 @@ class SplashViewModel {
     required this.getOnBoardingCheckUseCase,
     required this.getFCMUseCase,
     required this.setFCMTokenUseCase,
+    required this.deleteUserDataUseCase,
   });
 
   final GetLoginUseCase getLoginUseCase;
@@ -29,6 +31,7 @@ class SplashViewModel {
   final GetOnBoardingCheckUseCase getOnBoardingCheckUseCase;
   final GetFCMUseCase getFCMUseCase;
   final SetFCMTokenUseCase setFCMTokenUseCase;
+  final DeleteUserDataUseCase deleteUserDataUseCase;
 
   /// 상태
   StateAPI state = Loading();
@@ -86,5 +89,10 @@ class SplashViewModel {
   /// 온보딩 확인 여부 가져오기
   Future<bool> isOnBoardingCheck() async {
     return await getOnBoardingCheckUseCase.execute();
+  }
+
+  /// 로그아웃
+  Future<void> logout() async {
+    await deleteUserDataUseCase.withdrawal();
   }
 }

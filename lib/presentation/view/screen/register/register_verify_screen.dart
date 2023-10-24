@@ -10,6 +10,7 @@ import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_user_data_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
@@ -61,6 +62,7 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
       getOnBoardingCheckUseCase: GetIt.instance<GetOnBoardingCheckUseCase>(),
       getFCMUseCase: GetIt.instance<GetFCMUseCase>(),
       setFCMTokenUseCase: GetIt.instance<SetFCMTokenUseCase>(),
+      deleteUserDataUseCase: GetIt.instance<DeleteUserDataUseCase>(),
     );
   }
 
@@ -117,10 +119,12 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
                     /// 회원구분
                     switch (loginResponse.mbrPrivilegeTp) {
                       case MbrPrivilegeTp.driver:
+                        _registerVerifyViewModel.logout();
                         await _showAlertDialog(content: StringLogin.mbrPrivilegeTpDMMB, isCanceled: false);
                         SystemNavigator.pop();
                         return;
                       case MbrPrivilegeTp.admin:
+                        _registerVerifyViewModel.logout();
                         await _showAlertDialog(content: StringLogin.mbrPrivilegeTpADMN, isCanceled: false);
                         SystemNavigator.pop();
                         return;
@@ -152,10 +156,12 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
                               }
                               break;
                             case MbrSt.withdrawal:
+                              _registerVerifyViewModel.logout();
                               await _showAlertDialog(content: StringLogin.mbrStW, isCanceled: false);
                               SystemNavigator.pop();
                               break;
                             case MbrSt.registerDormant:
+                              _registerVerifyViewModel.logout();
                               await _showAlertDialog(content: StringLogin.mbrStD, isCanceled: false);
                               SystemNavigator.pop();
                               break;
@@ -163,6 +169,7 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
                         }
                         break;
                       default:
+                        _registerVerifyViewModel.logout();
                         await _showAlertDialog(content: StringLogin.mbrPrivilegeTpUNKNOWN, isCanceled: false);
                         SystemNavigator.pop();
                     }

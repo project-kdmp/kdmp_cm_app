@@ -9,7 +9,7 @@ class AddPaymentUseCase {
 
   Future<void> execute({required Payment payment}) async {
     final paymentList = await _secureStorageRepository.getPaymentList();
-    paymentList.add(payment);
+    paymentList.insert(0, payment);
     await _secureStorageRepository.setPaymentList(paymentList: paymentList);
   }
 }

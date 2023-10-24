@@ -104,6 +104,15 @@ class CallDetailViewModel {
 
   set endPlace(String value) => _endPlace.value = value;
 
+  /// 기사아이디
+  final ValueNotifier<String> _driverId = ValueNotifier<String>("");
+
+  ValueNotifier<String> get driverIdNotifier => _driverId;
+
+  String get driverId => _driverId.value;
+
+  set driverId(String value) => _driverId.value = value;
+
   /// 기사이름
   final ValueNotifier<String> _driver = ValueNotifier<String>("");
 
@@ -140,17 +149,17 @@ class CallDetailViewModel {
 
     if (result is Success) {
       final response = result.callDetailResponse;
-      date = getDateAndTimeFormat(startDate: response.drvStartDt, endDate: response.drvEndDt);
+      date = response.drvStartDt != null ? getDateAndTimeFormat(startDate: response.drvStartDt, endDate: response.drvEndDt) : getDateAndTimeFormat(startDate: response.reqRegDt);
       drvReqSt = response.drvReqSt ?? "";
-      startPlace = response.reqStartPlaceNm;
-      endPlace = response.reqEndPlaceNm;
+      startPlace = response.reqStartPlaceNm.isNotEmpty ? response.reqStartPlaceNm : response.reqStartAddress;
+      endPlace = response.reqEndPlaceNm.isNotEmpty ? response.reqEndPlaceNm : response.reqEndAddress;
       stopoverList = response.stopOverLst;
       payment = response.paymKind ?? "";
       amount = response.drvPaymPrice ?? 0;
+      driverId = response.dmMbrId ?? "";
       driver = response.dmMbrNm ?? "";
       carNumId = response.carNumId ?? "";
-      // TODO: 서버에서 mbrDmSq 내려줘야함
-      // _mbrDmSq = response.mbrDmSq ?? 0;
+      _mbrDmSq = response.mbrDmSq ?? 0;
     }
 
     return result;

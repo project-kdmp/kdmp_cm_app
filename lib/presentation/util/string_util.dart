@@ -124,7 +124,7 @@ String getDateFormat({required String? date, String dateFormat = "yyyy-MM-dd"}) 
 }
 
 /// 날짜형식 포맷 후 반환
-String getDateAndTimeFormat({required String? startDate, required String? endDate}) {
+String getDateAndTimeFormat({required String? startDate, String? endDate}) {
   if (startDate != null) {
     try {
       const dateFormat = "yyyy년 MM월 dd일 HH:mm";

@@ -17,7 +17,6 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/horizontal_dashed_divider.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_tag.dart';
-import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_text_field.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/mypage/called_detail_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -97,6 +96,22 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                             child: Text(StringCalled.infoTitle, style: Theme.of(context).textTheme.displaySmall),
                           ),
                           const SizedBox(height: 28),
+
+                          /// 코드(운행)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(StringCalled.code, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              const SizedBox(width: 14),
+                              ValueListenableBuilder<String>(
+                                valueListenable: _calledDetailViewModel.codeNotifier,
+                                builder: (context, value, _) {
+                                  return Expanded(child: Text(value, textAlign: TextAlign.start));
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
 
                           /// 일시
                           Row(
@@ -268,6 +283,22 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           ),
                           const SizedBox(height: 28),
 
+                          /// 코드(아이디)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(StringCalled.driverId, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              const SizedBox(width: 14),
+                              ValueListenableBuilder<String>(
+                                valueListenable: _calledDetailViewModel.driverIdNotifier,
+                                builder: (context, value, _) {
+                                  return Expanded(child: Text(value, textAlign: TextAlign.start));
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+
                           /// 이름
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -330,13 +361,15 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                                     ValueListenableBuilder<String>(
                                       valueListenable: _calledDetailViewModel.reviewNotifier,
                                       builder: (context, value, _) {
-                                        return SizedBox(
+                                        return Container(
                                           height: 80,
-                                          child: CustomTextField(
-                                            text: value,
-                                            isEnabled: false,
-                                            isExpands: true,
+                                          width: double.maxFinite,
+                                          padding: const EdgeInsets.all(14),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).dividerColor,
+                                            borderRadius: const BorderRadius.all(Radius.circular(4)),
                                           ),
+                                          child: Text(value),
                                         );
                                       },
                                     ),
@@ -461,7 +494,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
               ),
             ),
             const SizedBox(width: 18),
-            Text(value[index].placeName.isNotEmpty ? value[index].placeName : value[index].address),
+            Expanded(child: Text(value[index].placeName.isNotEmpty ? value[index].placeName : value[index].address)),
           ],
         );
       },

@@ -33,33 +33,38 @@ class CalledListResponse {
 
 class Called {
   int drvReqSq;
+  String? reqRegDt;
   String? drvStartDt;
   String? drvEndDt;
   String? drvReqSt;
-  String? reqStartAddress;
-  String? reqStartPlaceNm;
+  String reqStartAddress;
+  String reqStartPlaceNm;
   List<StopOver> stopOverLst;
-  String? reqEndAddress;
-  String? reqEndPlaceNm;
+  String reqEndAddress;
+  String reqEndPlaceNm;
   int? drvPaymPrice;
   String? payCardInfo;
+  String? paymKind;
 
   Called({
     required this.drvReqSq,
+    this.reqRegDt,
     this.drvStartDt,
     this.drvEndDt,
     this.drvReqSt,
-    this.reqStartAddress,
-    this.reqStartPlaceNm,
+    required this.reqStartAddress,
+    required this.reqStartPlaceNm,
     required this.stopOverLst,
-    this.reqEndAddress,
-    this.reqEndPlaceNm,
+    required this.reqEndAddress,
+    required this.reqEndPlaceNm,
     this.drvPaymPrice,
     this.payCardInfo,
+    this.paymKind,
   });
 
   factory Called.fromJson(Map<String, dynamic> json) => Called(
         drvReqSq: json["drvReqSq"],
+        reqRegDt: json["reqRegDt"],
         drvStartDt: json["drvStartDt"],
         drvEndDt: json["drvEndDt"],
         drvReqSt: json["drvReqSt"],
@@ -70,10 +75,12 @@ class Called {
         reqEndPlaceNm: json["reqEndPlaceNm"],
         drvPaymPrice: json["drvPaymPrice"],
         payCardInfo: json["payCardInfo"],
+        paymKind: json["paymKind"],
       );
 
   Map<String, dynamic> toJson() => {
         "drvReqSq": drvReqSq,
+        "reqRegDt": reqRegDt,
         "drvStartDt": drvStartDt,
         "drvEndDt": drvEndDt,
         "drvReqSt": drvReqSt,
@@ -84,5 +91,6 @@ class Called {
         "reqEndPlaceNm": reqEndPlaceNm,
         "drvPaymPrice": drvPaymPrice,
         "payCardInfo": payCardInfo,
+        "paymKind": paymKind,
       };
 }

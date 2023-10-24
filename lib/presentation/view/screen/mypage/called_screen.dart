@@ -156,7 +156,9 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
       primary: false,
       itemBuilder: (context, index) {
         final stopOverList = value[index].stopOverLst;
-        String text = stopOverList.isNotEmpty
+        final startPlace = value[index].reqStartPlaceNm.isNotEmpty ? value[index].reqStartPlaceNm : value[index].reqStartAddress;
+        final endPlace = value[index].reqEndPlaceNm.isNotEmpty ? value[index].reqEndPlaceNm : value[index].reqEndAddress;
+        var text = stopOverList.isNotEmpty
             ? stopOverList[0].placeName.isNotEmpty
                 ? stopOverList[0].placeName
                 : stopOverList[0].address
@@ -164,6 +166,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
         if (stopOverList.length > 1) {
           text += " 외 ${stopOverList.length - 1}";
         }
+        final date = value[index].drvStartDt != null ? getDateAndTimeFormat(startDate: value[index].drvStartDt, endDate: value[index].drvEndDt) : getDateAndTimeFormat(startDate: value[index].reqRegDt);
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
@@ -202,7 +205,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(child: Text(getDateAndTimeFormat(startDate: value[index].drvStartDt, endDate: value[index].drvEndDt), textAlign: TextAlign.start)),
+                          Expanded(child: Text(date, textAlign: TextAlign.start)),
                         ],
                       ),
 
@@ -241,7 +244,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                         children: [
                           Text(StringCalled.startSpot, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                           const SizedBox(width: 12),
-                          Expanded(child: Text(value[index].reqStartPlaceNm ?? value[index].reqStartAddress ?? "", textAlign: TextAlign.start)),
+                          Expanded(child: Text(startPlace, textAlign: TextAlign.start)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -265,7 +268,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                         children: [
                           Text(StringCalled.endSpot, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                           const SizedBox(width: 12),
-                          Expanded(child: Text(value[index].reqEndPlaceNm ?? value[index].reqEndAddress ?? "", textAlign: TextAlign.start)),
+                          Expanded(child: Text(endPlace, textAlign: TextAlign.start)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -316,7 +319,9 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
       primary: false,
       itemBuilder: (context, index) {
         final stopOverList = value[index].stopOverLst;
-        String text = stopOverList.isNotEmpty
+        final startPlace = value[index].reqStartPlaceNm.isNotEmpty ? value[index].reqStartPlaceNm : value[index].reqStartAddress;
+        final endPlace = value[index].reqEndPlaceNm.isNotEmpty ? value[index].reqEndPlaceNm : value[index].reqEndAddress;
+        var text = stopOverList.isNotEmpty
             ? stopOverList[0].placeName.isNotEmpty
                 ? stopOverList[0].placeName
                 : stopOverList[0].address
@@ -324,6 +329,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
         if (stopOverList.length > 1) {
           text += " 외 ${stopOverList.length - 1}";
         }
+        final date = value[index].drvStartDt != null ? getDateAndTimeFormat(startDate: value[index].drvStartDt, endDate: value[index].drvEndDt) : getDateAndTimeFormat(startDate: value[index].reqRegDt);
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
@@ -362,7 +368,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           /// 일시
-                          Expanded(child: Text(getDateAndTimeFormat(startDate: value[index].drvStartDt, endDate: value[index].drvEndDt), textAlign: TextAlign.start)),
+                          Expanded(child: Text(date, textAlign: TextAlign.start)),
 
                           /// 삭제 버튼
                           GestureDetector(
@@ -431,7 +437,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                         children: [
                           Text(StringCalled.startSpot, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                           const SizedBox(width: 12),
-                          Expanded(child: Text(value[index].reqStartPlaceNm ?? value[index].reqStartAddress ?? "", textAlign: TextAlign.start)),
+                          Expanded(child: Text(startPlace, textAlign: TextAlign.start)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -455,7 +461,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                         children: [
                           Text(StringCalled.endSpot, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                           const SizedBox(width: 12),
-                          Expanded(child: Text(value[index].reqEndPlaceNm ?? value[index].reqEndAddress ?? "", textAlign: TextAlign.start)),
+                          Expanded(child: Text(endPlace, textAlign: TextAlign.start)),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -477,8 +483,7 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                         children: [
                           Text(StringCalled.payment, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
                           const SizedBox(width: 12),
-                          // TODO: 결제유형 확인
-                          Expanded(child: Text("", textAlign: TextAlign.start)),
+                          Expanded(child: Text(getPaymentKind(value[index].paymKind), textAlign: TextAlign.start)),
                         ],
                       ),
                     ],

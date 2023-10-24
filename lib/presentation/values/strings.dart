@@ -423,6 +423,7 @@ abstract class StringCalled {
   static const String driverTitle = "기사 정보";
   static const String reservationStateTitle = "접수 완료";
 
+  static const String code = "코드";
   static const String date = "일시";
   static const String callType = "호출";
   static const String driveType = "상태";
@@ -433,6 +434,7 @@ abstract class StringCalled {
   static const String amount = "요금";
   static const String delete = "삭제";
   static const String driver = "이름";
+ static const String driverId = "코드";
   static const String car = "차량";
   static const String review = "리뷰";
 

@@ -6,6 +6,7 @@ class CallDetailResponse {
   String serverVersion;
   String serverId;
   int drvReqSq;
+  String? reqRegDt;
   String? drvStartDt;
   String? drvEndDt;
   String? drvReqSt;
@@ -17,12 +18,15 @@ class CallDetailResponse {
   int? drvPaymPrice;
   String? paymKind;
   String? dmMbrNm;
+  String? dmMbrId;
+  int? mbrDmSq;
   String? carNumId;
 
   CallDetailResponse({
     required this.serverVersion,
     required this.serverId,
     required this.drvReqSq,
+    this.reqRegDt,
     this.drvStartDt,
     this.drvEndDt,
     this.drvReqSt,
@@ -34,6 +38,8 @@ class CallDetailResponse {
     this.drvPaymPrice,
     this.paymKind,
     this.dmMbrNm,
+    this.dmMbrId,
+    this.mbrDmSq,
     this.carNumId,
   });
 
@@ -41,6 +47,7 @@ class CallDetailResponse {
         serverVersion: json["serverVersion"],
         serverId: json["serverId"],
         drvReqSq: json["drvReqSq"],
+        reqRegDt: json["reqRegDt"],
         drvStartDt: json["drvStartDt"],
         drvEndDt: json["drvEndDt"],
         drvReqSt: json["drvReqSt"],
@@ -52,6 +59,8 @@ class CallDetailResponse {
         drvPaymPrice: json["drvPaymPrice"],
         paymKind: json["paymKind"],
         dmMbrNm: json["dmMbrNm"],
+        dmMbrId: json["dmMbrId"],
+        mbrDmSq: json["mbrDmSq"],
         carNumId: json["carNumId"],
       );
 
@@ -59,6 +68,7 @@ class CallDetailResponse {
         "serverVersion": serverVersion,
         "serverId": serverId,
         "drvReqSq": drvReqSq,
+        "reqRegDt": reqRegDt,
         "drvStartDt": drvStartDt,
         "drvEndDt": drvEndDt,
         "drvReqSt": drvReqSt,
@@ -70,6 +80,8 @@ class CallDetailResponse {
         "drvPaymPrice": drvPaymPrice,
         "paymKind": paymKind,
         "dmMbrNm": dmMbrNm,
+        "dmMbrId": dmMbrId,
+        "mbrDmSq": mbrDmSq,
         "carNumId": carNumId,
       };
 }

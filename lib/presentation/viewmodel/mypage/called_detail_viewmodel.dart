@@ -27,6 +27,15 @@ class CalledDetailViewModel {
   /// 운행기사 번호
   int _mbrDmSq = 0;
 
+  /// 코드
+  final ValueNotifier<String> _code = ValueNotifier<String>("");
+
+  ValueNotifier<String> get codeNotifier => _code;
+
+  String get code => _code.value;
+
+  set code(String value) => _code.value = value;
+
   /// 일시
   final ValueNotifier<String> _date = ValueNotifier<String>("");
 
@@ -120,6 +129,15 @@ class CalledDetailViewModel {
 
   set driver(String value) => _driver.value = value;
 
+  /// 기사아이디
+  final ValueNotifier<String> _driverId = ValueNotifier<String>("");
+
+  ValueNotifier<String> get driverIdNotifier => _driverId;
+
+  String get driverId => _driverId.value;
+
+  set driverId(String value) => _driverId.value = value;
+
   /// 차량
   final ValueNotifier<String> _carNumId = ValueNotifier<String>("");
 
@@ -179,22 +197,22 @@ class CalledDetailViewModel {
 
     if (result is Success) {
       final response = result.calledDetailResponse;
+      code = response.drvReqEndId ?? "";
       startDate = response.drvStartDt ?? "";
-      date = getDateAndTimeFormat(startDate: response.drvStartDt, endDate: response.drvEndDt);
+      date = response.drvStartDt != null ? getDateAndTimeFormat(startDate: response.drvStartDt, endDate: response.drvEndDt) : getDateAndTimeFormat(startDate: response.reqRegDt);
       drvReqSt = response.drvReqSt ?? "";
       startPlace = response.reqStartPlaceNm.isNotEmpty ? response.reqStartPlaceNm : response.reqStartAddress;
       endPlace = response.reqEndPlaceNm.isNotEmpty ? response.reqEndPlaceNm : response.reqEndAddress;
       stopoverList = response.stopOverLst;
 
-      /// TODO: 결제수단 paymKind 안내려옴
-      // payment = response.paymKind ?? "";
+      payment = response.paymKind ?? "";
       amount = response.drvPaymPrice ?? 0;
       driver = response.dmMbrNm ?? "";
+      driverId = response.dmMbrId ?? "";
       carNumId = response.carNumId ?? "";
       star = response.starPoint ?? 0;
       review = response.reviewContent ?? "";
-      // TODO: 서버에서 mbrDmSq 내려줘야함
-      // _mbrDmSq = response.mbrDmSq ?? 0;
+      _mbrDmSq = response.mbrDmSq ?? 0;
     }
 
     return result;

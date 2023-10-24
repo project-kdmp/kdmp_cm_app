@@ -6,6 +6,7 @@ class CalledDetailResponse {
   String serverVersion;
   String serverId;
   int drvReqSq;
+  String? reqRegDt;
   String? drvStartDt;
   String? drvEndDt;
   String? drvReqSt;
@@ -16,8 +17,12 @@ class CalledDetailResponse {
   List<StopOver> stopOverLst;
   int? drvPaymPrice;
   String? payCardInfo;
+  String? paymKind;
   String? dmMbrNm;
+  String? dmMbrId;
+  int? mbrDmSq;
   String? carNumId;
+  String? drvReqEndId;
   String? reviewContent;
   int? starPoint;
 
@@ -25,6 +30,7 @@ class CalledDetailResponse {
     required this.serverVersion,
     required this.serverId,
     required this.drvReqSq,
+    this.reqRegDt,
     this.drvStartDt,
     this.drvEndDt,
     this.drvReqSt,
@@ -35,8 +41,12 @@ class CalledDetailResponse {
     required this.stopOverLst,
     this.drvPaymPrice,
     this.payCardInfo,
+    this.paymKind,
     this.dmMbrNm,
+    this.dmMbrId,
+    this.mbrDmSq,
     this.carNumId,
+    this.drvReqEndId,
     this.reviewContent,
     this.starPoint,
   });
@@ -45,6 +55,7 @@ class CalledDetailResponse {
         serverVersion: json["serverVersion"],
         serverId: json["serverId"],
         drvReqSq: json["drvReqSq"],
+        reqRegDt: json["reqRegDt"],
         drvStartDt: json["drvStartDt"],
         drvEndDt: json["drvEndDt"],
         drvReqSt: json["drvReqSt"],
@@ -55,8 +66,12 @@ class CalledDetailResponse {
         stopOverLst: json["stopOverLst"] != null && json["stopOverLst"] != "" ? List<StopOver>.from(jsonDecode(json["stopOverLst"]).map((x) => StopOver.fromJson(x))) : List.empty(),
         drvPaymPrice: json["drvPaymPrice"],
         payCardInfo: json["payCardInfo"],
+        paymKind: json["paymKind"],
         dmMbrNm: json["dmMbrNm"],
+        dmMbrId: json["dmMbrId"],
+        mbrDmSq: json["mbrDmSq"],
         carNumId: json["carNumId"],
+        drvReqEndId: json["drvReqEndId"],
         reviewContent: json["reviewContent"],
         starPoint: json["starPoint"],
       );
@@ -65,6 +80,7 @@ class CalledDetailResponse {
         "serverVersion": serverVersion,
         "serverId": serverId,
         "drvReqSq": drvReqSq,
+        "reqRegDt": reqRegDt,
         "drvStartDt": drvStartDt,
         "drvEndDt": drvEndDt,
         "drvReqSt": drvReqSt,
@@ -75,8 +91,12 @@ class CalledDetailResponse {
         "stopOverLst": stopOverLst.isNotEmpty ? jsonEncode(stopOverLst) : "",
         "drvPaymPrice": drvPaymPrice,
         "payCardInfo": payCardInfo,
+        "paymKind": paymKind,
         "dmMbrNm": dmMbrNm,
+        "dmMbrId": dmMbrId,
+        "mbrDmSq": mbrDmSq,
         "carNumId": carNumId,
+        "drvReqEndId": drvReqEndId,
         "reviewContent": reviewContent,
         "starPoint": starPoint,
       };

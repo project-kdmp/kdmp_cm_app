@@ -367,6 +367,22 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                           ),
                           const SizedBox(height: 28),
 
+                          /// 코드(아이디)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(StringCalled.driverId, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              const SizedBox(width: 14),
+                              ValueListenableBuilder<String>(
+                                valueListenable: _callDetailViewModel.driverIdNotifier,
+                                builder: (context, value, _) {
+                                  return Expanded(child: Text(value, textAlign: TextAlign.start));
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+
                           /// 이름
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -566,7 +582,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
               ),
             ),
             const SizedBox(width: 18),
-            Text(value[index].placeName.isNotEmpty ? value[index].placeName : value[index].address),
+            Expanded(child: Text(value[index].placeName.isNotEmpty ? value[index].placeName : value[index].address)),
           ],
         );
       },

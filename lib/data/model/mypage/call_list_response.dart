@@ -28,33 +28,36 @@ class CallListResponse {
 
 class Call {
   int drvReqSq;
+  String? reqRegDt;
   String? drvStartDt;
   String? drvEndDt;
   String? drvReqSt;
-  String? reqStartAddress;
-  String? reqStartPlaceNm;
+  String reqStartAddress;
+  String reqStartPlaceNm;
   List<StopOver> stopOverLst;
-  String? reqEndAddress;
-  String? reqEndPlaceNm;
+  String reqEndAddress;
+  String reqEndPlaceNm;
   int? drvPaymPrice;
   String? paymKind;
 
   Call({
     required this.drvReqSq,
+    this.reqRegDt,
     this.drvStartDt,
     this.drvEndDt,
     this.drvReqSt,
-    this.reqStartAddress,
-    this.reqStartPlaceNm,
+    required this.reqStartAddress,
+    required this.reqStartPlaceNm,
     required this.stopOverLst,
-    this.reqEndAddress,
-    this.reqEndPlaceNm,
+    required this.reqEndAddress,
+    required this.reqEndPlaceNm,
     this.drvPaymPrice,
     this.paymKind,
   });
 
   factory Call.fromJson(Map<String, dynamic> json) => Call(
         drvReqSq: json["drvReqSq"],
+        reqRegDt: json["reqRegDt"],
         drvStartDt: json["drvStartDt"],
         drvEndDt: json["drvEndDt"],
         drvReqSt: json["drvReqSt"],
@@ -69,6 +72,7 @@ class Call {
 
   Map<String, dynamic> toJson() => {
         "drvReqSq": drvReqSq,
+        "reqRegDt": reqRegDt,
         "drvStartDt": drvStartDt,
         "drvEndDt": drvEndDt,
         "drvReqSt": drvReqSt,

@@ -32,6 +32,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.d
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_management_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/work/work_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
@@ -642,15 +643,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                     /// 예약 접수 성공 팝업
                                     await _showAlertDialog(content: StringReservation.reservationConfirmAlert, isCanceled: false);
 
-                                    // TODO: 운행 정보 화면으로 이동
-                                    final drvReqSq = requestResult.drvResponse.drvReqSq;
-
                                     /// 입력 데이터 삭제
                                     _homeViewModel.clearData();
 
                                     /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
                                     naverMap = null;
                                     initData();
+
+                                    /// 운행 정보 화면으로 이동
+                                    final drvReqSq = requestResult.drvResponse.drvReqSq;
+                                    await context.pushNamed(
+                                      CallDetailScreen.routeName,
+                                      extra: drvReqSq,
+                                    );
                                   } else if (requestResult is Bad) {
                                     Fluttertoast.showToast(msg: requestResult.badResponse.detailMessage);
                                   } else if (requestResult is Fail) {

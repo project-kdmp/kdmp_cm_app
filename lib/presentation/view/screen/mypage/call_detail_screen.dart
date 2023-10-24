@@ -110,7 +110,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                             builder: (context, value, child) {
                               final primaryColor = Theme.of(context).colorScheme.primary;
                               final disabledColor = Theme.of(context).disabledColor;
-                              final isWait = value == DrvReqSt.res || value == DrvReqSt.rco || value == DrvReqSt.rwt || value == DrvReqSt.rst;
+                              final isWait = value == DrvReqSt.rco || value == DrvReqSt.rwt || value == DrvReqSt.rst;
                               final isStart = value == DrvReqSt.rst;
                               return _callDetailViewModel.isReservation()
                                   ? Column(

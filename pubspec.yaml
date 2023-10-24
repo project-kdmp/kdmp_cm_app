@@ -80,6 +80,9 @@ dependencies:
   # UUID
   uuid: ^4.1.0
 
+  # Indicator
+  smooth_page_indicator: ^1.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -121,4 +124,5 @@ flutter:
     - assets/menu/icon_car.png
     - assets/common/ic_start.png
     - assets/common/ic_end.png
+    - assets/common/img_money.png
     - assets/work/img_work.png

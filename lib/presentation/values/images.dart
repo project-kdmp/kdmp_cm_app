@@ -6,6 +6,7 @@ abstract class ImageCommon {
   static const String icStart = "assets/common/ic_start.png";
   static const String icEnd = "assets/common/ic_end.png";
   static const String imgWarning = "assets/common/img_warning.png";
+  static const String imgMoney = "assets/common/img_money.png";
 }
 
 abstract class ImageRegister {

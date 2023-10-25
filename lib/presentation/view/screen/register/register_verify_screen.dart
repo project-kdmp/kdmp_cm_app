@@ -42,9 +42,9 @@ class RegisterVerifyScreen extends StatefulWidget {
 class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
   late final RegisterVerifyViewModel _registerVerifyViewModel;
 
-  String mbrNm = "김유현";
-  String mbrMobilePhone = "01088889999";
-  String mbrCi = "ci8888";
+  String mbrNm = "김팥죽";
+  String mbrMobilePhone = "01011122223";
+  String mbrCi = "ci2223";
 
   @override
   void initState() {

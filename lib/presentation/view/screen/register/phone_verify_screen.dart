@@ -23,9 +23,9 @@ class PhoneVerifyScreen extends StatefulWidget {
 class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
   late final PhoneVerifyViewModel _phoneVerifyViewModel;
 
-  String mbrNm = "김유현";
-  String mbrMobilePhone = "01088889999";
-  String mbrCi = "ci8888";
+  String mbrNm = "김팥죽";
+  String mbrMobilePhone = "01011122223";
+  String mbrCi = "ci2223";
   String identityNumber = "800808";
 
   @override

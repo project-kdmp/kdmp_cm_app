@@ -41,6 +41,7 @@ class TokenInterceptor extends InterceptorsWrapper {
     super.onRequest(options, handler);
   }
 
+  /// DioException 발생 시 실행됨
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     super.onError(err, handler);
@@ -122,6 +123,9 @@ class TokenInterceptor extends InterceptorsWrapper {
         return handler.resolve(clonedRequest);
       } else if (badResponse.detailMessage.isNotEmpty) {
         Fluttertoast.showToast(msg: badResponse.detailMessage);
+
+        /// 앱 종료
+        SystemNavigator.pop();
       } else {
         Fluttertoast.showToast(msg: "서버 오류가 발생했습니다.\n앱을 다시 실행해주세요.");
 
@@ -129,6 +133,7 @@ class TokenInterceptor extends InterceptorsWrapper {
         SystemNavigator.pop();
       }
     } catch (e) {
+      /// BadResponse 형식이 아닌 경우
       Fluttertoast.showToast(msg: "서버 오류가 발생했습니다.\n앱을 다시 실행해주세요.");
 
       /// 앱 종료

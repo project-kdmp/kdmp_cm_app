@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -138,10 +137,6 @@ class _MyPageScreenState extends State<MyPageScreen> {
             if (result is Success) {
               /// 이용약관 화면으로 이동
               context.goNamed(TermScreen.routeName);
-            } else if (result is Bad) {
-              Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-            } else if (result is Fail) {
-              Fluttertoast.showToast(msg: "${result.errorMessage}");
             }
           },
         );

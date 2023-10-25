@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -81,14 +80,9 @@ class _InquiryDetailScreenState extends State<InquiryDetailScreen> {
                           onConfirm: () async {
                             /// 상담문의 삭제
                             final result = await _inquiryDetailViewModel.deleteInquiry(inqSq: widget.inqSq);
-
                             if (result is Success) {
                               /// 팝업 닫기
                               context.pop(true);
-                            } else if (result is Bad) {
-                              Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-                            } else if (result is Fail) {
-                              Fluttertoast.showToast(msg: "${result.errorMessage}");
                             }
                           },
                         );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
@@ -171,10 +170,6 @@ class _ModifyPlaceScreenState extends State<ModifyPlaceScreen> {
 
                             /// 화면 닫기, 이전 화면 갱신
                             context.pop(true);
-                          } else if (result is Bad) {
-                            Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-                          } else if (result is Fail) {
-                            Fluttertoast.showToast(msg: "${result.errorMessage}");
                           }
                         } else {
                           /// 자주 가는 장소 수정
@@ -184,10 +179,6 @@ class _ModifyPlaceScreenState extends State<ModifyPlaceScreen> {
 
                             /// 화면 닫기, 이전 화면 갱신
                             context.pop(true);
-                          } else if (result is Bad) {
-                            Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-                          } else if (result is Fail) {
-                            Fluttertoast.showToast(msg: "${result.errorMessage}");
                           }
                         }
                       },

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
@@ -173,15 +172,7 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
                         await _showAlertDialog(content: StringLogin.mbrPrivilegeTpUNKNOWN, isCanceled: false);
                         SystemNavigator.pop();
                     }
-                  } else if (loginResult is Bad) {
-                    Fluttertoast.showToast(msg: loginResult.badResponse.detailMessage);
-                  } else if (loginResult is Fail) {
-                    Fluttertoast.showToast(msg: "${loginResult.errorMessage}");
                   }
-                } else if (registerResult is Bad) {
-                  Fluttertoast.showToast(msg: registerResult.badResponse.detailMessage);
-                } else if (registerResult is Fail) {
-                  Fluttertoast.showToast(msg: "${registerResult.errorMessage}");
                 }
               },
               text: "다음",

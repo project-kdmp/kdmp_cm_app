@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
@@ -528,10 +527,6 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                   if (result is Success) {
                     /// 리뷰 작성 팝업 닫기
                     context.pop(true);
-                  } else if (result is Bad) {
-                    Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-                  } else if (result is Fail) {
-                    Fluttertoast.showToast(msg: "${result.errorMessage}");
                   }
                 },
               ),

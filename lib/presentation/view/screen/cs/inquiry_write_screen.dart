@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -136,10 +135,6 @@ class _InquiryWriteScreenState extends State<InquiryWriteScreen> {
 
                               /// 화면 닫기, 상담문의 리스트 재조회 후 상세 화면으로 이동
                               context.pop(inqSq);
-                            } else if (result is Bad) {
-                              Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-                            } else if (result is Fail) {
-                              Fluttertoast.showToast(msg: "${result.errorMessage}");
                             }
                           },
                         ),

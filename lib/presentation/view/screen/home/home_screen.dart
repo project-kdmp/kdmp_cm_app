@@ -667,10 +667,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       CallDetailScreen.routeName,
                                       extra: drvReqSq,
                                     );
-                                  } else if (requestResult is Bad) {
-                                    Fluttertoast.showToast(msg: requestResult.badResponse.detailMessage);
-                                  } else if (requestResult is Fail) {
-                                    Fluttertoast.showToast(msg: "${requestResult.errorMessage}");
                                   }
                                 }
                               },
@@ -719,10 +715,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                               /// 화면 이동 완료 후 네이버 지도 보여줌
                                               initData();
-                                            } else if (requestResult is Bad) {
-                                              Fluttertoast.showToast(msg: requestResult.badResponse.detailMessage);
-                                            } else if (requestResult is Fail) {
-                                              Fluttertoast.showToast(msg: "${requestResult.errorMessage}");
                                             }
                                           }
                                         },

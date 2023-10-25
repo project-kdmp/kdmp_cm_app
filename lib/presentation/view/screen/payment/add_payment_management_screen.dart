@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -324,10 +323,6 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
 
                           /// 화면 닫기
                           context.pop(true);
-                        } else if (addResult is Bad) {
-                          Fluttertoast.showToast(msg: addResult.badResponse.detailMessage);
-                        } else if (addResult is Fail) {
-                          // Fluttertoast.showToast(msg: "${addResult.errorMessage}");
                         }
                       } else {
                         /// 본인인증 실패

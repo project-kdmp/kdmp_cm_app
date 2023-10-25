@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -382,10 +381,6 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                                   if (deleteResult is Success) {
                                     /// 이용내역 삭제 확인 팝업 닫기
                                     context.pop(true);
-                                  } else if (deleteResult is Bad) {
-                                    Fluttertoast.showToast(msg: deleteResult.badResponse.detailMessage);
-                                  } else if (deleteResult is Fail) {
-                                    Fluttertoast.showToast(msg: "${deleteResult.errorMessage}");
                                   }
                                 },
                               );

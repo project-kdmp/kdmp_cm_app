@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -166,10 +165,6 @@ class _PlaceScreenState extends State<PlaceScreen> {
 
                             /// 자주 가는 장소 리스트 갱신
                             initData();
-                          } else if (result is Bad) {
-                            Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-                          } else if (result is Fail) {
-                            Fluttertoast.showToast(msg: "${result.errorMessage}");
                           }
                         },
                       );

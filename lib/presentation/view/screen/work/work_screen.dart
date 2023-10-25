@@ -131,10 +131,6 @@ class _WorkScreenState extends State<WorkScreen> {
                                                         if (result is Success) {
                                                           /// 호출취소 팝업 닫기
                                                           context.pop(true);
-                                                        } else if (result is Bad) {
-                                                          Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-                                                        } else if (result is Fail) {
-                                                          Fluttertoast.showToast(msg: "${result.errorMessage}");
                                                         }
                                                       },
                                                     )
@@ -151,10 +147,6 @@ class _WorkScreenState extends State<WorkScreen> {
                                                         if (result is Success) {
                                                           /// 호출취소 사유 선택 팝업 닫기
                                                           context.pop(true);
-                                                        } else if (result is Bad) {
-                                                          Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-                                                        } else if (result is Fail) {
-                                                          Fluttertoast.showToast(msg: "${result.errorMessage}");
                                                         }
                                                       },
                                                     );
@@ -444,10 +436,6 @@ class _WorkScreenState extends State<WorkScreen> {
                                               );
                                               if (changeCallFeeResult is Success) {
                                                 _showAlertDialog(content: StringWork.changeCallFeeAlert, isCanceled: false);
-                                              } else if (changeCallFeeResult is Bad) {
-                                                Fluttertoast.showToast(msg: changeCallFeeResult.badResponse.detailMessage);
-                                              } else if (changeCallFeeResult is Fail) {
-                                                Fluttertoast.showToast(msg: "${changeCallFeeResult.errorMessage}");
                                               }
                                             }
                                           },
@@ -559,10 +547,6 @@ class _WorkScreenState extends State<WorkScreen> {
                   if (result is Success) {
                     /// 리뷰 작성 팝업 닫기
                     context.pop();
-                  } else if (result is Bad) {
-                    Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-                  } else if (result is Fail) {
-                    Fluttertoast.showToast(msg: "${result.errorMessage}");
                   }
                 },
               ),

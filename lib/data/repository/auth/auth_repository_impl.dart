@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
 import 'package:kdmp_cm_app/data/constant/url.dart';
 import 'package:kdmp_cm_app/data/model/auth/login_request.dart';
@@ -27,34 +28,31 @@ class AuthRepositoryImpl extends AuthRepository {
         options: Options(contentType: Headers.jsonContentType),
       );
 
-      switch (response.statusCode) {
-        case 200:
-          {
-            final loginResponse = LoginResponse.fromJson(response.data);
-            final StateAPI state = Success(loginResponse);
-            debugPrint("state: $state");
-            return state;
-          }
-        default:
-          {
-            final badResponse = BadResponse.fromJson(response.data);
-            final StateAPI state = Bad(badResponse);
-            debugPrint("state: $state");
-            return state;
-          }
+      /// bizErrCode 없으면 정상 데이터 파싱
+      if (!response.data.containsKey("bizErrCode")) {
+        final loginResponse = LoginResponse.fromJson(response.data);
+        final StateAPI state = Success(loginResponse);
+        debugPrint("state: $state");
+        return state;
+      } else {
+        final badResponse = BadResponse.fromJson(response.data);
+        final StateAPI state = Bad(badResponse);
+        if (badResponse.detailMessage.isNotEmpty) {
+          Fluttertoast.showToast(msg: badResponse.detailMessage);
+        } else {
+          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
+        }
+        debugPrint("state: $state");
+        return state;
       }
     } on DioException catch (e) {
-      try {
-        if (e.response != null) {
-          final badResponse = BadResponse.fromJson(e.response?.data);
-          final StateAPI state = Bad(badResponse);
-          debugPrint("state: $state");
-          return state;
-        }
-        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
-      } catch (e2) {
-        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
-      }
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      Fluttertoast.showToast(msg: errorMessage);
+      return Fail(errorMessage: errorMessage);
+    } catch (e) {
+      const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      Fluttertoast.showToast(msg: errorMessage);
+      return Fail(errorMessage: errorMessage);
     }
   }
 
@@ -70,34 +68,31 @@ class AuthRepositoryImpl extends AuthRepository {
         options: Options(contentType: Headers.jsonContentType),
       );
 
-      switch (response.statusCode) {
-        case 200:
-          {
-            final loginResponse = DefaultResponse.fromJson(response.data);
-            final StateAPI state = Success(loginResponse);
-            debugPrint("state: $state");
-            return state;
-          }
-        default:
-          {
-            final badResponse = BadResponse.fromJson(response.data);
-            final StateAPI state = Bad(badResponse);
-            debugPrint("state: $state");
-            return state;
-          }
+      /// bizErrCode 없으면 정상 데이터 파싱
+      if (!response.data.containsKey("bizErrCode")) {
+        final loginResponse = DefaultResponse.fromJson(response.data);
+        final StateAPI state = Success(loginResponse);
+        debugPrint("state: $state");
+        return state;
+      } else {
+        final badResponse = BadResponse.fromJson(response.data);
+        final StateAPI state = Bad(badResponse);
+        if (badResponse.detailMessage.isNotEmpty) {
+          Fluttertoast.showToast(msg: badResponse.detailMessage);
+        } else {
+          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
+        }
+        debugPrint("state: $state");
+        return state;
       }
     } on DioException catch (e) {
-      try {
-        if (e.response != null) {
-          final badResponse = BadResponse.fromJson(e.response?.data);
-          final StateAPI state = Bad(badResponse);
-          debugPrint("state: $state");
-          return state;
-        }
-        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
-      } catch (e2) {
-        return Fail(errorMessage: DioExceptions.fromDioError(e).toString());
-      }
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      Fluttertoast.showToast(msg: errorMessage);
+      return Fail(errorMessage: errorMessage);
+    } catch (e) {
+      const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      Fluttertoast.showToast(msg: errorMessage);
+      return Fail(errorMessage: errorMessage);
     }
   }
 }

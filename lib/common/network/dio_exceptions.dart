@@ -1,5 +1,6 @@
 import "package:dio/dio.dart";
 import "package:flutter/cupertino.dart";
+import "package:kdmp_cm_app/presentation/values/strings.dart";
 
 class DioExceptions implements Exception {
   String? message;
@@ -8,13 +9,13 @@ class DioExceptions implements Exception {
     debugPrint("${dioException.message}");
     switch (dioException.type) {
       case DioExceptionType.connectionTimeout:
-        message = "connection timeout";
+        message = "서버와의 통신이 원활하지 않습니다.\n네트워크 상태를 확인해주세요.";
         break;
       case DioExceptionType.sendTimeout:
-        message = "send timeout";
+        message = "서버와의 통신이 원활하지 않습니다.\n네트워크 상태를 확인해주세요.";
         break;
       case DioExceptionType.receiveTimeout:
-        message = "receive timeout";
+        message = "서버와의 통신이 원활하지 않습니다.\n네트워크 상태를 확인해주세요.";
         break;
       case DioExceptionType.badCertificate:
         message = "bad certificate";
@@ -26,7 +27,7 @@ class DioExceptions implements Exception {
         message = "request cancelled";
         break;
       case DioExceptionType.connectionError:
-        message = "connection error";
+        message = "서버와의 통신이 원활하지 않습니다.\n네트워크 상태를 확인해주세요.";
         break;
       case DioExceptionType.unknown:
         message = "unknown";
@@ -39,14 +40,10 @@ class DioExceptions implements Exception {
   //
   String _handleError(int? statusCode, dynamic error) {
     switch (statusCode) {
-      case 401:
-        return "로그인 실패";
-      case 404:
-        return "statusCode: $statusCode\nerrorMessage: ${error["message"]}";
       case 500:
         return "statusCode: $statusCode\nerrorMessage: Internal server error";
       default:
-        return "statusCode: $statusCode\nerrorMessage: Oops something went wrongr";
+        return "statusCode: $statusCode\nerrorMessage: ${error["message"]}";
     }
   }
 

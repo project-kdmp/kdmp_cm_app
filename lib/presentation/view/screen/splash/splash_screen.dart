@@ -1,7 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
@@ -169,10 +168,6 @@ class _SplashScreenState extends State<SplashScreen> {
           await _showAlertDialog(content: StringLogin.mbrPrivilegeTpUNKNOWN, isCanceled: false);
           SystemNavigator.pop();
       }
-    } else if (result is Bad) {
-      Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-    } else if (result is Fail) {
-      Fluttertoast.showToast(msg: "${result.errorMessage}");
     }
   }
 

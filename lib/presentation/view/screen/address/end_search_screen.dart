@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -129,12 +128,6 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
 
                             /// 검색 리스트 조회
                             final result = await _endSearchViewModel.getSearchList();
-                            if (result is Success) {
-                            } else if (result is Bad) {
-                              Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-                            } else if (result is Fail) {
-                              Fluttertoast.showToast(msg: "${result.errorMessage}");
-                            }
                           },
                         );
                       },
@@ -290,10 +283,6 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
               );
               await _endSearchViewModel.addRecentMapData(mapData: mapData);
               context.pop(mapData);
-            } else if (result is Bad) {
-              Fluttertoast.showToast(msg: result.badResponse.detailMessage);
-            } else if (result is Fail) {
-              Fluttertoast.showToast(msg: "${result.errorMessage}");
             }
           },
           child: Padding(

@@ -50,19 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBqBmaQ8R0H2LW4yqXkOV1K2VtnuopIGZE',
-    appId: '1:177470258837:android:591961dec5f21ee768259c',
-    messagingSenderId: '177470258837',
-    projectId: 'kdmp-cm-app',
-    storageBucket: 'kdmp-cm-app.appspot.com',
+    apiKey: 'AIzaSyCCs_bklYNkN8YspVhhWeHMfHKhXSyWUC4',
+    appId: '1:839596079109:android:6799a7611d10e05788446c',
+    messagingSenderId: '839596079109',
+    projectId: 'kdmp-71fcb',
+    storageBucket: 'kdmp-71fcb.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDDVs-j6dcMq5UzkMEx5mTmu-X38MUWPnA',
-    appId: '1:177470258837:ios:f7201a8a4acaef1968259c',
-    messagingSenderId: '177470258837',
-    projectId: 'kdmp-cm-app',
-    storageBucket: 'kdmp-cm-app.appspot.com',
+    apiKey: 'AIzaSyDdgrrLQzzgTzircfEzqlT-IqXeFU-nfLY',
+    appId: '1:839596079109:ios:2effa1c4d9603b2388446c',
+    messagingSenderId: '839596079109',
+    projectId: 'kdmp-71fcb',
+    storageBucket: 'kdmp-71fcb.appspot.com',
     iosBundleId: 'kr.or.kddsa.kdmpCmApp',
   );
 }

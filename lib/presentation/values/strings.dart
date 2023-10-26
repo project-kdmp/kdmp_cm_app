@@ -28,7 +28,7 @@ abstract class StringPermission {
   StringPermission._();
 
   static const String title = "접근 권한 안내";
-  static const String content = "OOOO는 아래 접근 권한을 사용합니다.";
+  static const String content = "드라이브는 아래 접근 권한을 사용합니다.";
   static const String permissionTitle1 = "위치";
   static const String permissionContent1 = "출발지 위치를 안내하기 위해 필요한 권한";
   static const String permissionTitle2 = "전화";
@@ -38,10 +38,10 @@ abstract class StringPermission {
   // static const String permissionContent3 = "(미정)";
   static const String permissionTitle4 = "알림";
   static const String permissionContent4 = "기사님 호출 및 배정 결과 등 대리 서비스 이용 상태 안내를 위해 필요한 권한";
-  static const String permissionGuide = "선택 권한은 서비스 사용 중 필요한 시점에 동의를 받고 있습니다. 허용하지 않아도 해당 기능 외 서비스를 이용할 수 있습니다.\n\n접근 권한 변경 휴대폰 설정 > 앱(애플리케이션) > OOOO";
+  static const String permissionGuide = "선택 권한은 서비스 사용 중 필요한 시점에 동의를 받고 있습니다. 허용하지 않아도 해당 기능 외 서비스를 이용할 수 있습니다.\n\n접근 권한 변경 휴대폰 설정 > 앱(애플리케이션) > 드라이브";
   static const String bottomButton = "확인";
 
-  static const String alertTitle = "접근 권한이 없어\nOOOO을 사용할 수 없습니다.";
+  static const String alertTitle = "접근 권한이 없어\n드라이브를 사용할 수 없습니다.";
   static const String alertContent1 = "아래 확인 버튼을 눌러\n필요한 권한을 허용해주세요.";
   static const String alertContent2 = "필요 권한 : 위치, 전화, 알림";
 }
@@ -53,7 +53,7 @@ abstract class StringTerm {
   static const String allAgree = "전체 이용약관을 동의합니다.";
   static const String detail = "보기";
   static const String bottomButton = "동의";
-  static const String content = "OOOO 서비스를 이용하기 위해\n변경된 필수 약관에 대한 동의가 필요합니다.";
+  static const String content = "드라이브 서비스를 이용하기 위해\n변경된 필수 약관에 대한 동의가 필요합니다.";
 }
 
 abstract class StringLogin {
@@ -76,7 +76,7 @@ abstract class StringHome {
 
   static const String onBackPressed = "뒤로가기를 한번 더 누르면 종료됩니다.";
 
-  static const String title = "타이틀";
+  static const String title = "드라이브";
   static const String reservationButton = "예약하기";
   static const String callButton = "호출하기";
   static const String startPlaceHint = "출발지 검색";
@@ -175,8 +175,8 @@ abstract class StringWithdraw {
   StringWithdraw._();
 
   static const String title = "탈퇴하기";
-  static const String content1 = "OOOO를 탈퇴하시겠습니까?";
-  static const String content2 = "(탈퇴 시 개인정보처리 정책 내용)";
+  static const String content1 = "드라이브 서비스를 탈퇴하시겠습니까?";
+  static const String content2 = "탈퇴 시 재가입이 제한됩니다.";
   static const String bottomButton = "탈퇴하기";
 
   static const String withdrawalConfirm = "정말 탈퇴하시겠습니까?";
@@ -399,7 +399,7 @@ abstract class StringOther {
 abstract class StringPush {
   StringPush._();
 
-  static const String title = "대리기사";
+  static const String title = "드라이브";
   static const String callTitle = "대리기사 콜";
   static const String reservationTitle = "대리기사 예약콜";
 

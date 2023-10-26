@@ -118,7 +118,7 @@ Future<String?> fcmSetting() async {
   AndroidNotificationChannel channel = const AndroidNotificationChannel(
     "high_importance_channel",
     "channel_name",
-    description: "대리기사 고객용 앱 알림",
+    description: "드라이브",
     importance: Importance.max,
   );
 
@@ -193,7 +193,7 @@ Future<void> _onBackgroundMessage(RemoteMessage message) async {
   AndroidNotificationChannel channel = const AndroidNotificationChannel(
     "high_importance_channel",
     "channel_name",
-    description: "대리기사 고객용 앱 알림",
+    description: "드라이브",
     importance: Importance.max,
   );
 

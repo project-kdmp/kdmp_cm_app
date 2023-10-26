@@ -77,7 +77,7 @@ class FCMRepositoryImpl extends FCMRepository {
         final badResponse = BadResponse.fromJson(response.data);
         final StateAPI state = Bad(badResponse);
         if (badResponse.detailMessage.isNotEmpty) {
-          Fluttertoast.showToast(msg: badResponse.detailMessage);
+          // Fluttertoast.showToast(msg: badResponse.detailMessage);
         } else {
           Fluttertoast.showToast(msg: "오류가 발생했습니다.");
         }

@@ -7,6 +7,7 @@ abstract class ImageCommon {
   static const String icEnd = "assets/common/ic_end.png";
   static const String imgWarning = "assets/common/img_warning.png";
   static const String imgMoney = "assets/common/img_money.png";
+  static const String imgCar = "assets/common/img_car.png";
 }
 
 abstract class ImageRegister {
@@ -63,9 +64,16 @@ abstract class ImageMenu {
   static const String iconCar = "assets/menu/icon_car.png";
 }
 
-
 abstract class ImageWork {
   ImageWork._();
 
   static const String imgWork = "assets/work/img_work.png";
+}
+
+abstract class ImageOnBoarding {
+  ImageOnBoarding._();
+
+  static const String imgOnBoarding1 = "assets/onboarding/img_onboarding1.png";
+  static const String imgOnBoarding2 = "assets/onboarding/img_onboarding2.png";
+  static const String imgOnBoarding3 = "assets/onboarding/img_onboarding3.png";
 }

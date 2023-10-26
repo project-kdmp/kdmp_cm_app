@@ -89,21 +89,35 @@ dev_dependencies:
 
   flutter_lints: ^2.0.0
 
+  # App Icon
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  ios: true
+  android: true
+  image_path: "assets/app_icon.png"
+  remove_alpha_ios: true
 
 flutter:
   uses-material-design: true
 
   assets:
     - .env
+    - assets/app_icon.png
+    - assets/common/app_logo.png
+    - assets/common/icon_warning.png
+    - assets/common/img_warning.png
+    - assets/common/app_logo.png
+    - assets/common/ic_start.png
+    - assets/common/ic_end.png
+    - assets/common/img_money.png
+    - assets/common/img_car.png
     - assets/setup/icon_darkmode.png
     - assets/setup/icon_lightmode.png
     - assets/permission/icon_call.png
     - assets/permission/icon_file.png
     - assets/permission/icon_location.png
     - assets/permission/icon_notification.png
-    - assets/common/icon_warning.png
-    - assets/common/img_warning.png
-    - assets/common/app_logo.png
     - assets/register/icon_check_off.png
     - assets/register/icon_check_on.png
     - assets/register/img_no_permission.png
@@ -122,7 +136,7 @@ flutter:
     - assets/menu/icon_place_dark.png
     - assets/menu/icon_setup_dark.png
     - assets/menu/icon_car.png
-    - assets/common/ic_start.png
-    - assets/common/ic_end.png
-    - assets/common/img_money.png
     - assets/work/img_work.png
+    - assets/onboarding/img_onboarding1.png
+    - assets/onboarding/img_onboarding2.png
+    - assets/onboarding/img_onboarding3.png

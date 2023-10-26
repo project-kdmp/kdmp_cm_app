@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -66,43 +65,59 @@ class _RegisterCarScreenState extends State<RegisterCarScreen> {
         body: WillPopScope(
           onWillPop: _onBackPressed,
           child: SafeArea(
-            child: ScrollConfiguration(
-              behavior: CustomScrollBehavior(),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    /// 내용
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 32),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              StringRegister.registerCarContent1,
-                              style: Theme.of(context).textTheme.bodyLarge,
+            child: Column(
+              children: [
+                Expanded(
+                  child: ScrollConfiguration(
+                    behavior: CustomScrollBehavior(),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 32),
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                StringRegister.registerCarContent1,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              StringRegister.registerCarContent2,
-                              style: Theme.of(context).textTheme.displaySmall,
-                              textAlign: TextAlign.left,
+                            const SizedBox(height: 10),
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                StringRegister.registerCarContent2,
+                                style: Theme.of(context).textTheme.displaySmall,
+                                textAlign: TextAlign.left,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 30),
-                        ],
+                            const SizedBox(height: 64),
+                            Image.asset(ImageCommon.imgCar, fit: BoxFit.fitWidth),
+                            const SizedBox(height: 32),
+                          ],
+                        ),
                       ),
                     ),
-
-                    /// 상태 이미지
-                    Padding(
-                      padding: const EdgeInsets.only(top: 48, bottom: 40),
-                      child: Image.asset(ImageCommon.appLogo, width: 208, height: 208),
+                  ),
+                ),
+                Column(
+                  children: [
+                    /// 운행불가 차종안내
+                    GestureDetector(
+                      child: Text(
+                        StringRegister.driverTerm,
+                        style: TextStyle(
+                          color: Theme.of(context).iconTheme.color,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      onTap: () {
+                        /// 운행불가 차종안내 화면으로 이동
+                        context.pushNamed(DriverTermScreen.routeName);
+                      },
                     ),
+                    const SizedBox(height: 32),
 
                     /// 차량정보 입력 버튼
                     CustomRadiusButton(
@@ -138,26 +153,9 @@ class _RegisterCarScreenState extends State<RegisterCarScreen> {
                         }
                       },
                     ),
-                    const SizedBox(height: 12),
-
-                    /// 운행불가 차종안내
-                    GestureDetector(
-                      child: Text(
-                        StringRegister.driverTerm,
-                        style: TextStyle(
-                          color: Theme.of(context).iconTheme.color,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                      onTap: () {
-                        /// 운행불가 차종안내 화면으로 이동
-                        context.pushNamed(DriverTermScreen.routeName);
-                      },
-                    ),
-                    const SizedBox(height: 32),
                   ],
-                ),
-              ),
+                )
+              ],
             ),
           ),
         ),

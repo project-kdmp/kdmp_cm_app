@@ -76,10 +76,8 @@ class _TermScreenState extends State<TermScreen> {
                         child: Column(
                           children: [
                             /// 로고
-                            Padding(
-                              padding: const EdgeInsets.only(top: 50, bottom: 60),
-                              child: Image.asset(ImageCommon.appLogo, width: 120, height: 120),
-                            ),
+                            Image.asset(ImageCommon.appLogo, width: 150, height: 150),
+                            const SizedBox(height: 30),
 
                             /// 전체 이용약관
                             ValueListenableBuilder<bool>(

@@ -87,13 +87,11 @@ class _CMTermScreenState extends State<CMTermScreen> {
                               StringTerm.content,
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 30),
 
                             /// 로고
-                            Padding(
-                              padding: const EdgeInsets.only(top: 50, bottom: 60),
-                              child: Image.asset(ImageCommon.appLogo, width: 120, height: 120),
-                            ),
+                            Image.asset(ImageCommon.appLogo, width: 150, height: 150),
+                            const SizedBox(height: 30),
 
                             /// 전체 이용약관
                             ValueListenableBuilder<bool>(

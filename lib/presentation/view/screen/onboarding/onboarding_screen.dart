@@ -36,19 +36,19 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         PageViewModel(
           title: "",
           body: "",
-          image: Image.asset(ImageCommon.appLogo, width: double.maxFinite, height: double.infinity),
+          image: Image.asset(ImageOnBoarding.imgOnBoarding1, width: double.maxFinite, height: double.infinity),
           decoration: getScreenDecoration(context),
         ),
         PageViewModel(
           title: "",
           body: "",
-          image: Image.asset(ImageCommon.appLogo, width: double.maxFinite, height: double.infinity),
+          image: Image.asset(ImageOnBoarding.imgOnBoarding2, width: double.maxFinite, height: double.infinity),
           decoration: getScreenDecoration(context),
         ),
         PageViewModel(
           title: "",
           body: "",
-          image: Image.asset(ImageCommon.appLogo, width: double.maxFinite, height: double.infinity),
+          image: Image.asset(ImageOnBoarding.imgOnBoarding3, width: double.maxFinite, height: double.infinity),
           decoration: getScreenDecoration(context),
         ),
       ],

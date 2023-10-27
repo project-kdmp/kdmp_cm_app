@@ -1,11 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
-import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
@@ -200,7 +199,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                                 valueListenable: _workViewModel.imagePathNotifier,
                                                 builder: (context, value, _) {
                                                   return Image.network(
-                                                    "$baseImageUrl$value",
+                                                    "${AppConstants.IMAGE_URL}$value",
                                                     headers: Map.from({"SCLAuthorization": "Bearer $accessToken"}),
                                                     fit: BoxFit.cover,
                                                     width: 88,

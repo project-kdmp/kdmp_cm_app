@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
-import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/auth/login_request.dart';
 import 'package:kdmp_cm_app/data/model/auth/login_response.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
@@ -19,7 +19,7 @@ class AuthRepositoryImpl extends AuthRepository {
   @override
   Future<StateAPI> login({required LoginRequest loginRequest}) async {
     const api = '/v1/auth-svr/cmLogin';
-    const url = '$baseUrl$api';
+    final url = '${AppConstants.AUTH_API}$api';
 
     try {
       final response = await _dio.post(
@@ -59,7 +59,7 @@ class AuthRepositoryImpl extends AuthRepository {
   @override
   Future<StateAPI> logout({required DefaultRequest logoutRequest}) async {
     const api = '/v1/auth-svr/cmLogout';
-    const url = '$baseUrl$api';
+    final url = '${AppConstants.AUTH_API}$api';
 
     try {
       final response = await _dio.post(

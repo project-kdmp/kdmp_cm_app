@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/auth/refresh_request.dart';
 import 'package:kdmp_cm_app/data/model/auth/refresh_response.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
@@ -93,7 +93,7 @@ class TokenInterceptor extends InterceptorsWrapper {
 
         // 토큰 갱신 API 요청
         const api = '/v1/auth-svr/refreshToken';
-        const url = '$baseUrl$api';
+        final url = '${AppConstants.AUTH_API}$api';
 
         final refreshRequest = RefreshRequest(mbrId: mbrId, autoRefreshToken: refreshToken);
         final response = await dio.post(

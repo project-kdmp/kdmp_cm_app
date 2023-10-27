@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
@@ -89,8 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     /// 키 관리 파일 가져오기
     await dotenv.load(fileName: ".env");
-    _homeViewModel.clientId = dotenv.get("NAVER_MAP_CLIENT_ID");
-    _homeViewModel.clientSecret = dotenv.get("NAVER_MAP_CLIENT_SECRET");
+    _homeViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
+    _homeViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
   }
 
   void initData() async {

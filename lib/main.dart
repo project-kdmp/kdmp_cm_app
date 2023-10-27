@@ -13,6 +13,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kdmp_cm_app/common/network/dio_singleton.dart';
 import 'package:kdmp_cm_app/common/network/interceptor/token_interceptor.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/repository/auth/auth_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/fcm/fcm_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/inquiry/inquiry_repository_impl.dart';
@@ -220,6 +221,8 @@ Future<void> _onBackgroundMessage(RemoteMessage message) async {
 }
 
 void main() async {
+  AppConstants.setEnvironment(kDebugMode ? Environment.DEV : Environment.PROD);
+
   WidgetsFlutterBinding.ensureInitialized();
 
   /// 키 관리 파일 가져오기
@@ -227,7 +230,7 @@ void main() async {
 
   /// 네이버 지도
   await NaverMapSdk.instance.initialize(
-    clientId: dotenv.get("NAVER_MAP_CLIENT_ID"),
+    clientId: dotenv.get(AppConstants.NAVER_CLIENT_ID),
     onAuthFailed: (ex) => debugPrint("********* 네이버맵 인증오류 : $ex *********"),
   );
 

@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
-import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
 import 'package:kdmp_cm_app/data/model/common/drv_request.dart';
@@ -28,7 +28,7 @@ class WorkRepositoryImpl extends WorkRepository {
   @override
   Future<StateAPI> cancelCall({required CallCancelRequest callCancelRequest}) async {
     const api = '/v1/biztotal/cm/drv/cancelCall';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -68,7 +68,7 @@ class WorkRepositoryImpl extends WorkRepository {
   @override
   Future<StateAPI> cancelConfirmCall({required ConfirmCallCancelRequest confirmCallCancelRequest}) async {
     const api = '/v1/biztotal/cm/drv/cancelConfirmCall';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -108,7 +108,7 @@ class WorkRepositoryImpl extends WorkRepository {
   @override
   Future<StateAPI> setPay({required PayRequest payRequest}) async {
     const api = '/v1/biztotal/cm/drv/donePaym';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -148,7 +148,7 @@ class WorkRepositoryImpl extends WorkRepository {
   @override
   Future<StateAPI> getCallInfo({required DrvRequest getCallInfoRequest}) async {
     const api = '/v1/biztotal/cm/drv/getCallInfo';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -188,7 +188,7 @@ class WorkRepositoryImpl extends WorkRepository {
   @override
   Future<StateAPI> getReservationInfo({required DrvRequest getReservationInfoRequest}) async {
     const api = '/v1/biztotal/cm/drv/listResvCall';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -228,7 +228,7 @@ class WorkRepositoryImpl extends WorkRepository {
   @override
   Future<StateAPI> requestCall({required CallRequest callRequest}) async {
     const api = '/v1/biztotal/cm/drv/requestCall';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -268,7 +268,7 @@ class WorkRepositoryImpl extends WorkRepository {
   @override
   Future<StateAPI> requestReservation({required CallRequest reservationRequest}) async {
     const api = '/v1/biztotal/cm/drv/requestResvCall';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -308,7 +308,7 @@ class WorkRepositoryImpl extends WorkRepository {
   @override
   Future<StateAPI> changeCallFee({required CallFeeChangeRequest callFeeChangeRequest}) async {
     const api = '/v1/biztotal/cm/drv/setCallFee';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -348,7 +348,7 @@ class WorkRepositoryImpl extends WorkRepository {
   @override
   Future<StateAPI> writeReview({required ReviewWriteRequest reviewWriteRequest}) async {
     const api = '/v1/biztotal/cm/drv/regReviewCall';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -388,7 +388,7 @@ class WorkRepositoryImpl extends WorkRepository {
   @override
   Future<StateAPI> getDriving({required DrivingRequest drivingRequest}) async {
     const api = '/v1/biztotal/cm/drv/getNowDriving';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(

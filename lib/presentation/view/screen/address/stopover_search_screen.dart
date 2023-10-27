@@ -4,6 +4,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/juso/juso_list_response.dart';
@@ -72,9 +73,9 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
   void initData() async {
     /// 키 관리 파일 가져오기
     await dotenv.load(fileName: ".env");
-    _stopOverSearchViewModel.clientId = dotenv.get("NAVER_MAP_CLIENT_ID");
-    _stopOverSearchViewModel.clientSecret = dotenv.get("NAVER_MAP_CLIENT_SECRET");
-    _stopOverSearchViewModel.jusoApiKey = dotenv.get("JUSO_API_KEY");
+    _stopOverSearchViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
+    _stopOverSearchViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
+    _stopOverSearchViewModel.jusoApiKey = dotenv.get(AppConstants.JUSO_API_KEY);
 
     /// 자주 가는 장소 리스트 가져오기
     _stopOverSearchViewModel.getPlaceList();

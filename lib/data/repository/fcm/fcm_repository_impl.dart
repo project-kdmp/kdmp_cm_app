@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
-import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -18,7 +18,7 @@ class FCMRepositoryImpl extends FCMRepository {
   @override
   Future<StateAPI> setToken({required FCMTokenRequest fcmTokenRequest}) async {
     const api = '/v1/biztotal/adm/fcm/regFcmToken';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -58,7 +58,7 @@ class FCMRepositoryImpl extends FCMRepository {
   @override
   Future<StateAPI> sendPush({required FCMPushRequest fcmPushRequest}) async {
     const api = '/v1/biztotal/adm/fcm/fcmPushMbrSq';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(

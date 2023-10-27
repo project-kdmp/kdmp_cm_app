@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
-import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -23,7 +23,7 @@ class InquiryRepositoryImpl extends InquiryRepository {
   @override
   Future<StateAPI> getInquiryList({required InquiryListRequest inquiryListRequest}) async {
     const api = '/v1/biztotal/cm/cs/listInquiry';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -63,7 +63,7 @@ class InquiryRepositoryImpl extends InquiryRepository {
   @override
   Future<StateAPI> getInquiryDetail({required InquiryDetailRequest inquiryDetailRequest}) async {
     const api = '/v1/biztotal/cm/cs/getInquiry';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -103,7 +103,7 @@ class InquiryRepositoryImpl extends InquiryRepository {
   @override
   Future<StateAPI> writeInquiry({required InquiryWriteRequest inquiryWriteRequest}) async {
     const api = '/v1/biztotal/cm/cs/regInquiry';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -143,7 +143,7 @@ class InquiryRepositoryImpl extends InquiryRepository {
   @override
   Future<StateAPI> deleteInquiry({required InquiryDeleteRequest inquiryDeleteRequest}) async {
     const api = '/v1/biztotal/cm/cs/delInquiry';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
-import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/juso/juso_list_request.dart';
@@ -15,7 +15,7 @@ class JusoRepositoryImpl extends JusoRepository {
 
   @override
   Future<StateAPI> getJusoList({required JusoListRequest jusoListRequest}) async {
-    const url = baseJusoAPIUrl;
+    final url = AppConstants.JUSO_API;
 
     try {
       final response = await _dio.get(

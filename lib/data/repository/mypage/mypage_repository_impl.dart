@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
-import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
@@ -34,7 +34,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> getProfileDetail({required DefaultRequest getProfileRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/getMyInfo';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -74,7 +74,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> withdrawalMember({required DefaultRequest withdrawalMemberRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/cancelMbr';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -114,7 +114,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> deletePlace({required PlaceDeleteRequest placeDeleteRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/delFplace';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -154,7 +154,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> deleteCar({required CarDeleteRequest carDeleteRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/delMycar';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -194,7 +194,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> deleteCalled({required DrvRequest calledDeleteRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/delUse';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -234,7 +234,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> addPlace({required PlaceAddRequest placeAddRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/regFplace';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -274,7 +274,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> addCar({required CarAddRequest carAddRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/regMycar';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -314,7 +314,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> modifyPlace({required PlaceModifyRequest placeModifyRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/setFplace';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -354,7 +354,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> modifyCar({required CarModifyRequest carModifyRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/setMycar';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(
@@ -394,7 +394,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> getCallDetail({required DrvRequest callDetailRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/getUse';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -434,7 +434,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> getCalledDetail({required DrvRequest calledDetailRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/getUseEnd';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -474,7 +474,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> getCallList({required CallListRequest callListRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/listUse';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -514,7 +514,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> getCalledList({required CalledListRequest calledListRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/listUseEnd';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -554,7 +554,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> getPlaceList({required DefaultRequest getPlaceListRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/listFplace';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -594,7 +594,7 @@ class MyPageRepositoryImpl extends MyPageRepository {
   @override
   Future<StateAPI> getCarList({required DefaultRequest getCarListRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/listMycar';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(

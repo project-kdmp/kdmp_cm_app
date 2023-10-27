@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
-import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/register/register_request.dart';
@@ -17,7 +17,7 @@ class RegisterRepositoryImpl extends RegisterRepository {
   @override
   Future<StateAPI> register({required RegisterRequest registerRequest}) async {
     const api = '/v1/biztotal/cm/mbr/newMember';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(

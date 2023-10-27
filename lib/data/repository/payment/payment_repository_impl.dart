@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
-import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/payment/toss_billingkey_request.dart';
@@ -17,7 +17,7 @@ class PaymentRepositoryImpl extends PaymentRepository {
   @override
   Future<StateAPI> setTossBillingKey({required TossBillingKeyRequest tossBillingKeyRequest}) async {
     const api = '/v1/biztotal/cm/drv/genTossBillingKey';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(

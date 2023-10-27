@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
-import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
@@ -23,7 +23,7 @@ class TermRepositoryImpl extends TermRepository {
   @override
   Future<StateAPI> getCMTermList({required DefaultRequest getCMTermListRequest}) async {
     const api = '/v1/biztotal/cm/getMyTerm';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -63,7 +63,7 @@ class TermRepositoryImpl extends TermRepository {
   @override
   Future<StateAPI> getTermList({required TermListRequest termListRequest}) async {
     const api = '/v1/biztotal/cm/listTerm';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -103,7 +103,7 @@ class TermRepositoryImpl extends TermRepository {
   @override
   Future<StateAPI> getTermDetail({required TermDetailRequest termDetailRequest}) async {
     const api = '/v1/biztotal/cm/getTerm';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -143,7 +143,7 @@ class TermRepositoryImpl extends TermRepository {
   @override
   Future<StateAPI> getDriverTerm({required DefaultRequest driverTermRequest}) async {
     const api = '/v1/biztotal/cm/getNcarTerm';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.get(
@@ -183,7 +183,7 @@ class TermRepositoryImpl extends TermRepository {
   @override
   Future<StateAPI> setMyTerm({required MyTermRequest myTermRequest}) async {
     const api = '/v1/biztotal/cm/setMyTerm';
-    const url = '$baseBizUrl$api';
+    final url = '${AppConstants.API}$api';
 
     try {
       final response = await _dio.post(

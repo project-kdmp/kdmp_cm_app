@@ -4,6 +4,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/juso/juso_list_response.dart';
@@ -68,9 +69,9 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
   void initData() async {
     /// 키 관리 파일 가져오기
     await dotenv.load(fileName: ".env");
-    _startSearchViewModel.clientId = dotenv.get("NAVER_MAP_CLIENT_ID");
-    _startSearchViewModel.clientSecret = dotenv.get("NAVER_MAP_CLIENT_SECRET");
-    _startSearchViewModel.jusoApiKey = dotenv.get("JUSO_API_KEY");
+    _startSearchViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
+    _startSearchViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
+    _startSearchViewModel.jusoApiKey = dotenv.get(AppConstants.JUSO_API_KEY);
 
     /// 최근 검색 리스트 가져오기
     _startSearchViewModel.getRecentList();

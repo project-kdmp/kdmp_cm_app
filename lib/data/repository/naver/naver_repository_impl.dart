@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
-import 'package:kdmp_cm_app/data/constant/url.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/naver/directions_request.dart';
@@ -21,7 +21,7 @@ class NaverRepositoryImpl extends NaverRepository {
   @override
   Future<StateAPI> getAddress({required String clientId, required String clientSecret, required ReverseGeocodingRequest reverseGeocodingRequest}) async {
     const api = '/map-reversegeocode/v2/gc';
-    const url = '$baseNaverAPIUrl$api';
+    final url = '${AppConstants.NAVER_API}$api';
 
     try {
       final response = await _dio.get(
@@ -38,17 +38,16 @@ class NaverRepositoryImpl extends NaverRepository {
         ),
       );
 
-
       /// bizErrCode 없으면 정상 데이터 파싱
       if (!response.data.containsKey("bizErrCode")) {
-            final responseObject = ReverseGeocodingResponse.fromJson(response.data);
-            if (responseObject.status.code == 0) {
-              final StateAPI state = Success(responseObject);
-              debugPrint("state: $state");
-              return state;
-            } else {
-              return Fail();
-            }
+        final responseObject = ReverseGeocodingResponse.fromJson(response.data);
+        if (responseObject.status.code == 0) {
+          final StateAPI state = Success(responseObject);
+          debugPrint("state: $state");
+          return state;
+        } else {
+          return Fail();
+        }
       } else {
         final badResponse = BadResponse.fromJson(response.data);
         final StateAPI state = Bad(badResponse);
@@ -74,7 +73,7 @@ class NaverRepositoryImpl extends NaverRepository {
   @override
   Future<StateAPI> getAddressInfo({required String clientId, required String clientSecret, required GeocodingRequest geocodingRequest}) async {
     const api = '/map-geocode/v2/geocode';
-    const url = '$baseNaverAPIUrl$api';
+    final url = '${AppConstants.NAVER_API}$api';
 
     try {
       final response = await _dio.get(
@@ -91,13 +90,12 @@ class NaverRepositoryImpl extends NaverRepository {
         ),
       );
 
-
       /// bizErrCode 없으면 정상 데이터 파싱
       if (!response.data.containsKey("bizErrCode")) {
-            final responseObject = GeocodingResponse.fromJson(response.data);
-            final StateAPI state = Success(responseObject);
-            debugPrint("state: $state");
-            return state;
+        final responseObject = GeocodingResponse.fromJson(response.data);
+        final StateAPI state = Success(responseObject);
+        debugPrint("state: $state");
+        return state;
       } else {
         final badResponse = BadResponse.fromJson(response.data);
         final StateAPI state = Bad(badResponse);
@@ -123,7 +121,7 @@ class NaverRepositoryImpl extends NaverRepository {
   @override
   Future<StateAPI> getPrice({required String clientId, required String clientSecret, required DirectionsRequest directionsRequest}) async {
     const api = '/map-direction-15/v1/driving';
-    const url = '$baseNaverAPIUrl$api';
+    final url = '${AppConstants.NAVER_API}$api';
 
     try {
       final response = await _dio.get(
@@ -140,17 +138,16 @@ class NaverRepositoryImpl extends NaverRepository {
         ),
       );
 
-
       /// bizErrCode 없으면 정상 데이터 파싱
       if (!response.data.containsKey("bizErrCode")) {
-            final responseObject = DirectionsResponse.fromJson(response.data);
-            if (responseObject.code == 0) {
-              final StateAPI state = Success(responseObject);
-              debugPrint("state: $state");
-              return state;
-            } else {
-              return Fail(errorMessage: responseObject.message);
-            }
+        final responseObject = DirectionsResponse.fromJson(response.data);
+        if (responseObject.code == 0) {
+          final StateAPI state = Success(responseObject);
+          debugPrint("state: $state");
+          return state;
+        } else {
+          return Fail(errorMessage: responseObject.message);
+        }
       } else {
         final badResponse = BadResponse.fromJson(response.data);
         final StateAPI state = Bad(badResponse);

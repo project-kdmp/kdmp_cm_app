@@ -6,6 +6,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
@@ -62,8 +63,8 @@ class _EndMapScreenState extends State<EndMapScreen> {
     /// 키 관리 파일 가져오기
     await dotenv.load(fileName: ".env");
     _naverMapViewModel = NaverMapViewModel(
-      clientId: dotenv.get("NAVER_MAP_CLIENT_ID"),
-      clientSecret: dotenv.get("NAVER_MAP_CLIENT_SECRET"),
+      clientId: dotenv.get(AppConstants.NAVER_CLIENT_ID),
+      clientSecret: dotenv.get(AppConstants.NAVER_CLIENT_SECRET),
       getNaverAddressUseCase: GetIt.instance<GetNaverAddressUseCase>(),
     );
   }

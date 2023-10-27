@@ -1,6 +1,10 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class TossBillingKeyRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int mbrSq;
   String aliasNm;
   String cardNumber;
@@ -12,8 +16,6 @@ class TossBillingKeyRequest {
   bool breGenerate;
 
   TossBillingKeyRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrSq,
     required this.aliasNm,
     required this.cardNumber,
@@ -26,8 +28,6 @@ class TossBillingKeyRequest {
   });
 
   factory TossBillingKeyRequest.fromJson(Map<String, dynamic> json) => TossBillingKeyRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         mbrSq: json["mbrSq"],
         aliasNm: json["aliasNm"],
         cardNumber: json["cardNumber"],

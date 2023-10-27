@@ -1,14 +1,14 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class InquiryWriteRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int cmMbrSq;
   String inqAskTitle;
   String inqAskContent;
   String inqRegIp;
 
   InquiryWriteRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.cmMbrSq,
     required this.inqAskTitle,
     required this.inqAskContent,
@@ -16,8 +16,6 @@ class InquiryWriteRequest {
   });
 
   factory InquiryWriteRequest.fromJson(Map<String, dynamic> json) => InquiryWriteRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         cmMbrSq: json["cmMbrSq"],
         inqAskTitle: json["inqAskTitle"],
         inqAskContent: json["inqAskContent"],

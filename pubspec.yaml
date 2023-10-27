@@ -83,6 +83,9 @@ dependencies:
   # Indicator
   smooth_page_indicator: ^1.1.0
 
+  # App Info
+  package_info_plus: ^4.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

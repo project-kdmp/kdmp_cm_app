@@ -1,19 +1,17 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class FCMTokenRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int mbrSq;
   String mbrFcmToken;
 
   FCMTokenRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrSq,
     required this.mbrFcmToken,
   });
 
   factory FCMTokenRequest.fromJson(Map<String, dynamic> json) => FCMTokenRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         mbrSq: json["mbrSq"],
         mbrFcmToken: json["mbrFcmToken"],
       );

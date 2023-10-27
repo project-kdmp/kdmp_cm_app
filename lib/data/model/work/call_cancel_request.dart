@@ -1,19 +1,17 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class CallCancelRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int mbrCmSq;
   int drvReqSq;
 
   CallCancelRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrCmSq,
     required this.drvReqSq,
   });
 
   factory CallCancelRequest.fromJson(Map<String, dynamic> json) => CallCancelRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         mbrCmSq: json["mbrCmSq"],
         drvReqSq: json["drvReqSq"],
       );

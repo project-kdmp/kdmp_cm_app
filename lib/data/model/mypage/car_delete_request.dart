@@ -1,19 +1,17 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class CarDeleteRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int mbrSq;
   String carNumId;
 
   CarDeleteRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrSq,
     required this.carNumId,
   });
 
   factory CarDeleteRequest.fromJson(Map<String, dynamic> json) => CarDeleteRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         mbrSq: json["mbrSq"],
         carNumId: json["carNumId"],
       );

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/logout/set_logout_usecase.dart';
@@ -50,6 +51,7 @@ class MyPageViewModel {
     state = result;
 
     if (result is Success) {
+      ClientInfo.setClientId = "";
       await deleteUserDataUseCase.logout();
     }
 

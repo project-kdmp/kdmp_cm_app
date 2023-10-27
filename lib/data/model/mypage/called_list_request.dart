@@ -1,21 +1,19 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class CalledListRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int mbrCmSq;
   int page;
   int pageSize;
 
   CalledListRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrCmSq,
     required this.page,
     required this.pageSize,
   });
 
   factory CalledListRequest.fromJson(Map<String, dynamic> json) => CalledListRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         mbrCmSq: json["mbrCmSq"],
         page: json["page"],
         pageSize: json["pageSize"],

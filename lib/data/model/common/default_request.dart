@@ -1,18 +1,16 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class DefaultRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int mbrSq;
 
   DefaultRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrSq,
   });
 
   factory DefaultRequest.fromJson(Map<String, dynamic> json) {
     return DefaultRequest(
-      clientVersion: json["clientVersion"] as String,
-      clientId: json["clientId"] as String,
       mbrSq: json["mbrSq"] as int,
     );
   }

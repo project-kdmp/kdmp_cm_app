@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
@@ -24,6 +27,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_scree
 import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/term_screen.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/splash/splash_viewmodel.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// 스플래시 화면
@@ -44,7 +48,23 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     initViewModel();
+    checkVersion();
     checkPermission();
+  }
+
+  void checkVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+    String appName = packageInfo.appName;
+    String packageName = packageInfo.packageName;
+    String version = packageInfo.version;
+    String buildNumber = packageInfo.buildNumber;
+    String platform = "";
+    if (Platform.isAndroid) platform = "android";
+    if (Platform.isIOS) platform = "iOS";
+    debugPrint("appName: $appName, packageName: $packageName, version: $version, buildNumber: $buildNumber, platform: $platform");
+
+    ClientInfo.setClientVersion = "${platform}_$version";
   }
 
   void checkPermission() async {

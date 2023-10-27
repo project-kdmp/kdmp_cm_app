@@ -1,19 +1,17 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class MyTermRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int mbrSq;
   List<AgreeTerm> agreeTermList;
 
   MyTermRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrSq,
     required this.agreeTermList,
   });
 
   factory MyTermRequest.fromJson(Map<String, dynamic> json) => MyTermRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         mbrSq: json["mbrSq"],
         agreeTermList: List<AgreeTerm>.from(json["agreeTermList"].map((x) => AgreeTerm.fromJson(x))),
       );

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
 import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/auth/refresh_request.dart';
 import 'package:kdmp_cm_app/data/model/auth/refresh_response.dart';
@@ -76,6 +77,7 @@ class TokenInterceptor extends InterceptorsWrapper {
               // 다시 인증 오류가 발생했을 경우: RefreshToken 만료
               // if (err.response?.statusCode == 401) {
               // 기기의 자동 로그인 정보 삭제
+              ClientInfo.setClientId = "";
               await deleteUserDataUseCase.logout();
 
               Fluttertoast.showToast(msg: "로그인이 만료되었습니다.\n다시 로그인해주세요.");

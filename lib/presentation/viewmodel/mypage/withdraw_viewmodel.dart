@@ -1,3 +1,4 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_withdrawal_member_usecase.dart';
@@ -29,6 +30,7 @@ class WithdrawViewModel {
     state = result;
 
     if (result is Success) {
+      ClientInfo.setClientId = "";
       await deleteUserDataUseCase.withdrawal();
     }
 

@@ -1,18 +1,16 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class InquiryDetailRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int inqSq;
 
   InquiryDetailRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.inqSq,
   });
 
   factory InquiryDetailRequest.fromJson(Map<String, dynamic> json) {
     return InquiryDetailRequest(
-      clientVersion: json["clientVersion"] as String,
-      clientId: json["clientId"] as String,
       inqSq: json["inqSq"] as int,
     );
   }

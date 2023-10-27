@@ -1,20 +1,18 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class RefreshRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   String mbrId;
   String autoRefreshToken;
 
   RefreshRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrId,
     required this.autoRefreshToken,
   });
 
   factory RefreshRequest.fromJson(Map<String, dynamic> json) {
     return RefreshRequest(
-      clientVersion: json["clientVersion"] as String,
-      clientId: json["clientId"] as String,
       mbrId: json["mbrId"] as String,
       autoRefreshToken: json["autoRefreshToken"] as String,
     );

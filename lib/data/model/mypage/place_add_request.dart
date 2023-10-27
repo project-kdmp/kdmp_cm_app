@@ -1,6 +1,8 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class PlaceAddRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int mbrSq;
   String fplaceNicknm;
   String fplacePlaceNm;
@@ -9,8 +11,6 @@ class PlaceAddRequest {
   double gpsLong;
 
   PlaceAddRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrSq,
     required this.fplaceNicknm,
     required this.fplacePlaceNm,
@@ -20,8 +20,6 @@ class PlaceAddRequest {
   });
 
   factory PlaceAddRequest.fromJson(Map<String, dynamic> json) => PlaceAddRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         mbrSq: json["mbrSq"],
         fplaceNicknm: json["fplaceNicknm"],
         fplacePlaceNm: json["fplacePlaceNm"],

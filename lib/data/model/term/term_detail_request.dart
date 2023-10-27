@@ -1,18 +1,16 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class TermDetailRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int trmSq;
 
   TermDetailRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.trmSq,
   });
 
   factory TermDetailRequest.fromJson(Map<String, dynamic> json) {
     return TermDetailRequest(
-      clientVersion: json["clientVersion"] as String,
-      clientId: json["clientId"] as String,
       trmSq: json["trmSq"] as int,
     );
   }

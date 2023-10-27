@@ -1,21 +1,19 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class ReviewWriteRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int drvReqSq;
   String reviewContent;
   int starPoint;
 
   ReviewWriteRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.drvReqSq,
     required this.reviewContent,
     required this.starPoint,
   });
 
   factory ReviewWriteRequest.fromJson(Map<String, dynamic> json) => ReviewWriteRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         drvReqSq: json["drvReqSq"],
         reviewContent: json["reviewContent"],
         starPoint: json["starPoint"],

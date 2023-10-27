@@ -1,13 +1,13 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class InquiryListRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int cmMbrSq;
   int page;
   int pageSize;
 
   InquiryListRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.cmMbrSq,
     required this.page,
     required this.pageSize,
@@ -15,8 +15,6 @@ class InquiryListRequest {
 
   factory InquiryListRequest.fromJson(Map<String, dynamic> json) {
     return InquiryListRequest(
-      clientVersion: json["clientVersion"] as String,
-      clientId: json["clientId"] as String,
       cmMbrSq: json["cmMbrSq"] as int,
       page: json["page"] as int,
       pageSize: json["pageSize"] as int,

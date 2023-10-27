@@ -1,20 +1,18 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class NoticeListRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int page;
   int pageSize;
 
   NoticeListRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.page,
     required this.pageSize,
   });
 
   factory NoticeListRequest.fromJson(Map<String, dynamic> json) {
     return NoticeListRequest(
-      clientVersion: json["clientVersion"] as String,
-      clientId: json["clientId"] as String,
       page: json["page"] as int,
       pageSize: json["pageSize"] as int,
     );

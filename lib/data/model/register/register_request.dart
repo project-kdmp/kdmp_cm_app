@@ -1,8 +1,9 @@
 import 'package:kdmp_cm_app/data/constant/codes.dart';
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
 
 class RegisterRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   String mbrNm;
   String mbrSt;
   String mbrMobilePhone;
@@ -14,8 +15,6 @@ class RegisterRequest {
   List<AgreeTerm> agreeTermList;
 
   RegisterRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrNm,
     this.mbrSt = MbrSt.registerComplete,
     required this.mbrMobilePhone,
@@ -33,8 +32,6 @@ class RegisterRequest {
       agreeTermList.add(AgreeTerm.fromJson(v));
     });
     return RegisterRequest(
-      clientVersion: json["clientVersion"] as String,
-      clientId: json["clientId"] as String,
       mbrNm: json["mbrNm"] as String,
       mbrSt: json["mbrSt"] as String,
       mbrMobilePhone: json["mbrMobilePhone"] as String,

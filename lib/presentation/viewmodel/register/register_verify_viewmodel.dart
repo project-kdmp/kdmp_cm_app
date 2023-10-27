@@ -1,3 +1,4 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/auth/login_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -89,6 +90,7 @@ class RegisterVerifyViewModel {
           mbrCi: mbrCi,
           isFirstLogin: false,
         );
+        ClientInfo.setClientId = result.loginResponse.mbrId;
 
         await _setFcmToken(mbrSq: result.loginResponse.mbrSq);
       }
@@ -119,6 +121,7 @@ class RegisterVerifyViewModel {
 
   /// 로그아웃
   Future<void> logout() async {
+    ClientInfo.setClientId = "";
     await deleteUserDataUseCase.withdrawal();
   }
 }

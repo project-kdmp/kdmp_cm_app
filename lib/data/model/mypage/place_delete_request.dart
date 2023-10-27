@@ -1,17 +1,15 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class PlaceDeleteRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int fplaceSq;
 
   PlaceDeleteRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.fplaceSq,
   });
 
   factory PlaceDeleteRequest.fromJson(Map<String, dynamic> json) => PlaceDeleteRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         fplaceSq: json["fplaceSq"],
       );
 

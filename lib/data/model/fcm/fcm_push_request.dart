@@ -1,14 +1,14 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class FCMPushRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int mbrSqTarget;
   String title;
   String body;
   String? type;
 
   FCMPushRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrSqTarget,
     required this.title,
     required this.body,
@@ -16,8 +16,6 @@ class FCMPushRequest {
   });
 
   factory FCMPushRequest.fromJson(Map<String, dynamic> json) => FCMPushRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         mbrSqTarget: json["mbrSqTarget"],
         title: json["title"],
         body: json["body"],

@@ -1,6 +1,10 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class PayRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int mbrSq;
   int drvReqSq;
   int price;
@@ -8,8 +12,6 @@ class PayRequest {
   String carNumId;
 
   PayRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrSq,
     required this.drvReqSq,
     required this.price,
@@ -18,8 +20,6 @@ class PayRequest {
   });
 
   factory PayRequest.fromJson(Map<String, dynamic> json) => PayRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         mbrSq: json["mbrSq"],
         drvReqSq: json["drvReqSq"],
         price: json["price"],

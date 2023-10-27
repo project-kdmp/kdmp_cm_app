@@ -1,18 +1,16 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class NoticeDetailRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int notiSq;
 
   NoticeDetailRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.notiSq,
   });
 
   factory NoticeDetailRequest.fromJson(Map<String, dynamic> json) {
     return NoticeDetailRequest(
-      clientVersion: json["clientVersion"] as String,
-      clientId: json["clientId"] as String,
       notiSq: json["notiSq"] as int,
     );
   }

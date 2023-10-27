@@ -1,17 +1,15 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class DrivingRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int cmMbrSq;
 
   DrivingRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.cmMbrSq,
   });
 
   factory DrivingRequest.fromJson(Map<String, dynamic> json) => DrivingRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         cmMbrSq: json["cmMbrSq"],
       );
 

@@ -1,14 +1,14 @@
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class CallFeeChangeRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int mbrSq;
   int drvReqSq;
   int price;
   int beforPrice;
 
   CallFeeChangeRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrSq,
     required this.drvReqSq,
     required this.price,
@@ -16,8 +16,6 @@ class CallFeeChangeRequest {
   });
 
   factory CallFeeChangeRequest.fromJson(Map<String, dynamic> json) => CallFeeChangeRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         mbrSq: json["mbrSq"],
         drvReqSq: json["drvReqSq"],
         price: json["price"],

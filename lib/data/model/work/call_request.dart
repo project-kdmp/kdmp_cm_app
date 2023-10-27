@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 
+import 'package:kdmp_cm_app/data/constant/client_info.dart';
+
 class CallRequest {
-  String clientVersion;
-  String clientId;
+  String clientVersion = ClientInfo.clientVersion;
+  String clientId = ClientInfo.clientId;
   int mbrCmSq;
   String paymKind;
   String carNumId;
@@ -33,8 +35,6 @@ class CallRequest {
   String tossCardId;
 
   CallRequest({
-    this.clientVersion = "",
-    this.clientId = "",
     required this.mbrCmSq,
     required this.paymKind,
     required this.carNumId,
@@ -60,8 +60,6 @@ class CallRequest {
   });
 
   factory CallRequest.fromJson(Map<String, dynamic> json) => CallRequest(
-        clientVersion: json["clientVersion"],
-        clientId: json["clientId"],
         mbrCmSq: json["mbrCmSq"],
         paymKind: json["paymKind"],
         carNumId: json["carNumId"],

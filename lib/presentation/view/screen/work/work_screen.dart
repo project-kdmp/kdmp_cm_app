@@ -488,6 +488,9 @@ class _WorkScreenState extends State<WorkScreen> {
         case DrvReqSt.end:
           _showReviewBottomSheet(drvReqSt);
           break;
+        case DrvReqSt.del:
+        case DrvReqSt.rdl:
+          _showCallCancelAlert();
       }
     });
   }
@@ -559,6 +562,12 @@ class _WorkScreenState extends State<WorkScreen> {
     context.pop(false);
   }
 
+  /// 운행 취소 팝업
+  Future<void> _showCallCancelAlert() async {
+    context.pop();
+    _showAlertDialog(content: StringWork.cancelAlert, isCanceled: false);
+  }
+
   /// 앱 뒤로가기
   Future<bool> _onBackPressed() async {
     /// 운행이 종료된 경우에만 뒤로가기
@@ -570,7 +579,7 @@ class _WorkScreenState extends State<WorkScreen> {
 
   /// 운행 종료 여부 체크
   bool isWorkEnd() {
-    return _workViewModel.drvReqSt == DrvReqSt.end || _workViewModel.drvReqSt == DrvReqSt.ren;
+    return _workViewModel.drvReqSt == DrvReqSt.end || _workViewModel.drvReqSt == DrvReqSt.ren || _workViewModel.drvReqSt == DrvReqSt.rco || _workViewModel.drvReqSt == DrvReqSt.del;
   }
 
   /// 전화 버튼

@@ -323,6 +323,7 @@ abstract class StringWork {
   static const String callWaitAlert = "기사님이 출발지에 도착했습니다.";
   static const String callStartAlert = "운행이 시작되었습니다.";
   static const String changeCallFeeAlert = "호출 요금을 변경했습니다.";
+  static const String cancelAlert = "운행이 취소되었습니다.";
 }
 
 abstract class StringCallCancel {

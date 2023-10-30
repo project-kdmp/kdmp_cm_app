@@ -91,23 +91,30 @@ class _StopOverScreenState extends State<StopOverScreen> {
                       const SizedBox(height: 20),
 
                       /// 경유지 추가 버튼
-                      CustomRadiusButton(
-                        minimumSize: const Size(double.minPositive, double.minPositive),
-                        text: StringStopOverSetup.addButton,
-                        onPressed: () async {
-                          /// 경유지 설정 검색 화면으로 이동
-                          final result = await context.pushNamed(StopOverSearchScreen.routeName);
-                          if (result != null && result is MapData) {
-                            _stopOverViewModel.addStopOverList(
-                              StopOver(
-                                address: result.address,
-                                placeName: result.place,
-                                stopDistance: 0,
-                                lat: result.latLng.latitude,
-                                long: result.latLng.longitude,
-                              ),
-                            );
-                          }
+                      ValueListenableBuilder<List<StopOver>>(
+                        valueListenable: _stopOverViewModel.stopOverListNotifier,
+                        builder: (context, value, child) {
+                          return value.length < 5
+                              ? CustomRadiusButton(
+                                  minimumSize: const Size(double.minPositive, double.minPositive),
+                                  text: StringStopOverSetup.addButton,
+                                  onPressed: () async {
+                                    /// 경유지 설정 검색 화면으로 이동
+                                    final result = await context.pushNamed(StopOverSearchScreen.routeName);
+                                    if (result != null && result is MapData) {
+                                      _stopOverViewModel.addStopOverList(
+                                        StopOver(
+                                          address: result.address,
+                                          placeName: result.place,
+                                          stopDistance: 0,
+                                          lat: result.latLng.latitude,
+                                          long: result.latLng.longitude,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                )
+                              : const SizedBox();
                         },
                       ),
                       const SizedBox(height: 24),

@@ -120,7 +120,7 @@ class NaverRepositoryImpl extends NaverRepository {
 
   @override
   Future<StateAPI> getPrice({required String clientId, required String clientSecret, required DirectionsRequest directionsRequest}) async {
-    const api = '/map-direction-15/v1/driving';
+    const api = '/map-direction/v1/driving';
     final url = '${AppConstants.NAVER_API}$api';
 
     try {

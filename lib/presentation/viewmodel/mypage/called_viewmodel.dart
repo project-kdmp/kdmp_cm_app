@@ -113,7 +113,10 @@ class CalledViewModel {
 
     if (result is Success) {
       final response = result.calledListResponse;
-      calledList = response.resultList;
+
+      List<Called> copyList = List.from(calledList);
+      copyList.addAll(response.resultList);
+      calledList = copyList;
 
       page = response.pagination.page;
       isNextPage = response.pagination.existNextPage;

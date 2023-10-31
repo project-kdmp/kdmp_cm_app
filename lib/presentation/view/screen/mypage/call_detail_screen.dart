@@ -107,7 +107,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                           ValueListenableBuilder<String>(
                             valueListenable: _callDetailViewModel.drvReqStNotifier,
                             builder: (context, value, child) {
-                              final primaryColor = Theme.of(context).colorScheme.primary;
+                              final mainColor = Theme.of(context).colorScheme.secondary;
                               final disabledColor = Theme.of(context).disabledColor;
                               final isWait = value == DrvReqSt.rco || value == DrvReqSt.rwt || value == DrvReqSt.rst;
                               final isStart = value == DrvReqSt.rst;
@@ -124,11 +124,11 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                         /// 예약접수
                                         Row(
                                           children: [
-                                            Icon(Icons.check_circle, size: 26, color: primaryColor),
+                                            Icon(Icons.check_circle, size: 26, color: mainColor),
                                             const SizedBox(width: 10),
                                             Text(
                                               StringCalled.reservationState1,
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: primaryColor),
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: mainColor),
                                             ),
                                           ],
                                         ),
@@ -137,11 +137,11 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                         /// 기사님 호출중
                                         Row(
                                           children: [
-                                            Icon(Icons.check_circle, size: 26, color: primaryColor),
+                                            Icon(Icons.check_circle, size: 26, color: mainColor),
                                             const SizedBox(width: 10),
                                             Text(
                                               StringCalled.reservationState2,
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: primaryColor),
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: mainColor),
                                             ),
                                           ],
                                         ),
@@ -150,11 +150,11 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                         /// 운행준비
                                         Row(
                                           children: [
-                                            Icon(Icons.check_circle, size: 26, color: isWait ? primaryColor : disabledColor),
+                                            Icon(Icons.check_circle, size: 26, color: isWait ? mainColor : disabledColor),
                                             const SizedBox(width: 10),
                                             Text(
                                               StringCalled.reservationState3,
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: isWait ? primaryColor : disabledColor),
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: isWait ? mainColor : disabledColor),
                                             ),
                                           ],
                                         ),
@@ -163,11 +163,11 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                         /// 운행중
                                         Row(
                                           children: [
-                                            Icon(Icons.check_circle, size: 26, color: isStart ? primaryColor : disabledColor),
+                                            Icon(Icons.check_circle, size: 26, color: isStart ? mainColor : disabledColor),
                                             const SizedBox(width: 10),
                                             Text(
                                               StringCalled.reservationState4,
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: isStart ? primaryColor : disabledColor),
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: isStart ? mainColor : disabledColor),
                                             ),
                                           ],
                                         ),

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/common/fcm/notification.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -15,7 +16,6 @@ import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
-import 'package:kdmp_cm_app/main.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
@@ -449,8 +449,8 @@ class _WorkScreenState extends State<WorkScreen> {
                     ],
                   ),
                 ),
-                StreamBuilder<String>(
-                  stream: streamController.stream,
+                StreamBuilder<Map<String, dynamic>>(
+                  stream: FlutterLocalNotification.streamController.stream,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       _showPushDialog(snapshot);
@@ -466,7 +466,7 @@ class _WorkScreenState extends State<WorkScreen> {
     );
   }
 
-  _showPushDialog(AsyncSnapshot<String> snapshot) {
+  _showPushDialog(AsyncSnapshot<Map<String, dynamic>> snapshot) {
     debugPrint("========${snapshot.data}");
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -474,54 +474,34 @@ class _WorkScreenState extends State<WorkScreen> {
       if (ModalRoute.of(context)?.isCurrent != true) {
         context.pop();
       }
-      final drvReqSt = snapshot.data ?? "";
-      switch (drvReqSt) {
+      final type = snapshot.data?["type"] ?? "";
+      final title = snapshot.data?["title"] ?? "";
+      final body = snapshot.data?["body"] ?? "";
+      switch (type) {
         case DrvReqSt.cco:
-          _showCallConfirmAlert(drvReqSt);
+          _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
+          _showAlertDialog(content: body, isCanceled: false);
           break;
+        case DrvReqSt.rwt:
         case DrvReqSt.wat:
-          _showWaitAlert(drvReqSt);
-          break;
         case DrvReqSt.sta:
-          _showStartAlert(drvReqSt);
+          _workViewModel.drvReqSt = type;
+          _showAlertDialog(content: body, isCanceled: false);
           break;
         case DrvReqSt.end:
-          _showReviewBottomSheet(drvReqSt);
+        case DrvReqSt.ren:
+          _showReviewBottomSheet(type);
           break;
         case DrvReqSt.del:
         case DrvReqSt.rdl:
-          _showCallCancelAlert();
+          context.pop();
+          _showAlertDialog(content: body, isCanceled: false);
+          break;
+        default:
+          _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
+          _showAlertDialog(content: body, isCanceled: false);
       }
     });
-  }
-
-  /// 운행 확정 팝업
-  Future<void> _showCallConfirmAlert(String drvReqSt) async {
-    /// 상태 변경
-    // TODO: API 재조회할지 변경된 값만 Push Data 값으로 받을지
-    _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
-
-    _showAlertDialog(content: StringWork.callConfirmAlert, isCanceled: false);
-  }
-
-  /// 출발지 도착 팝업
-  Future<void> _showWaitAlert(String drvReqSt) async {
-    /// 상태 변경
-    // TODO: API 재조회할지 변경된 값만 Push Data 값으로 받을지
-    // _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
-    _workViewModel.drvReqSt = drvReqSt;
-
-    _showAlertDialog(content: StringWork.callWaitAlert, isCanceled: false);
-  }
-
-  /// 운행 시작 팝업
-  Future<void> _showStartAlert(String drvReqSt) async {
-    /// 상태 변경
-    // TODO: API 재조회할지 변경된 값만 Push Data 값으로 받을지
-    // _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
-    _workViewModel.drvReqSt = drvReqSt;
-
-    _showAlertDialog(content: StringWork.callStartAlert, isCanceled: false);
   }
 
   /// 리뷰 작성 팝업
@@ -560,12 +540,6 @@ class _WorkScreenState extends State<WorkScreen> {
 
     /// 화면 닫기, 홈 화면 초기화
     context.pop(false);
-  }
-
-  /// 운행 취소 팝업
-  Future<void> _showCallCancelAlert() async {
-    context.pop();
-    _showAlertDialog(content: StringWork.cancelAlert, isCanceled: false);
   }
 
   /// 앱 뒤로가기

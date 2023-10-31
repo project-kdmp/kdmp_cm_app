@@ -1,16 +1,12 @@
-import 'dart:async';
-
 import 'package:dio/dio.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get_it/get_it.dart';
+import 'package:kdmp_cm_app/common/fcm/notification.dart';
 import 'package:kdmp_cm_app/common/network/dio_singleton.dart';
 import 'package:kdmp_cm_app/common/network/interceptor/token_interceptor.dart';
 import 'package:kdmp_cm_app/data/constant/constants.dart';
@@ -96,129 +92,7 @@ import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import 'domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
-import 'firebase_options.dart';
 import 'presentation/router/router.dart';
-
-/// Notification 을 위한 StreamController 전역 변수 선언
-StreamController<String> streamController = StreamController.broadcast();
-
-/// Firebase Messaging
-Future<String?> fcmSetting() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  await messaging.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-
-  FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
-
-  AndroidNotificationChannel channel = const AndroidNotificationChannel(
-    "high_importance_channel",
-    "channel_name",
-    description: "드라이브",
-    importance: Importance.max,
-  );
-
-  /// Foreground 푸시 알림을 위한 설정
-  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  flutterLocalNotificationsPlugin.initialize(
-    const InitializationSettings(
-      android: AndroidInitializationSettings("@mipmap/ic_launcher"),
-      iOS: DarwinInitializationSettings(),
-    ),
-    onDidReceiveNotificationResponse: (details) {
-      debugPrint("fcmTest=====onDidReceiveNotificationResponse");
-    },
-  );
-  flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
-
-  /// Foreground : 앱 실행중
-  FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
-    if (message != null) {
-      if (message.notification != null) {
-        debugPrint("fcmTest=====Foreground - ${message.notification!.title}");
-        debugPrint("fcmTest=====Foreground - ${message.notification!.body}");
-        debugPrint("fcmTest=====Foreground - ${message.data["type"]}");
-
-        if (message.data.containsKey("type")) {
-          final type = message.data["type"];
-          streamController.add(type);
-        }
-        // streamController.add(message.notification!.title ?? "");
-
-        flutterLocalNotificationsPlugin.show(
-          DateTime.now().millisecond,
-          message.notification!.title,
-          message.notification!.body,
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel.id,
-              channel.name,
-              channelDescription: channel.description,
-              importance: channel.importance,
-              priority: Priority.high,
-              icon: "@mipmap/ic_launcher",
-            ),
-            iOS: const DarwinNotificationDetails(badgeNumber: 1),
-          ),
-        );
-      }
-    }
-  });
-
-  /// Background
-  FirebaseMessaging.onMessageOpenedApp.listen(_onBackgroundMessage);
-
-  /// Terminate : 앱 종료 상태
-  final remoteMessaging = await FirebaseMessaging.instance.getInitialMessage();
-  if (remoteMessaging != null) {
-    _onBackgroundMessage(remoteMessaging);
-  }
-
-  String? fcmToken = await messaging.getToken();
-  return fcmToken;
-}
-
-@pragma('vm:entry-point')
-Future<void> _onBackgroundMessage(RemoteMessage message) async {
-  await Firebase.initializeApp();
-
-  debugPrint("fcmTest=====Notification Listener - ${message.notification!.title}");
-  debugPrint("fcmTest=====Notification Listener - ${message.notification!.body}");
-  debugPrint("fcmTest=====Notification Listener - ${message.data["click_action"]}");
-
-  AndroidNotificationChannel channel = const AndroidNotificationChannel(
-    "high_importance_channel",
-    "channel_name",
-    description: "드라이브",
-    importance: Importance.max,
-  );
-
-  /// Foreground 푸시 알림을 위한 설정
-  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
-
-  flutterLocalNotificationsPlugin.show(
-    DateTime.now().millisecond,
-    message.notification!.title,
-    message.notification!.body,
-    NotificationDetails(
-      android: AndroidNotificationDetails(
-        channel.id,
-        channel.name,
-        channelDescription: channel.description,
-        importance: channel.importance,
-        priority: Priority.high,
-        icon: "@mipmap/ic_launcher",
-      ),
-      iOS: const DarwinNotificationDetails(badgeNumber: 1),
-    ),
-  );
-}
 
 void main() async {
   AppConstants.setEnvironment(kDebugMode ? Environment.DEV : Environment.PROD);
@@ -289,16 +163,18 @@ void main() async {
   final deleteMapDataUseCase = DeleteMapDataUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<DeleteMapDataUseCase>(deleteMapDataUseCase);
 
-  String? fcmToken = await fcmSetting();
-  debugPrint("======fcmToken=$fcmToken");
-  setFCMUseCase.execute(fcm: fcmToken ?? "");
-
   /// 환경설정값
   final themeMode = await setupUseCase.getThemeMode();
   CustomThemeMode.instance;
   CustomTextMode.instance;
   var mThemeMode = themeMode == "light" ? ThemeMode.light : ThemeMode.dark;
   CustomThemeMode.change(mThemeMode);
+
+  await FlutterLocalNotification.init();
+
+  String? fcmToken = await FlutterLocalNotification.getFcmToken();
+  debugPrint("fcmToken: $fcmToken");
+  setFCMUseCase.execute(fcm: fcmToken ?? "");
 
   /// Dio Singleton
   final Dio dio = DioSingleton.getInstance();

@@ -179,31 +179,31 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                           const SizedBox(height: 14),
 
                           /// 취소 정책 안내
-                          SizedBox(
-                            width: double.maxFinite,
-                            child: Text(
-                              StringReservation.cancelTitle,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).disabledColor,
-                                  ),
-                              textAlign: TextAlign.start,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Container(
-                            width: double.maxFinite,
-                            padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 20),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).dividerColor,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              StringReservation.cancelContent,
-                              style: Theme.of(context).textTheme.bodySmall,
-                              textAlign: TextAlign.start,
-                            ),
-                          ),
-                          const SizedBox(height: 14),
+                          // SizedBox(
+                          //   width: double.maxFinite,
+                          //   child: Text(
+                          //     StringReservation.cancelTitle,
+                          //     style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          //           color: Theme.of(context).disabledColor,
+                          //         ),
+                          //     textAlign: TextAlign.start,
+                          //   ),
+                          // ),
+                          // const SizedBox(height: 4),
+                          // Container(
+                          //   width: double.maxFinite,
+                          //   padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 20),
+                          //   decoration: BoxDecoration(
+                          //     color: Theme.of(context).dividerColor,
+                          //     borderRadius: BorderRadius.circular(10),
+                          //   ),
+                          //   child: Text(
+                          //     StringReservation.cancelContent,
+                          //     style: Theme.of(context).textTheme.bodySmall,
+                          //     textAlign: TextAlign.start,
+                          //   ),
+                          // ),
+                          // const SizedBox(height: 14),
 
                           /// 대기료 발생 안내
                           SizedBox(

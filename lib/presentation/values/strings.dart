@@ -360,8 +360,8 @@ abstract class StringReservation {
   static const String warningTitle = "유의사항 안내";
   static const String warningContent = "유의사항 내용";
 
-  static const String cancelTitle = "취소 정책 안내";
-  static const String cancelContent = "취소 정책 내용";
+  // static const String cancelTitle = "취소 정책 안내";
+  // static const String cancelContent = "취소 정책 내용";
 
   static const String waitTitle = "대기료 발생 안내";
   static const String waitContent = "대기료 발생 내용";

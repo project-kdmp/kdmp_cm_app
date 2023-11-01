@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrci_usecase.dart';
@@ -23,10 +24,10 @@ class PhoneVerifyScreen extends StatefulWidget {
 class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
   late final PhoneVerifyViewModel _phoneVerifyViewModel;
 
-  String mbrNm = "김팥죽";
-  String mbrMobilePhone = "01011122223";
-  String mbrCi = "ci2223";
-  String identityNumber = "800808";
+  String mbrNm = "";
+  String mbrMobilePhone = "";
+  String identityNumber = "";
+  String mbrCi = "";
 
   @override
   void initState() {
@@ -58,17 +59,26 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
             // TODO: 임시 버튼. 본인인증 기능 구현 후 제거
 
             CustomTextField(hint: "이름 입력", onChanged: (value) => mbrNm = value, text: mbrNm),
-            CustomTextField(hint: "휴대폰번호 입력", onChanged: (value) => mbrMobilePhone = value, text: mbrMobilePhone),
-            CustomTextField(hint: "CI 입력", onChanged: (value) => mbrCi = value, text: mbrCi),
-            CustomTextField(hint: "주민번호 앞 6자리 입력", maxLength: 6, onChanged: (value) => identityNumber = value, text: identityNumber),
+            CustomTextField(hint: "휴대폰번호 입력", maxLength: 11, inputType: TextInputType.number, onChanged: (value) => mbrMobilePhone = value, text: mbrMobilePhone),
+            CustomTextField(hint: "주민번호 앞 6자리 입력", maxLength: 6, inputType: TextInputType.number, onChanged: (value) => identityNumber = value, text: identityNumber),
 
             CustomElevatedButton(
               onPressed: () async {
                 /// 본인인증 처리
                 /// TODO: mbrNm, mbrDeviceId, mbrCi, mbrMobilePhone 임시값. 본인인증 후 가져와야함
-                // final mbrNm = "김민수";
-                // final mbrMobilePhone = "01011113334";
-                // final mbrCi = "ci_yuhyeon_test2";
+
+                if (mbrNm.trim().isEmpty || mbrMobilePhone.trim().isEmpty || identityNumber.trim().isEmpty) {
+                  Fluttertoast.showToast(msg: "정보를 입력해주세요.");
+                  return;
+                } else if (mbrMobilePhone.trim().length < 11) {
+                  Fluttertoast.showToast(msg: "휴대폰번호 11자리를 입력해주세요.");
+                  return;
+                } else if (identityNumber.trim().length < 6) {
+                  Fluttertoast.showToast(msg: "주민번호 앞 6자리를 입력해주세요.");
+                  return;
+                }
+
+                mbrCi = "ci${mbrMobilePhone.substring(7, 11)}";
 
                 /// 본인확인
                 final registerResult = await _phoneVerifyViewModel.verify(

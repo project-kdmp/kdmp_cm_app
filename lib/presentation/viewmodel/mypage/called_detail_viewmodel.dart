@@ -179,7 +179,7 @@ class CalledDetailViewModel {
   _checkIsReviewEnabled() {
     var valid = false;
     if (startDate.isNotEmpty) {
-      valid = DateTime.parse(startDate).isAfter(DateTime.now().subtract(const Duration(days: 7)));
+      valid = DateTime.parse(startDate).isAfter(DateTime.now().subtract(const Duration(days: 30)));
     }
     _setIsReviewEnabled(value: valid);
   }

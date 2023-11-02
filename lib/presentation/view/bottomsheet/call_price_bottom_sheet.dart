@@ -4,7 +4,6 @@ import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
-import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_text_field.dart';
 
 /// 요금 입력 팝업
 class CallPriceBottomSheet extends StatefulWidget {
@@ -122,45 +121,158 @@ class _CallPriceBottomSheetState extends State<CallPriceBottomSheet> {
             ),
 
             /// 요금
-            Container(
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: Row(
+              child: Column(
                 children: [
-                  const SizedBox(width: 10),
-                  const Text(StringCallPrice.amount),
-                  const SizedBox(width: 24),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        /// 요금 입력
-                        CustomTextField(
-                          text: "$price",
-                          inputType: TextInputType.number,
-                          suffixText: StringCommon.won,
-                          textAlign: TextAlign.right,
-                          onChanged: (value) {
-                            price = value.isEmpty ? 0 : int.parse(value);
-                          },
-                        ),
-                        const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const SizedBox(width: 10),
+                      const SizedBox(width: 80, child: Text(StringCallPrice.amount)),
 
-                        /// 입력값 에러 표시
-                        ValueListenableBuilder(
-                          valueListenable: errorMessageNotifier,
-                          builder: (context, value, child) {
-                            return Text(
-                              value,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.red),
-                            );
+                      /// - 버튼
+                      SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            /// - 버튼 클릭
+                            if (price > widget.minPrice) {
+                              price -= 1000;
+                            }
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                            side: BorderSide(
+                              color: Theme.of(context).colorScheme.secondary,
+                              width: 1,
+                            ),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                              ),
+                            ),
+                            disabledBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                          ),
+                          child: Text(
+                            "-",
+                            style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.secondary,
+                                ),
+                          ),
                         ),
-                      ],
-                    ),
+                      ),
+
+                      /// 요금
+                      ValueListenableBuilder<int>(
+                        valueListenable: priceNotifier,
+                        builder: (context, value, child) {
+                          return Expanded(
+                            child: Text(
+                              getPrice(value),
+                              style: Theme.of(context).textTheme.bodyLarge,
+                              textAlign: TextAlign.center,
+                            ),
+                          );
+                        },
+                      ),
+
+                      /// + 버튼
+                      SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            /// + 버튼 클릭
+                            price += 1000;
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                            side: BorderSide(
+                              color: Theme.of(context).colorScheme.secondary,
+                              width: 1,
+                            ),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(10),
+                                bottomRight: Radius.circular(10),
+                              ),
+                            ),
+                            disabledBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                          ),
+                          child: Text(
+                            "+",
+                            style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.secondary,
+                                ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const SizedBox(width: 10),
+                      const SizedBox(width: 80),
+
+                      /// 입력값 에러 표시
+                      ValueListenableBuilder(
+                        valueListenable: errorMessageNotifier,
+                        builder: (context, value, child) {
+                          return Text(
+                            value,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.red),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            //   child: Row(
+            //     children: [
+            //       const SizedBox(width: 10),
+            //       const Text(StringCallPrice.amount),
+            //       const SizedBox(width: 24),
+            //       Expanded(
+            //         child: Column(
+            //           crossAxisAlignment: CrossAxisAlignment.start,
+            //           children: [
+            //             /// 요금 입력
+            //             CustomTextField(
+            //               text: "$price",
+            //               inputType: TextInputType.number,
+            //               suffixText: StringCommon.won,
+            //               textAlign: TextAlign.right,
+            //               onChanged: (value) {
+            //                 price = value.isEmpty ? 0 : int.parse(value);
+            //               },
+            //             ),
+            //             const SizedBox(height: 8),
+            //
+            //             /// 입력값 에러 표시
+            //             ValueListenableBuilder(
+            //               valueListenable: errorMessageNotifier,
+            //               builder: (context, value, child) {
+            //                 return Text(
+            //                   value,
+            //                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.red),
+            //                 );
+            //               },
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
 
             /// 신청 버튼
             ValueListenableBuilder<bool>(

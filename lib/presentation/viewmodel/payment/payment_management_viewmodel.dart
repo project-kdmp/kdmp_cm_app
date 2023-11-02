@@ -41,8 +41,11 @@ class PaymentManagementViewModel {
     /// 현금결제 결제수단 추가
     newPaymentList.add(Payment(paymentNm: "현금결제", cardId: "CASH"));
 
-    /// 결제수단 추가
-    newPaymentList.add(Payment(paymentNm: "+ 신용/체크카드 결제수단 추가", cardId: "ADD"));
+    /// 카드가 등록되어있지 않으면
+    if (newPaymentList.length < 2) {
+      /// 결제수단 추가
+      newPaymentList.add(Payment(paymentNm: "+ 신용/체크카드 결제수단 추가", cardId: "ADD"));
+    }
 
     paymentList = newPaymentList;
     currentPayment = paymentList[0];

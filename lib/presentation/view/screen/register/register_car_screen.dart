@@ -11,6 +11,7 @@ import 'package:kdmp_cm_app/presentation/view/bottomsheet/car_add_bottom_sheet.d
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/driver_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/register/register_car_viewmodel.dart';
@@ -119,39 +120,59 @@ class _RegisterCarScreenState extends State<RegisterCarScreen> {
                     ),
                     const SizedBox(height: 32),
 
-                    /// 차량정보 입력 버튼
-                    CustomRadiusButton(
-                      text: StringRegister.registerBottomButton,
-                      margin: const EdgeInsets.all(20),
-                      onPressed: () async {
-                        /// 차량번호 입력 팝업 띄움
-                        final result = await showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) {
-                            return Wrap(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                  child: const CarAddBottomSheet(),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                        if (result != null) {
-                          final String carNumber = result;
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        children: [
+                          /// 건너뛰기 버튼
+                          Expanded(
+                            child: CustomRadiusButton(
+                              text: StringRegister.registerPass,
+                              onPressed: () {
+                                /// 화면 닫기
+                                context.pop();
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
 
-                          /// 차량정보 등록
-                          final addCarInfoResult = await _registerCarViewModel.addCarInfo(carNumber);
-                          if (addCarInfoResult is Success) {
-                            await _showAlertDialog(content: StringCarAdd.carAddSuccess, isCanceled: false);
+                          /// 차량정보 입력 버튼
+                          Expanded(
+                            child: CustomElevatedButton(
+                              text: StringRegister.registerBottomButton,
+                              onPressed: () async {
+                                /// 차량번호 입력 팝업 띄움
+                                final result = await showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  builder: (context) {
+                                    return Wrap(
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                          child: const CarAddBottomSheet(),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                                if (result != null) {
+                                  final String carNumber = result;
 
-                            /// 화면 닫기
-                            context.pop();
-                          }
-                        }
-                      },
+                                  /// 차량정보 등록
+                                  final addCarInfoResult = await _registerCarViewModel.addCarInfo(carNumber);
+                                  if (addCarInfoResult is Success) {
+                                    await _showAlertDialog(content: StringCarAdd.carAddSuccess, isCanceled: false);
+
+                                    /// 화면 닫기
+                                    context.pop();
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 )

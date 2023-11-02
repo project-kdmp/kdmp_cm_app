@@ -77,6 +77,7 @@ class _CarSelectBottomSheetState extends State<CarSelectBottomSheet> {
         itemCount: value.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
+          final carNumId = value[index].carNumId;
           return GestureDetector(
             onTap: () {
               context.pop(widget.carList[index]);
@@ -88,24 +89,34 @@ class _CarSelectBottomSheetState extends State<CarSelectBottomSheet> {
                 shape: BoxShape.rectangle,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Image.asset(
-                        CustomThemeMode.getThemeMode == ThemeMode.light ? ImageMenuLight.iconCarInfo : ImageMenuDark.iconCarInfo,
-                        width: 28,
-                        height: 28,
-                      ),
-                      const SizedBox(width: 16),
+              child: carNumId.isNotEmpty
+                  ? Row(
+                      children: [
+                        Image.asset(
+                          CustomThemeMode.getThemeMode == ThemeMode.light ? ImageMenuLight.iconCarInfo : ImageMenuDark.iconCarInfo,
+                          width: 28,
+                          height: 28,
+                        ),
+                        const SizedBox(width: 16),
 
-                      /// 차량번호
-                      Expanded(child: Text(value[index].carNumId, style: Theme.of(context).textTheme.titleLarge)),
-                      const SizedBox(width: 8),
-                    ],
-                  ),
-                ],
-              ),
+                        /// 차량번호
+                        Expanded(child: Text(value[index].carNumId, style: Theme.of(context).textTheme.titleLarge)),
+                        const SizedBox(width: 8),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        const SizedBox(
+                          width: 28,
+                          height: 28,
+                        ),
+                        const SizedBox(width: 16),
+
+                        /// 선택안함
+                        Expanded(child: Text("선택안함", style: Theme.of(context).textTheme.titleLarge)),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
             ),
           );
         },

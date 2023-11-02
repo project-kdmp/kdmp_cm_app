@@ -152,10 +152,10 @@ class _SplashScreenState extends State<SplashScreen> {
               case MbrSt.reject: // 심사 거절이나 기사용 상태
                 break;
               case MbrSt.registerComplete:
-                if (response.mbrCarCount == 0) {
-                  /// 차량등록 화면으로 이동
-                  await context.pushNamed(RegisterCarScreen.routeName);
-                }
+                // if (response.mbrCarCount == 0) {
+                //   /// 차량등록 화면으로 이동
+                //   await context.pushNamed(RegisterCarScreen.routeName);
+                // }
 
                 /// 이용약관 갱신 여부 확인
                 if (response.bagreeTrmUpdate) {

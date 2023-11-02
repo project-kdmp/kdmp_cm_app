@@ -111,6 +111,7 @@ abstract class StringRegister {
   static const String registerCarContent1 = "입력하신 차량정보는";
   static const String registerCarContent2 = "대리 서비스에 이용됩니다.";
   static const String registerBottomButton = "차량정보 입력";
+  static const String registerPass = "건너뛰기";
   static const String driverTerm = "운행불가 차종안내";
 
   static const String noPermission = "정지 회원 안내";
@@ -294,6 +295,7 @@ abstract class StringCar {
   static const String deleteAlert = "차량을 삭제하시겠습니까?";
   static const String deleteSuccess = "차량정보가 삭제되었습니다.";
   static const String modifySuccess = "차량정보가 수정되었습니다.";
+  static const String noList = "등록된 정보가 없습니다.";
 }
 
 abstract class StringCall {

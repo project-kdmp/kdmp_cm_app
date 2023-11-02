@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     /// 현위치 좌표 가져오기
     _homeViewModel.currentLatLng = await getCurrentLocation();
-
+    // _homeViewModel.currentLatLng = const NLatLng(37.4668787, 126.88837); // TODO: 임시값
     /// 네이버 지도 초기화
     naverMap = initNaverMap(nLatLng: _homeViewModel.currentLatLng);
   }
@@ -636,39 +636,51 @@ class _HomeScreenState extends State<HomeScreen> {
                                   return;
                                 }
 
-                                /// 차량선택 팝업
+                                /// 차량정보 리스트 조회
                                 final carList = await _homeViewModel.getCarList();
-                                final carResult = await showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  builder: (context) {
-                                    return Wrap(children: [CarSelectBottomSheet(carList: carList)]);
-                                  },
-                                );
-                                if (carResult != null && carResult is Car) {
-                                  /// 예약하기
-                                  final requestResult = await _homeViewModel.requestReservation(
-                                    carNumId: carResult.carNumId,
-                                    date: dateValue,
+
+                                String carNumId = "";
+                                if (carList.isNotEmpty) {
+                                  /// 선택 안함 추가
+                                  carList.add(Car(carNumId: ""));
+
+                                  /// 차량선택 팝업
+                                  final carResult = await showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (context) {
+                                      return Wrap(children: [CarSelectBottomSheet(carList: carList)]);
+                                    },
                                   );
-                                  if (requestResult is Success) {
-                                    /// 예약 접수 성공 팝업
-                                    await _showAlertDialog(content: StringReservation.reservationConfirmAlert, isCanceled: false);
-
-                                    /// 입력 데이터 삭제
-                                    _homeViewModel.clearData();
-
-                                    /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
-                                    naverMap = null;
-                                    initData();
-
-                                    /// 운행 정보 화면으로 이동
-                                    final drvReqSq = requestResult.drvResponse.drvReqSq;
-                                    await context.pushNamed(
-                                      CallDetailScreen.routeName,
-                                      extra: drvReqSq,
-                                    );
+                                  if (carResult != null && carResult is Car) {
+                                    carNumId = carResult.carNumId;
+                                  } else {
+                                    return;
                                   }
+                                }
+
+                                /// 예약하기
+                                final requestResult = await _homeViewModel.requestReservation(
+                                  carNumId: carNumId,
+                                  date: dateValue,
+                                );
+                                if (requestResult is Success) {
+                                  /// 예약 접수 성공 팝업
+                                  await _showAlertDialog(content: StringReservation.reservationConfirmAlert, isCanceled: false);
+
+                                  /// 입력 데이터 삭제
+                                  _homeViewModel.clearData();
+
+                                  /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                  naverMap = null;
+                                  initData();
+
+                                  /// 운행 정보 화면으로 이동
+                                  final drvReqSq = requestResult.drvResponse.drvReqSq;
+                                  await context.pushNamed(
+                                    CallDetailScreen.routeName,
+                                    extra: drvReqSq,
+                                  );
                                 }
                               },
                             ),
@@ -686,37 +698,49 @@ class _HomeScreenState extends State<HomeScreen> {
                                         onConfirm: () async {
                                           Navigator.pop(context);
 
-                                          /// 차량선택 팝업
+                                          /// 차량정보 리스트 조회
                                           final carList = await _homeViewModel.getCarList();
-                                          final result = await showModalBottomSheet(
-                                            context: context,
-                                            isScrollControlled: true,
-                                            builder: (context) {
-                                              return Wrap(children: [CarSelectBottomSheet(carList: carList)]);
-                                            },
-                                          );
-                                          if (result != null && result is Car) {
-                                            /// 호출하기
-                                            final requestResult = await _homeViewModel.requestCall(carNumId: result.carNumId);
-                                            if (requestResult is Success) {
-                                              /// 화면 이동 전 네이버지도 가림
-                                              naverMap = null;
 
-                                              /// 운행 화면으로 이동
-                                              final drvReqSq = requestResult.drvResponse.drvReqSq;
-                                              final callResult = await context.pushNamed(
-                                                WorkScreen.routeName,
-                                                extra: drvReqSq,
-                                              );
-                                              if (callResult == false) {
-                                                /// 운행취소
-                                                /// 입력 데이터 삭제
-                                                _homeViewModel.clearData();
-                                              }
+                                          String carNumId = "";
+                                          if (carList.isNotEmpty) {
+                                            /// 선택 안함 추가
+                                            carList.add(Car(carNumId: ""));
 
-                                              /// 화면 이동 완료 후 네이버 지도 보여줌
-                                              initData();
+                                            /// 차량선택 팝업
+                                            final carResult = await showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              builder: (context) {
+                                                return Wrap(children: [CarSelectBottomSheet(carList: carList)]);
+                                              },
+                                            );
+                                            if (carResult != null && carResult is Car) {
+                                              carNumId = carResult.carNumId;
+                                            } else {
+                                              return;
                                             }
+                                          }
+
+                                          /// 호출하기
+                                          final requestResult = await _homeViewModel.requestCall(carNumId: carNumId);
+                                          if (requestResult is Success) {
+                                            /// 화면 이동 전 네이버지도 가림
+                                            naverMap = null;
+
+                                            /// 운행 화면으로 이동
+                                            final drvReqSq = requestResult.drvResponse.drvReqSq;
+                                            final callResult = await context.pushNamed(
+                                              WorkScreen.routeName,
+                                              extra: drvReqSq,
+                                            );
+                                            if (callResult == false) {
+                                              /// 운행취소
+                                              /// 입력 데이터 삭제
+                                              _homeViewModel.clearData();
+                                            }
+
+                                            /// 화면 이동 완료 후 네이버 지도 보여줌
+                                            initData();
                                           }
                                         },
                                       );

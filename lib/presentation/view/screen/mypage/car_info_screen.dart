@@ -88,7 +88,25 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                             ValueListenableBuilder<List<Car>>(
                               valueListenable: _carInfoViewModel.carListNotifier,
                               builder: (context, value, _) {
-                                return getListView(value);
+                                /// 차량정보 리스트 없음
+                                return value.isEmpty
+                                    ? SizedBox(
+                                        height: 500,
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Image.asset(ImageCommon.imgWarning, width: 72, height: 72),
+                                            const SizedBox(height: 20),
+                                            Text(
+                                              StringPlace.noList,
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                    color: Theme.of(context).disabledColor,
+                                                  ),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    : getListView(value);
                               },
                             ),
                             const SizedBox(height: 20),
@@ -131,7 +149,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                           children: [
                             Padding(
                               padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                              child: CarAddBottomSheet(),
+                              child: const CarAddBottomSheet(),
                             ),
                           ],
                         );
@@ -188,33 +206,31 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                     const SizedBox(width: 16),
 
                     /// 차량번호
-                    Expanded(child: Text("${value[index].carNumId}", style: Theme.of(context).textTheme.titleLarge)),
+                    Expanded(child: Text(value[index].carNumId, style: Theme.of(context).textTheme.titleLarge)),
                     const SizedBox(width: 8),
 
                     /// 차량정보 삭제 버튼
-                    value.length > 1
-                        ? CustomRoundButton(
-                            text: StringCar.delete,
-                            onPressed: () async {
-                              /// 차량정보 삭제 팝업 띄움
-                              await _showConfirmDialog(
-                                content: StringCar.deleteAlert,
-                                onConfirm: () async {
-                                  Navigator.pop(context);
+                    CustomRoundButton(
+                      text: StringCar.delete,
+                      onPressed: () async {
+                        /// 차량정보 삭제 팝업 띄움
+                        await _showConfirmDialog(
+                          content: StringCar.deleteAlert,
+                          onConfirm: () async {
+                            Navigator.pop(context);
 
-                                  /// 차량정보 삭제
-                                  final result = await _carInfoViewModel.deleteCarInfo(value[index].carNumId!);
-                                  if (result is Success) {
-                                    await _showAlertDialog(content: StringCar.deleteSuccess, isCanceled: false);
+                            /// 차량정보 삭제
+                            final result = await _carInfoViewModel.deleteCarInfo(value[index].carNumId);
+                            if (result is Success) {
+                              await _showAlertDialog(content: StringCar.deleteSuccess, isCanceled: false);
 
-                                    /// 차량정보 리스트 갱신
-                                    initData();
-                                  }
-                                },
-                              );
-                            },
-                          )
-                        : const SizedBox(),
+                              /// 차량정보 리스트 갱신
+                              initData();
+                            }
+                          },
+                        );
+                      },
+                    ),
                     const SizedBox(width: 8),
 
                     /// 차량정보 수정 버튼
@@ -230,7 +246,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                               children: [
                                 Padding(
                                   padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                  child: CarAddBottomSheet(initCarNumber: value[index].carNumId!),
+                                  child: CarAddBottomSheet(initCarNumber: value[index].carNumId),
                                 ),
                               ],
                             );
@@ -241,7 +257,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
 
                           /// 차량정보 수정
                           final modifyResult = await _carInfoViewModel.modifyCarInfo(
-                            beforeCarNumId: value[index].carNumId!,
+                            beforeCarNumId: value[index].carNumId,
                             afterCarNumId: carNumber,
                           );
                           if (modifyResult is Success) {

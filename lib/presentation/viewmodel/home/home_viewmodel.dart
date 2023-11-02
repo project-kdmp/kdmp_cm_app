@@ -12,6 +12,7 @@ import 'package:kdmp_cm_app/data/model/work/driving_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
@@ -24,6 +25,7 @@ class HomeViewModel {
     required this.setCallRequestUseCase,
     required this.setReservationRequestUseCase,
     required this.getDrivingUseCase,
+    required this.getPaymentListUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
@@ -32,6 +34,7 @@ class HomeViewModel {
   final SetCallRequestUseCase setCallRequestUseCase;
   final SetReservationRequestUseCase setReservationRequestUseCase;
   final GetDrivingUseCase getDrivingUseCase;
+  final GetPaymentListUseCase getPaymentListUseCase;
 
   String clientId = "";
   String clientSecret = "";
@@ -271,6 +274,20 @@ class HomeViewModel {
     }
 
     return List.empty();
+  }
+
+  /// 결제수단 조회
+  getPayment() async {
+    final paymentList = await getPaymentListUseCase.execute();
+    if (paymentList.isNotEmpty) {
+      cardId = paymentList[0].cardId;
+      paymentNm = paymentList[0].paymentNm;
+      paymKind = "CARD";
+    } else {
+      cardId = "";
+      paymentNm = "";
+      paymKind = "CASH";
+    }
   }
 
   /// 요금 조회

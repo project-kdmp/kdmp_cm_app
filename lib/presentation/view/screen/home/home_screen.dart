@@ -16,6 +16,7 @@ import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
@@ -74,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     initViewModel();
+    initDataFirst();
     initData();
   }
 
@@ -86,12 +88,18 @@ class _HomeScreenState extends State<HomeScreen> {
       setCallRequestUseCase: GetIt.instance<SetCallRequestUseCase>(),
       setReservationRequestUseCase: GetIt.instance<SetReservationRequestUseCase>(),
       getDrivingUseCase: GetIt.instance<GetDrivingUseCase>(),
+      getPaymentListUseCase: GetIt.instance<GetPaymentListUseCase>(),
     );
 
     /// 키 관리 파일 가져오기
     await dotenv.load(fileName: ".env");
     _homeViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
     _homeViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
+  }
+
+  void initDataFirst() async {
+    /// 결제수단 조회
+    await _homeViewModel.getPayment();
   }
 
   void initData() async {

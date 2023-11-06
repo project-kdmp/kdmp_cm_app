@@ -34,9 +34,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/mypage/withdraw_screen.dart
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/add_payment_management_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_management_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_password_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/payment/set_payment_password_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/no_permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/phone_verify_screen.dart';
@@ -280,19 +278,19 @@ final GoRouter router = GoRouter(
               ],
             ),
 
-            /// 결제 비밀번호 입력
-            GoRoute(
-              name: PaymentPasswordScreen.routeName,
-              path: PaymentPasswordScreen.routeName,
-              builder: (context, state) => const PaymentPasswordScreen(),
-            ),
-
-            /// 결제 비밀번호 설정
-            GoRoute(
-              name: SetPaymentPasswordScreen.routeName,
-              path: SetPaymentPasswordScreen.routeName,
-              builder: (context, state) => const SetPaymentPasswordScreen(),
-            ),
+            // /// 결제 비밀번호 입력
+            // GoRoute(
+            //   name: PaymentPasswordScreen.routeName,
+            //   path: PaymentPasswordScreen.routeName,
+            //   builder: (context, state) => const PaymentPasswordScreen(),
+            // ),
+            //
+            // /// 결제 비밀번호 설정
+            // GoRoute(
+            //   name: SetPaymentPasswordScreen.routeName,
+            //   path: SetPaymentPasswordScreen.routeName,
+            //   builder: (context, state) => const SetPaymentPasswordScreen(),
+            // ),
           ],
         ),
 

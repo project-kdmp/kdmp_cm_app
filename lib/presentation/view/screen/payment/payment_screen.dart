@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_management_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/payment/set_payment_password_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/menu/custom_move_button.dart';
@@ -62,13 +61,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   },
                 ),
 
-                /// 결제 비밀번호 설정 버튼
-                CustomMoveButton(
-                  text: StringPayment.paymentSetPassword,
-                  onPressed: () async {
-                    context.pushNamed(SetPaymentPasswordScreen.routeName);
-                  },
-                ),
+                // /// 결제 비밀번호 설정 버튼
+                // CustomMoveButton(
+                //   text: StringPayment.paymentSetPassword,
+                //   onPressed: () async {
+                //     context.pushNamed(SetPaymentPasswordScreen.routeName);
+                //   },
+                // ),
               ],
             ),
           ),

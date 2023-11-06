@@ -8,7 +8,6 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/payment/set_payment_password_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/phone_verify_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
@@ -304,16 +303,16 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
                       if (identityNumber is String && identityNumber.length == 6) {
                         /// 본인인증 성공
 
-                        /// 결제 비밀번호 설정 여부 확인
-                        if (!await _addPaymentManagementViewModel.isSetPaymentPassword()) {
-                          /// 결제 비밀번호 설정 화면으로 이동
-                          final passwordResult = await context.pushNamed(SetPaymentPasswordScreen.routeName);
-                          if (passwordResult == true) {
-                            /// 결제 비밀번호 설정 성공
-                          } else {
-                            return;
-                          }
-                        }
+                        // /// 결제 비밀번호 설정 여부 확인
+                        // if (!await _addPaymentManagementViewModel.isSetPaymentPassword()) {
+                        //   /// 결제 비밀번호 설정 화면으로 이동
+                        //   final passwordResult = await context.pushNamed(SetPaymentPasswordScreen.routeName);
+                        //   if (passwordResult == true) {
+                        //     /// 결제 비밀번호 설정 성공
+                        //   } else {
+                        //     return;
+                        //   }
+                        // }
 
                         /// 결제수단 등록
                         final addResult = await _addPaymentManagementViewModel.addPayment(identityNumber: identityNumber);

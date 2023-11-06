@@ -9,7 +9,6 @@ import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/add_payment_management_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_password_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
@@ -140,13 +139,13 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                           onPressed: () async {
                             /// 화면 닫기, 선택한 결제수단 전달
                             if (_paymentManagementViewModel.currentPayment?.cardId != "ADD") {
-                              if (_paymentManagementViewModel.currentPayment?.cardId != "CASH") {
-                                /// 결제 비밀번호 입력 화면으로 이동
-                                final result = await context.pushNamed(PaymentPasswordScreen.routeName);
-                                if (result != true) {
-                                  return;
-                                }
-                              }
+                              // if (_paymentManagementViewModel.currentPayment?.cardId != "CASH") {
+                              //   /// 결제 비밀번호 입력 화면으로 이동
+                              //   final result = await context.pushNamed(PaymentPasswordScreen.routeName);
+                              //   if (result != true) {
+                              //     return;
+                              //   }
+                              // }
                               context.pop(_paymentManagementViewModel.currentPayment);
                             } else {
                               context.pop();

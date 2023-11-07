@@ -182,10 +182,10 @@ void main() async {
   /// Dio Token Interceptor
   /// 로컬에 저장된 JWT를 가져온 다음, Dio header에 Bearer로 추가해주는 Interceptor
   dio.interceptors.add(TokenInterceptor(
-    dio: dio,
+    // dio: dio,
     getJwtUseCase: getJwtUseCase,
     getAutoRefreshUseCase: getAutoRefreshUseCase,
-    getMbrIdUseCase: getMbrIdUseCase,
+    getMbrSqUseCase: getMbrSqUseCase,
     setUserDataUseCase: setUserDataUseCase,
     deleteUserDataUseCase: deleteUserDataUseCase,
   ));

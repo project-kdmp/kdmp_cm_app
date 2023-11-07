@@ -49,10 +49,6 @@ class TermRepositoryImpl extends TermRepository {
         debugPrint("state: $state");
         return state;
       }
-    } on DioException catch (e) {
-      final errorMessage = DioExceptions.fromDioError(e).toString();
-      Fluttertoast.showToast(msg: errorMessage);
-      return Fail(errorMessage: errorMessage);
     } catch (e) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
       Fluttertoast.showToast(msg: errorMessage);
@@ -89,10 +85,6 @@ class TermRepositoryImpl extends TermRepository {
         debugPrint("state: $state");
         return state;
       }
-    } on DioException catch (e) {
-      final errorMessage = DioExceptions.fromDioError(e).toString();
-      Fluttertoast.showToast(msg: errorMessage);
-      return Fail(errorMessage: errorMessage);
     } catch (e) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
       Fluttertoast.showToast(msg: errorMessage);
@@ -129,10 +121,6 @@ class TermRepositoryImpl extends TermRepository {
         debugPrint("state: $state");
         return state;
       }
-    } on DioException catch (e) {
-      final errorMessage = DioExceptions.fromDioError(e).toString();
-      Fluttertoast.showToast(msg: errorMessage);
-      return Fail(errorMessage: errorMessage);
     } catch (e) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
       Fluttertoast.showToast(msg: errorMessage);
@@ -169,10 +157,6 @@ class TermRepositoryImpl extends TermRepository {
         debugPrint("state: $state");
         return state;
       }
-    } on DioException catch (e) {
-      final errorMessage = DioExceptions.fromDioError(e).toString();
-      Fluttertoast.showToast(msg: errorMessage);
-      return Fail(errorMessage: errorMessage);
     } catch (e) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
       Fluttertoast.showToast(msg: errorMessage);
@@ -209,10 +193,6 @@ class TermRepositoryImpl extends TermRepository {
         debugPrint("state: $state");
         return state;
       }
-    } on DioException catch (e) {
-      final errorMessage = DioExceptions.fromDioError(e).toString();
-      Fluttertoast.showToast(msg: errorMessage);
-      return Fail(errorMessage: errorMessage);
     } catch (e) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
       Fluttertoast.showToast(msg: errorMessage);

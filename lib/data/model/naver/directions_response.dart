@@ -1,21 +1,21 @@
 class DirectionsResponse {
   int code;
   String message;
-  String currentDateTime;
-  Route route;
+  String? currentDateTime;
+  Route? route;
 
   DirectionsResponse({
     required this.code,
     required this.message,
-    required this.currentDateTime,
-    required this.route,
+    this.currentDateTime,
+    this.route,
   });
 
   factory DirectionsResponse.fromJson(Map<String, dynamic> json) => DirectionsResponse(
         code: json["code"],
         message: json["message"],
         currentDateTime: json["currentDateTime"],
-        route: Route.fromJson(json["route"]),
+        route: json["route"] != null ? Route.fromJson(json["route"]) : null,
       );
 }
 

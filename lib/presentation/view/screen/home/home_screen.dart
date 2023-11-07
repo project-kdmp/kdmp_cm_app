@@ -14,7 +14,7 @@ import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _homeViewModel = HomeViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getCarListUseCase: GetIt.instance<GetCarListUseCase>(),
-      getNaverPriceUseCase: GetIt.instance<GetNaverPriceUseCase>(),
+      getNaverDrivingUseCase: GetIt.instance<GetNaverDrivingUseCase>(),
       setCallRequestUseCase: GetIt.instance<SetCallRequestUseCase>(),
       setReservationRequestUseCase: GetIt.instance<SetReservationRequestUseCase>(),
       getDrivingUseCase: GetIt.instance<GetDrivingUseCase>(),

@@ -8,5 +8,5 @@ abstract class NaverRepository {
 
   Future<StateAPI> getAddressInfo({required String clientId, required String clientSecret, required GeocodingRequest geocodingRequest});
 
-  Future<StateAPI> getPrice({required String clientId, required String clientSecret, required DirectionsRequest directionsRequest});
+  Future<StateAPI> getDriving({required String clientId, required String clientSecret, required DirectionsRequest directionsRequest});
 }

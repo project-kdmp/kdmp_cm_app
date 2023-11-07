@@ -10,7 +10,7 @@ import 'package:kdmp_cm_app/data/model/naver/directions_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_request.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
@@ -21,7 +21,7 @@ class HomeViewModel {
   HomeViewModel({
     required this.getMbrSqUseCase,
     required this.getCarListUseCase,
-    required this.getNaverPriceUseCase,
+    required this.getNaverDrivingUseCase,
     required this.setCallRequestUseCase,
     required this.setReservationRequestUseCase,
     required this.getDrivingUseCase,
@@ -30,7 +30,7 @@ class HomeViewModel {
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final GetCarListUseCase getCarListUseCase;
-  final GetNaverPriceUseCase getNaverPriceUseCase;
+  final GetNaverDrivingUseCase getNaverDrivingUseCase;
   final SetCallRequestUseCase setCallRequestUseCase;
   final SetReservationRequestUseCase setReservationRequestUseCase;
   final GetDrivingUseCase getDrivingUseCase;
@@ -290,7 +290,7 @@ class HomeViewModel {
     }
   }
 
-  /// 요금 조회
+  /// 운행거리 및 요금 조회 API
   getCallPrice() async {
     if (startMapData == null || endMapData == null) {
       return;
@@ -299,8 +299,11 @@ class HomeViewModel {
     final result = await _getCallPrice();
     if (result is Success) {
       final response = result.directionsResponse;
-      basicPrice = response.route.traoptimal[0].summary.taxiFare + response.route.traoptimal[0].summary.tollFare; // 택시 요금 + 통행 요금(톨게이트)
-      distance = response.route.traoptimal[0].summary.distance; // 운행거리
+      basicPrice = response.route!.traoptimal[0].summary.taxiFare + response.route!.traoptimal[0].summary.tollFare; // 택시 요금 + 통행 요금(톨게이트)
+      distance = response.route!.traoptimal[0].summary.distance; // 운행거리
+    } else {
+      basicPrice = 0;
+      distance = 0;
     }
     _checkStopOverButtonValid();
     _checkCallButtonValid();
@@ -323,7 +326,7 @@ class HomeViewModel {
       goal: goal,
       waypoints: waypoints,
     );
-    final result = await getNaverPriceUseCase.execute(
+    final result = await getNaverDrivingUseCase.execute(
       clientId: clientId,
       clientSecret: clientSecret,
       directionsRequest: request,

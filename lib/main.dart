@@ -48,7 +48,7 @@ import 'package:kdmp_cm_app/domain/usecase/mypage/set_place_modify_usecase.dart'
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_withdrawal_member_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_price_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_detail_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/payment/set_toss_billingkey_usecase.dart';
@@ -313,8 +313,8 @@ void main() async {
   getIt.registerSingleton<GetNaverAddressUseCase>(getNaverAddressUseCase);
   final getNaverAddressInfoUseCase = GetNaverAddressInfoUseCase(naverRepository: naverRepository);
   getIt.registerSingleton<GetNaverAddressInfoUseCase>(getNaverAddressInfoUseCase);
-  final getNaverPriceUseCase = GetNaverPriceUseCase(naverRepository: naverRepository);
-  getIt.registerSingleton<GetNaverPriceUseCase>(getNaverPriceUseCase);
+  final getNaverDrivingUseCase = GetNaverDrivingUseCase(naverRepository: naverRepository);
+  getIt.registerSingleton<GetNaverDrivingUseCase>(getNaverDrivingUseCase);
 
   /// 도로명주소 검색 API
   final jusoRepository = JusoRepositoryImpl(dio);

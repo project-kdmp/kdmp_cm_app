@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
 import 'package:kdmp_cm_app/data/constant/constants.dart';
-import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/naver/directions_request.dart';
 import 'package:kdmp_cm_app/data/model/naver/directions_response.dart';
@@ -38,26 +37,14 @@ class NaverRepositoryImpl extends NaverRepository {
         ),
       );
 
-      /// bizErrCode 없으면 정상 데이터 파싱
-      if (!response.data.containsKey("bizErrCode")) {
-        final responseObject = ReverseGeocodingResponse.fromJson(response.data);
-        if (responseObject.status.code == 0) {
-          final StateAPI state = Success(responseObject);
-          debugPrint("state: $state");
-          return state;
-        } else {
-          return Fail();
-        }
-      } else {
-        final badResponse = BadResponse.fromJson(response.data);
-        final StateAPI state = Bad(badResponse);
-        if (badResponse.detailMessage.isNotEmpty) {
-          Fluttertoast.showToast(msg: badResponse.detailMessage);
-        } else {
-          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
-        }
+      final responseObject = ReverseGeocodingResponse.fromJson(response.data);
+      if (responseObject.status.code == 0) {
+        final StateAPI state = Success(responseObject);
         debugPrint("state: $state");
         return state;
+      } else {
+        Fluttertoast.showToast(msg: responseObject.status.message);
+        return Fail(errorMessage: responseObject.status.message);
       }
     } on DioException catch (e) {
       final errorMessage = DioExceptions.fromDioError(e).toString();
@@ -90,23 +77,10 @@ class NaverRepositoryImpl extends NaverRepository {
         ),
       );
 
-      /// bizErrCode 없으면 정상 데이터 파싱
-      if (!response.data.containsKey("bizErrCode")) {
-        final responseObject = GeocodingResponse.fromJson(response.data);
-        final StateAPI state = Success(responseObject);
-        debugPrint("state: $state");
-        return state;
-      } else {
-        final badResponse = BadResponse.fromJson(response.data);
-        final StateAPI state = Bad(badResponse);
-        if (badResponse.detailMessage.isNotEmpty) {
-          Fluttertoast.showToast(msg: badResponse.detailMessage);
-        } else {
-          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
-        }
-        debugPrint("state: $state");
-        return state;
-      }
+      final responseObject = GeocodingResponse.fromJson(response.data);
+      final StateAPI state = Success(responseObject);
+      debugPrint("state: $state");
+      return state;
     } on DioException catch (e) {
       final errorMessage = DioExceptions.fromDioError(e).toString();
       Fluttertoast.showToast(msg: errorMessage);
@@ -119,7 +93,7 @@ class NaverRepositoryImpl extends NaverRepository {
   }
 
   @override
-  Future<StateAPI> getPrice({required String clientId, required String clientSecret, required DirectionsRequest directionsRequest}) async {
+  Future<StateAPI> getDriving({required String clientId, required String clientSecret, required DirectionsRequest directionsRequest}) async {
     const api = '/map-direction/v1/driving';
     final url = '${AppConstants.NAVER_API}$api';
 
@@ -138,26 +112,14 @@ class NaverRepositoryImpl extends NaverRepository {
         ),
       );
 
-      /// bizErrCode 없으면 정상 데이터 파싱
-      if (!response.data.containsKey("bizErrCode")) {
-        final responseObject = DirectionsResponse.fromJson(response.data);
-        if (responseObject.code == 0) {
-          final StateAPI state = Success(responseObject);
-          debugPrint("state: $state");
-          return state;
-        } else {
-          return Fail(errorMessage: responseObject.message);
-        }
-      } else {
-        final badResponse = BadResponse.fromJson(response.data);
-        final StateAPI state = Bad(badResponse);
-        if (badResponse.detailMessage.isNotEmpty) {
-          Fluttertoast.showToast(msg: badResponse.detailMessage);
-        } else {
-          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
-        }
+      final responseObject = DirectionsResponse.fromJson(response.data);
+      if (responseObject.code == 0) {
+        final StateAPI state = Success(responseObject);
         debugPrint("state: $state");
         return state;
+      } else {
+        Fluttertoast.showToast(msg: responseObject.message);
+        return Fail(errorMessage: responseObject.message);
       }
     } on DioException catch (e) {
       final errorMessage = DioExceptions.fromDioError(e).toString();

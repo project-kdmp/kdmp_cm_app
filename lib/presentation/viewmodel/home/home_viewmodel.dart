@@ -3,14 +3,17 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
+import 'package:kdmp_cm_app/data/model/common/policy_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/directions_request.dart';
+import 'package:kdmp_cm_app/data/model/policy/policy_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_request.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/policy/get_policy_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
@@ -26,6 +29,7 @@ class HomeViewModel {
     required this.setReservationRequestUseCase,
     required this.getDrivingUseCase,
     required this.getPaymentListUseCase,
+    required this.getPolicyUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
@@ -35,6 +39,7 @@ class HomeViewModel {
   final SetReservationRequestUseCase setReservationRequestUseCase;
   final GetDrivingUseCase getDrivingUseCase;
   final GetPaymentListUseCase getPaymentListUseCase;
+  final GetPolicyUseCase getPolicyUseCase;
 
   String clientId = "";
   String clientSecret = "";
@@ -410,6 +415,18 @@ class HomeViewModel {
     if (result is Success) {
       final response = result.drivingResponse;
       return response.driving ? response.drvReqSq : null;
+    }
+    return null;
+  }
+
+  /// 정책 조회 API
+  Future<Policy?> getPolicy({required String policyTp}) async {
+    final request = PolicyRequest(policyTp: policyTp);
+    final result = await getPolicyUseCase.execute(policyRequest: request);
+
+    if (result is Success) {
+      final response = result.policyResponse;
+      return Policy(title: response.policyTitle, content: response.policyContent);
     }
     return null;
   }

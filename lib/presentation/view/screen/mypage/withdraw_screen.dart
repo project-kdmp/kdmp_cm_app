@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/constant/codes.dart';
+import 'package:kdmp_cm_app/data/model/common/policy_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_withdrawal_member_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/policy/get_policy_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
@@ -32,6 +35,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
   void initState() {
     super.initState();
     initViewModel();
+    initData();
   }
 
   /// Create
@@ -40,7 +44,13 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       setWithdrawalMemberUseCase: GetIt.instance<SetWithdrawalMemberUseCase>(),
       deleteUserDataUseCase: GetIt.instance<DeleteUserDataUseCase>(),
+      getPolicyUseCase: GetIt.instance<GetPolicyUseCase>(),
     );
+  }
+
+  void initData() {
+    /// 탈퇴 정책 조회
+    _withdrawViewModel.getPolicy(policyTp: PolicyTp.cncl);
   }
 
   @override
@@ -80,14 +90,18 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            StringWithdraw.content2,
-                            style: Theme.of(context).textTheme.bodyLarge,
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
+                        ValueListenableBuilder<Policy>(
+                            valueListenable: _withdrawViewModel.policyNotifier,
+                            builder: (context, value, child) {
+                              return Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  value.content,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                  textAlign: TextAlign.left,
+                                ),
+                              );
+                            }),
                         const SizedBox(height: 30),
                       ],
                     ),

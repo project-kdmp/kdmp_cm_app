@@ -119,3 +119,14 @@ abstract class InqRtnSt {
   static const String wait = "WAIT"; // 답변 대기
   static const String comp = "COMP"; // 답변 완료
 }
+
+/// 정책 유형
+abstract class PolicyTp {
+  PolicyTp._();
+
+  static const String wait = "WAIT"; // 대기료 정책
+  static const String notc = "NOTC"; // 유의사항 정책
+  static const String pont = "PONT"; // 포인트 정책
+  static const String wthd = "WTHD"; // 출금 정책
+  static const String cncl = "CNCL"; // 탈퇴 정책
+}

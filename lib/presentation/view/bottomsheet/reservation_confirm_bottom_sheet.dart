@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
+import 'package:kdmp_cm_app/data/model/common/policy_model.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
@@ -17,6 +18,8 @@ class ReservationConfirmBottomSheet extends StatefulWidget {
     required this.start,
     required this.end,
     required this.stopOverList,
+    required this.notiPolicy,
+    required this.waitPolicy,
   }) : super(key: key);
 
   final String dateTitle;
@@ -26,6 +29,8 @@ class ReservationConfirmBottomSheet extends StatefulWidget {
   final MapData start;
   final MapData end;
   final List<StopOver> stopOverList;
+  final Policy notiPolicy;
+  final Policy waitPolicy;
 
   @override
   State<ReservationConfirmBottomSheet> createState() => _ReservationConfirmBottomSheetState();
@@ -155,7 +160,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                           SizedBox(
                             width: double.maxFinite,
                             child: Text(
-                              StringReservation.warningTitle,
+                              widget.notiPolicy.title,
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: Theme.of(context).disabledColor,
                                   ),
@@ -171,7 +176,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
-                              StringReservation.warningContent,
+                              widget.notiPolicy.content,
                               style: Theme.of(context).textTheme.bodySmall,
                               textAlign: TextAlign.start,
                             ),
@@ -209,7 +214,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                           SizedBox(
                             width: double.maxFinite,
                             child: Text(
-                              StringReservation.waitTitle,
+                              widget.waitPolicy.title,
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: Theme.of(context).disabledColor,
                                   ),
@@ -225,7 +230,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
-                              StringReservation.waitContent,
+                              widget.waitPolicy.content,
                               style: Theme.of(context).textTheme.bodySmall,
                               textAlign: TextAlign.start,
                             ),

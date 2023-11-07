@@ -420,7 +420,9 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                     /// 다시 호출하기 버튼
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () async {},
+                        onPressed: () async {
+                          // TODO: 다시 호출하기
+                        },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
                         ),

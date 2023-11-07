@@ -177,7 +177,6 @@ abstract class StringWithdraw {
 
   static const String title = "탈퇴하기";
   static const String content1 = "드라이브 서비스를 탈퇴하시겠습니까?";
-  static const String content2 = "탈퇴 시 재가입이 제한됩니다.";
   static const String bottomButton = "탈퇴하기";
 
   static const String withdrawalConfirm = "정말 탈퇴하시겠습니까?";
@@ -302,8 +301,6 @@ abstract class StringCall {
   StringCall._();
 
   static const String callContent = "(으)로\n호출하시겠습니까?";
-  static const String waitTitle = "대기료 발생 안내";
-  static const String waitContent = "대기료 발생 내용";
 }
 
 abstract class StringWork {
@@ -354,15 +351,6 @@ abstract class StringReservation {
   static const String startSpot = "출발지";
   static const String endSpot = "도착지";
   static const String stopover = "경유지";
-
-  static const String warningTitle = "유의사항 안내";
-  static const String warningContent = "유의사항 내용";
-
-  // static const String cancelTitle = "취소 정책 안내";
-  // static const String cancelContent = "취소 정책 내용";
-
-  static const String waitTitle = "대기료 발생 안내";
-  static const String waitContent = "대기료 발생 내용";
 
   static const String reservationConfirmAlert = "예약이 접수되었습니다.";
 }

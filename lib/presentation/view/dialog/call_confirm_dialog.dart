@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kdmp_cm_app/data/model/common/policy_model.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 
@@ -10,12 +11,14 @@ class CallConfirmDialog extends StatelessWidget {
     required this.content,
     required this.onConfirm,
     this.onCancel,
+    required this.waitPolicy,
   }) : super(key: key);
 
   final String? title;
   final String content;
   final Function() onConfirm;
   final Function()? onCancel;
+  final Policy waitPolicy;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +52,7 @@ class CallConfirmDialog extends StatelessWidget {
           SizedBox(
             width: double.maxFinite,
             child: Text(
-              StringCall.waitTitle,
+              waitPolicy.title,
               style: Theme.of(context).textTheme.bodySmall,
               textAlign: TextAlign.start,
             ),
@@ -63,7 +66,7 @@ class CallConfirmDialog extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
-              StringCall.waitContent,
+              waitPolicy.content,
               style: Theme.of(context).textTheme.bodySmall,
               textAlign: TextAlign.start,
             ),

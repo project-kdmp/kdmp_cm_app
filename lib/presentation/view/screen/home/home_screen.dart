@@ -7,14 +7,17 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
+import 'package:kdmp_cm_app/data/model/common/policy_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/policy/get_policy_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
@@ -89,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setReservationRequestUseCase: GetIt.instance<SetReservationRequestUseCase>(),
       getDrivingUseCase: GetIt.instance<GetDrivingUseCase>(),
       getPaymentListUseCase: GetIt.instance<GetPaymentListUseCase>(),
+      getPolicyUseCase: GetIt.instance<GetPolicyUseCase>(),
     );
 
     /// 키 관리 파일 가져오기
@@ -606,6 +610,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               isEnabled: value,
                               text: StringHome.reservationButton,
                               onPressed: () async {
+                                /// 유의사항 조회
+                                final notiPolicy = await _homeViewModel.getPolicy(policyTp: PolicyTp.notc);
+                                if (notiPolicy == null) {
+                                  return;
+                                }
+
+                                /// 대기료 정책 조회
+                                final waitPolicy = await _homeViewModel.getPolicy(policyTp: PolicyTp.wait);
+                                if (waitPolicy == null) {
+                                  return;
+                                }
+
                                 /// 예약 일시 팝업 띄움
                                 final result = await showModalBottomSheet(
                                   context: context,
@@ -636,6 +652,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       start: _homeViewModel.startMapData!,
                                       end: _homeViewModel.endMapData!,
                                       stopOverList: _homeViewModel.stopOverList,
+                                      notiPolicy: notiPolicy,
+                                      waitPolicy: waitPolicy,
                                     );
                                   },
                                 );
@@ -700,9 +718,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: ElevatedButton(
                               onPressed: value
                                   ? () async {
+                                      /// 대기료 정책 조회
+                                      final waitPolicy = await _homeViewModel.getPolicy(policyTp: PolicyTp.wait);
+                                      if (waitPolicy == null) {
+                                        return;
+                                      }
+
                                       final content = _homeViewModel.endMapData!.place.isNotEmpty ? _homeViewModel.endMapData!.place : _homeViewModel.endMapData!.address;
                                       await _showCallConfirmDialog(
                                         content: content,
+                                        waitPolicy: waitPolicy,
                                         onConfirm: () async {
                                           Navigator.pop(context);
 
@@ -838,7 +863,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _showCallConfirmDialog({String? title, required String content, required Function() onConfirm}) {
+  _showCallConfirmDialog({String? title, required String content, required Policy waitPolicy, required Function() onConfirm}) {
     return showDialog(
       context: context,
       barrierDismissible: true, // dialog 영역 외 터치 여부
@@ -846,6 +871,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return CallConfirmDialog(
           title: title,
           content: content,
+          waitPolicy: waitPolicy,
           onConfirm: onConfirm,
         );
       },

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/register/register_request.dart';
 import 'package:kdmp_cm_app/data/model/term/term_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
+import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/register_verify_screen.dart';
@@ -76,7 +77,12 @@ class _TermScreenState extends State<TermScreen> {
                         child: Column(
                           children: [
                             /// 로고
-                            Image.asset(ImageCommon.appLogo, width: 150, height: 150),
+                            ValueListenableBuilder<ThemeMode>(
+                              valueListenable: CustomThemeMode.themeMode,
+                              builder: (context, themeMode, child) {
+                                return Image.asset(themeMode == ThemeMode.light ? ImageCommon.appLogoLight : ImageCommon.appLogoDark, width: 150, height: 150);
+                              },
+                            ),
                             const SizedBox(height: 30),
 
                             /// 전체 이용약관

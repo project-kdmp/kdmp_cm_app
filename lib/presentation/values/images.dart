@@ -2,7 +2,8 @@ abstract class ImageCommon {
   ImageCommon._();
 
   static const String iconWarning = "assets/common/icon_warning.png";
-  static const String appLogo = "assets/common/app_logo.png";
+  static const String appLogoLight = "assets/common/app_logo_light.png";
+  static const String appLogoDark = "assets/common/app_logo_dark.png";
   static const String icStart = "assets/common/ic_start.png";
   static const String icEnd = "assets/common/ic_end.png";
   static const String imgWarning = "assets/common/img_warning.png";

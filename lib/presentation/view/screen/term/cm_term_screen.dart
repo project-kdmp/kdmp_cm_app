@@ -8,6 +8,7 @@ import 'package:kdmp_cm_app/data/model/term/my_term_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/set_my_term_usecase.dart';
+import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
@@ -90,7 +91,12 @@ class _CMTermScreenState extends State<CMTermScreen> {
                             const SizedBox(height: 30),
 
                             /// 로고
-                            Image.asset(ImageCommon.appLogo, width: 150, height: 150),
+                            ValueListenableBuilder<ThemeMode>(
+                              valueListenable: CustomThemeMode.themeMode,
+                              builder: (context, themeMode, child) {
+                                return Image.asset(themeMode == ThemeMode.light ? ImageCommon.appLogoLight : ImageCommon.appLogoDark, width: 150, height: 150);
+                              },
+                            ),
                             const SizedBox(height: 30),
 
                             /// 전체 이용약관

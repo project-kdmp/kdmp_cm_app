@@ -17,13 +17,13 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_user_data_usecase.dart';
+import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/term_screen.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/splash/splash_viewmodel.dart';
@@ -117,7 +117,12 @@ class _SplashScreenState extends State<SplashScreen> {
       onWillPop: _onBackPressed,
       child: Scaffold(
         body: Center(
-          child: Image.asset(ImageCommon.appLogo, width: 200, height: 200),
+          child: ValueListenableBuilder<ThemeMode>(
+            valueListenable: CustomThemeMode.themeMode,
+            builder: (context, themeMode, child) {
+              return Image.asset(themeMode == ThemeMode.light ? ImageCommon.appLogoLight : ImageCommon.appLogoDark, width: 200, height: 200);
+            },
+          ),
         ),
       ),
     );

@@ -107,10 +107,10 @@ flutter:
   assets:
     - .env
     - assets/app_icon.png
-    - assets/common/app_logo.png
+    - assets/common/app_logo_light.png
+    - assets/common/app_logo_dark.png
     - assets/common/icon_warning.png
     - assets/common/img_warning.png
-    - assets/common/app_logo.png
     - assets/common/ic_start.png
     - assets/common/ic_end.png
     - assets/common/img_money.png

@@ -3,6 +3,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
+import 'package:kdmp_cm_app/data/model/common/place_map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_place_add_usecase.dart';
@@ -58,7 +59,7 @@ class _ModifyPlaceScreenState extends State<ModifyPlaceScreen> {
     final data = widget.place;
     if (data != null) {
       _modifyPlaceViewModel.placeNicknm = data.fplaceNicknm;
-      _modifyPlaceViewModel.placeMapData = MapData(
+      _modifyPlaceViewModel.placeMapData = PlaceMapData(
         place: data.fplacePlaceNm,
         address: data.fplaceAddress,
         latLng: NLatLng(data.gpsLat, data.gpsLat),
@@ -136,7 +137,11 @@ class _ModifyPlaceScreenState extends State<ModifyPlaceScreen> {
                                       /// 장소 설정 검색 화면으로 이동
                                       final result = await context.pushNamed(PlaceSearchScreen.routeName);
                                       if (result != null && result is MapData) {
-                                        _modifyPlaceViewModel.placeMapData = result;
+                                        _modifyPlaceViewModel.placeMapData = PlaceMapData(
+                                          latLng: result.latLng,
+                                          place: result.place,
+                                          address: result.address,
+                                        );
                                       }
                                     },
                                   );

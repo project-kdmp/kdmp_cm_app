@@ -138,9 +138,7 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
                         onPressed: () async {
                           final result = await context.pushNamed(StartMapScreen.routeName);
                           if (result != null && result is MapData) {
-                            /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-                            await _startSearchViewModel.addRecentMapData(mapData: result);
-                            context.pop(result);
+                            await setMapData(address: result.address, place: result.place);
                           }
                         },
                       ),
@@ -153,9 +151,7 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
                         onPressed: () async {
                           final result = await context.pushNamed(StartMapScreen.routeName);
                           if (result != null && result is MapData) {
-                            /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-                            await _startSearchViewModel.addRecentMapData(mapData: result);
-                            context.pop(result);
+                            await setMapData(address: result.address, place: result.place);
                           }
                         },
                       ),
@@ -237,20 +233,7 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 검색 리스트 아이템 클릭
-            /// 검색된 주소로 장소 정보 검색
-            final result = await _startSearchViewModel.getAddressInfo(address: item.roadAddrPart1);
-            if (result is Success) {
-              final addressInfo = result.geocodingResponse.addresses![0];
-
-              /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-              final mapData = MapData(
-                latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
-                address: address,
-                place: place,
-              );
-              await _startSearchViewModel.addRecentMapData(mapData: mapData);
-              context.pop(mapData);
-            }
+            await setMapData(address: address, place: place);
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -291,10 +274,7 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 최근 검색 리스트 아이템 클릭
-
-            /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-            await _startSearchViewModel.addRecentMapData(mapData: value[index]);
-            context.pop(value[index]);
+            await setMapData(address: address, place: place);
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -329,5 +309,42 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     debugPrint("location position: $position");
     return NLatLng(position.latitude, position.longitude);
+  }
+
+  /// 장소 정보 검색 후 전 화면으로 값 전달
+  Future<void> setMapData({required String address, required String place}) async {
+    /// 검색된 주소로 장소 정보 검색
+    final result = await _startSearchViewModel.getAddressInfo(address: address);
+    if (result is Success) {
+      final addressInfo = result.geocodingResponse.addresses![0];
+      String sido = "";
+      String sigugun = "";
+      String dongmyun = "";
+      for (int i = 0; i < addressInfo.addressElements.length; i++) {
+        final types = addressInfo.addressElements[i].types[0];
+        if (types == "SIDO") {
+          sido = addressInfo.addressElements[i].longName;
+        } else if (types == "SIGUGUN") {
+          sigugun = addressInfo.addressElements[i].longName;
+        } else if (types == "DONGMYUN") {
+          dongmyun = addressInfo.addressElements[i].longName;
+        }
+      }
+      final drivingAddress = DrivingAddress(
+        sido: sido,
+        sigungu: sigugun,
+        legalDong: dongmyun,
+      );
+
+      /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+      final mapData = MapData(
+        latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
+        address: address,
+        place: place,
+        drivingAddress: drivingAddress,
+      );
+      await _startSearchViewModel.addRecentMapData(mapData: mapData);
+      context.pop(mapData);
+    }
   }
 }

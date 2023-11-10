@@ -20,6 +20,7 @@ import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart'
 import 'package:kdmp_cm_app/domain/usecase/policy/get_policy_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/get_driving_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
@@ -91,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setCallRequestUseCase: GetIt.instance<SetCallRequestUseCase>(),
       setReservationRequestUseCase: GetIt.instance<SetReservationRequestUseCase>(),
       getDrivingUseCase: GetIt.instance<GetDrivingUseCase>(),
+      getDrivingPriceUseCase: GetIt.instance<GetDrivingPriceUseCase>(),
       getPaymentListUseCase: GetIt.instance<GetPaymentListUseCase>(),
       getPolicyUseCase: GetIt.instance<GetPolicyUseCase>(),
     );

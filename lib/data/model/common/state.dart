@@ -27,6 +27,7 @@ import 'package:kdmp_cm_app/data/model/term/cm_term_list_response.dart';
 import 'package:kdmp_cm_app/data/model/term/term_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/term/term_list_response.dart';
 import 'package:kdmp_cm_app/data/model/work/call_info_response.dart';
+import 'package:kdmp_cm_app/data/model/work/driving_price_response.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_response.dart';
 import 'package:kdmp_cm_app/data/model/work/reservation_info_response.dart';
 
@@ -102,6 +103,8 @@ class Success extends StateAPI {
   InquiryWriteResponse get inquiryWriteResponse => _response;
 
   DrivingResponse get drivingResponse => _response;
+
+  DrivingPriceResponse get drivingPriceResponse => _response;
 
   PolicyResponse get policyResponse => _response;
 

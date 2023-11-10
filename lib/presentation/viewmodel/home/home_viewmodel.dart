@@ -10,12 +10,14 @@ import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/directions_request.dart';
 import 'package:kdmp_cm_app/data/model/policy/policy_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_request.dart';
+import 'package:kdmp_cm_app/data/model/work/driving_price_request.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/policy/get_policy_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/get_driving_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
@@ -28,6 +30,7 @@ class HomeViewModel {
     required this.setCallRequestUseCase,
     required this.setReservationRequestUseCase,
     required this.getDrivingUseCase,
+    required this.getDrivingPriceUseCase,
     required this.getPaymentListUseCase,
     required this.getPolicyUseCase,
   });
@@ -38,6 +41,7 @@ class HomeViewModel {
   final SetCallRequestUseCase setCallRequestUseCase;
   final SetReservationRequestUseCase setReservationRequestUseCase;
   final GetDrivingUseCase getDrivingUseCase;
+  final GetDrivingPriceUseCase getDrivingPriceUseCase;
   final GetPaymentListUseCase getPaymentListUseCase;
   final GetPolicyUseCase getPolicyUseCase;
 
@@ -62,7 +66,8 @@ class HomeViewModel {
 
   set startMapData(MapData? value) {
     _startMapData.value = value;
-    getCallPrice();
+    _checkStopOverButtonValid();
+    _getDrivingCalculate();
   }
 
   /// 경유지 리스트
@@ -74,7 +79,8 @@ class HomeViewModel {
 
   set stopOverList(List<StopOver> value) {
     _stopOverList.value = value;
-    getCallPrice();
+    _checkStopOverButtonValid();
+    _getDrivingCalculate();
   }
 
   addStopOverList(StopOver item) {
@@ -96,7 +102,8 @@ class HomeViewModel {
 
   set endMapData(MapData? value) {
     _endMapData.value = value;
-    getCallPrice();
+    _checkStopOverButtonValid();
+    _getDrivingCalculate();
   }
 
   /// 도착지 검색 내 경유 버튼 활성화 여부
@@ -296,26 +303,30 @@ class HomeViewModel {
   }
 
   /// 운행거리 및 요금 조회 API
-  getCallPrice() async {
+  _getDrivingCalculate() async {
     if (startMapData == null || endMapData == null) {
       return;
     }
 
-    final result = await _getCallPrice();
+    /// 운행거리 및 요금 재조회 시 요금 값 초기화
+    basicPrice = 0;
+    distance = 0;
+
+    final result = await _getDrivingDistance();
     if (result is Success) {
       final response = result.directionsResponse;
-      basicPrice = response.route!.traoptimal[0].summary.taxiFare + response.route!.traoptimal[0].summary.tollFare; // 택시 요금 + 통행 요금(톨게이트)
       distance = response.route!.traoptimal[0].summary.distance; // 운행거리
-    } else {
-      basicPrice = 0;
-      distance = 0;
+
+      final priceResult = await _getDrivingPrice();
+      if (priceResult is Success) {
+        final priceResponse = priceResult.drivingPriceResponse;
+        basicPrice = priceResponse.price;
+      }
     }
-    _checkStopOverButtonValid();
-    _checkCallButtonValid();
   }
 
-  /// 요금 조회 API
-  Future<StateAPI> _getCallPrice() async {
+  /// 운행거리 조회 API
+  Future<StateAPI> _getDrivingDistance() async {
     state = Loading();
 
     final start = "${startMapData!.latLng.longitude},${startMapData!.latLng.latitude}";
@@ -336,6 +347,26 @@ class HomeViewModel {
       clientSecret: clientSecret,
       directionsRequest: request,
     );
+    state = result;
+
+    return result;
+  }
+
+  /// 운행 요금 조회 API
+  Future<StateAPI> _getDrivingPrice() async {
+    state = Loading();
+
+    List<DrivingAddress> drivingAddressList = List.from({});
+    for (int i = 0; i < stopOverList.length; i++) {
+      drivingAddressList.add(stopOverList[i].drivingAddress);
+    }
+
+    final request = DrivingPriceRequest(
+      start: startMapData!.drivingAddress,
+      end: endMapData!.drivingAddress,
+      stopoverList: drivingAddressList,
+    );
+    final result = await getDrivingPriceUseCase.execute(drivingPriceRequest: request);
     state = result;
 
     return result;

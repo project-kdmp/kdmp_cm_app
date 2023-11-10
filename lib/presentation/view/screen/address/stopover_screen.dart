@@ -109,6 +109,7 @@ class _StopOverScreenState extends State<StopOverScreen> {
                                           stopDistance: 0,
                                           lat: result.latLng.latitude,
                                           long: result.latLng.longitude,
+                                          drivingAddress: result.drivingAddress,
                                         ),
                                       );
                                     }

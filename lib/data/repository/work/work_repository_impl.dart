@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
 import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
@@ -13,6 +12,8 @@ import 'package:kdmp_cm_app/data/model/work/call_fee_change_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_info_response.dart';
 import 'package:kdmp_cm_app/data/model/work/call_request.dart';
 import 'package:kdmp_cm_app/data/model/work/confirm_call_cancel_request.dart';
+import 'package:kdmp_cm_app/data/model/work/driving_price_request.dart';
+import 'package:kdmp_cm_app/data/model/work/driving_price_response.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_request.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_response.dart';
 import 'package:kdmp_cm_app/data/model/work/pay_request.dart';
@@ -364,6 +365,42 @@ class WorkRepositoryImpl extends WorkRepository {
       /// bizErrCode 없으면 정상 데이터 파싱
       if (!response.data.containsKey("bizErrCode")) {
         final responseObject = DrivingResponse.fromJson(response.data);
+        final StateAPI state = Success(responseObject);
+        debugPrint("state: $state");
+        return state;
+      } else {
+        final badResponse = BadResponse.fromJson(response.data);
+        final StateAPI state = Bad(badResponse);
+        if (badResponse.detailMessage.isNotEmpty) {
+          Fluttertoast.showToast(msg: badResponse.detailMessage);
+        } else {
+          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
+        }
+        debugPrint("state: $state");
+        return state;
+      }
+    } catch (e) {
+      const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      Fluttertoast.showToast(msg: errorMessage);
+      return Fail(errorMessage: errorMessage);
+    }
+  }
+
+  @override
+  Future<StateAPI> getDrivingPrice({required DrivingPriceRequest drivingPriceRequest}) async {
+    const api = '/v1/biztotal/cm/drv/getDrivingPrice';
+    final url = '${AppConstants.API}$api';
+
+    try {
+      final response = await _dio.post(
+        url,
+        data: drivingPriceRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      /// bizErrCode 없으면 정상 데이터 파싱
+      if (!response.data.containsKey("bizErrCode")) {
+        final responseObject = DrivingPriceResponse.fromJson(response.data);
         final StateAPI state = Success(responseObject);
         debugPrint("state: $state");
         return state;

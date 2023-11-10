@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
+import 'package:kdmp_cm_app/data/model/common/place_map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/mypage/place_add_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/place_modify_request.dart';
@@ -43,13 +43,13 @@ class ModifyPlaceViewModel {
   }
 
   /// 장소 데이터 모델
-  final ValueNotifier<MapData?> _placeMapData = ValueNotifier<MapData?>(null);
+  final ValueNotifier<PlaceMapData?> _placeMapData = ValueNotifier<PlaceMapData?>(null);
 
-  ValueNotifier<MapData?> get placeMapDataNotifier => _placeMapData;
+  ValueNotifier<PlaceMapData?> get placeMapDataNotifier => _placeMapData;
 
-  MapData? get placeMapData => _placeMapData.value;
+  PlaceMapData? get placeMapData => _placeMapData.value;
 
-  set placeMapData(MapData? value) {
+  set placeMapData(PlaceMapData? value) {
     _placeMapData.value = value;
     placeAddress = value != null ? value.address : "";
     _checkIsValid();

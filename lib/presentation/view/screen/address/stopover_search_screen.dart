@@ -156,9 +156,7 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
                           onPressed: () async {
                             final result = await context.pushNamed(StopOverMapScreen.routeName);
                             if (result != null && result is MapData) {
-                              /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-                              _stopOverSearchViewModel.addRecentMapData(mapData: result);
-                              context.pop(result);
+                              await setMapData(address: result.address, place: result.place);
                             }
                           },
                         ),
@@ -234,23 +232,49 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
       primary: false,
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
+        final item = value[index];
+        final address = item.fplaceAddress;
+        final place = item.fplacePlaceNm;
         return CustomRoundButton(
-          text: value[index].fplaceNicknm ?? "",
+          text: value[index].fplaceNicknm,
           backgroundColor: Theme.of(context).toggleButtonsTheme.fillColor,
           textColor: Theme.of(context).colorScheme.secondary,
           textSize: 16,
           // 텍스트 사이즈 고정
           onPressed: () async {
-            /// 해당 장소로 경유지 설정
-            final mapData = MapData(
-              place: value[index].fplacePlaceNm,
-              address: value[index].fplaceAddress,
-              latLng: NLatLng(value[index].gpsLat, value[index].gpsLong),
-            );
+            /// 검색된 주소로 장소 정보 검색
+            final result = await _stopOverSearchViewModel.getAddressInfo(address: address);
+            if (result is Success) {
+              final addressInfo = result.geocodingResponse.addresses![0];
+              String sido = "";
+              String sigugun = "";
+              String dongmyun = "";
+              for (int i = 0; i < addressInfo.addressElements.length; i++) {
+                final types = addressInfo.addressElements[i].types[0];
+                if (types == "SIDO") {
+                  sido = addressInfo.addressElements[i].longName;
+                } else if (types == "SIGUGUN") {
+                  sigugun = addressInfo.addressElements[i].longName;
+                } else if (types == "DONGMYUN") {
+                  dongmyun = addressInfo.addressElements[i].longName;
+                }
+              }
+              final drivingAddress = DrivingAddress(
+                sido: sido,
+                sigungu: sigugun,
+                legalDong: dongmyun,
+              );
 
-            /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-            _stopOverSearchViewModel.addRecentMapData(mapData: mapData);
-            context.pop(mapData);
+              /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+              final mapData = MapData(
+                latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
+                address: address,
+                place: place,
+                drivingAddress: drivingAddress,
+              );
+              await _stopOverSearchViewModel.addRecentMapData(mapData: mapData);
+              context.pop(mapData);
+            }
           },
         );
       },
@@ -274,20 +298,7 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 검색 리스트 아이템 클릭
-            /// 검색된 주소로 장소 정보 검색
-            final result = await _stopOverSearchViewModel.getAddressInfo(address: item.roadAddrPart1);
-            if (result is Success) {
-              final addressInfo = result.geocodingResponse.addresses![0];
-
-              /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-              final mapData = MapData(
-                latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
-                address: address,
-                place: place,
-              );
-              await _stopOverSearchViewModel.addRecentMapData(mapData: mapData);
-              context.pop(mapData);
-            }
+            await setMapData(address: address, place: place);
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -328,10 +339,7 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 최근 검색 리스트 아이템 클릭
-
-            /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-            await _stopOverSearchViewModel.addRecentMapData(mapData: value[index]);
-            context.pop(value[index]);
+            await setMapData(address: address, place: place);
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -366,5 +374,42 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     debugPrint("location position: $position");
     return NLatLng(position.latitude, position.longitude);
+  }
+
+  /// 장소 정보 검색 후 전 화면으로 값 전달
+  Future<void> setMapData({required String address, required String place}) async {
+    /// 검색된 주소로 장소 정보 검색
+    final result = await _stopOverSearchViewModel.getAddressInfo(address: address);
+    if (result is Success) {
+      final addressInfo = result.geocodingResponse.addresses![0];
+      String sido = "";
+      String sigugun = "";
+      String dongmyun = "";
+      for (int i = 0; i < addressInfo.addressElements.length; i++) {
+        final types = addressInfo.addressElements[i].types[0];
+        if (types == "SIDO") {
+          sido = addressInfo.addressElements[i].longName;
+        } else if (types == "SIGUGUN") {
+          sigugun = addressInfo.addressElements[i].longName;
+        } else if (types == "DONGMYUN") {
+          dongmyun = addressInfo.addressElements[i].longName;
+        }
+      }
+      final drivingAddress = DrivingAddress(
+        sido: sido,
+        sigungu: sigugun,
+        legalDong: dongmyun,
+      );
+
+      /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+      final mapData = MapData(
+        latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
+        address: address,
+        place: place,
+        drivingAddress: drivingAddress,
+      );
+      await _stopOverSearchViewModel.addRecentMapData(mapData: mapData);
+      context.pop(mapData);
+    }
   }
 }

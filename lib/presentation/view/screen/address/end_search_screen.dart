@@ -156,9 +156,7 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
                           onPressed: () async {
                             final result = await context.pushNamed(EndMapScreen.routeName);
                             if (result != null && result is MapData) {
-                              /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-                              await _endSearchViewModel.addRecentMapData(mapData: result);
-                              context.pop(result);
+                              await setMapData(address: result.address, place: result.place);
                             }
                           },
                         ),
@@ -234,20 +232,18 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
       primary: false,
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
+        final item = value[index];
+        final address = item.fplaceAddress;
+        final place = item.fplacePlaceNm;
         return CustomRoundButton(
-          text: value[index].fplaceNicknm ?? "",
+          text: value[index].fplaceNicknm,
           backgroundColor: Theme.of(context).toggleButtonsTheme.fillColor,
           textColor: Theme.of(context).colorScheme.secondary,
           textSize: 16,
           // 텍스트 사이즈 고정
           onPressed: () async {
-            /// 해당 장소로 도착지 설정
-            final result = MapData(
-              place: value[index].fplacePlaceNm,
-              address: value[index].fplaceAddress,
-              latLng: NLatLng(value[index].gpsLat, value[index].gpsLong),
-            );
-            context.pop(result);
+            /// 자주 가는 장소 리스트 아이템 클릭
+            await setMapData(address: address, place: place);
           },
         );
       },
@@ -271,20 +267,7 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 검색 리스트 아이템 클릭
-            /// 검색된 주소로 장소 정보 검색
-            final result = await _endSearchViewModel.getAddressInfo(address: item.roadAddrPart1);
-            if (result is Success) {
-              final addressInfo = result.geocodingResponse.addresses![0];
-
-              /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-              final mapData = MapData(
-                latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
-                address: address,
-                place: place,
-              );
-              await _endSearchViewModel.addRecentMapData(mapData: mapData);
-              context.pop(mapData);
-            }
+            await setMapData(address: address, place: place);
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -325,10 +308,7 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 최근 검색 리스트 아이템 클릭
-
-            /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-            await _endSearchViewModel.addRecentMapData(mapData: value[index]);
-            context.pop(value[index]);
+            await setMapData(address: address, place: place);
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -363,5 +343,42 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     debugPrint("location position: $position");
     return NLatLng(position.latitude, position.longitude);
+  }
+
+  /// 장소 정보 검색 후 전 화면으로 값 전달
+  Future<void> setMapData({required String address, required String place}) async {
+    /// 검색된 주소로 장소 정보 검색
+    final result = await _endSearchViewModel.getAddressInfo(address: address);
+    if (result is Success) {
+      final addressInfo = result.geocodingResponse.addresses![0];
+      String sido = "";
+      String sigugun = "";
+      String dongmyun = "";
+      for (int i = 0; i < addressInfo.addressElements.length; i++) {
+        final types = addressInfo.addressElements[i].types[0];
+        if (types == "SIDO") {
+          sido = addressInfo.addressElements[i].longName;
+        } else if (types == "SIGUGUN") {
+          sigugun = addressInfo.addressElements[i].longName;
+        } else if (types == "DONGMYUN") {
+          dongmyun = addressInfo.addressElements[i].longName;
+        }
+      }
+      final drivingAddress = DrivingAddress(
+        sido: sido,
+        sigungu: sigugun,
+        legalDong: dongmyun,
+      );
+
+      /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+      final mapData = MapData(
+        latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
+        address: address,
+        place: place,
+        drivingAddress: drivingAddress,
+      );
+      await _endSearchViewModel.addRecentMapData(mapData: mapData);
+      context.pop(mapData);
+    }
   }
 }

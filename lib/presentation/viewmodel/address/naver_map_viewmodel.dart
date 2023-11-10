@@ -47,6 +47,7 @@ class NaverMapViewModel {
       address: newAddress,
       place: newPlace,
       latLng: nLatLng,
+      drivingAddress: DrivingAddress(sido: "", sigungu: "", legalDong: ""),
     );
   }
 }

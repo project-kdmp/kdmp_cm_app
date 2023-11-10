@@ -154,6 +154,9 @@ class StartSearchViewModel {
   /// 최근 검색 장소 리스트 조회
   Future<void> getRecentList() async {
     recentList = await getMapDataListUseCase.execute();
+    for (int i = 0; i<recentList.length; i++) {
+      debugPrint("ddddd ${recentList[i].place} ${recentList[i].address}");
+    }
   }
 
   /// 최근 검색 장소 추가

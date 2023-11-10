@@ -17,6 +17,7 @@ class PlaceMapViewModel {
       latLng: const NLatLng(37.5666103, 126.9783882),
       place: "",
       address: "",
+      drivingAddress: DrivingAddress(sido: "", sigungu: "", legalDong: ""),
     ),
   );
 

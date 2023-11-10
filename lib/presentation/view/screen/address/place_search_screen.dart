@@ -225,15 +225,34 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
           onTap: () async {
             /// 검색 리스트 아이템 클릭
             /// 검색된 주소로 장소 정보 검색
-            final result = await _placeSearchViewModel.getAddressInfo(address: item.roadAddrPart1);
+            final result = await _placeSearchViewModel.getAddressInfo(address: address);
             if (result is Success) {
               final addressInfo = result.geocodingResponse.addresses![0];
+              String sido = "";
+              String sigugun = "";
+              String dongmyun = "";
+              for (int i = 0; i < addressInfo.addressElements.length; i++) {
+                final types = addressInfo.addressElements[i].types[0];
+                if (types == "SIDO") {
+                  sido = addressInfo.addressElements[i].longName;
+                } else if (types == "SIGUGUN") {
+                  sigugun = addressInfo.addressElements[i].longName;
+                } else if (types == "DONGMYUN") {
+                  dongmyun = addressInfo.addressElements[i].longName;
+                }
+              }
+              final drivingAddress = DrivingAddress(
+                sido: sido,
+                sigungu: sigugun,
+                legalDong: dongmyun,
+              );
 
               /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
               final mapData = MapData(
                 latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
                 address: address,
                 place: place,
+                drivingAddress: drivingAddress,
               );
               await _placeSearchViewModel.addRecentMapData(mapData: mapData);
               context.pop(mapData);

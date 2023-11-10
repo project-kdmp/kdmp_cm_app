@@ -191,10 +191,7 @@ class HomeViewModel {
 
   String get paymKind => _paymKind.value;
 
-  set paymKind(String value) {
-    _paymKind.value = value;
-    _checkCallButtonValid();
-  }
+  set paymKind(String value) => _paymKind.value = value;
 
   /// 결제수단
   final ValueNotifier<String> _paymentNm = ValueNotifier<String>("");
@@ -203,9 +200,7 @@ class HomeViewModel {
 
   String get paymentNm => _paymentNm.value;
 
-  set paymentNm(String value) {
-    _paymentNm.value = value;
-  }
+  set paymentNm(String value) => _paymentNm.value = value;
 
   /// 결제 카드 아이디
   final ValueNotifier<String> _cardId = ValueNotifier<String>("");
@@ -214,8 +209,13 @@ class HomeViewModel {
 
   String get cardId => _cardId.value;
 
-  set cardId(String value) {
-    _cardId.value = value;
+  set cardId(String value) => _cardId.value = value;
+
+  setPaymentInfo({required String paymKind, required String paymentNm, required String cardId}) {
+    this.paymKind = paymKind;
+    this.paymentNm = paymentNm;
+    this.cardId = cardId;
+    _checkCallButtonValid();
   }
 
   /// 운행거리
@@ -261,10 +261,9 @@ class HomeViewModel {
     startMapData = null;
     endMapData = null;
     stopOverList = List.empty();
-    paymentNm = "";
-    paymKind = "";
     distance = 0;
     basicPrice = 0;
+    getPayment();
     _checkStopOverButtonValid();
   }
 
@@ -292,13 +291,17 @@ class HomeViewModel {
   getPayment() async {
     final paymentList = await getPaymentListUseCase.execute();
     if (paymentList.isNotEmpty) {
-      cardId = paymentList[0].cardId;
-      paymentNm = paymentList[0].paymentNm;
-      paymKind = "CARD";
+      setPaymentInfo(
+        paymKind: "CARD",
+        paymentNm: paymentList[0].paymentNm,
+        cardId: paymentList[0].cardId,
+      );
     } else {
-      cardId = "";
-      paymentNm = "";
-      paymKind = "CASH";
+      setPaymentInfo(
+        paymKind: "CASH",
+        paymentNm: "",
+        cardId: "",
+      );
     }
   }
 

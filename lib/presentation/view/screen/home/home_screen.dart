@@ -577,9 +577,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                             );
                                             if (result is Payment) {
                                               /// 선택한 결제수단 데이터 받기
-                                              _homeViewModel.cardId = result.cardId == "CASH" ? "" : result.cardId;
-                                              _homeViewModel.paymentNm = result.paymentNm;
-                                              _homeViewModel.paymKind = result.cardId == "CASH" ? "CASH" : "CARD";
+                                              _homeViewModel.setPaymentInfo(
+                                                paymKind: result.cardId == "CASH" ? "CASH" : "CARD",
+                                                paymentNm: result.paymentNm,
+                                                cardId: result.cardId == "CASH" ? "" : result.cardId,
+                                              );
                                             }
 
                                             /// 화면 이동 완료 후 네이버 지도 보여줌

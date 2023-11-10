@@ -51,10 +51,12 @@ import 'package:provider/provider.dart';
 
 /// 홈 화면
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({Key? key, this.drivingData}) : super(key: key);
 
   static const String routeName = "home";
   static const String routeURL = "/home";
+
+  final Map<String, dynamic>? drivingData;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -106,6 +108,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void initDataFirst() async {
     /// 결제수단 조회
     await _homeViewModel.getPayment();
+    debugPrint("initDataFirst: ${widget.drivingData}");
+
+    /// 다시 호출로 접근 시 호출 데이터 전달
+    if (widget.drivingData != null) {
+      _homeViewModel.setDrivingData(
+        startMapData: widget.drivingData!["startMapData"] as MapData,
+        endMapData: widget.drivingData!["endMapData"] as MapData,
+        stopOverList: widget.drivingData!["stopOverList"] as List<StopOver>,
+      );
+    }
   }
 
   void initData() async {

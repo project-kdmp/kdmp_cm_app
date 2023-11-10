@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
+import 'package:kdmp_cm_app/data/constant/constants.dart';
+import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_called_detail_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/review_bottom_sheet.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/horizontal_dashed_divider.dart';
@@ -51,10 +56,16 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
       getCalledDetailUseCase: GetIt.instance<GetCalledDetailUseCase>(),
       setReviewWriteUseCase: GetIt.instance<SetReviewWriteUseCase>(),
       setFCMPushUseCase: GetIt.instance<SetFCMPushUseCase>(),
+      getNaverAddressInfoUseCase: GetIt.instance<GetNaverAddressInfoUseCase>(),
     );
   }
 
   void initData() async {
+    /// 키 관리 파일 가져오기
+    await dotenv.load(fileName: ".env");
+    _calledDetailViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
+    _calledDetailViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
+
     /// 이용 정보정보 조회
     await _calledDetailViewModel.getCalledDetail(widget.drvReqSq);
   }
@@ -177,10 +188,15 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                                 ),
                               ),
                               const SizedBox(width: 30),
-                              ValueListenableBuilder<String>(
-                                valueListenable: _calledDetailViewModel.startPlaceNotifier,
+                              ValueListenableBuilder<MapData?>(
+                                valueListenable: _calledDetailViewModel.startMapDataNotifier,
                                 builder: (context, value, _) {
-                                  return Expanded(child: Text(value));
+                                  final text = value != null
+                                      ? value.place.isNotEmpty
+                                          ? value.place
+                                          : value.address
+                                      : "";
+                                  return Expanded(child: Text(text));
                                 },
                               ),
                             ],
@@ -215,10 +231,15 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                                 ),
                               ),
                               const SizedBox(width: 30),
-                              ValueListenableBuilder<String>(
-                                valueListenable: _calledDetailViewModel.endPlaceNotifier,
+                              ValueListenableBuilder<MapData?>(
+                                valueListenable: _calledDetailViewModel.endMapDataNotifier,
                                 builder: (context, value, _) {
-                                  return Expanded(child: Text(value));
+                                  final text = value != null
+                                      ? value.place.isNotEmpty
+                                          ? value.place
+                                          : value.address
+                                      : "";
+                                  return Expanded(child: Text(text));
                                 },
                               ),
                             ],
@@ -421,7 +442,14 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () async {
-                          // TODO: 다시 호출하기
+                          /// 호출 데이터 홈 화면에 전달
+                          final drivingData = await _calledDetailViewModel.getDrivingData();
+                          if (drivingData != null) {
+                            context.pushNamed(
+                              HomeScreen.routeName,
+                              extra: drivingData,
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
@@ -537,8 +565,5 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
         );
       },
     );
-
-    /// 화면 닫기, 홈 화면 초기화
-    context.pop(false);
   }
 }

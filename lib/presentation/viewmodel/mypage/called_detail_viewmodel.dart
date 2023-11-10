@@ -1,11 +1,15 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:kdmp_cm_app/data/model/common/drv_request.dart';
+import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/fcm/fcm_push_request.dart';
+import 'package:kdmp_cm_app/data/model/naver/geocoding_request.dart';
 import 'package:kdmp_cm_app/data/model/work/review_write_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_called_detail_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
@@ -17,12 +21,17 @@ class CalledDetailViewModel {
     required this.getCalledDetailUseCase,
     required this.setReviewWriteUseCase,
     required this.setFCMPushUseCase,
+    required this.getNaverAddressInfoUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final GetCalledDetailUseCase getCalledDetailUseCase;
   final SetReviewWriteUseCase setReviewWriteUseCase;
   final SetFCMPushUseCase setFCMPushUseCase;
+  final GetNaverAddressInfoUseCase getNaverAddressInfoUseCase;
+
+  String clientId = "";
+  String clientSecret = "";
 
   /// 운행기사 번호
   int _mbrDmSq = 0;
@@ -93,14 +102,23 @@ class CalledDetailViewModel {
 
   set amount(int value) => _amount.value = value;
 
-  /// 출발지 장소명
-  final ValueNotifier<String> _startPlace = ValueNotifier<String>("");
+  /// 출발지 데이터 모델
+  final ValueNotifier<MapData?> _startMapData = ValueNotifier<MapData?>(null);
 
-  ValueNotifier<String> get startPlaceNotifier => _startPlace;
+  ValueNotifier<MapData?> get startMapDataNotifier => _startMapData;
 
-  String get startPlace => _startPlace.value;
+  MapData? get startMapData => _startMapData.value;
 
-  set startPlace(String value) => _startPlace.value = value;
+  set startMapData(MapData? value) => _startMapData.value = value;
+
+  /// 도착지 데이터 모델
+  final ValueNotifier<MapData?> _endMapData = ValueNotifier<MapData?>(null);
+
+  ValueNotifier<MapData?> get endMapDataNotifier => _endMapData;
+
+  MapData? get endMapData => _endMapData.value;
+
+  set endMapData(MapData? value) => _endMapData.value = value;
 
   /// 경유지 리스트
   final ValueNotifier<List<StopOver>> _stopoverList = ValueNotifier<List<StopOver>>(List.empty());
@@ -110,15 +128,6 @@ class CalledDetailViewModel {
   List<StopOver> get stopoverList => _stopoverList.value;
 
   set stopoverList(List<StopOver> value) => _stopoverList.value = value;
-
-  /// 도착지 장소명
-  final ValueNotifier<String> _endPlace = ValueNotifier<String>("");
-
-  ValueNotifier<String> get endPlaceNotifier => _endPlace;
-
-  String get endPlace => _endPlace.value;
-
-  set endPlace(String value) => _endPlace.value = value;
 
   /// 기사이름
   final ValueNotifier<String> _driver = ValueNotifier<String>("");
@@ -201,8 +210,18 @@ class CalledDetailViewModel {
       startDate = response.drvStartDt ?? "";
       date = response.drvStartDt != null ? getDateAndTimeFormat(startDate: response.drvStartDt, endDate: response.drvEndDt) : getDateAndTimeFormat(startDate: response.reqRegDt);
       drvReqSt = response.drvReqSt ?? "";
-      startPlace = response.reqStartPlaceNm.isNotEmpty ? response.reqStartPlaceNm : response.reqStartAddress;
-      endPlace = response.reqEndPlaceNm.isNotEmpty ? response.reqEndPlaceNm : response.reqEndAddress;
+      startMapData = MapData(
+        latLng: const NLatLng(0, 0),
+        place: response.reqStartPlaceNm,
+        address: response.reqStartAddress,
+        drivingAddress: DrivingAddress(legalDong: "", sigungu: "", sido: ""),
+      );
+      endMapData = MapData(
+        latLng: const NLatLng(0, 0),
+        place: response.reqEndPlaceNm,
+        address: response.reqEndAddress,
+        drivingAddress: DrivingAddress(legalDong: "", sigungu: "", sido: ""),
+      );
       stopoverList = response.stopOverLst;
 
       payment = response.paymKind ?? "";
@@ -251,5 +270,90 @@ class CalledDetailViewModel {
       type: type,
     );
     await setFCMPushUseCase.execute(fcmPushRequest: request);
+  }
+
+  Future<Map<String, dynamic>?> getDrivingData() async {
+    if (startMapData == null || endMapData == null) {
+      return null;
+    }
+    Map<String, dynamic> drivingData = Map.from({});
+    final start = await getMapData(
+      address: startMapData!.address,
+      place: startMapData!.place,
+    );
+    final end = await getMapData(
+      address: endMapData!.address,
+      place: endMapData!.place,
+    );
+    final List<StopOver> stopOver = List.from(stopoverList);
+    for (int i = 0; i < stopOver.length; i++) {
+      final stopOverMapData = await getMapData(
+        address: stopOver[i].address,
+        place: stopOver[i].placeName,
+      );
+      if (stopOverMapData == null) {
+        return null;
+      }
+      stopOver[i].drivingAddress = stopOverMapData.drivingAddress;
+    }
+    drivingData["startMapData"] = start;
+    drivingData["endMapData"] = end;
+    drivingData["stopOverList"] = stopOver;
+    return drivingData;
+  }
+
+  /// 검색한 장소 정보 조회 API
+  Future<StateAPI> getAddressInfo({required String address}) async {
+    final request = GeocodingRequest(
+      query: address,
+      page: 1,
+      count: 1,
+    );
+    final result = await getNaverAddressInfoUseCase.execute(
+      clientId: clientId,
+      clientSecret: clientSecret,
+      geocodingRequest: request,
+    );
+    if (result is Success && result.geocodingResponse.addresses != null && result.geocodingResponse.addresses!.isNotEmpty) {
+      return result;
+    }
+    return Fail(errorMessage: "해당 장소 정보를 조회할 수 없습니다.");
+  }
+
+  /// 장소 정보 검색 후 전 화면으로 값 전달
+  Future<MapData?> getMapData({required String address, required String place}) async {
+    /// 검색된 주소로 장소 정보 검색
+    final result = await getAddressInfo(address: address);
+    if (result is Success) {
+      final addressInfo = result.geocodingResponse.addresses![0];
+      String sido = "";
+      String sigugun = "";
+      String dongmyun = "";
+      for (int i = 0; i < addressInfo.addressElements.length; i++) {
+        final types = addressInfo.addressElements[i].types[0];
+        if (types == "SIDO") {
+          sido = addressInfo.addressElements[i].longName;
+        } else if (types == "SIGUGUN") {
+          sigugun = addressInfo.addressElements[i].longName;
+        } else if (types == "DONGMYUN") {
+          dongmyun = addressInfo.addressElements[i].longName;
+        }
+      }
+      final drivingAddress = DrivingAddress(
+        sido: sido,
+        sigungu: sigugun,
+        legalDong: dongmyun,
+      );
+
+      /// 장소 정보 전달
+      final mapData = MapData(
+        latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
+        address: address,
+        place: place,
+        drivingAddress: drivingAddress,
+      );
+      return mapData;
+    }
+    return null;
   }
 }

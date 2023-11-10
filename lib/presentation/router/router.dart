@@ -150,7 +150,14 @@ final GoRouter router = GoRouter(
     GoRoute(
       name: HomeScreen.routeName,
       path: HomeScreen.routeURL,
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) {
+        if (state.extra == null) {
+          return const HomeScreen();
+        } else {
+          final Map<String, dynamic>? drivingData = state.extra as Map<String, dynamic>?;
+          return HomeScreen(drivingData: drivingData);
+        }
+      },
       routes: [
         /// 출발지 설정 검색
         GoRoute(

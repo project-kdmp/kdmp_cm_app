@@ -452,7 +452,7 @@ class _WorkScreenState extends State<WorkScreen> {
                 StreamBuilder<Map<String, dynamic>>(
                   stream: FlutterLocalNotification.streamController.stream,
                   builder: (context, snapshot) {
-                    if (snapshot.hasData) {
+                    if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                       _showPushDialog(snapshot);
                     }
                     return const SizedBox();
@@ -501,6 +501,9 @@ class _WorkScreenState extends State<WorkScreen> {
           _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
           _showAlertDialog(content: body, isCanceled: false);
       }
+
+      /// 받은 데이터 지우기
+      snapshot.data!.clear();
     });
   }
 

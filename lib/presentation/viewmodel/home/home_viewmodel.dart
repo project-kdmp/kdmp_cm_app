@@ -89,6 +89,15 @@ class HomeViewModel {
     stopOverList = copyList;
   }
 
+  /// 다시 호출하기 데이터
+  setDrivingData({required MapData startMapData, required MapData endMapData, required List<StopOver> stopOverList}) {
+    _startMapData.value = startMapData;
+    _endMapData.value = endMapData;
+    _stopOverList.value = stopOverList;
+    _checkStopOverButtonValid();
+    _getDrivingCalculate();
+  }
+
   clearStopOverList() {
     stopOverList = List.empty();
   }

@@ -142,7 +142,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
                   /// 장소 별명
                   Expanded(
                     child: Text(
-                      "${value[index].fplaceNicknm}",
+                      value[index].fplaceNicknm,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.secondary),
                     ),
                   ),
@@ -150,7 +150,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
 
                   /// 자주 가는 장소 삭제 버튼
                   GestureDetector(
-                    child: Text(StringPlace.delete, style: Theme.of(context).textTheme.titleLarge),
+                    child: Text(StringPlace.delete, style: Theme.of(context).textTheme.titleMedium),
                     onTap: () async {
                       /// 자주 가는 장소 삭제 팝업 띄움
                       await _showConfirmDialog(
@@ -192,7 +192,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
               const SizedBox(height: 12),
 
               /// 장소 주소
-              SizedBox(width: double.maxFinite, child: Text("${value[index].fplaceAddress}", style: Theme.of(context).textTheme.bodyMedium)),
+              SizedBox(width: double.maxFinite, child: Text(value[index].fplaceAddress, style: Theme.of(context).textTheme.bodyMedium)),
             ],
           );
         },

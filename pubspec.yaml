@@ -86,6 +86,9 @@ dependencies:
   # App Info
   package_info_plus: ^4.2.0
 
+  # WebView
+  webview_flutter: ^4.2.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -140,6 +143,7 @@ flutter:
     - assets/menu/icon_setup_dark.png
     - assets/menu/icon_car.png
     - assets/work/img_work.png
-    - assets/onboarding/img_onboarding1.png
-    - assets/onboarding/img_onboarding2.png
-    - assets/onboarding/img_onboarding3.png
+    - assets/onboarding/img_onboarding1_light.png
+    - assets/onboarding/img_onboarding1_dark.png
+    - assets/onboarding/img_onboarding2_light.png
+    - assets/onboarding/img_onboarding2_dark.png

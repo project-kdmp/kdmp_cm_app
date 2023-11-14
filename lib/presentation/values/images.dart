@@ -74,7 +74,8 @@ abstract class ImageWork {
 abstract class ImageOnBoarding {
   ImageOnBoarding._();
 
-  static const String imgOnBoarding1 = "assets/onboarding/img_onboarding1.png";
-  static const String imgOnBoarding2 = "assets/onboarding/img_onboarding2.png";
-  static const String imgOnBoarding3 = "assets/onboarding/img_onboarding3.png";
+  static const String imgOnBoarding1Light = "assets/onboarding/img_onboarding1_light.png";
+  static const String imgOnBoarding1Dark = "assets/onboarding/img_onboarding1_dark.png";
+  static const String imgOnBoarding2Light = "assets/onboarding/img_onboarding2_light.png";
+  static const String imgOnBoarding2Dark = "assets/onboarding/img_onboarding2_dark.png";
 }

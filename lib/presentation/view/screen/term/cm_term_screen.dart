@@ -179,8 +179,7 @@ class _CMTermScreenState extends State<CMTermScreen> {
                             /// 이용약관 동의여부 저장
                             final result = await _cmTermViewModel.agreeTerms();
                             if (result is Success) {
-                              /// 홈 화면으로 이동
-                              context.goNamed(HomeScreen.routeName);
+                              context.pop();
                             }
                           },
                         );

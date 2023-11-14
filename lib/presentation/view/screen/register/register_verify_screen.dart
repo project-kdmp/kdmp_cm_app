@@ -151,15 +151,15 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
                               /// 이용약관 갱신 여부 확인
                               if (loginResponse.bagreeTrmUpdate) {
                                 /// 미동의 필수 약관 갱신 필요
-                                context.goNamed(CMTermScreen.routeName);
-                              } else {
-                                /// 필수 약관 모두 동의
-                                final isOnBoardingCheck = await _registerVerifyViewModel.isOnBoardingCheck();
-                                if (!isOnBoardingCheck) {
-                                  await context.pushNamed(OnBoardingScreen.routeName);
-                                }
-                                context.goNamed(HomeScreen.routeName);
+                                await context.pushNamed(CMTermScreen.routeName);
                               }
+
+                              /// 필수 약관 모두 동의
+                              final isOnBoardingCheck = await _registerVerifyViewModel.isOnBoardingCheck();
+                              if (!isOnBoardingCheck) {
+                                await context.pushNamed(OnBoardingScreen.routeName);
+                              }
+                              context.goNamed(HomeScreen.routeName);
                               break;
                             case MbrSt.withdrawal:
                               _registerVerifyViewModel.logout();

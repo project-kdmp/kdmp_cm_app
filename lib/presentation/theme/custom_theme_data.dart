@@ -18,7 +18,7 @@ class CustomThemeData {
       /// 기본 테마
       scaffoldBackgroundColor: ColorLight.background,
       disabledColor: ColorLight.gray3,
-      dividerColor: ColorLight.gray6,
+      dividerColor: ColorLight.gray5,
       cardColor: ColorLight.gray5,
       colorScheme: const ColorScheme.light(
         primary: ColorLight.primary,
@@ -49,7 +49,7 @@ class CustomThemeData {
       ),
       toggleButtonsTheme: ToggleButtonsThemeData(
         color: ColorLight.gray4,
-        borderColor: ColorLight.gray6,
+        borderColor: ColorLight.gray5,
         selectedColor: ColorLight.icon,
         selectedBorderColor: ColorLight.icon,
         fillColor: ColorLight.btn,
@@ -87,8 +87,8 @@ class CustomThemeData {
       sliderTheme: const SliderThemeData(
         activeTrackColor: ColorLight.icon,
         activeTickMarkColor: ColorLight.icon,
-        inactiveTrackColor: ColorLight.gray6,
-        inactiveTickMarkColor: ColorLight.gray6,
+        inactiveTrackColor: ColorLight.gray5,
+        inactiveTickMarkColor: ColorLight.gray5,
         thumbColor: ColorLight.icon,
       ),
     );
@@ -110,7 +110,7 @@ class CustomThemeData {
       /// 다크 모드 테마
       scaffoldBackgroundColor: ColorNight.background,
       disabledColor: ColorNight.gray3,
-      dividerColor: ColorNight.gray6,
+      dividerColor: ColorNight.gray5,
       cardColor: ColorNight.gray5,
       colorScheme: const ColorScheme.dark(
         primary: ColorNight.primary,
@@ -141,7 +141,7 @@ class CustomThemeData {
       ),
       toggleButtonsTheme: ToggleButtonsThemeData(
         color: ColorNight.gray4,
-        borderColor: ColorNight.gray6,
+        borderColor: ColorNight.gray5,
         selectedColor: ColorNight.icon,
         selectedBorderColor: ColorNight.icon,
         fillColor: ColorNight.btn,
@@ -179,8 +179,8 @@ class CustomThemeData {
       sliderTheme: const SliderThemeData(
         activeTrackColor: ColorNight.icon,
         activeTickMarkColor: ColorNight.icon,
-        inactiveTrackColor: ColorNight.gray6,
-        inactiveTickMarkColor: ColorNight.gray6,
+        inactiveTrackColor: ColorNight.gray5,
+        inactiveTickMarkColor: ColorNight.gray5,
         thumbColor: ColorNight.icon,
       ),
     );

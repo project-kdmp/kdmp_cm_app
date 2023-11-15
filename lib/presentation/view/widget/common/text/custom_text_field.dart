@@ -60,11 +60,11 @@ class CustomTextField extends StatelessWidget {
           color: Theme.of(context).disabledColor,
         ),
         filled: true,
-        fillColor: backgroundColor ?? Theme.of(context).dividerColor,
+        fillColor: backgroundColor ?? Theme.of(context).cardColor,
         enabledBorder: OutlineInputBorder(
           borderRadius: const BorderRadius.all(Radius.circular(4)),
           borderSide: BorderSide(
-            color: backgroundColor ?? Theme.of(context).dividerColor,
+            color: backgroundColor ?? Theme.of(context).cardColor,
           ),
         ),
         focusedBorder: OutlineInputBorder(

@@ -33,7 +33,7 @@ class CustomRoundButton extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           minimumSize: const Size(double.minPositive, double.minPositive),
-          backgroundColor: backgroundColor ?? Theme.of(context).dividerColor,
+          backgroundColor: backgroundColor ?? Theme.of(context).cardColor,
           padding: padding ?? const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: borderColor ?? Colors.transparent)),
         ),

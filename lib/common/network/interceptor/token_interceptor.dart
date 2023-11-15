@@ -119,7 +119,7 @@ class TokenInterceptor extends InterceptorsWrapper {
       } catch (e) {
         return handler.next(err);
       }
-    } else if (err.response?.statusCode == 200) {
+    } else {
       final errorMessage = DioExceptions.fromDioError(err).toString();
       Fluttertoast.showToast(msg: errorMessage);
     }

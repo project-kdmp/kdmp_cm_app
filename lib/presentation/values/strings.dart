@@ -22,6 +22,10 @@ abstract class StringCommon {
   static const String km = "km";
   static const String m = "m";
   static const String won = "원";
+
+  static const String startSpot = "출발";
+  static const String endSpot = "도착";
+  static const String stopover = "경유";
 }
 
 abstract class StringPermission {
@@ -81,7 +85,7 @@ abstract class StringHome {
   static const String callButton = "호출하기";
   static const String startPlaceHint = "출발지 검색";
   static const String endPlaceHint = "도착지 검색";
-  static const String stopOverButton = "경유";
+  static const String stopOverButton = "+ 경유지";
   static const String basicPrice = "일반요금";
   static const String basicPriceSub = "혼잡 시 긴 대기시간";
   static const String inputPrice = "요금 직접 입력";
@@ -122,7 +126,7 @@ abstract class StringPhoneVerify {
   StringPhoneVerify._();
 
   static const String title = "본인인증";
-  static const String verifyFail = "본인 확인에 실패하였습니다.";
+  static const String verifyFail = "본인 확인에 실패하였습니다.\n다시 시도해주세요.";
 }
 
 abstract class StringOnBoarding {

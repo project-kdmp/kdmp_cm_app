@@ -25,6 +25,7 @@ import 'package:kdmp_cm_app/data/repository/term/term_repository_impl.dart';
 import 'package:kdmp_cm_app/data/repository/work/work_repository_impl.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/logout/set_logout_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/auth/verify/get_verify_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/inquiry/get_inquiry_detail_usecase.dart';
@@ -211,6 +212,8 @@ void main() async {
   getIt.registerSingleton<GetLoginUseCase>(getLoginUseCase);
   final setLogoutUseCase = SetLogoutUseCase(authRepository: authRepository);
   getIt.registerSingleton<SetLogoutUseCase>(setLogoutUseCase);
+  final getVerifyInfoUseCase = GetVerifyInfoUseCase(authRepository: authRepository);
+  getIt.registerSingleton<GetVerifyInfoUseCase>(getVerifyInfoUseCase);
 
   /// FCM
   final fcmRepository = FCMRepositoryImpl(dio);

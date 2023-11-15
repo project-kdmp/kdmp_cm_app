@@ -87,7 +87,7 @@ dependencies:
   package_info_plus: ^4.2.0
 
   # WebView
-  webview_flutter: ^4.2.4
+  webview_flutter: ^4.4.2
 
 dev_dependencies:
   flutter_test:

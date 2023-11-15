@@ -107,7 +107,7 @@ class _PlaceMapScreenState extends State<PlaceMapScreen> {
               ValueListenableBuilder<NaverMap?>(
                 valueListenable: naverMapNotifier,
                 builder: (context, value, child) {
-                  return Expanded(child: value ?? Container(color: Theme.of(context).dividerColor));
+                  return Expanded(child: value ?? Container(color: Theme.of(context).cardColor));
                 },
               ),
 

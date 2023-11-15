@@ -107,7 +107,7 @@ class _StopOverMapScreenState extends State<StopOverMapScreen> {
               ValueListenableBuilder<NaverMap?>(
                 valueListenable: naverMapNotifier,
                 builder: (context, value, child) {
-                  return Expanded(child: value ?? Container(color: Theme.of(context).dividerColor));
+                  return Expanded(child: value ?? Container(color: Theme.of(context).cardColor));
                 },
               ),
 

@@ -179,7 +179,7 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
             margin: const EdgeInsets.all(14),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Theme.of(context).dividerColor,
+              color: Theme.of(context).cardColor,
               borderRadius: const BorderRadius.all(Radius.circular(10)),
             ),
             child: Column(

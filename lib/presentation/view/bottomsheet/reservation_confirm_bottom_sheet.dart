@@ -79,8 +79,8 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(StringReservation.dateAndTime, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
-                          SizedBox(height: 12, child: VerticalDivider(thickness: 1, width: 40, color: Theme.of(context).disabledColor)),
+                          const Text(StringReservation.dateAndTime, textAlign: TextAlign.start),
+                          const SizedBox(height: 12, child: VerticalDivider(thickness: 1, width: 40)),
                           Expanded(child: Text(widget.dateTitle, textAlign: TextAlign.start)),
                         ],
                       ),
@@ -89,7 +89,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                     /// 운행경로
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
-                      color: Theme.of(context).dividerColor,
+                      color: Theme.of(context).cardColor,
                       child: Column(
                         children: [
                           /// 출발지
@@ -161,9 +161,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                             width: double.maxFinite,
                             child: Text(
                               widget.notiPolicy.title,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).disabledColor,
-                                  ),
+                              style: Theme.of(context).textTheme.bodySmall,
                               textAlign: TextAlign.start,
                             ),
                           ),
@@ -172,7 +170,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                             width: double.maxFinite,
                             padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 20),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).dividerColor,
+                              color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
@@ -188,9 +186,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                           //   width: double.maxFinite,
                           //   child: Text(
                           //     StringReservation.cancelTitle,
-                          //     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          //           color: Theme.of(context).disabledColor,
-                          //         ),
+                          //     style: Theme.of(context).textTheme.bodySmall,
                           //     textAlign: TextAlign.start,
                           //   ),
                           // ),
@@ -199,7 +195,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                           //   width: double.maxFinite,
                           //   padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 20),
                           //   decoration: BoxDecoration(
-                          //     color: Theme.of(context).dividerColor,
+                          //     color: Theme.of(context).cardColor,
                           //     borderRadius: BorderRadius.circular(10),
                           //   ),
                           //   child: Text(
@@ -215,9 +211,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                             width: double.maxFinite,
                             child: Text(
                               widget.waitPolicy.title,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).disabledColor,
-                                  ),
+                              style: Theme.of(context).textTheme.bodySmall,
                               textAlign: TextAlign.start,
                             ),
                           ),
@@ -226,7 +220,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                             width: double.maxFinite,
                             padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 20),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).dividerColor,
+                              color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(

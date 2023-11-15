@@ -184,7 +184,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).dividerColor,
+                              color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(

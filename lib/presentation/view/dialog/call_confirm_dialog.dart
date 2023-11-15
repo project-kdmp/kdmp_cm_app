@@ -41,7 +41,6 @@ class CallConfirmDialog extends StatelessWidget {
             width: double.maxFinite,
             padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 20),
             decoration: BoxDecoration(
-              // color: Theme.of(context).dividerColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text("$content${StringCall.callContent}", textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
@@ -62,7 +61,7 @@ class CallConfirmDialog extends StatelessWidget {
             width: double.maxFinite,
             padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 20),
             decoration: BoxDecoration(
-              color: Theme.of(context).dividerColor,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(

@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ValueListenableBuilder<NaverMap?>(
                   valueListenable: naverMapNotifier,
                   builder: (context, value, child) {
-                    return Expanded(child: value ?? Container(color: Theme.of(context).dividerColor));
+                    return Expanded(child: value ?? Container(color: Theme.of(context).cardColor));
                   },
                 ),
 
@@ -231,6 +231,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Icons.location_on,
                                           color: value != null ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor,
                                           size: 24,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          StringCommon.startSpot,
+                                          style: TextStyle(
+                                            color: value != null ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor,
+                                          ),
                                         ),
 
                                         /// 출발지 검색 버튼
@@ -356,6 +363,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: value != null ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor,
                                           size: 24,
                                         ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          StringCommon.endSpot,
+                                          style: TextStyle(
+                                            color: value != null ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor,
+                                          ),
+                                        ),
 
                                         /// 도착지 검색 버튼
                                         Expanded(
@@ -390,9 +404,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             return value
                                                 ? CustomRoundButton(
                                                     text: StringHome.stopOverButton,
-                                                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                                                    textColor: Theme.of(context).colorScheme.secondary,
-                                                    borderColor: Theme.of(context).cardColor,
+                                                    backgroundColor: Theme.of(context).colorScheme.primary,
+                                                    textColor: Colors.white,
+                                                    borderColor: Theme.of(context).colorScheme.primary,
                                                     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                                                     onPressed: () async {
                                                       /// 화면 이동 전 네이버지도 가림
@@ -503,7 +517,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   decoration: BoxDecoration(
                                                     borderRadius: const BorderRadius.all(Radius.circular(12)),
                                                     border: Border.all(color: value == PriceType.input ? Theme.of(context).colorScheme.secondary : Colors.transparent, width: 1),
-                                                    color: value == PriceType.input ? Theme.of(context).toggleButtonsTheme.fillColor : Theme.of(context).dividerColor,
+                                                    color: value == PriceType.input ? Theme.of(context).toggleButtonsTheme.fillColor : Theme.of(context).cardColor,
                                                   ),
                                                   child: RadioListTile(
                                                     value: PriceType.input,
@@ -574,9 +588,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         /// 결제수단 선택 버튼
                                         CustomRoundButton(
                                           text: value.isEmpty ? StringHome.selectButton : StringHome.changeButton,
-                                          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                                          textColor: Theme.of(context).colorScheme.secondary,
-                                          borderColor: Theme.of(context).cardColor,
+                                          backgroundColor: Theme.of(context).colorScheme.primary,
+                                          textColor: Colors.white,
+                                          borderColor: Theme.of(context).colorScheme.primary,
                                           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                                           onPressed: () async {
                                             /// 화면 이동 전 네이버지도 가림

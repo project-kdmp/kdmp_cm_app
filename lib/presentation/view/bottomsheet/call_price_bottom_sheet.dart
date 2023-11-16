@@ -132,8 +132,8 @@ class _CallPriceBottomSheetState extends State<CallPriceBottomSheet> {
 
                       /// - 버튼
                       SizedBox(
-                        height: 40,
-                        width: 40,
+                        height: 50,
+                        width: 50,
                         child: ElevatedButton(
                           onPressed: () {
                             /// - 버튼 클릭
@@ -170,10 +170,15 @@ class _CallPriceBottomSheetState extends State<CallPriceBottomSheet> {
                         valueListenable: priceNotifier,
                         builder: (context, value, child) {
                           return Expanded(
-                            child: Text(
-                              getPrice(value),
-                              style: Theme.of(context).textTheme.bodyLarge,
-                              textAlign: TextAlign.center,
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: 50,
+                              color: Theme.of(context).cardColor,
+                              child: Text(
+                                getPrice(value),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           );
                         },
@@ -181,8 +186,8 @@ class _CallPriceBottomSheetState extends State<CallPriceBottomSheet> {
 
                       /// + 버튼
                       SizedBox(
-                        height: 40,
-                        width: 40,
+                        height: 50,
+                        width: 50,
                         child: ElevatedButton(
                           onPressed: () {
                             /// + 버튼 클릭

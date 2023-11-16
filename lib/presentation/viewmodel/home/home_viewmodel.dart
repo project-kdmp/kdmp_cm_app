@@ -308,7 +308,7 @@ class HomeViewModel {
     } else {
       setPaymentInfo(
         paymKind: "CASH",
-        paymentNm: "",
+        paymentNm: "현금결제",
         cardId: "",
       );
     }

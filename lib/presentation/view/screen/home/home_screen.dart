@@ -456,7 +456,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 decoration: BoxDecoration(
                                                   borderRadius: const BorderRadius.all(Radius.circular(12)),
                                                   border: Border.all(color: value == PriceType.basic ? Theme.of(context).colorScheme.secondary : Colors.transparent, width: 1),
-                                                  color: value == PriceType.basic ? Theme.of(context).toggleButtonsTheme.fillColor : Theme.of(context).dividerColor,
+                                                  color: value == PriceType.basic ? Theme.of(context).toggleButtonsTheme.fillColor : Theme.of(context).cardColor,
                                                 ),
                                                 child: RadioListTile(
                                                   value: PriceType.basic,
@@ -501,7 +501,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         children: [
                                                           Padding(
                                                             padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                                            child: CallPriceBottomSheet(initPrice: _homeViewModel.basicPrice, minPrice: _homeViewModel.basicPrice),
+                                                            child: CallPriceBottomSheet(initPrice: _homeViewModel.inputPrice, minPrice: _homeViewModel.basicPrice - 5000),
                                                           ),
                                                         ],
                                                       );

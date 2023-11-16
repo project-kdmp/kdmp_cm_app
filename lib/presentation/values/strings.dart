@@ -145,6 +145,7 @@ abstract class StringMenu {
   static const String payment = "결제관리";
   static const String carInfo = "차량정보";
   static const String cs = "고객센터";
+  static const String terms = "이용약관";
   static const String setup = "환경설정";
 }
 

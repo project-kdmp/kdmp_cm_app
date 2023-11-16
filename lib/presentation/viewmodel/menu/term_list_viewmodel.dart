@@ -4,10 +4,10 @@ import 'package:kdmp_cm_app/data/model/term/term_list_request.dart';
 import 'package:kdmp_cm_app/data/model/term/term_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
 
-class CSViewModel {
+class TermListViewModel {
   final GetTermUseCase getTermUseCase;
 
-  CSViewModel({required this.getTermUseCase});
+  TermListViewModel({required this.getTermUseCase});
 
   /// 이용약관 목록
   final ValueNotifier<List<Term>> _termList = ValueNotifier<List<Term>>([]);

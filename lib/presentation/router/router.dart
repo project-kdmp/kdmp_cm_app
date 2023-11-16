@@ -20,6 +20,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_write_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/menu/term_list_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
@@ -342,6 +343,13 @@ final GoRouter router = GoRouter(
           name: CarInfoScreen.routeName,
           path: CarInfoScreen.routeName,
           builder: (context, state) => const CarInfoScreen(),
+        ),
+
+        /// 메뉴 > 이용약관
+        GoRoute(
+          name: TermListScreen.routeName,
+          path: TermListScreen.routeName,
+          builder: (context, state) => const TermListScreen(),
         ),
 
         /// 환경설정

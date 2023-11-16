@@ -4,6 +4,7 @@ import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/cs_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/menu/term_list_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/car_info_screen.dart';
@@ -118,6 +119,20 @@ class MenuScreen extends StatelessWidget {
                       ),
                       onPressed: () {
                         context.pushNamed(CSScreen.routeName);
+                      },
+                    ),
+
+                    /// 이용약관 버튼
+                    // TODO: 이용약관 버튼 아이콘 적용
+                    CustomMoveButton(
+                      text: StringMenu.terms,
+                      iconImage: Image.asset(
+                        themeMode == ThemeMode.light ? ImageMenuLight.iconCS : ImageMenuDark.iconCS,
+                        width: 28,
+                        height: 28,
+                      ),
+                      onPressed: () {
+                        context.pushNamed(TermListScreen.routeName);
                       },
                     ),
 

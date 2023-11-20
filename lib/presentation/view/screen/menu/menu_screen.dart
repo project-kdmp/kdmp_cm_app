@@ -123,11 +123,10 @@ class MenuScreen extends StatelessWidget {
                     ),
 
                     /// 이용약관 버튼
-                    // TODO: 이용약관 버튼 아이콘 적용
                     CustomMoveButton(
                       text: StringMenu.terms,
                       iconImage: Image.asset(
-                        themeMode == ThemeMode.light ? ImageMenuLight.iconCS : ImageMenuDark.iconCS,
+                        themeMode == ThemeMode.light ? ImageMenuLight.iconTerms : ImageMenuDark.iconTerms,
                         width: 28,
                         height: 28,
                       ),

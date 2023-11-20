@@ -134,6 +134,7 @@ flutter:
     - assets/menu/icon_payment_light.png
     - assets/menu/icon_place_light.png
     - assets/menu/icon_setup_light.png
+    - assets/menu/icon_terms_light.png
     - assets/menu/icon_called_dark.png
     - assets/menu/icon_car_info_dark.png
     - assets/menu/icon_cs_dark.png
@@ -141,6 +142,7 @@ flutter:
     - assets/menu/icon_payment_dark.png
     - assets/menu/icon_place_dark.png
     - assets/menu/icon_setup_dark.png
+    - assets/menu/icon_terms_dark.png
     - assets/menu/icon_car.png
     - assets/work/img_work.png
     - assets/onboarding/img_onboarding1_light.png

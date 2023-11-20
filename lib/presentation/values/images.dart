@@ -45,6 +45,7 @@ abstract class ImageMenuLight {
   static const String iconPayment = "assets/menu/icon_payment_light.png";
   static const String iconPlace = "assets/menu/icon_place_light.png";
   static const String iconSetup = "assets/menu/icon_setup_light.png";
+  static const String iconTerms = "assets/menu/icon_terms_light.png";
 }
 
 abstract class ImageMenuDark {
@@ -57,6 +58,7 @@ abstract class ImageMenuDark {
   static const String iconPayment = "assets/menu/icon_payment_dark.png";
   static const String iconPlace = "assets/menu/icon_place_dark.png";
   static const String iconSetup = "assets/menu/icon_setup_dark.png";
+  static const String iconTerms = "assets/menu/icon_terms_dark.png";
 }
 
 abstract class ImageMenu {

@@ -120,7 +120,10 @@ class _SplashScreenState extends State<SplashScreen> {
           child: ValueListenableBuilder<ThemeMode>(
             valueListenable: CustomThemeMode.themeMode,
             builder: (context, themeMode, child) {
-              return Image.asset(themeMode == ThemeMode.light ? ImageCommon.appLogoLight : ImageCommon.appLogoDark, width: 200, height: 200);
+              return Padding(
+                padding: const EdgeInsets.all(50),
+                child: Image.asset(themeMode == ThemeMode.light ? ImageCommon.appLogoLight : ImageCommon.appLogoDark),
+              );
             },
           ),
         ),

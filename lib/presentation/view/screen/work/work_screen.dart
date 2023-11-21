@@ -581,8 +581,8 @@ class _WorkScreenState extends State<WorkScreen> {
     if (Platform.isIOS) {
       telUrl = telUrl.replaceAll((RegExp(r'-')), '');
     }
-    if (await canLaunchUrl(Uri(scheme: 'tel', path: url))) {
-      await launchUrl(Uri(scheme: 'tel', path: url));
+    if (await canLaunchUrl(Uri.parse(telUrl))) {
+      await launchUrl(Uri.parse(telUrl));
     }
   }
 

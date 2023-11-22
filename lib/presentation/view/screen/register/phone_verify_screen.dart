@@ -34,11 +34,6 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
   late final PhoneVerifyViewModel _phoneVerifyViewModel;
   late final WebViewController _webController;
 
-  // String mbrNm = "";
-  // String mbrMobilePhone = "";
-  // String identityNumber = "";
-  // String mbrCi = "";
-
   @override
   void initState() {
     super.initState();
@@ -136,6 +131,12 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
       ..clearCache();
   }
 
+  /// ========== TEST 코드, 본인인증 정보 직접 입력 ==========
+
+  String mbrNm = "김유현";
+  String mbrMobilePhone = "01087092739";
+  String identityNumber = "990907";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,54 +148,58 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
 
       /// 화면
       body: SafeArea(
-        child: WebViewWidget(controller: _webController),
-      ),
+        child: Column(
+          children: [
+            CustomTextField(hint: "이름 입력", onChanged: (value) => mbrNm = value, text: mbrNm),
+            CustomTextField(hint: "휴대폰번호 입력", maxLength: 11, inputType: TextInputType.number, onChanged: (value) => mbrMobilePhone = value, text: mbrMobilePhone),
+            CustomTextField(hint: "주민번호 앞 6자리 입력", maxLength: 6, inputType: TextInputType.number, onChanged: (value) => identityNumber = value, text: identityNumber),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: CustomElevatedButton(
+                onPressed: () async {
+                  /// 본인인증 처리
 
-      /// 화면
-      // body: SafeArea(
-      //   child: Column(
-      //     children: [
-      //       CustomTextField(hint: "이름 입력", onChanged: (value) => mbrNm = value, text: mbrNm),
-      //       CustomTextField(hint: "휴대폰번호 입력", maxLength: 11, inputType: TextInputType.number, onChanged: (value) => mbrMobilePhone = value, text: mbrMobilePhone),
-      //       CustomTextField(hint: "주민번호 앞 6자리 입력", maxLength: 6, inputType: TextInputType.number, onChanged: (value) => identityNumber = value, text: identityNumber),
-      //
-      //       CustomElevatedButton(
-      //         onPressed: () async {
-      //           /// 본인인증 처리
-      //           /// TODO: mbrNm, mbrDeviceId, mbrCi, mbrMobilePhone 임시값. 본인인증 후 가져와야함
-      //
-      //           if (mbrNm.trim().isEmpty || mbrMobilePhone.trim().isEmpty || identityNumber.trim().isEmpty) {
-      //             Fluttertoast.showToast(msg: "정보를 입력해주세요.");
-      //             return;
-      //           } else if (mbrMobilePhone.trim().length < 11) {
-      //             Fluttertoast.showToast(msg: "휴대폰번호 11자리를 입력해주세요.");
-      //             return;
-      //           } else if (identityNumber.trim().length < 6) {
-      //             Fluttertoast.showToast(msg: "주민번호 앞 6자리를 입력해주세요.");
-      //             return;
-      //           }
-      //
-      //           mbrCi = "ci${mbrMobilePhone.substring(7, 11)}";
-      //
-      //           /// 본인확인
-      //           final registerResult = await _phoneVerifyViewModel.verify(
-      //             mbrCi: mbrCi,
-      //           );
-      //           if (registerResult == true) {
-      //             /// 본인확인 성공
-      //             /// 화면 닫기, 주민등록번호 앞 6자리 전달
-      //             context.pop(identityNumber);
-      //           } else {
-      //             /// 본인확인 실패
-      //             await _showAlertDialog(content: StringPhoneVerify.verifyFail, isCanceled: false);
-      //             context.pop();
-      //           }
-      //         },
-      //         text: "다음",
-      //       ),
-      //     ],
-      //   ),
-      // ),
+                  if (mbrNm.trim().isEmpty || mbrMobilePhone.trim().isEmpty || identityNumber.trim().isEmpty) {
+                    Fluttertoast.showToast(msg: "정보를 입력해주세요.");
+                    return;
+                  } else if (mbrMobilePhone.trim().length < 11) {
+                    Fluttertoast.showToast(msg: "휴대폰번호 11자리를 입력해주세요.");
+                    return;
+                  } else if (identityNumber.trim().length < 6) {
+                    Fluttertoast.showToast(msg: "주민번호 앞 6자리를 입력해주세요.");
+                    return;
+                  }
+
+                  final mbrCi = "ci_test_${mbrMobilePhone.substring(7, 11)}";
+
+                  /// 본인확인
+                  final registerResult = await _phoneVerifyViewModel.verify(
+                    mbrCi: mbrCi,
+                  );
+                  if (registerResult == true) {
+                    /// 본인확인 성공
+                    /// 화면 닫기, 주민등록번호 앞 6자리 전달
+                    context.pop(identityNumber);
+                  } else {
+                    /// 본인확인 실패
+                    await _showAlertDialog(content: StringPhoneVerify.verifyFail, isCanceled: false);
+                    context.pop();
+                  }
+                },
+                text: "다음",
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Text(
+                "위 정보 입력란, 다음 버튼은 본인인증 없이 로그인하기 위한 화면이므로 실제 앱에 적용되지 않습니다.",
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.red),
+              ),
+            ),
+            Expanded(child: WebViewWidget(controller: _webController)),
+          ],
+        ),
+      ),
     );
   }
 

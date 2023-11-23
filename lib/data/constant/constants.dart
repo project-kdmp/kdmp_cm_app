@@ -61,14 +61,14 @@ class _Config {
 
   /// 운영
   static Map<String, dynamic> prodConstants = {
-    API: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/kdmp",
-    AUTH_API: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/kdmp",
-    IMAGE_URL: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/kdmp/v1/biztotal",
+    API: "https://appkddsa.or.kr",
+    AUTH_API: "https://appkddsa.or.kr",
+    IMAGE_URL: "https://appkddsa.or.kr/v1/biztotal",
     NAVER_API: "https://naveropenapi.apigw.ntruss.com",
     JUSO_API: "https://business.juso.go.kr/addrlink/addrLinkApi.do",
     JUSO_API_KEY: "JUSO_API_KEY_PROD",
     NAVER_CLIENT_ID: "NAVER_CLIENT_ID",
     NAVER_CLIENT_SECRET: "NAVER_CLIENT_SECRET",
-    PHONE_VERIFY_URL: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/portone",
+    PHONE_VERIFY_URL: "https://appkddsa.or.kr/portone",
   };
 }

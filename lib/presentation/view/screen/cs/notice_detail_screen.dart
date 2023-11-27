@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_detail_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
@@ -7,7 +7,6 @@ import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/cs/notice_detail_viewmodel.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// 공지사항 상세 화면
 class NoticeDetailScreen extends StatefulWidget {
@@ -109,18 +108,20 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                     child: ValueListenableBuilder<String>(
                       valueListenable: _noticeDetailViewModel.noticeContentNotifier,
                       builder: (context, value, _) {
-                        return Html(
-                          data: value,
-                          onLinkTap: (url, attributes, element) async {
-                            debugPrint("$url");
-                            if (url != null) {
-                              await launchUrl(
-                                Uri.parse(url),
-                                mode: LaunchMode.externalApplication,
-                              );
-                            }
-                          },
-                        );
+                        return value.isNotEmpty
+                            ? InAppWebView(
+                                initialOptions: InAppWebViewGroupOptions(
+                                  android: AndroidInAppWebViewOptions(
+                                    useHybridComposition: true,
+                                    // it makes 2 times bigger
+                                    textZoom: 100 * 2,
+                                  ),
+                                ),
+                                onWebViewCreated: (InAppWebViewController controller) {
+                                  controller.loadData(data: value, mimeType: "text/html");
+                                },
+                              )
+                            : const SizedBox();
                       },
                     ),
                   ),

@@ -237,116 +237,120 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            CustomTextField(hint: "이름 입력", onChanged: (value) => mbrNm = value, text: mbrNm),
-            CustomTextField(hint: "휴대폰번호 입력", maxLength: 11, inputType: TextInputType.number, onChanged: (value) => mbrMobilePhone = value, text: mbrMobilePhone),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: CustomElevatedButton(
-                onPressed: () async {
-                  /// 회원가입 처리
+            AppConstants.isDev ? CustomTextField(hint: "이름 입력", onChanged: (value) => mbrNm = value, text: mbrNm) : const SizedBox(),
+            AppConstants.isDev ? CustomTextField(hint: "휴대폰번호 입력", maxLength: 11, inputType: TextInputType.number, onChanged: (value) => mbrMobilePhone = value, text: mbrMobilePhone) : const SizedBox(),
+            AppConstants.isDev
+                ? Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: CustomElevatedButton(
+                      onPressed: () async {
+                        /// 회원가입 처리
 
-                  if (mbrNm.trim().isEmpty || mbrMobilePhone.trim().isEmpty) {
-                    Fluttertoast.showToast(msg: "정보를 입력해주세요.");
-                    return;
-                  } else if (mbrMobilePhone.trim().length < 11) {
-                    Fluttertoast.showToast(msg: "휴대폰번호 11자리를 입력해주세요.");
-                    return;
-                  }
-
-                  final mbrCi = "ci_test_${mbrMobilePhone.substring(7, 11)}";
-
-                  final registerResult = await _registerVerifyViewModel.register(
-                    mbrNm: mbrNm,
-                    mbrMobilePhone: mbrMobilePhone,
-                    mbrCi: mbrCi,
-                    tempAgreeTermList: widget.agreeTermList,
-                  );
-
-                  if (registerResult is Success) {
-                    /// 회원가입 - 성공시 처리
-                    final registerResponse = registerResult.registerResponse;
-
-                    /// 로그인 처리
-                    final loginResult = await _registerVerifyViewModel.login(
-                      mbrId: registerResponse.mbrId,
-                      mbrPw: registerResponse.mbrPwd,
-                      mbrCi: mbrCi,
-                    );
-
-                    if (loginResult is Success) {
-                      /// 로그인 - 성공시 처리
-                      final loginResponse = loginResult.loginResponse;
-
-                      /// 회원구분
-                      switch (loginResponse.mbrPrivilegeTp) {
-                        case MbrPrivilegeTp.driver:
-                          _registerVerifyViewModel.logout();
-                          await _showAlertDialog(content: StringLogin.mbrPrivilegeTpDMMB, isCanceled: false);
-                          SystemNavigator.pop();
+                        if (mbrNm.trim().isEmpty || mbrMobilePhone.trim().isEmpty) {
+                          Fluttertoast.showToast(msg: "정보를 입력해주세요.");
                           return;
-                        case MbrPrivilegeTp.admin:
-                          _registerVerifyViewModel.logout();
-                          await _showAlertDialog(content: StringLogin.mbrPrivilegeTpADMN, isCanceled: false);
-                          SystemNavigator.pop();
+                        } else if (mbrMobilePhone.trim().length < 11) {
+                          Fluttertoast.showToast(msg: "휴대폰번호 11자리를 입력해주세요.");
                           return;
-                        case MbrPrivilegeTp.customer:
-                          {
-                            /// 가입상태
-                            switch (loginResponse.mbrSt) {
-                              case MbrSt.temp:
-                                break;
-                              case MbrSt.reject: // 심사 거절이나 기사용 상태
-                                break;
-                              case MbrSt.registerComplete:
-                                if (loginResponse.mbrCarCount == 0) {
-                                  /// 차량등록 화면으로 이동
-                                  await context.pushNamed(RegisterCarScreen.routeName);
-                                }
+                        }
 
-                                /// 이용약관 갱신 여부 확인
-                                if (loginResponse.bagreeTrmUpdate) {
-                                  /// 미동의 필수 약관 갱신 필요
-                                  await context.pushNamed(CMTermScreen.routeName);
-                                }
+                        final mbrCi = "ci_test_${mbrMobilePhone.substring(7, 11)}";
 
-                                /// 필수 약관 모두 동의
-                                final isOnBoardingCheck = await _registerVerifyViewModel.isOnBoardingCheck();
-                                if (!isOnBoardingCheck) {
-                                  await context.pushNamed(OnBoardingScreen.routeName);
+                        final registerResult = await _registerVerifyViewModel.register(
+                          mbrNm: mbrNm,
+                          mbrMobilePhone: mbrMobilePhone,
+                          mbrCi: mbrCi,
+                          tempAgreeTermList: widget.agreeTermList,
+                        );
+
+                        if (registerResult is Success) {
+                          /// 회원가입 - 성공시 처리
+                          final registerResponse = registerResult.registerResponse;
+
+                          /// 로그인 처리
+                          final loginResult = await _registerVerifyViewModel.login(
+                            mbrId: registerResponse.mbrId,
+                            mbrPw: registerResponse.mbrPwd,
+                            mbrCi: mbrCi,
+                          );
+
+                          if (loginResult is Success) {
+                            /// 로그인 - 성공시 처리
+                            final loginResponse = loginResult.loginResponse;
+
+                            /// 회원구분
+                            switch (loginResponse.mbrPrivilegeTp) {
+                              case MbrPrivilegeTp.driver:
+                                _registerVerifyViewModel.logout();
+                                await _showAlertDialog(content: StringLogin.mbrPrivilegeTpDMMB, isCanceled: false);
+                                SystemNavigator.pop();
+                                return;
+                              case MbrPrivilegeTp.admin:
+                                _registerVerifyViewModel.logout();
+                                await _showAlertDialog(content: StringLogin.mbrPrivilegeTpADMN, isCanceled: false);
+                                SystemNavigator.pop();
+                                return;
+                              case MbrPrivilegeTp.customer:
+                                {
+                                  /// 가입상태
+                                  switch (loginResponse.mbrSt) {
+                                    case MbrSt.temp:
+                                      break;
+                                    case MbrSt.reject: // 심사 거절이나 기사용 상태
+                                      break;
+                                    case MbrSt.registerComplete:
+                                      if (loginResponse.mbrCarCount == 0) {
+                                        /// 차량등록 화면으로 이동
+                                        await context.pushNamed(RegisterCarScreen.routeName);
+                                      }
+
+                                      /// 이용약관 갱신 여부 확인
+                                      if (loginResponse.bagreeTrmUpdate) {
+                                        /// 미동의 필수 약관 갱신 필요
+                                        await context.pushNamed(CMTermScreen.routeName);
+                                      }
+
+                                      /// 필수 약관 모두 동의
+                                      final isOnBoardingCheck = await _registerVerifyViewModel.isOnBoardingCheck();
+                                      if (!isOnBoardingCheck) {
+                                        await context.pushNamed(OnBoardingScreen.routeName);
+                                      }
+                                      context.goNamed(HomeScreen.routeName);
+                                      break;
+                                    case MbrSt.withdrawal:
+                                      _registerVerifyViewModel.logout();
+                                      await _showAlertDialog(content: StringLogin.mbrStW, isCanceled: false);
+                                      SystemNavigator.pop();
+                                      break;
+                                    case MbrSt.registerDormant:
+                                      _registerVerifyViewModel.logout();
+                                      await _showAlertDialog(content: StringLogin.mbrStD, isCanceled: false);
+                                      SystemNavigator.pop();
+                                      break;
+                                  }
                                 }
-                                context.goNamed(HomeScreen.routeName);
                                 break;
-                              case MbrSt.withdrawal:
+                              default:
                                 _registerVerifyViewModel.logout();
-                                await _showAlertDialog(content: StringLogin.mbrStW, isCanceled: false);
+                                await _showAlertDialog(content: StringLogin.mbrPrivilegeTpUNKNOWN, isCanceled: false);
                                 SystemNavigator.pop();
-                                break;
-                              case MbrSt.registerDormant:
-                                _registerVerifyViewModel.logout();
-                                await _showAlertDialog(content: StringLogin.mbrStD, isCanceled: false);
-                                SystemNavigator.pop();
-                                break;
                             }
                           }
-                          break;
-                        default:
-                          _registerVerifyViewModel.logout();
-                          await _showAlertDialog(content: StringLogin.mbrPrivilegeTpUNKNOWN, isCanceled: false);
-                          SystemNavigator.pop();
-                      }
-                    }
-                  }
-                },
-                text: "다음",
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Text(
-                "위 정보 입력란, 다음 버튼은 본인인증 없이 로그인하기 위한 화면이므로 실제 앱에 적용되지 않습니다.",
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.red),
-              ),
-            ),
+                        }
+                      },
+                      text: "다음",
+                    ),
+                  )
+                : const SizedBox(),
+            AppConstants.isDev
+                ? Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(
+                      "위 정보 입력란, 다음 버튼은 본인인증 없이 로그인하기 위한 화면이므로 실제 앱에 적용되지 않습니다.",
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.red),
+                    ),
+                  )
+                : const SizedBox(),
             Expanded(child: WebViewWidget(controller: _webController)),
           ],
         ),

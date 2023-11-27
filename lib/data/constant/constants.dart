@@ -14,6 +14,8 @@ class AppConstants {
     }
   }
 
+  static get isDev => _config[_Config.environment] == Environment.DEV;
+
   static get API => _config[_Config.API];
 
   static get AUTH_API => _config[_Config.AUTH_API];
@@ -34,6 +36,8 @@ class AppConstants {
 }
 
 class _Config {
+  static const environment = "Environment";
+
   static const API = "API";
   static const AUTH_API = "AUTH_API";
   static const IMAGE_URL = "IMAGE_URL";
@@ -48,6 +52,7 @@ class _Config {
 
   /// 개발
   static Map<String, dynamic> devConstants = {
+    environment: Environment.DEV,
     API: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/kdmp",
     AUTH_API: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/kdmp",
     IMAGE_URL: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/kdmp/v1/biztotal",
@@ -61,6 +66,7 @@ class _Config {
 
   /// 운영
   static Map<String, dynamic> prodConstants = {
+    environment: Environment.PROD,
     API: "https://appkddsa.or.kr",
     AUTH_API: "https://appkddsa.or.kr",
     IMAGE_URL: "https://appkddsa.or.kr/v1/biztotal",

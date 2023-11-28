@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -90,6 +92,7 @@ import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.
 import 'package:kdmp_cm_app/domain/usecase/work/set_pay_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
+import 'package:kdmp_cm_app/firebase_options.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_text_mode.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_data.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
@@ -97,6 +100,14 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import 'domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'presentation/router/router.dart';
+
+/// background : 앱 실행중이나 화면이 보이지 않는 상태
+@pragma('vm:entry-point')
+Future<void> onBackgroundMessage(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  debugPrint("fcmTest onBackgroundMessage - title=${message.notification!.title}");
+  debugPrint("fcmTest onBackgroundMessage - body=${message.notification!.body}");
+}
 
 void main() async {
   AppConstants.setEnvironment(kDebugMode ? Environment.DEV : Environment.PROD);
@@ -174,7 +185,53 @@ void main() async {
   var mThemeMode = themeMode == "light" ? ThemeMode.light : ThemeMode.dark;
   CustomThemeMode.change(mThemeMode);
 
+  /// firebase messaging
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  /// local firebase messaging
   await FlutterLocalNotification.init();
+
+  /// Terminate : 앱 종료 상태 푸시 알림 수신
+  final remoteMessaging = await FirebaseMessaging.instance.getInitialMessage();
+  if (remoteMessaging != null) {
+    onBackgroundMessage(remoteMessaging);
+  }
+
+  /// Background : 앱 실행중이나 화면이 보이지 않는 상태 푸시 알림 수신
+  FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
+
+  /// Background : 앱 실행중이나 화면이 보이지 않는 상태에 푸시 알림 클릭 시
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? message) {
+    if (message != null) {
+      if (message.notification != null) {
+        debugPrint("fcmTest onMessageOpenedApp - title=${message.notification!.title}");
+        debugPrint("fcmTest onMessageOpenedApp - body=${message.notification!.body}");
+      }
+    }
+  });
+
+  /// Foreground : 앱 실행중 푸시 알림 수신
+  /// Foreground 상태에는 푸시 알림이 뜨지않아 직접 띄워야함
+  FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
+    if (message != null) {
+      if (message.notification != null) {
+        debugPrint("fcmTest onMessage - title=${message.notification!.title}");
+        debugPrint("fcmTest onMessage - body=${message.notification!.body}");
+
+        /// 푸시 알림 띄움
+        FlutterLocalNotification.showNotification(
+          title: message.notification!.title,
+          body: message.notification!.body,
+        );
+      }
+    }
+  });
+
+  FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
 
   String? fcmToken = await FlutterLocalNotification.getFcmToken();
   debugPrint("fcmToken: $fcmToken");

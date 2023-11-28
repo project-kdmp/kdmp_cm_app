@@ -46,48 +46,6 @@ class FlutterLocalNotification {
 
     // 필요 시 푸시 알림을 누르면 작동되는 콜백 함수를 생성할 수 있음, 기본값은 푸시 알림 클릭 시 앱 실행
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-    FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
-
-    FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    /// Foreground : 앱 실행중
-    FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
-      if (message != null) {
-        if (message.notification != null) {
-          debugPrint("fcmTest=====Foreground - ${message.notification!.title}");
-          debugPrint("fcmTest=====Foreground - ${message.notification!.body}");
-          debugPrint("fcmTest=====Foreground - ${message.data["type"]}");
-
-          if (message.data.containsKey("type")) {
-            Map<String, dynamic> map = Map.from({
-              "title": message.notification!.title,
-              "body": message.notification!.body,
-              "type": message.data["type"],
-            });
-            streamController.add(map);
-          }
-
-          showNotification(
-            title: message.notification!.title,
-            body: message.notification!.body,
-          );
-        }
-      }
-    });
-
-    /// Background
-    FirebaseMessaging.onMessageOpenedApp.listen(_onBackgroundMessage);
-
-    /// Terminate : 앱 종료 상태
-    final remoteMessaging = await FirebaseMessaging.instance.getInitialMessage();
-    if (remoteMessaging != null) {
-      _onBackgroundMessage(remoteMessaging);
-    }
   }
 
   static Future<String?> getFcmToken() async {
@@ -126,20 +84,6 @@ class FlutterLocalNotification {
         /// iOS
         iOS: const DarwinNotificationDetails(badgeNumber: 1),
       ),
-    );
-  }
-
-  @pragma('vm:entry-point')
-  static Future<void> _onBackgroundMessage(RemoteMessage message) async {
-    await Firebase.initializeApp();
-
-    debugPrint("fcmTest=====Notification Listener - ${message.notification!.title}");
-    debugPrint("fcmTest=====Notification Listener - ${message.notification!.body}");
-
-    /// Foreground 푸시 알림을 위한 설정
-    showNotification(
-      title: message.notification!.title,
-      body: message.notification!.body,
     );
   }
 }

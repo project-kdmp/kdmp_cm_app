@@ -11,6 +11,7 @@ class LoginResponse {
   String autoRefresh;
   int mbrCarCount;
   bool bagreeTrmUpdate;
+  String serviceYn;
 
   LoginResponse({
     required this.serverVersion,
@@ -25,6 +26,7 @@ class LoginResponse {
     required this.autoRefresh,
     required this.mbrCarCount,
     required this.bagreeTrmUpdate,
+    required this.serviceYn,
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class LoginResponse {
       autoRefresh: json["autoRefresh"] as String,
       mbrCarCount: json["mbrCarCount"] as int,
       bagreeTrmUpdate: json["bagreeTrmUpdate"] as bool,
+      serviceYn: json["serviceYn"] as String,
     );
   }
 
@@ -57,5 +60,6 @@ class LoginResponse {
         "autoRefresh": autoRefresh,
         "mbrCarCount": mbrCarCount,
         "bagreeTrmUpdate": bagreeTrmUpdate,
+        "serviceYn": serviceYn,
       };
 }

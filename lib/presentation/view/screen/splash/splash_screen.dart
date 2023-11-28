@@ -24,6 +24,7 @@ import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/no_permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/term_screen.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/splash/splash_viewmodel.dart';
@@ -153,6 +154,12 @@ class _SplashScreenState extends State<SplashScreen> {
           return;
         case MbrPrivilegeTp.customer:
           {
+            /// 이용정지 회원 체크
+            if (response.serviceYn != "Y") {
+              context.goNamed(NoPermissionScreen.routeName);
+              return;
+            }
+
             /// 가입상태
             switch (response.mbrSt) {
               case MbrSt.temp:

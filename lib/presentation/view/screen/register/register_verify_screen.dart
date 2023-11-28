@@ -22,6 +22,7 @@ import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/no_permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
@@ -165,6 +166,12 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
                     return;
                   case MbrPrivilegeTp.customer:
                     {
+                      /// 이용정지 회원 체크
+                      if (loginResponse.serviceYn != "Y") {
+                        context.goNamed(NoPermissionScreen.routeName);
+                        return;
+                      }
+
                       /// 가입상태
                       switch (loginResponse.mbrSt) {
                         case MbrSt.temp:
@@ -292,6 +299,12 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
                                 return;
                               case MbrPrivilegeTp.customer:
                                 {
+                                  /// 이용정지 회원 체크
+                                  if (loginResponse.serviceYn != "Y") {
+                                    context.goNamed(NoPermissionScreen.routeName);
+                                    return;
+                                  }
+
                                   /// 가입상태
                                   switch (loginResponse.mbrSt) {
                                     case MbrSt.temp:

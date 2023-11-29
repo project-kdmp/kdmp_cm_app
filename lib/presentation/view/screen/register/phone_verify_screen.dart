@@ -133,9 +133,9 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
 
   /// ========== TEST 코드, 본인인증 정보 직접 입력 ==========
 
-  String mbrNm = "김유현";
-  String mbrMobilePhone = "01087092739";
-  String identityNumber = "990907";
+  String mbrNm = "";
+  String mbrMobilePhone = "";
+  String identityNumber = "";
 
   @override
   Widget build(BuildContext context) {

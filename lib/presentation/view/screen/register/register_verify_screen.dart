@@ -22,6 +22,7 @@ import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/demo_login_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/no_permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
@@ -50,6 +51,8 @@ class RegisterVerifyScreen extends StatefulWidget {
 class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
   late final RegisterVerifyViewModel _registerVerifyViewModel;
   late final WebViewController _webController;
+
+  int demoClickCount = 0;
 
   @override
   void initState() {
@@ -228,16 +231,32 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
 
   /// ========== TEST 코드, 본인인증 정보 직접 입력 ==========
 
-  String mbrNm = "김유현";
-  String mbrMobilePhone = "01087092739";
+  String mbrNm = "";
+  String mbrMobilePhone = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       /// 상단 앱바
-      appBar: BaseAppBar(
-        appBar: AppBar(),
-        title: StringRegister.phoneVerify,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(AppBar().preferredSize.height),
+        child: GestureDetector(
+          onTap: () {
+            if (!AppConstants.isDev) {
+              demoClickCount++;
+
+              /// 앱바 10번 클릭 시 데모 로그인 화면으로 이동
+              if (demoClickCount >= 10) {
+                demoClickCount = 0;
+                context.goNamed(DemoLoginScreen.routeName);
+              }
+            }
+          },
+          child: BaseAppBar(
+            appBar: AppBar(),
+            title: StringRegister.phoneVerify,
+          ),
+        ),
       ),
 
       /// 화면

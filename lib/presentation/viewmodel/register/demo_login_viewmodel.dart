@@ -7,17 +7,12 @@ import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_user_data_usecase.dart';
-import 'package:kdmp_cm_app/presentation/util/device_info_util.dart';
 
-class SplashViewModel {
-  SplashViewModel({
+class DemoLoginViewModel {
+  DemoLoginViewModel({
     required this.getLoginUseCase,
-    required this.getMbrIdUseCase,
-    required this.getMbrPwUseCase,
     required this.setUserDataUseCase,
     required this.getOnBoardingCheckUseCase,
     required this.getFCMUseCase,
@@ -26,8 +21,6 @@ class SplashViewModel {
   });
 
   final GetLoginUseCase getLoginUseCase;
-  final GetMbrIdUseCase getMbrIdUseCase;
-  final GetMbrPwUseCase getMbrPwUseCase;
   final SetUserDataUseCase setUserDataUseCase;
   final GetOnBoardingCheckUseCase getOnBoardingCheckUseCase;
   final GetFCMUseCase getFCMUseCase;
@@ -37,24 +30,18 @@ class SplashViewModel {
   /// 상태
   StateAPI state = Loading();
 
-  /// 로그인 API (자동로그인)
-  Future<StateAPI> autoLogin() async {
+  /// 로그인 API
+  Future<StateAPI> login({
+    required String mbrId,
+    required String mbrPw,
+  }) async {
     state = Loading();
 
-    final mbrId = await getMbrIdUseCase.execute();
-    final password = await getMbrPwUseCase.execute();
-    final mbrDeviceId = await getDeviceId();
-
-    if (mbrId.isEmpty || password.isEmpty) {
-      state = Fail(errorMessage: "아이디 비밀번호가 존재하지 않습니다.");
-      return state;
-    }
-
-    /// 데모 계정 deviceId
+    /// 데모 계정 deviceId, ci
+    const demoMbrCi = "1LHeGXSNIJYtX5lJunDo4aJu9O8iOE+b4N+ytX6ZrsYxKmPDX0DXMw+0d7YYJ3mcGS/SXBdNXbJUxgrzxOo7iLw==";
     const demoDeviceId = "15b6672f35fae0ec1";
-    final isDemo = mbrId == "C0029";
 
-    final request = LoginRequest(mbrId: mbrId, mbrDeviceId: isDemo ? demoDeviceId : mbrDeviceId, password: password);
+    final request = LoginRequest(mbrId: mbrId, mbrDeviceId: demoDeviceId, password: mbrPw);
     final result = await getLoginUseCase.execute(loginRequest: request);
     state = result;
 
@@ -64,9 +51,14 @@ class SplashViewModel {
 
       if (mbrPrivilegeTp == MbrPrivilegeTp.customer) {
         // 회원 유형이 고객일 경우에만 저장
-        await setUserDataUseCase.autoLogin(
+        await setUserDataUseCase.login(
           jwt: result.loginResponse.jwt,
           autoRefresh: result.loginResponse.autoRefresh,
+          mbrSq: result.loginResponse.mbrSq,
+          mbrId: mbrId,
+          mbrPw: mbrPw,
+          mbrCi: demoMbrCi,
+          isFirstLogin: false,
         );
         ClientInfo.setClientId = result.loginResponse.mbrId;
 

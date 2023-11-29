@@ -20,10 +20,10 @@ import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_write_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/menu/term_list_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/menu/term_list_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_screen.dart';
@@ -37,6 +37,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/payment/add_payment_managem
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_management_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/demo_login_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/no_permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/phone_verify_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_screen.dart';
@@ -56,7 +57,7 @@ final GoRouter router = GoRouter(
     final isLogin = (await GetIt.instance<GetJwtUseCase>().execute()).isNotEmpty;
 
     /// 로그인 상태가 아니고, 스플래시 화면이 아닐 경우
-    if (!isLogin && !state.matchedLocation.contains(PermissionScreen.routeURL) && !state.matchedLocation.contains(TermScreen.routeURL) && !state.matchedLocation.contains(RegisterVerifyScreen.routeURL)) {
+    if (!isLogin && !state.matchedLocation.contains(PermissionScreen.routeURL) && !state.matchedLocation.contains(TermScreen.routeURL) && !state.matchedLocation.contains(RegisterVerifyScreen.routeURL) && !state.matchedLocation.contains(DemoLoginScreen.routeURL)) {
       return SplashScreen.routeURL;
     }
     return null;
@@ -107,6 +108,13 @@ final GoRouter router = GoRouter(
         final bool isAgreeButtonEnabled = params["isAgreeButtonEnabled"] != null ? bool.parse(params["isAgreeButtonEnabled"]!) : true;
         return TermDetailScreen(trmSq: trmSq, isAgreeButtonEnabled: isAgreeButtonEnabled);
       },
+    ),
+
+    /// 데모 계정 로그인 화면
+    GoRoute(
+      name: DemoLoginScreen.routeName,
+      path: DemoLoginScreen.routeURL,
+      builder: (context, state) => const DemoLoginScreen(),
     ),
 
     /// 회원가입 본인인증 확인

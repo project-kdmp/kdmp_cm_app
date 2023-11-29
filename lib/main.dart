@@ -57,6 +57,7 @@ import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_detail_usecase.dart
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/payment/set_toss_billingkey_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/policy/get_policy_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/register/get_service_stop_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/set_fcm_usecase.dart';
@@ -295,6 +296,8 @@ void main() async {
   final registerRepository = RegisterRepositoryImpl(dio);
   final getRegisterUseCase = SetRegisterUseCase(registerRepository: registerRepository);
   getIt.registerSingleton<SetRegisterUseCase>(getRegisterUseCase);
+  final getServiceStopUseCase = GetServiceStopUseCase(registerRepository: registerRepository);
+  getIt.registerSingleton<GetServiceStopUseCase>(getServiceStopUseCase);
 
   /// 내정보
   final myPageRepository = MyPageRepositoryImpl(dio);

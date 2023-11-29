@@ -1,17 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
+import 'package:kdmp_cm_app/domain/usecase/register/get_service_stop_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
+import 'package:kdmp_cm_app/presentation/viewmodel/register/no_permission_viewmodel.dart';
 
 /// 정지 회원 안내 화면
-class NoPermissionScreen extends StatelessWidget {
+class NoPermissionScreen extends StatefulWidget {
   const NoPermissionScreen({Key? key}) : super(key: key);
 
   static const String routeName = "no_permission";
   static const String routeURL = "/no_permission";
+
+  @override
+  State<NoPermissionScreen> createState() => _NoPermissionScreenState();
+}
+
+class _NoPermissionScreenState extends State<NoPermissionScreen> {
+  late final NoPermissionViewModel _noPermissionViewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    initViewModel();
+    initData();
+  }
+
+  /// Create
+  void initViewModel() {
+    _noPermissionViewModel = NoPermissionViewModel(
+      getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
+      getServiceStopUseCase: GetIt.instance<GetServiceStopUseCase>(),
+    );
+  }
+
+  void initData() {
+    /// 정지 사유 조회
+    _noPermissionViewModel.getServiceStop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,14 +78,20 @@ class NoPermissionScreen extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            Container(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                // TODO: API 사용 정지 사유
-                                "API 사용 정지 사유",
-                                style: Theme.of(context).textTheme.bodyLarge,
-                                textAlign: TextAlign.left,
-                              ),
+
+                            /// 정지 사유
+                            ValueListenableBuilder<String>(
+                              valueListenable: _noPermissionViewModel.serviceStopNotifier,
+                              builder: (context, value, child) {
+                                return Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    value,
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                    textAlign: TextAlign.left,
+                                  ),
+                                );
+                              },
                             ),
                             const SizedBox(height: 30),
                           ],

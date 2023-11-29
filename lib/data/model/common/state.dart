@@ -24,6 +24,7 @@ import 'package:kdmp_cm_app/data/model/notice/notice_list_response.dart';
 import 'package:kdmp_cm_app/data/model/payment/toss_billingkey_response.dart';
 import 'package:kdmp_cm_app/data/model/policy/policy_response.dart';
 import 'package:kdmp_cm_app/data/model/register/register_response.dart';
+import 'package:kdmp_cm_app/data/model/register/service_stop_response.dart';
 import 'package:kdmp_cm_app/data/model/term/cm_term_list_response.dart';
 import 'package:kdmp_cm_app/data/model/term/term_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/term/term_list_response.dart';
@@ -68,6 +69,8 @@ class Success extends StateAPI {
   RefreshResponse get refreshResponse => _response;
 
   RegisterResponse get registerResponse => _response;
+
+  ServiceStopResponse get serviceStopResponse => _response;
 
   TermDetailResponse get termDetailResponse => _response;
 

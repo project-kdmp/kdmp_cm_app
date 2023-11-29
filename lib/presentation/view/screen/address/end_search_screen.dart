@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -261,7 +262,7 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
       primary: false,
       itemBuilder: (context, index) {
         final item = value[index];
-        final address = item.roadAddrPart1;
+        final address = item.jibunAddr;
         final place = item.bdNm;
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
@@ -379,6 +380,8 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
       );
       await _endSearchViewModel.addRecentMapData(mapData: mapData);
       context.pop(mapData);
+    } else {
+      Fluttertoast.showToast(msg: "해당 지역을 검색할 수 없습니다.");
     }
   }
 }

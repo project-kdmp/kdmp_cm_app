@@ -218,7 +218,7 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
       primary: false,
       itemBuilder: (context, index) {
         final item = value[index];
-        final address = item.roadAddrPart1;
+        final address = item.jibunAddr;
         final place = item.bdNm;
         return GestureDetector(
           behavior: HitTestBehavior.opaque,

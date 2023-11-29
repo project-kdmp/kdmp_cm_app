@@ -207,6 +207,17 @@ void main() async {
       if (message.notification != null) {
         debugPrint("fcmTest onMessageOpenedApp - title=${message.notification!.title}");
         debugPrint("fcmTest onMessageOpenedApp - body=${message.notification!.body}");
+        debugPrint("fcmTest onMessageOpenedApp - data type=${message.data["type"]}");
+
+        /// stream 값 전달
+        if (message.data.containsKey("type")) {
+          Map<String, dynamic> map = Map.from({
+            "title": message.notification!.title,
+            "body": message.notification!.body,
+            "type": message.data["type"],
+          });
+          FlutterLocalNotification.streamController.add(map);
+        }
       }
     }
   });
@@ -224,6 +235,16 @@ void main() async {
           title: message.notification!.title,
           body: message.notification!.body,
         );
+
+        /// stream 값 전달
+        if (message.data.containsKey("type")) {
+          Map<String, dynamic> map = Map.from({
+            "title": message.notification!.title,
+            "body": message.notification!.body,
+            "type": message.data["type"],
+          });
+          FlutterLocalNotification.streamController.add(map);
+        }
       }
     }
   });

@@ -163,13 +163,14 @@ class _WorkScreenState extends State<WorkScreen> {
                                   },
                                 ),
 
-                                /// 전화 버튼
-                                ValueListenableBuilder<String>(
-                                  valueListenable: _workViewModel.callNumberNotifier,
-                                  builder: (context, value, child) {
-                                    return value.isNotEmpty ? getCallButton(value) : const SizedBox();
-                                  },
-                                ),
+                                // TODO: 필요하면 적용
+                                // /// 전화 버튼
+                                // ValueListenableBuilder<String>(
+                                //   valueListenable: _workViewModel.callNumberNotifier,
+                                //   builder: (context, value, child) {
+                                //     return value.isNotEmpty ? getCallButton(value) : const SizedBox();
+                                //   },
+                                // ),
                               ],
                             ),
                             const SizedBox(height: 80),

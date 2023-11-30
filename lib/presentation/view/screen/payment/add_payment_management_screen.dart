@@ -259,7 +259,7 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
                         ),
                         const SizedBox(height: 24),
 
-                        /// 유효기간 입력
+                        /// 카드별칭 입력
                         Container(
                           alignment: Alignment.centerLeft,
                           child: Text(

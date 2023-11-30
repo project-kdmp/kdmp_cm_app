@@ -473,7 +473,6 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                       child: CustomRadiusButton(
                                         text: StringCalled.reservationCancel,
                                         onPressed: () async {
-                                          // TODO: 예약 취소 API 별도로 있는지 확인 후 예약 취소 기능 구현
 
                                           /// 호출취소 팝업 띄움
                                           final cancelResult = _callDetailViewModel.drvReqSt == DrvReqSt.res

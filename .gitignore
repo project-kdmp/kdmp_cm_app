@@ -43,7 +43,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# key manage file
 .env
+.keystore.jks
+.private_key.pepk
 
 # Firebase messaging
 /android/app/google-services.json

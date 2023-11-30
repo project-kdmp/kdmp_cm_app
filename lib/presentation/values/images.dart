@@ -78,6 +78,4 @@ abstract class ImageOnBoarding {
 
   static const String imgOnBoarding1Light = "assets/onboarding/img_onboarding1_light.png";
   static const String imgOnBoarding1Dark = "assets/onboarding/img_onboarding1_dark.png";
-  static const String imgOnBoarding2Light = "assets/onboarding/img_onboarding2_light.png";
-  static const String imgOnBoarding2Dark = "assets/onboarding/img_onboarding2_dark.png";
 }

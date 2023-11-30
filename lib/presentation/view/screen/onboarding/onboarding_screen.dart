@@ -49,16 +49,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
                 decoration: getScreenDecoration(context),
               ),
-              PageViewModel(
-                title: "",
-                body: "",
-                image: Image.asset(
-                  themeMode == ThemeMode.light ? ImageOnBoarding.imgOnBoarding2Light : ImageOnBoarding.imgOnBoarding2Dark,
-                  width: double.maxFinite,
-                  height: double.infinity,
-                ),
-                decoration: getScreenDecoration(context),
-              ),
             ],
 
             /// 시작하기 버튼

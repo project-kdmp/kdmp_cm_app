@@ -309,13 +309,15 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
               children: [
                 Icon(Icons.access_time_outlined, color: Theme.of(context).disabledColor, size: 22),
                 const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(place.isNotEmpty ? place : "장소명 없음", style: Theme.of(context).textTheme.titleLarge),
-                    const SizedBox(height: 10),
-                    Text(address, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(place.isNotEmpty ? place : "장소명 없음", style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 10),
+                      Text(address, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                    ],
+                  ),
                 ),
               ],
             ),

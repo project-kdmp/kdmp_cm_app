@@ -45,8 +45,8 @@ app.*.map.json
 
 # key manage file
 .env
-.keystore.jks
-.private_key.pepk
+keystore.jks
+private_key.pepk
 
 # Firebase messaging
 /android/app/google-services.json

@@ -203,6 +203,9 @@ class _SplashScreenState extends State<SplashScreen> {
           await _showAlertDialog(content: StringLogin.mbrPrivilegeTpUNKNOWN, isCanceled: false);
           SystemNavigator.pop();
       }
+    } else {
+      _splashViewModel.logout();
+      SystemNavigator.pop();
     }
   }
 

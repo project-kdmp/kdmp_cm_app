@@ -34,7 +34,7 @@ abstract class StringPermission {
   static const String title = "접근 권한 안내";
   static const String content = "드라이버는 아래 접근 권한을 사용합니다.";
   static const String permissionTitle1 = "위치";
-  static const String permissionContent1 = "출발지 위치를 안내하기 위해 필요한 권한";
+  static const String permissionContent1 = "사용자의 현재 위치를 안내하기 위해 필요한 권한";
   static const String permissionTitle2 = "전화";
   static const String permissionContent2 = "전화를 걸기위해 필요한 권한";
 

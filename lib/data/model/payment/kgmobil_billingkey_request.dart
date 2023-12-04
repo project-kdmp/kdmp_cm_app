@@ -2,7 +2,7 @@ import 'package:kdmp_cm_app/data/constant/client_info.dart';
 
 import 'package:kdmp_cm_app/data/constant/client_info.dart';
 
-class TossBillingKeyRequest {
+class KGMobilBillingKeyRequest {
   String clientVersion = ClientInfo.clientVersion;
   String clientId = ClientInfo.clientId;
   int mbrSq;
@@ -12,10 +12,10 @@ class TossBillingKeyRequest {
   String cardExpirationMonth;
   String cardPassword;
   String customerIdentityNumber;
-  String customerKey;
+  // String customerKey;
   bool breGenerate;
 
-  TossBillingKeyRequest({
+  KGMobilBillingKeyRequest({
     required this.mbrSq,
     required this.aliasNm,
     required this.cardNumber,
@@ -23,11 +23,11 @@ class TossBillingKeyRequest {
     required this.cardExpirationMonth,
     required this.cardPassword,
     required this.customerIdentityNumber,
-    required this.customerKey,
+    // required this.customerKey,
     required this.breGenerate,
   });
 
-  factory TossBillingKeyRequest.fromJson(Map<String, dynamic> json) => TossBillingKeyRequest(
+  factory KGMobilBillingKeyRequest.fromJson(Map<String, dynamic> json) => KGMobilBillingKeyRequest(
         mbrSq: json["mbrSq"],
         aliasNm: json["aliasNm"],
         cardNumber: json["cardNumber"],
@@ -35,7 +35,7 @@ class TossBillingKeyRequest {
         cardExpirationMonth: json["cardExpirationMonth"],
         cardPassword: json["cardPassword"],
         customerIdentityNumber: json["customerIdentityNumber"],
-        customerKey: json["customerKey"],
+        // customerKey: json["customerKey"],
         breGenerate: json["breGenerate"],
       );
 
@@ -49,7 +49,7 @@ class TossBillingKeyRequest {
         "cardExpirationMonth": cardExpirationMonth,
         "cardPassword": cardPassword,
         "customerIdentityNumber": customerIdentityNumber,
-        "customerKey": customerKey,
+        // "customerKey": customerKey,
         "breGenerate": breGenerate,
       };
 }

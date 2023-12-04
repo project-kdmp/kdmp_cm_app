@@ -55,7 +55,7 @@ import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart'
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_detail_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_list_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/payment/set_toss_billingkey_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/payment/set_kgmobil_billingkey_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/policy/get_policy_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/get_service_stop_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
@@ -380,8 +380,8 @@ void main() async {
 
   /// 결제
   final paymentRepository = PaymentRepositoryImpl(dio);
-  final setTossBillingKeyUseCase = SetTossBillingKeyUseCase(paymentRepository: paymentRepository);
-  getIt.registerSingleton<SetTossBillingKeyUseCase>(setTossBillingKeyUseCase);
+  final setKGMobilBillingKeyUseCase = SetKGMobilBillingKeyUseCase(paymentRepository: paymentRepository);
+  getIt.registerSingleton<SetKGMobilBillingKeyUseCase>(setKGMobilBillingKeyUseCase);
 
   /// 공지사항
   final noticeRepository = NoticeRepositoryImpl(dio);

@@ -1,17 +1,17 @@
-class TossBillingKeyResponse {
+class KGMobilBillingKeyResponse {
   String serverVersion;
   String serverId;
   int mbrSq;
   String cardId;
 
-  TossBillingKeyResponse({
+  KGMobilBillingKeyResponse({
     this.serverVersion = "",
     this.serverId = "",
     required this.mbrSq,
     required this.cardId,
   });
 
-  factory TossBillingKeyResponse.fromJson(Map<String, dynamic> json) => TossBillingKeyResponse(
+  factory KGMobilBillingKeyResponse.fromJson(Map<String, dynamic> json) => KGMobilBillingKeyResponse(
         serverVersion: json["serverVersion"],
         serverId: json["serverId"],
         mbrSq: json["mbrSq"],

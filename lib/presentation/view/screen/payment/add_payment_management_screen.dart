@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
-import 'package:kdmp_cm_app/domain/usecase/payment/set_toss_billingkey_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/payment/set_kgmobil_billingkey_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_payment_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
@@ -40,7 +40,7 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getPaymentPasswordUseCase: GetIt.instance<GetPaymentPasswordUseCase>(),
       addPaymentUseCase: GetIt.instance<AddPaymentUseCase>(),
-      setTossBillingKeyUseCase: GetIt.instance<SetTossBillingKeyUseCase>(),
+      setKGMobilBillingKeyUseCase: GetIt.instance<SetKGMobilBillingKeyUseCase>(),
     );
   }
 

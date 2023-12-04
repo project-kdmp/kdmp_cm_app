@@ -21,7 +21,7 @@ import 'package:kdmp_cm_app/data/model/naver/geocoding_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/reverse_geocoding_response.dart';
 import 'package:kdmp_cm_app/data/model/notice/notice_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/notice/notice_list_response.dart';
-import 'package:kdmp_cm_app/data/model/payment/toss_billingkey_response.dart';
+import 'package:kdmp_cm_app/data/model/payment/kgmobil_billingkey_response.dart';
 import 'package:kdmp_cm_app/data/model/policy/policy_response.dart';
 import 'package:kdmp_cm_app/data/model/register/register_response.dart';
 import 'package:kdmp_cm_app/data/model/register/service_stop_response.dart';
@@ -115,7 +115,7 @@ class Success extends StateAPI {
   PolicyResponse get policyResponse => _response;
 
   /// 결제
-  TossBillingKeyResponse get tossBillingKeyResponse => _response;
+  KGMobilBillingKeyResponse get kgMobilBillingKeyResponse => _response;
 
   /// 네이버 API
   ReverseGeocodingResponse get reverseGeocodingResponse => _response;

@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
-import 'package:kdmp_cm_app/data/model/payment/toss_billingkey_request.dart';
-import 'package:kdmp_cm_app/domain/usecase/payment/set_toss_billingkey_usecase.dart';
+import 'package:kdmp_cm_app/data/model/payment/kgmobil_billingkey_request.dart';
+import 'package:kdmp_cm_app/domain/usecase/payment/set_kgmobil_billingkey_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_payment_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
@@ -12,13 +12,13 @@ class AddPaymentManagementViewModel {
   AddPaymentManagementViewModel({
     required this.getMbrSqUseCase,
     required this.getPaymentPasswordUseCase,
-    required this.setTossBillingKeyUseCase,
+    required this.setKGMobilBillingKeyUseCase,
     required this.addPaymentUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final GetPaymentPasswordUseCase getPaymentPasswordUseCase;
-  final SetTossBillingKeyUseCase setTossBillingKeyUseCase;
+  final SetKGMobilBillingKeyUseCase setKGMobilBillingKeyUseCase;
   final AddPaymentUseCase addPaymentUseCase;
 
   /// 비밀번호
@@ -153,25 +153,25 @@ class AddPaymentManagementViewModel {
     state = Loading();
 
     final mbrSq = await getMbrSqUseCase.execute();
-    final uuid = const Uuid().v1();
+    // final uuid = const Uuid().v1();
 
-    final request = TossBillingKeyRequest(
+    final request = KGMobilBillingKeyRequest(
       mbrSq: mbrSq,
       aliasNm: paymentNm,
       cardNumber: "$card1$card2$card3$card4",
-      cardExpirationYear: mmyy.substring(2, 4),
+      cardExpirationYear: "20${mmyy.substring(2, 4)}",
       cardExpirationMonth: mmyy.substring(0, 2),
       // 앞 두 자리만 입력받음
       cardPassword: password,
       customerIdentityNumber: identityNumber,
-      customerKey: uuid,
+      // customerKey: uuid,
       breGenerate: false,
     );
-    final result = await setTossBillingKeyUseCase.execute(tossBillingKeyRequest: request);
+    final result = await setKGMobilBillingKeyUseCase.execute(kgMobilBillingKeyRequest: request);
     state = result;
 
     if (result is Success) {
-      final response = result.tossBillingKeyResponse;
+      final response = result.kgMobilBillingKeyResponse;
       await _addPayment(payment: Payment(paymentNm: paymentNm, cardId: response.cardId));
     }
     return result;

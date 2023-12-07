@@ -148,14 +148,14 @@ String getDateAndTimeFormat({required String? startDate, String? endDate}) {
 }
 
 /// 네이버 장소 검색 주소 반환
-String makeAddress(List<Result> items) {
+String makeAddress({required List<Result> items, bool isRoad = true}) {
   if (items.isEmpty) {
     return "";
   }
   final item = items[0];
   final region = item.region;
   final land = item.land;
-  final isRoadAddress = item.name == "roadaddr";
+  final isRoadAddress = isRoad && item.name == "roadaddr";
 
   String sido = "";
   String sigugun = "";
@@ -181,7 +181,7 @@ String makeAddress(List<Result> items) {
 
   if (land != null) {
     if (land.number1 != null && land.number1!.isNotEmpty) {
-      if (land.type != null && land.type == "2") {
+      if (land.type == "2") {
         rest += "산";
       }
 
@@ -199,6 +199,10 @@ String makeAddress(List<Result> items) {
         dongmyun = land.name ?? "";
         ri = "";
       }
+
+      // if (land.addition0 != null) { // 도로명 주소이고 건물정보가 있는경우 건물명
+      //   rest += " " + land.addition0!.value;
+      // }
     }
   }
   return [sido, sigugun, dongmyun, ri, rest].join(" ").replaceAll("  ", " ").trim();

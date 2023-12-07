@@ -16,7 +16,8 @@ class PlaceMapViewModel {
     MapData(
       latLng: const NLatLng(37.5666103, 126.9783882),
       place: "",
-      address: "",
+      addressRoad: "",
+      addressJibun: "",
       drivingAddress: DrivingAddress(sido: "", sigungu: "", legalDong: ""),
     ),
   );
@@ -42,7 +43,7 @@ class PlaceMapViewModel {
   }
 
   _checkIsValid() {
-    var valid = mapData.address.isNotEmpty;
+    var valid = mapData.addressRoad.isNotEmpty;
     _setIsValid(value: valid);
   }
 

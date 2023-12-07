@@ -104,7 +104,7 @@ class _StopOverScreenState extends State<StopOverScreen> {
                                     if (result != null && result is MapData) {
                                       _stopOverViewModel.addStopOverList(
                                         StopOver(
-                                          address: result.address,
+                                          address: result.addressRoad,
                                           placeName: result.place,
                                           stopDistance: 0,
                                           lat: result.latLng.latitude,

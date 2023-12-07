@@ -34,17 +34,20 @@ class NaverMapViewModel {
     );
     state = result;
 
-    String newAddress = "";
+    String addressRoad = "";
+    String addressJibun = "";
     String newPlace = "";
 
     if (result is Success) {
       final response = result.reverseGeocodingResponse;
-      newAddress = makeAddress(response.results);
+      addressRoad = makeAddress(items: response.results, isRoad: true);
+      addressJibun = makeAddress(items: response.results, isRoad: false);
       newPlace = makePlace(response.results);
     }
 
     return MapData(
-      address: newAddress,
+      addressRoad: addressRoad,
+      addressJibun: addressJibun,
       place: newPlace,
       latLng: nLatLng,
       drivingAddress: DrivingAddress(sido: "", sigungu: "", legalDong: ""),

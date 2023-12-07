@@ -213,13 +213,13 @@ class CalledDetailViewModel {
       startMapData = MapData(
         latLng: const NLatLng(0, 0),
         place: response.reqStartPlaceNm,
-        address: response.reqStartAddress,
+        addressRoad: response.reqStartAddress,
         drivingAddress: DrivingAddress(legalDong: "", sigungu: "", sido: ""),
       );
       endMapData = MapData(
         latLng: const NLatLng(0, 0),
         place: response.reqEndPlaceNm,
-        address: response.reqEndAddress,
+        addressRoad: response.reqEndAddress,
         drivingAddress: DrivingAddress(legalDong: "", sigungu: "", sido: ""),
       );
       stopoverList = response.stopOverLst;
@@ -278,11 +278,11 @@ class CalledDetailViewModel {
     }
     Map<String, dynamic> drivingData = Map.from({});
     final start = await getMapData(
-      address: startMapData!.address,
+      address: startMapData!.addressRoad,
       place: startMapData!.place,
     );
     final end = await getMapData(
-      address: endMapData!.address,
+      address: endMapData!.addressRoad,
       place: endMapData!.place,
     );
     final List<StopOver> stopOver = List.from(stopoverList);
@@ -348,7 +348,7 @@ class CalledDetailViewModel {
       /// 장소 정보 전달
       final mapData = MapData(
         latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
-        address: address,
+        addressRoad: address,
         place: place,
         drivingAddress: drivingAddress,
       );

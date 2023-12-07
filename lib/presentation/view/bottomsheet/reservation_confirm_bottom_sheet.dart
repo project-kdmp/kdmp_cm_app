@@ -98,7 +98,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                             children: [
                               const SizedBox(width: 80, child: Text(StringReservation.startSpot)),
                               SizedBox(width: 20, child: Icon(Icons.circle, color: Theme.of(context).textTheme.bodyMedium?.color, size: 8)),
-                              Expanded(child: Text(widget.start.place.isNotEmpty ? widget.start.place : widget.start.address)),
+                              Expanded(child: Text(widget.start.place.isNotEmpty ? widget.start.place : widget.start.addressRoad)),
                             ],
                           ),
 
@@ -114,7 +114,7 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                             children: [
                               const SizedBox(width: 80, child: Text(StringReservation.endSpot)),
                               SizedBox(width: 20, child: Icon(Icons.circle, color: Theme.of(context).textTheme.bodyMedium?.color, size: 8)),
-                              Expanded(child: Text(widget.end.place.isNotEmpty ? widget.end.place : widget.end.address)),
+                              Expanded(child: Text(widget.end.place.isNotEmpty ? widget.end.place : widget.end.addressRoad)),
                             ],
                           ),
                         ],

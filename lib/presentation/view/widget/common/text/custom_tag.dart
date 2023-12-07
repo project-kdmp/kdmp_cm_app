@@ -20,7 +20,7 @@ class CustomTag extends StatelessWidget {
         color: color != null ? color!.withOpacity(0.2) : Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-          color: color!.withOpacity(0.2) ?? Theme.of(context).colorScheme.secondary,
+          color: color != null ? color!.withOpacity(0.2) : Theme.of(context).colorScheme.secondary,
           width: 1,
         ),
       ),

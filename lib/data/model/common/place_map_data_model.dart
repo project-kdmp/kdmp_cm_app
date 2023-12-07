@@ -3,6 +3,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 class PlaceMapData {
   NLatLng latLng;
   String place;
+  // TODO: 서버에 도로명, 지번 둘다 저장할 경우 address -> addressJibun 변경, addressRoad 추가
   String address;
 
   PlaceMapData({

@@ -247,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             text: value != null
                                                 ? value.place.isNotEmpty
                                                     ? value.place
-                                                    : value.address
+                                                    : value.addressRoad
                                                 : "",
                                             backgroundColor: Colors.transparent,
                                             onPressed: () async {
@@ -378,7 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             text: value != null
                                                 ? value.place.isNotEmpty
                                                     ? value.place
-                                                    : value.address
+                                                    : value.addressRoad
                                                 : "",
                                             backgroundColor: Colors.transparent,
                                             onPressed: () async {
@@ -754,7 +754,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         return;
                                       }
 
-                                      final content = _homeViewModel.endMapData!.place.isNotEmpty ? _homeViewModel.endMapData!.place : _homeViewModel.endMapData!.address;
+                                      final content = _homeViewModel.endMapData!.place.isNotEmpty ? _homeViewModel.endMapData!.place : _homeViewModel.endMapData!.addressRoad;
                                       await _showCallConfirmDialog(
                                         content: content,
                                         waitPolicy: waitPolicy,
@@ -935,7 +935,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         initialCameraPosition: NCameraPosition(
           target: nLatLng,
-          zoom: 12, // 0.0 ~ 21.0
+          zoom: 8, // 0.0 ~ 21.0
         ),
         mapType: NMapType.navi,
         nightModeEnable: CustomThemeMode.getThemeMode == ThemeMode.dark, // mapType이 네비게이션일 경우에만 제공
@@ -1003,7 +1003,7 @@ class _HomeScreenState extends State<HomeScreen> {
         controller.updateCamera(
           NCameraUpdate.scrollAndZoomTo(
             target: target,
-            zoom: 12, // 0.0 ~ 21.0
+            zoom: 8, // 0.0 ~ 21.0
           ),
         );
       },

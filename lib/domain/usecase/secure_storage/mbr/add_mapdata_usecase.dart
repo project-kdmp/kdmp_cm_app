@@ -10,7 +10,7 @@ class AddMapDataUseCase {
   Future<void> execute({required MapData mapData}) async {
     final mapDataList = await _secureStorageRepository.getMapDataList();
     for (int i = 0; i < mapDataList.length; i++) {
-      if (mapDataList[i].address == mapData.address) {
+      if (mapDataList[i].addressRoad == mapData.addressRoad) {
         mapDataList.removeAt(i);
       }
     }

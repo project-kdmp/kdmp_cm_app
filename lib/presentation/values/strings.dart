@@ -26,6 +26,9 @@ abstract class StringCommon {
   static const String startSpot = "출발";
   static const String endSpot = "도착";
   static const String stopover = "경유";
+
+  static const String placeSearchFailTitle = "장소 지정";
+  static const String placeSearchFailContent = "지도 장소의 위치를 찾을 수 없습니다. 장소를 지도에서 선택해주세요.";
 }
 
 abstract class StringPermission {

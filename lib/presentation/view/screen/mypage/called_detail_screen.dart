@@ -194,7 +194,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                                   final text = value != null
                                       ? value.place.isNotEmpty
                                           ? value.place
-                                          : value.address
+                                          : value.addressRoad
                                       : "";
                                   return Expanded(child: Text(text));
                                 },
@@ -237,7 +237,7 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                                   final text = value != null
                                       ? value.place.isNotEmpty
                                           ? value.place
-                                          : value.address
+                                          : value.addressRoad
                                       : "";
                                   return Expanded(child: Text(text));
                                 },

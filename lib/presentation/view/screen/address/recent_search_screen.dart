@@ -8,6 +8,7 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scro
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/checkbox/custom_checkbox.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_tag.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/address/recent_search_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -160,7 +161,8 @@ class _RecentSearchScreenState extends State<RecentSearchScreen> with SingleTick
       primary: false,
       itemBuilder: (context, index) {
         final item = _recentSearchViewModel.recentList[index];
-        final address = item.address;
+        final addressRoad = item.addressRoad;
+        final addressJibun = item.addressJibun;
         final place = item.place;
         return Padding(
           padding: const EdgeInsets.all(20),
@@ -189,9 +191,32 @@ class _RecentSearchScreenState extends State<RecentSearchScreen> with SingleTick
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(place.isNotEmpty ? place : "장소명 없음", style: Theme.of(context).textTheme.titleLarge),
-                    const SizedBox(height: 10),
-                    Text(address, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                    /// 장소명
+                    place.isNotEmpty ? Text(place, style: Theme.of(context).textTheme.titleLarge) : const SizedBox(),
+                    place.isNotEmpty ? const SizedBox(height: 10) : const SizedBox(),
+
+                    /// 주소
+                    addressRoad.isNotEmpty
+                        ? Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomTag(text: "도로명", color: Theme.of(context).textTheme.bodyLarge?.color),
+                              const SizedBox(width: 6),
+                              Expanded(child: Text(addressRoad, style: Theme.of(context).textTheme.bodyMedium)),
+                            ],
+                          )
+                        : const SizedBox(),
+                    addressJibun.isNotEmpty ? const SizedBox(height: 10) : const SizedBox(),
+                    addressJibun.isNotEmpty
+                        ? Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomTag(text: "지번", color: Theme.of(context).textTheme.bodyLarge?.color),
+                              const SizedBox(width: 6),
+                              Expanded(child: Text(addressJibun, style: Theme.of(context).textTheme.bodyMedium)),
+                            ],
+                          )
+                        : const SizedBox(),
                   ],
                 ),
               ),

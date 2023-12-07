@@ -3,20 +3,24 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 class MapData {
   NLatLng latLng;
   String place;
-  String address;
+  String addressRoad;
+  String addressJibun;
   DrivingAddress drivingAddress;
 
   MapData({
     required this.latLng,
     this.place = "",
-    this.address = "",
+    this.addressRoad = "",
+    this.addressJibun = "",
     required this.drivingAddress,
   });
 
   factory MapData.fromJson(Map<String, dynamic> json) => MapData(
         latLng: NLatLng(json["latitude"] as double, json["longitude"] as double),
         place: json["place"],
-        address: json["address"],
+        // 기존에 address로 적용하고 배포했기때문에 변경하면 안됨
+        addressJibun: json["address"] ?? "",
+        addressRoad: json["addressRoad"] ?? "",
         drivingAddress: DrivingAddress(sido: "", sigungu: "", legalDong: ""),
       );
 
@@ -24,7 +28,8 @@ class MapData {
         "latitude": latLng.latitude,
         "longitude": latLng.longitude,
         "place": place,
-        "address": address,
+        "address": addressJibun, // 기존에 address로 적용하고 배포했기때문에 변경하면 안됨
+        "addressRoad": addressRoad,
         "drivingAddress": drivingAddress,
       };
 }

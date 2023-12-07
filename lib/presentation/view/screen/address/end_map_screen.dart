@@ -16,6 +16,7 @@ import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_tag.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/address/end_map_viewmodel.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/address/naver_map_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -144,26 +145,50 @@ class _EndMapScreenState extends State<EndMapScreen> {
                         child: Column(
                           children: [
                             /// 장소명
-                            Container(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                value.place.isNotEmpty ? value.place : "장소명 없음",
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      color: Theme.of(context).colorScheme.primary,
+                            value.place.isNotEmpty
+                                ? Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      value.place,
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                            color: Theme.of(context).colorScheme.primary,
+                                          ),
                                     ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
+                                  )
+                                : const SizedBox(),
+                            value.place.isNotEmpty ? const SizedBox(height: 10) : const SizedBox(),
 
                             /// 주소
                             Container(
                               alignment: Alignment.centerLeft,
-                              child: Text(
-                                value.address.isNotEmpty ? value.address : "화면을 이동하여 장소를 지정해주세요.",
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).disabledColor,
+                              child: value.addressRoad.isNotEmpty
+                                  ? Column(
+                                      children: [
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            const CustomTag(text: "도로명"),
+                                            const SizedBox(width: 6),
+                                            Expanded(child: Text(value.addressRoad, style: Theme.of(context).textTheme.bodyMedium)),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            const CustomTag(text: "지번"),
+                                            const SizedBox(width: 6),
+                                            Expanded(child: Text(value.addressJibun, style: Theme.of(context).textTheme.bodyMedium)),
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                  : Text(
+                                      "화면을 이동하여 장소를 지정해주세요.",
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                            color: Theme.of(context).disabledColor,
+                                          ),
                                     ),
-                              ),
                             ),
                           ],
                         ),

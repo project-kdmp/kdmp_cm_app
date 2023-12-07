@@ -140,7 +140,8 @@ class _ModifyPlaceScreenState extends State<ModifyPlaceScreen> {
                                         _modifyPlaceViewModel.placeMapData = PlaceMapData(
                                           latLng: result.latLng,
                                           place: result.place,
-                                          address: result.address,
+                                          // TODO: 서버에 도로명, 지번 둘다 저장할 경우 address -> addressJibun 변경, addressRoad 추가
+                                          address: result.addressRoad.isNotEmpty ? result.addressRoad : result.addressJibun,
                                         );
                                       }
                                     },

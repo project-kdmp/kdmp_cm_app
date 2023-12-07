@@ -155,7 +155,7 @@ class StartSearchViewModel {
   Future<void> getRecentList() async {
     recentList = await getMapDataListUseCase.execute();
     for (int i = 0; i<recentList.length; i++) {
-      debugPrint("ddddd ${recentList[i].place} ${recentList[i].address}");
+      debugPrint("ddddd ${recentList[i].place} ${recentList[i].addressRoad}");
     }
   }
 

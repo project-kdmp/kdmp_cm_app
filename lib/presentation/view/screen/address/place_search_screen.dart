@@ -14,12 +14,14 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_mapdata_usecas
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mapdata_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/place_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/recent_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_icon_text_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_search_field.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_tag.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/address/place_search_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -218,57 +220,48 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
       primary: false,
       itemBuilder: (context, index) {
         final item = value[index];
-        final address = item.jibunAddr;
+        final addressRoad = item.roadAddr;
+        final addressJibun = item.jibunAddr;
         final place = item.bdNm;
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 검색 리스트 아이템 클릭
-            /// 검색된 주소로 장소 정보 검색
-            final result = await _placeSearchViewModel.getAddressInfo(address: address);
-            if (result is Success) {
-              final addressInfo = result.geocodingResponse.addresses![0];
-              String sido = "";
-              String sigugun = "";
-              String dongmyun = "";
-              for (int i = 0; i < addressInfo.addressElements.length; i++) {
-                final types = addressInfo.addressElements[i].types[0];
-                if (types == "SIDO") {
-                  sido = addressInfo.addressElements[i].longName;
-                } else if (types == "SIGUGUN") {
-                  sigugun = addressInfo.addressElements[i].longName;
-                } else if (types == "DONGMYUN") {
-                  dongmyun = addressInfo.addressElements[i].longName;
-                }
-              }
-              final drivingAddress = DrivingAddress(
-                sido: sido,
-                sigungu: sigugun,
-                legalDong: dongmyun,
-              );
-
-              /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-              final mapData = MapData(
-                latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
-                address: address,
-                place: place,
-                drivingAddress: drivingAddress,
-              );
-              await _placeSearchViewModel.addRecentMapData(mapData: mapData);
-              context.pop(mapData);
-            }
+            await setMapData(addressRoad: addressRoad, addressJibun: addressJibun, place: place);
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// 장소명
-                Text(place.isNotEmpty ? place : "장소명 없음", style: Theme.of(context).textTheme.titleLarge),
+                place.isNotEmpty
+                    ? Text(
+                        place,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                      )
+                    : const SizedBox(),
+                place.isNotEmpty ? const SizedBox(height: 10) : const SizedBox(),
 
                 /// 주소
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CustomTag(text: "도로명"),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text(addressRoad, style: Theme.of(context).textTheme.bodyMedium)),
+                  ],
+                ),
                 const SizedBox(height: 10),
-                Text(address, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CustomTag(text: "지번"),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text(addressJibun, style: Theme.of(context).textTheme.bodyMedium)),
+                  ],
+                ),
               ],
             ),
           ),
@@ -291,16 +284,14 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
       primary: false,
       itemBuilder: (context, index) {
         final item = value[index];
-        final address = item.address;
+        final addressRoad = item.addressRoad;
+        final addressJibun = item.addressJibun;
         final place = item.place;
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             /// 최근 검색 리스트 아이템 클릭
-
-            /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
-            await _placeSearchViewModel.addRecentMapData(mapData: value[index]);
-            context.pop(value[index]);
+            await setMapData(addressRoad: addressRoad, addressJibun: addressJibun, place: place);
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -313,9 +304,32 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(place.isNotEmpty ? place : "장소명 없음", style: Theme.of(context).textTheme.titleLarge),
-                      const SizedBox(height: 10),
-                      Text(address, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).disabledColor)),
+                      /// 장소명
+                      place.isNotEmpty ? Text(place, style: Theme.of(context).textTheme.titleLarge) : const SizedBox(),
+                      place.isNotEmpty ? const SizedBox(height: 10) : const SizedBox(),
+
+                      /// 주소
+                      addressRoad.isNotEmpty
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomTag(text: "도로명", color: Theme.of(context).textTheme.bodyLarge?.color),
+                                const SizedBox(width: 6),
+                                Expanded(child: Text(addressRoad, style: Theme.of(context).textTheme.bodyMedium)),
+                              ],
+                            )
+                          : const SizedBox(),
+                      addressJibun.isNotEmpty ? const SizedBox(height: 10) : const SizedBox(),
+                      addressJibun.isNotEmpty
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomTag(text: "지번", color: Theme.of(context).textTheme.bodyLarge?.color),
+                                const SizedBox(width: 6),
+                                Expanded(child: Text(addressJibun, style: Theme.of(context).textTheme.bodyMedium)),
+                              ],
+                            )
+                          : const SizedBox(),
                     ],
                   ),
                 ),
@@ -337,5 +351,106 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> with SingleTicker
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     debugPrint("location position: $position");
     return NLatLng(position.latitude, position.longitude);
+  }
+
+  /// 장소 정보 검색 후 전 화면으로 값 전달
+  Future<void> setMapData({required String addressRoad, required String addressJibun, required String place}) async {
+    /// 검색된 주소로 장소 정보 검색 (도로명)
+    final result = await _placeSearchViewModel.getAddressInfo(address: addressRoad);
+    if (result is Success) {
+      final addressInfo = result.geocodingResponse.addresses![0];
+      String sido = "";
+      String sigugun = "";
+      String dongmyun = "";
+      for (int i = 0; i < addressInfo.addressElements.length; i++) {
+        final types = addressInfo.addressElements[i].types[0];
+        if (types == "SIDO") {
+          sido = addressInfo.addressElements[i].longName;
+        } else if (types == "SIGUGUN") {
+          sigugun = addressInfo.addressElements[i].longName;
+        } else if (types == "DONGMYUN") {
+          dongmyun = addressInfo.addressElements[i].longName;
+        }
+      }
+      final drivingAddress = DrivingAddress(
+        sido: sido,
+        sigungu: sigugun,
+        legalDong: dongmyun,
+      );
+
+      /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+      final mapData = MapData(
+        latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
+        addressRoad: addressRoad,
+        // TODO: 서버에 도로명, 지번 둘다 저장할 경우 addressJibun
+        addressJibun: "",
+        place: place,
+        drivingAddress: drivingAddress,
+      );
+      await _placeSearchViewModel.addRecentMapData(mapData: mapData);
+      context.pop(mapData);
+    } else {
+      /// 검색된 주소로 장소 정보 검색 (지번)
+      final result = await _placeSearchViewModel.getAddressInfo(address: addressJibun);
+      if (result is Success) {
+        final addressInfo = result.geocodingResponse.addresses![0];
+        String sido = "";
+        String sigugun = "";
+        String dongmyun = "";
+        for (int i = 0; i < addressInfo.addressElements.length; i++) {
+          final types = addressInfo.addressElements[i].types[0];
+          if (types == "SIDO") {
+            sido = addressInfo.addressElements[i].longName;
+          } else if (types == "SIGUGUN") {
+            sigugun = addressInfo.addressElements[i].longName;
+          } else if (types == "DONGMYUN") {
+            dongmyun = addressInfo.addressElements[i].longName;
+          }
+        }
+        final drivingAddress = DrivingAddress(
+          sido: sido,
+          sigungu: sigugun,
+          legalDong: dongmyun,
+        );
+
+        /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+        final mapData = MapData(
+          latLng: NLatLng(double.parse(addressInfo.y), double.parse(addressInfo.x)),
+          // TODO: 서버에 도로명, 지번 둘다 저장할 경우 addressRoad
+          addressRoad: "",
+          addressJibun: addressJibun,
+          place: place,
+          drivingAddress: drivingAddress,
+        );
+        await _placeSearchViewModel.addRecentMapData(mapData: mapData);
+        context.pop(mapData);
+      } else {
+        _showSearchFailAlertDialog();
+      }
+    }
+  }
+
+  /// 장소 검색 실패 확인 팝업
+  _showSearchFailAlertDialog() {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: StringCommon.placeSearchFailTitle,
+          content: StringCommon.placeSearchFailContent,
+          onConfirm: () async {
+            /// 팝업 닫기
+            context.pop();
+
+            final result = await context.pushNamed(PlaceMapScreen.routeName);
+            if (result != null && result is MapData) {
+              /// 선택 장소 정보 최근 검색 기록에 저장 후, 이전 화면에 장소 정보 전달
+              await _placeSearchViewModel.addRecentMapData(mapData: result);
+              context.pop(result);
+            }
+          },
+        );
+      },
+    );
   }
 }

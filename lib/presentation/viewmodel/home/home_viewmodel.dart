@@ -338,9 +338,13 @@ class HomeViewModel {
         } else {
           /// 없는 경우
           final km = (distance / 1000).floor(); // m 단위 절삭
-          final taxiFare = response.route!.traoptimal[0].summary.taxiFare; // 택시 요금
-          final tollFare = response.route!.traoptimal[0].summary.tollFare; // 통행 요금(톨게이트)
-          basicPrice = ((15000 + taxiFare + tollFare + (km * 1000)) / 1000).floor() * 1000; // 1000원 단위 이하 절삭
+          if (startMapData!.drivingAddress.sido == "경기도" && endMapData!.drivingAddress.sido == "경기도") {
+            basicPrice = ((15000 + (km * 1000)) / 1000).floor() * 1000; // 1000원 단위 이하 절삭
+          } else {
+            final taxiFare = response.route!.traoptimal[0].summary.taxiFare; // 택시 요금
+            final tollFare = response.route!.traoptimal[0].summary.tollFare; // 통행 요금(톨게이트)
+            basicPrice = ((15000 + taxiFare + tollFare + (km * 1000)) / 1000).floor() * 1000; // 1000원 단위 이하 절삭
+          }
         }
       }
     }

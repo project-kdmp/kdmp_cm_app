@@ -49,6 +49,15 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   late final SplashViewModel _splashViewModel;
 
+  /// 현재 버전
+  final ValueNotifier<String> _versionName = ValueNotifier<String>("");
+
+  ValueNotifier<String> get versionNameNotifier => _versionName;
+
+  String get versionName => _versionName.value;
+
+  set versionName(String value) => _versionName.value = value;
+
   @override
   void initState() {
     super.initState();
@@ -59,8 +68,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
   /// 스토어 업데이트 버전체크 및 업데이트
   Future<void> checkStoreVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    versionName = packageInfo.version;
+    final versionCode = packageInfo.buildNumber;
     if (Platform.isAndroid) {
-      await _getAndroidStoreVersion();
+      await _getAndroidStoreVersion(versionCode: versionCode);
     } else if (Platform.isIOS) {
       // TODO: iOS
     }
@@ -69,18 +81,28 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   /// Android Google Play 버전체크 및 업데이트
-  Future<void> _getAndroidStoreVersion() async {
+  Future<void> _getAndroidStoreVersion({required String versionCode}) async {
     await InAppUpdate.checkForUpdate().then((info) async {
       debugPrint("checkForUpdate info=${info.toString()}");
+
+      final newVersionCode = info.availableVersionCode?.toString() ?? "";
+      final versionA = int.parse(versionCode.substring(0, versionCode.length - 1));
+      final versionB = int.parse(versionCode[versionCode.length - 1]);
+      final newVersionA = int.parse(newVersionCode.substring(0, newVersionCode.length - 1));
+      final newVersionB = int.parse(newVersionCode[newVersionCode.length - 1]);
+
+      debugPrint("nowVersion: $versionA $versionB");
+      debugPrint("newVersion: $newVersionA $newVersionB");
+
       if (info.updateAvailability == UpdateAvailability.updateAvailable) {
-        /// 새 업데이트 버전 알림 (선택)
-        final result = await _showConfirmDialog(
-          title: "업데이트 알림",
-          content: "새롭게 출시된 버전이 있습니다.\n업데이트 하시겠습니까?",
-          isWarning: true,
-          onConfirm: () => context.pop(true),
-        );
-        if (result) {
+        if (newVersionA > versionA) {
+          /// 새 업데이트 버전 알림 (필수)
+          await _showAlertDialog(
+            title: "업데이트 알림",
+            content: "새롭게 출시된 버전이 있습니다.\n업데이트를 진행해주세요.",
+            isWarning: true,
+          );
+
           /// 스토어 이동
           final id = (await PackageInfo.fromPlatform()).packageName;
           await launchUrlString('https://play.google.com/store/apps/details?id=$id');
@@ -88,6 +110,23 @@ class _SplashScreenState extends State<SplashScreen> {
 
           /// 앱 종료
           SystemNavigator.pop();
+        } else if (newVersionB > versionB) {
+          /// 새 업데이트 버전 알림 (선택)
+          final result = await _showConfirmDialog(
+            title: "업데이트 알림",
+            content: "새롭게 출시된 버전이 있습니다.\n업데이트 하시겠습니까?",
+            isWarning: true,
+            onConfirm: () => context.pop(true),
+          );
+          if (result) {
+            /// 스토어 이동
+            final id = (await PackageInfo.fromPlatform()).packageName;
+            await launchUrlString('https://play.google.com/store/apps/details?id=$id');
+            Fluttertoast.showToast(msg: "업데이트 후 다시 실행해주세요.");
+
+            /// 앱 종료
+            SystemNavigator.pop();
+          }
         }
       }
     }).catchError((e) {
@@ -169,6 +208,15 @@ class _SplashScreenState extends State<SplashScreen> {
               );
             },
           ),
+        ),
+        bottomNavigationBar: ValueListenableBuilder<String>(
+          valueListenable: versionNameNotifier,
+          builder: (context, value, child) {
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text("V$value"),
+            );
+          },
         ),
       ),
     );

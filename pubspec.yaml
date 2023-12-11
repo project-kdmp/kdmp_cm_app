@@ -90,6 +90,9 @@ dependencies:
   webview_flutter: ^4.4.2
   flutter_inappwebview: ^5.8.0
 
+  # InApp Update For Android
+  in_app_update: ^4.2.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

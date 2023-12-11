@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:kdmp_cm_app/data/constant/client_info.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -21,6 +23,7 @@ import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
@@ -30,6 +33,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/term/term_screen.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/splash/splash_viewmodel.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 /// 스플래시 화면
 class SplashScreen extends StatefulWidget {
@@ -50,7 +54,45 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     initViewModel();
     checkVersion();
+    checkStoreVersion();
+  }
+
+  /// 스토어 업데이트 버전체크 및 업데이트
+  Future<void> checkStoreVersion() async {
+    if (Platform.isAndroid) {
+      await _getAndroidStoreVersion();
+    } else if (Platform.isIOS) {
+      // TODO: iOS
+    }
+
     checkPermission();
+  }
+
+  /// Android Google Play 버전체크 및 업데이트
+  Future<void> _getAndroidStoreVersion() async {
+    await InAppUpdate.checkForUpdate().then((info) async {
+      debugPrint("checkForUpdate info=${info.toString()}");
+      if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+        /// 새 업데이트 버전 알림 (선택)
+        final result = await _showConfirmDialog(
+          title: "업데이트 알림",
+          content: "새롭게 출시된 버전이 있습니다.\n업데이트 하시겠습니까?",
+          isWarning: true,
+          onConfirm: () => context.pop(true),
+        );
+        if (result) {
+          /// 스토어 이동
+          final id = (await PackageInfo.fromPlatform()).packageName;
+          await launchUrlString('https://play.google.com/store/apps/details?id=$id');
+          Fluttertoast.showToast(msg: "업데이트 후 다시 실행해주세요.");
+
+          /// 앱 종료
+          SystemNavigator.pop();
+        }
+      }
+    }).catchError((e) {
+      debugPrint("checkForUpdate error=${e.toString()}");
+    });
   }
 
   void checkVersion() async {
@@ -213,6 +255,21 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<bool> _onBackPressed() async {
     SystemNavigator.pop();
     return true;
+  }
+
+  _showConfirmDialog({String? title, String? content, bool isWarning = false, required Function() onConfirm}) {
+    return showDialog(
+      context: context,
+      barrierDismissible: true, // dialog 영역 외 터치 여부
+      builder: (BuildContext context) {
+        return CustomConfirmDialog(
+          title: title,
+          content: content,
+          isWarning: isWarning,
+          onConfirm: onConfirm,
+        );
+      },
+    );
   }
 
   _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {

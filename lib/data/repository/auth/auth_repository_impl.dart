@@ -92,13 +92,13 @@ class AuthRepositoryImpl extends AuthRepository {
 
   @override
   Future<StateAPI> getVerifyInfo({required VerifyRequest verifyRequest}) async {
-    const api = '/v1/biztotal/webview/portone/getAuthInfo';
+    const api = '/v1/biztotal/webview/mobilians/getMobilSelfAuthInfo';
     final url = '${AppConstants.AUTH_API}$api';
 
     try {
       final response = await _dio.post(
         url,
-        data: verifyRequest.toJson(),
+        data: verifyRequest.value,
         options: Options(contentType: Headers.jsonContentType),
       );
 

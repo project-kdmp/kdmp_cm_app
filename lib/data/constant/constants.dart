@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+
 enum Environment { DEV, PROD }
 
 class AppConstants {
@@ -33,6 +35,8 @@ class AppConstants {
   static get NAVER_CLIENT_SECRET => _config[_Config.NAVER_CLIENT_SECRET];
 
   static get PHONE_VERIFY_URL => _config[_Config.PHONE_VERIFY_URL];
+
+  static const methodChannel = MethodChannel('kdmp_cm');
 }
 
 class _Config {
@@ -61,7 +65,7 @@ class _Config {
     JUSO_API_KEY: "JUSO_API_KEY_DEV",
     NAVER_CLIENT_ID: "NAVER_CLIENT_ID",
     NAVER_CLIENT_SECRET: "NAVER_CLIENT_SECRET",
-    PHONE_VERIFY_URL: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/portone",
+    PHONE_VERIFY_URL: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/mobilians",
   };
 
   /// 운영

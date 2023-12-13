@@ -30,10 +30,10 @@ class PhoneVerifyViewModel {
   }
 
   /// 본인확인
-  Future<StateAPI> getVerifyInfo({required String impUid}) async {
+  Future<StateAPI> getVerifyInfo({required String value}) async {
     state = Loading();
 
-    final request = VerifyRequest(impUid: impUid);
+    final request = VerifyRequest(value: value);
     final result = await getVerifyInfoUseCase.execute(verifyRequest: request);
     state = result;
 

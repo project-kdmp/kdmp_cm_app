@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +20,7 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.da
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_user_data_usecase.dart';
+import 'package:kdmp_cm_app/presentation/util/device_info_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
@@ -30,6 +33,8 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevat
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_text_field.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/register/register_verify_viewmodel.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 /// 회원가입 본인인증 화면
@@ -52,14 +57,26 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
   late final RegisterVerifyViewModel _registerVerifyViewModel;
   late final WebViewController _webController;
 
+  final GlobalKey webViewKey = GlobalKey();
+
+  /// 디바이스 아이디
+  final ValueNotifier<String> _deviceId = ValueNotifier<String>("");
+
+  ValueNotifier<String> get deviceIdNotifier => _deviceId;
+
+  String get deviceId => _deviceId.value;
+
+  set deviceId(String value) {
+    _deviceId.value = value;
+  }
+
   int demoClickCount = 0;
 
   @override
   void initState() {
     super.initState();
-    initWebViewController();
     initViewModel();
-    initLoadUrl();
+    initData();
   }
 
   /// Create
@@ -76,157 +93,8 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
     );
   }
 
-  void initLoadUrl() async {
-    _webController.loadRequest(
-      Uri.parse(AppConstants.PHONE_VERIFY_URL),
-      method: LoadRequestMethod.get,
-      body: Uint8List.fromList(
-        utf8.encode("mbrSq=0"),
-      ),
-    );
-  }
-
-  void initWebViewController() {
-    _webController = WebViewController()
-      ..setBackgroundColor(const Color(0x00000000))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (int progress) {},
-          onPageStarted: (String url) {
-            debugPrint("onPageStarted > url: $url");
-          },
-          onPageFinished: (String url) {
-            debugPrint("onPageFinished > url: $url");
-          },
-          onWebResourceError: (WebResourceError error) {
-            debugPrint("onWebResourceError > error url: ${error.url}");
-            debugPrint("onWebResourceError > error code: ${error.errorCode}");
-            debugPrint("onWebResourceError > error description: ${error.description}");
-          },
-          onNavigationRequest: (NavigationRequest request) {
-            return NavigationDecision.navigate;
-          },
-        ),
-      )
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..addJavaScriptChannel(
-        "appClose",
-        onMessageReceived: (message) async {
-          debugPrint("addJavaScriptChannel appClose message: ${message.message}");
-          await _showAlertDialog(content: StringPhoneVerify.verifyFail, isCanceled: false);
-          initLoadUrl();
-        },
-      )
-      ..addJavaScriptChannel(
-        "verifySuccess",
-        onMessageReceived: (message) async {
-          debugPrint("addJavaScriptChannel verifySuccess message: ${message.message}");
-          final impUid = message.message;
-          final result = await _registerVerifyViewModel.getVerifyInfo(impUid: impUid);
-          if (result is Success) {
-            final response = result.verifyResponse;
-
-            final name = response.name ?? "";
-            final phone = response.phone ?? "";
-            final mbrCi = response.uniqueKey!.isNotEmpty ? response.uniqueKey! : "ci_test_${phone.substring(7, 11)}"; // TODO: null 일 경우 임시값
-            final dateTime = DateTime.fromMillisecondsSinceEpoch(int.parse(response.birth) * 1000);
-            final birth = DateFormat("yyMMdd").format(dateTime);
-            debugPrint("verifyInfo birth format: $birth");
-
-            final registerResult = await _registerVerifyViewModel.register(
-              mbrNm: name,
-              mbrMobilePhone: phone,
-              mbrCi: mbrCi,
-              tempAgreeTermList: widget.agreeTermList,
-            );
-
-            if (registerResult is Success) {
-              /// 회원가입 - 성공시 처리
-              final registerResponse = registerResult.registerResponse;
-
-              /// 로그인 처리
-              final loginResult = await _registerVerifyViewModel.login(
-                mbrId: registerResponse.mbrId,
-                mbrPw: registerResponse.mbrPwd,
-                mbrCi: mbrCi,
-              );
-
-              if (loginResult is Success) {
-                /// 로그인 - 성공시 처리
-                final loginResponse = loginResult.loginResponse;
-
-                /// 회원구분
-                switch (loginResponse.mbrPrivilegeTp) {
-                  case MbrPrivilegeTp.driver:
-                    _registerVerifyViewModel.logout();
-                    await _showAlertDialog(content: StringLogin.mbrPrivilegeTpDMMB, isCanceled: false);
-                    SystemNavigator.pop();
-                    return;
-                  case MbrPrivilegeTp.admin:
-                    _registerVerifyViewModel.logout();
-                    await _showAlertDialog(content: StringLogin.mbrPrivilegeTpADMN, isCanceled: false);
-                    SystemNavigator.pop();
-                    return;
-                  case MbrPrivilegeTp.customer:
-                    {
-                      /// 이용정지 회원 체크
-                      if (loginResponse.serviceYn != "Y") {
-                        context.goNamed(NoPermissionScreen.routeName);
-                        return;
-                      }
-
-                      /// 가입상태
-                      switch (loginResponse.mbrSt) {
-                        case MbrSt.temp:
-                          break;
-                        case MbrSt.reject: // 심사 거절이나 기사용 상태
-                          break;
-                        case MbrSt.registerComplete:
-                          if (loginResponse.mbrCarCount == 0) {
-                            /// 차량등록 화면으로 이동
-                            await context.pushNamed(RegisterCarScreen.routeName);
-                          }
-
-                          /// 이용약관 갱신 여부 확인
-                          if (loginResponse.bagreeTrmUpdate) {
-                            /// 미동의 필수 약관 갱신 필요
-                            await context.pushNamed(CMTermScreen.routeName);
-                          }
-
-                          /// 필수 약관 모두 동의
-                          final isOnBoardingCheck = await _registerVerifyViewModel.isOnBoardingCheck();
-                          if (!isOnBoardingCheck) {
-                            await context.pushNamed(OnBoardingScreen.routeName);
-                          }
-                          context.goNamed(HomeScreen.routeName);
-                          break;
-                        case MbrSt.withdrawal:
-                          _registerVerifyViewModel.logout();
-                          await _showAlertDialog(content: StringLogin.mbrStW, isCanceled: false);
-                          SystemNavigator.pop();
-                          break;
-                        case MbrSt.registerDormant:
-                          _registerVerifyViewModel.logout();
-                          await _showAlertDialog(content: StringLogin.mbrStD, isCanceled: false);
-                          SystemNavigator.pop();
-                          break;
-                      }
-                    }
-                    break;
-                  default:
-                    _registerVerifyViewModel.logout();
-                    await _showAlertDialog(content: StringLogin.mbrPrivilegeTpUNKNOWN, isCanceled: false);
-                    SystemNavigator.pop();
-                }
-              }
-            }
-          }
-        },
-      )
-      ..setOnConsoleMessage((message) {
-        debugPrint("console message: ${message.message}");
-      })
-      ..clearCache();
+  void initData() async {
+    deviceId = await getDeviceId();
   }
 
   /// ========== TEST 코드, 본인인증 정보 직접 입력 ==========
@@ -383,7 +251,239 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
                     ),
                   )
                 : const SizedBox(),
-            Expanded(child: WebViewWidget(controller: _webController)),
+
+            /// WebView
+            ValueListenableBuilder(
+              valueListenable: deviceIdNotifier,
+              builder: (context, value, child) {
+                return value.isNotEmpty
+                    ? Expanded(
+                        child: InAppWebView(
+                          key: webViewKey,
+                          initialUrlRequest: URLRequest(
+                            url: Uri.parse(AppConstants.PHONE_VERIFY_URL),
+                            body: Uint8List.fromList(
+                              utf8.encode("deviceId=$value"),
+                            ),
+                          ),
+                          initialOptions: InAppWebViewGroupOptions(
+                            crossPlatform: InAppWebViewOptions(
+                              javaScriptCanOpenWindowsAutomatically: true,
+                              javaScriptEnabled: true,
+                              useOnDownloadStart: true,
+                              useOnLoadResource: true,
+                              useShouldOverrideUrlLoading: true,
+                              mediaPlaybackRequiresUserGesture: true,
+                              allowFileAccessFromFileURLs: true,
+                              allowUniversalAccessFromFileURLs: true,
+                              verticalScrollBarEnabled: true,
+                            ),
+                            android: AndroidInAppWebViewOptions(
+                              useHybridComposition: true,
+                              allowContentAccess: true,
+                              builtInZoomControls: true,
+                              thirdPartyCookiesEnabled: true,
+                              allowFileAccess: true,
+                              supportMultipleWindows: true,
+                            ),
+                            ios: IOSInAppWebViewOptions(
+                              allowsInlineMediaPlayback: true,
+                              allowsBackForwardNavigationGestures: true,
+                            ),
+                          ),
+                          onLoadStart: (InAppWebViewController controller, uri) {
+                            debugPrint("onLoadStart: uri=$uri");
+                          },
+                          onProgressChanged: (controller, progress) {
+                            debugPrint("onProgressChanged: progress=${progress.toString()}");
+                          },
+                          onLoadStop: (InAppWebViewController controller, uri) {
+                            debugPrint("onLoadStop: uri=$uri");
+                          },
+                          onLoadError: (controller, url, code, message) async {
+                            debugPrint("onLoadError: url=$url, code=$code, message=$message");
+                          },
+                          onConsoleMessage: (controller, consoleMessage) {
+                            debugPrint("onConsoleMessage: ${consoleMessage.message}");
+                          },
+                          onWebViewCreated: (InAppWebViewController controller) {
+                            /// 엡 브릿지 함수 추가
+                            controller.addJavaScriptHandler(
+                              handlerName: "verifySuccess",
+                              callback: (arguments) async {
+                                debugPrint("[APP]verifySuccess: ${arguments.toString()}");
+
+                                if (arguments.isEmpty) {
+                                  Fluttertoast.showToast(msg: "전달된 인자값이 없습니다.");
+                                  return;
+                                }
+                                final value = arguments[0];
+
+                                final result = await _registerVerifyViewModel.getVerifyInfo(value: value);
+                                if (result is Success) {
+                                  final response = result.verifyResponse;
+
+                                  final name = response.name ?? "";
+                                  final phone = response.phone ?? "";
+                                  final mbrCi = response.uniqueKey!.isNotEmpty ? response.uniqueKey! : "ci_test_${phone.substring(7, 11)}"; // TODO: null 일 경우 임시값
+                                  final dateTime = DateTime.fromMillisecondsSinceEpoch(int.parse(response.birth) * 1000);
+                                  final birth = DateFormat("yyMMdd").format(dateTime);
+                                  debugPrint("verifyInfo birth format: $birth");
+
+                                  final registerResult = await _registerVerifyViewModel.register(
+                                    mbrNm: name,
+                                    mbrMobilePhone: phone,
+                                    mbrCi: mbrCi,
+                                    tempAgreeTermList: widget.agreeTermList,
+                                  );
+
+                                  if (registerResult is Success) {
+                                    /// 회원가입 - 성공시 처리
+                                    final registerResponse = registerResult.registerResponse;
+
+                                    /// 로그인 처리
+                                    final loginResult = await _registerVerifyViewModel.login(
+                                      mbrId: registerResponse.mbrId,
+                                      mbrPw: registerResponse.mbrPwd,
+                                      mbrCi: mbrCi,
+                                    );
+
+                                    if (loginResult is Success) {
+                                      /// 로그인 - 성공시 처리
+                                      final loginResponse = loginResult.loginResponse;
+
+                                      /// 회원구분
+                                      switch (loginResponse.mbrPrivilegeTp) {
+                                        case MbrPrivilegeTp.driver:
+                                          _registerVerifyViewModel.logout();
+                                          await _showAlertDialog(content: StringLogin.mbrPrivilegeTpDMMB, isCanceled: false);
+                                          SystemNavigator.pop();
+                                          return;
+                                        case MbrPrivilegeTp.admin:
+                                          _registerVerifyViewModel.logout();
+                                          await _showAlertDialog(content: StringLogin.mbrPrivilegeTpADMN, isCanceled: false);
+                                          SystemNavigator.pop();
+                                          return;
+                                        case MbrPrivilegeTp.customer:
+                                          {
+                                            /// 이용정지 회원 체크
+                                            if (loginResponse.serviceYn != "Y") {
+                                              context.goNamed(NoPermissionScreen.routeName);
+                                              return;
+                                            }
+
+                                            /// 가입상태
+                                            switch (loginResponse.mbrSt) {
+                                              case MbrSt.temp:
+                                                break;
+                                              case MbrSt.reject: // 심사 거절이나 기사용 상태
+                                                break;
+                                              case MbrSt.registerComplete:
+                                                if (loginResponse.mbrCarCount == 0) {
+                                                  /// 차량등록 화면으로 이동
+                                                  await context.pushNamed(RegisterCarScreen.routeName);
+                                                }
+
+                                                /// 이용약관 갱신 여부 확인
+                                                if (loginResponse.bagreeTrmUpdate) {
+                                                  /// 미동의 필수 약관 갱신 필요
+                                                  await context.pushNamed(CMTermScreen.routeName);
+                                                }
+
+                                                /// 필수 약관 모두 동의
+                                                final isOnBoardingCheck = await _registerVerifyViewModel.isOnBoardingCheck();
+                                                if (!isOnBoardingCheck) {
+                                                  await context.pushNamed(OnBoardingScreen.routeName);
+                                                }
+                                                context.goNamed(HomeScreen.routeName);
+                                                break;
+                                              case MbrSt.withdrawal:
+                                                _registerVerifyViewModel.logout();
+                                                await _showAlertDialog(content: StringLogin.mbrStW, isCanceled: false);
+                                                SystemNavigator.pop();
+                                                break;
+                                              case MbrSt.registerDormant:
+                                                _registerVerifyViewModel.logout();
+                                                await _showAlertDialog(content: StringLogin.mbrStD, isCanceled: false);
+                                                SystemNavigator.pop();
+                                                break;
+                                            }
+                                          }
+                                          break;
+                                        default:
+                                          _registerVerifyViewModel.logout();
+                                          await _showAlertDialog(content: StringLogin.mbrPrivilegeTpUNKNOWN, isCanceled: false);
+                                          SystemNavigator.pop();
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                            );
+                          },
+                          shouldOverrideUrlLoading: (controller, navigationAction) async {
+                            debugPrint("shouldOverrideUrlLoading: ${navigationAction.toString()}");
+                            final url = navigationAction.request.url;
+                            if (url == null) {
+                              return NavigationActionPolicy.CANCEL;
+                            }
+                            if (isAppLink(url)) {
+                              await controller.stopLoading();
+                              final scheme = url.scheme;
+
+                              if (scheme == "intent") {
+                                if (Platform.isAndroid) {
+                                  try {
+                                    final String launchUrl = await AppConstants.methodChannel.invokeMethod("getAppUrl", {"url": url.toString()});
+                                    if (await canLaunchUrlString(launchUrl)) {
+                                      launchUrlString(launchUrl);
+                                    } else {
+                                      final marketUrl = await AppConstants.methodChannel.invokeMethod("getMarketUrl", {"url": url.toString()});
+                                      launchUrlString(marketUrl);
+                                    }
+                                  } catch (e) {
+                                    debugPrint("shouldOverrideUrlLoading: error=$e");
+                                  }
+                                }
+                              } else if (scheme == "market") {
+                                if (Platform.isAndroid) {
+                                  if (await canLaunchUrl(url)) {
+                                    await launchUrl(url);
+                                  } else {
+                                    Fluttertoast.showToast(msg: "외부 앱을 실행할 수 없습니다.");
+                                  }
+                                }
+                              } else if (scheme == "tel") {
+                                String telUrl = url.toString();
+                                if (Platform.isIOS) {
+                                  telUrl = telUrl.replaceAll((RegExp(r'-')), "");
+                                }
+                                if (await canLaunchUrl(Uri.parse(telUrl))) {
+                                  await launchUrl(Uri.parse(telUrl));
+                                } else {
+                                  Fluttertoast.showToast(msg: "외부 앱을 실행할 수 없습니다.");
+                                }
+                              } else if (scheme == "sms") {
+                                String smsUrl = url.toString();
+                                if (Platform.isIOS) {
+                                  smsUrl = smsUrl.replaceAll((RegExp(r'-')), "");
+                                }
+                                if (await canLaunchUrl(Uri.parse(smsUrl))) {
+                                  await launchUrl(Uri.parse(smsUrl));
+                                } else {
+                                  Fluttertoast.showToast(msg: "외부 앱을 실행할 수 없습니다.");
+                                }
+                              }
+                              return NavigationActionPolicy.CANCEL;
+                            } else {
+                              return NavigationActionPolicy.ALLOW;
+                            }
+                          },
+                        ),
+                      )
+                    : const SizedBox();
+              },
+            ),
           ],
         ),
       ),
@@ -406,5 +506,11 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
         );
       },
     );
+  }
+
+  /// URL String 의 Scheme 이 http, https 인지 확인
+  bool isAppLink(Uri url) {
+    final appScheme = url.scheme;
+    return appScheme != 'http' && appScheme != 'https' && appScheme != 'about:blank' && appScheme != 'data';
   }
 }

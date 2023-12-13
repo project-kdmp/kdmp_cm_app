@@ -23,6 +23,10 @@
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
         </intent>
+        <!-- PASS 앱 통신사별 scheme -->
+        <package android:name="com.sktelecom.tauth" />
+        <package android:name="com.kt.ktauth" />
+        <package android:name="com.lguplus.smartotp" />
     </queries>
 
     <application

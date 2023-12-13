@@ -1,23 +1,11 @@
 import 'package:kdmp_cm_app/data/constant/client_info.dart';
 
 class VerifyRequest {
-  String clientVersion = ClientInfo.clientVersion;
-  String clientId = ClientInfo.clientId;
-  int mbrSq;
-  String impUid;
+  // String clientVersion = ClientInfo.clientVersion;
+  // String clientId = ClientInfo.clientId;
+  String value;
 
   VerifyRequest({
-    this.mbrSq = 0,
-    required this.impUid,
+    required this.value,
   });
-
-  factory VerifyRequest.fromJson(Map<String, dynamic> json) => VerifyRequest(
-        mbrSq: json["mbrSq"],
-        impUid: json["impUid"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "mbrSq": mbrSq,
-        "impUid": impUid,
-      };
 }

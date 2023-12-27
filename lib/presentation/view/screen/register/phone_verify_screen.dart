@@ -218,8 +218,7 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
                                   final name = response.name ?? "";
                                   final phone = response.phone ?? "";
                                   final mbrCi = response.uniqueKey!.isNotEmpty ? response.uniqueKey! : "ci_test_${phone.substring(7, 11)}"; // TODO: null 일 경우 임시값
-                                  final dateTime = DateTime.fromMillisecondsSinceEpoch(int.parse(response.birth) * 1000);
-                                  final birth = DateFormat("yyMMdd").format(dateTime);
+                                  final birth = response.birth.substring(2, 8);
                                   debugPrint("verifyInfo birth format: $birth");
 
                                   /// 본인확인

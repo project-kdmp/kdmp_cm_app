@@ -65,7 +65,7 @@ class _Config {
     JUSO_API_KEY: "JUSO_API_KEY_DEV",
     NAVER_CLIENT_ID: "NAVER_CLIENT_ID",
     NAVER_CLIENT_SECRET: "NAVER_CLIENT_SECRET",
-    PHONE_VERIFY_URL: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/mobilians",
+    PHONE_VERIFY_URL: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/mobiliansTest",
   };
 
   /// 운영
@@ -79,6 +79,6 @@ class _Config {
     JUSO_API_KEY: "JUSO_API_KEY_PROD",
     NAVER_CLIENT_ID: "NAVER_CLIENT_ID",
     NAVER_CLIENT_SECRET: "NAVER_CLIENT_SECRET",
-    PHONE_VERIFY_URL: "https://appkddsa.or.kr/portone",
+    PHONE_VERIFY_URL: "https://appkddsa.or.kr/mobilians",
   };
 }

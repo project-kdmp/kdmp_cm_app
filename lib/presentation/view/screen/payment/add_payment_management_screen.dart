@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -325,6 +326,7 @@ class _AddPaymentManagementScreenState extends State<AddPaymentManagementScreen>
                         }
                       } else {
                         /// 본인인증 실패
+                        Fluttertoast.showToast(msg: "본인인증에 실패하였습니다.");
                       }
                     },
                   ),

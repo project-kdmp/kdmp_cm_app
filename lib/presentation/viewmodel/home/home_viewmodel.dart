@@ -178,6 +178,9 @@ class HomeViewModel {
     _checkPriceButtonValid();
   }
 
+  /// 최소 요금 입력 체크 여부
+  bool isCheckedMinPrice = true;
+
   /// 요금 직접 입력
   final ValueNotifier<int> _inputPrice = ValueNotifier<int>(0);
 
@@ -328,6 +331,13 @@ class HomeViewModel {
     if (result is Success) {
       final response = result.directionsResponse;
       distance = response.route!.traoptimal[0].summary.distance; // 운행거리
+
+      /// 제주 지역 체크
+      if (startMapData!.drivingAddress.sido == "제주특별자치도" || endMapData!.drivingAddress.sido == "제주특별자치도") {
+        isCheckedMinPrice = false;
+      } else {
+        isCheckedMinPrice = true;
+      }
 
       final priceResult = await _getDrivingPrice();
       if (priceResult is Success) {

@@ -481,7 +481,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   secondary: ValueListenableBuilder<int>(
                                                     valueListenable: _homeViewModel.basicPriceNotifier,
                                                     builder: (context, value, child) {
-                                                      return Text(getPrice(value));
+                                                      return Text(getPrice(value), style: Theme.of(context).textTheme.bodyMedium);
                                                     },
                                                   ),
                                                   fillColor: MaterialStateProperty.all(value == PriceType.basic ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor),

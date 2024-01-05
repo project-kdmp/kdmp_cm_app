@@ -26,6 +26,7 @@ class CustomThemeData {
       ),
       dividerTheme: const DividerThemeData(color: ColorLight.gray5),
       appBarTheme: const AppBarTheme(
+        surfaceTintColor: ColorLight.background,
         backgroundColor: ColorLight.background,
         iconTheme: IconThemeData(color: ColorLight.gray1),
       ),
@@ -119,6 +120,7 @@ class CustomThemeData {
       ),
       dividerTheme: const DividerThemeData(color: ColorNight.gray5),
       appBarTheme: const AppBarTheme(
+        surfaceTintColor: ColorNight.background,
         backgroundColor: ColorNight.background,
         iconTheme: IconThemeData(color: ColorNight.gray1),
       ),

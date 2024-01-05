@@ -24,6 +24,10 @@ class CustomThemeData {
         primary: ColorLight.primary,
         secondary: ColorLight.icon,
       ),
+      dialogTheme: const DialogTheme(
+        surfaceTintColor: ColorLight.background,
+        backgroundColor: ColorLight.background,
+      ),
       dividerTheme: const DividerThemeData(color: ColorLight.gray5),
       appBarTheme: const AppBarTheme(
         surfaceTintColor: ColorLight.background,
@@ -117,6 +121,10 @@ class CustomThemeData {
       colorScheme: const ColorScheme.dark(
         primary: ColorNight.primary,
         secondary: ColorNight.icon,
+      ),
+      dialogTheme: const DialogTheme(
+        surfaceTintColor: ColorNight.background,
+        backgroundColor: ColorNight.background,
       ),
       dividerTheme: const DividerThemeData(color: ColorNight.gray5),
       appBarTheme: const AppBarTheme(

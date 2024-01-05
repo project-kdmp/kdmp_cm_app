@@ -49,6 +49,12 @@ class CustomSearchField extends StatelessWidget {
                 color: Theme.of(context).cardColor,
               ),
             ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(22)),
+              borderSide: BorderSide(
+                color: Theme.of(context).cardColor,
+              ),
+            ),
             focusedBorder: OutlineInputBorder(
               borderRadius: const BorderRadius.all(Radius.circular(22)),
               borderSide: BorderSide(

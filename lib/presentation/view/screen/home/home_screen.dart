@@ -643,7 +643,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               isEnabled: value,
                               text: StringHome.reservationButton,
                               onPressed: () async {
-                                /// 유의사항 조회
+                                /// 예약콜 유의사항 조회
                                 final notiPolicy = await _homeViewModel.getPolicy(policyTp: PolicyTp.notc);
                                 if (notiPolicy == null) {
                                   return;
@@ -751,6 +751,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: ElevatedButton(
                               onPressed: value
                                   ? () async {
+                                      /// 일반콜 유의사항 조회
+                                      final notiPolicy = await _homeViewModel.getPolicy(policyTp: PolicyTp.cano);
+                                      if (notiPolicy == null) {
+                                        return;
+                                      }
+
                                       /// 대기료 정책 조회
                                       final waitPolicy = await _homeViewModel.getPolicy(policyTp: PolicyTp.wait);
                                       if (waitPolicy == null) {
@@ -760,6 +766,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       final content = _homeViewModel.endMapData!.place.isNotEmpty ? _homeViewModel.endMapData!.place : _homeViewModel.endMapData!.addressRoad;
                                       await _showCallConfirmDialog(
                                         content: content,
+                                        notiPolicy: notiPolicy,
                                         waitPolicy: waitPolicy,
                                         onConfirm: () async {
                                           Navigator.pop(context);
@@ -896,7 +903,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _showCallConfirmDialog({String? title, required String content, required Policy waitPolicy, required Function() onConfirm}) {
+  _showCallConfirmDialog({String? title, required String content, required Policy notiPolicy, required Policy waitPolicy, required Function() onConfirm}) {
     return showDialog(
       context: context,
       barrierDismissible: true, // dialog 영역 외 터치 여부
@@ -904,6 +911,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return CallConfirmDialog(
           title: title,
           content: content,
+          notiPolicy: notiPolicy,
           waitPolicy: waitPolicy,
           onConfirm: onConfirm,
         );

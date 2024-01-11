@@ -125,7 +125,8 @@ abstract class PolicyTp {
   PolicyTp._();
 
   static const String wait = "WAIT"; // 대기료 정책
-  static const String notc = "NOTC"; // 유의사항 정책
+  static const String cano = "CANO"; // 일반콜 유의사항 정책
+  static const String notc = "NOTC"; // 예약콜 유의사항 정책
   static const String pont = "PONT"; // 포인트 정책
   static const String wthd = "WTHD"; // 출금 정책
   static const String cncl = "CNCL"; // 탈퇴 정책

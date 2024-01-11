@@ -503,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
                                                             child: CallPriceBottomSheet(
                                                               initPrice: _homeViewModel.inputPrice,
-                                                              minPrice: _homeViewModel.isCheckedMinPrice ? _homeViewModel.basicPrice - 5000 : 0,
+                                                              minPrice: 0,
                                                             ),
                                                           ),
                                                         ],

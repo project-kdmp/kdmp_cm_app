@@ -474,8 +474,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         StringHome.basicPrice,
                                                         style: value == PriceType.basic ? Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary) : Theme.of(context).textTheme.bodyMedium,
                                                       ),
-                                                      const SizedBox(height: 4),
-                                                      Text(StringHome.basicPriceSub, style: Theme.of(context).textTheme.bodySmall),
+                                                      // const SizedBox(height: 4),
+                                                      // Text(StringHome.basicPriceSub, style: Theme.of(context).textTheme.bodySmall),
                                                     ],
                                                   ),
                                                   secondary: ValueListenableBuilder<int>(
@@ -533,8 +533,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           StringHome.inputPrice,
                                                           style: value == PriceType.input ? Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary) : Theme.of(context).textTheme.bodyMedium,
                                                         ),
-                                                        const SizedBox(height: 4),
-                                                        Text(StringHome.inputPriceSub, style: Theme.of(context).textTheme.bodySmall),
+                                                        // const SizedBox(height: 4),
+                                                        // Text(StringHome.inputPriceSub, style: Theme.of(context).textTheme.bodySmall),
                                                       ],
                                                     ),
                                                     secondary: ValueListenableBuilder<int>(

@@ -90,9 +90,9 @@ abstract class StringHome {
   static const String endPlaceHint = "도착지 검색";
   static const String stopOverButton = "+ 경유지";
   static const String basicPrice = "일반요금";
-  static const String basicPriceSub = "혼잡 시 긴 대기시간";
-  static const String inputPrice = "요금 직접 입력";
-  static const String inputPriceSub = "내 요금";
+  // static const String basicPriceSub = "혼잡 시 긴 대기시간";
+  static const String inputPrice = "요금 직접 입력(지정요금)";
+  // static const String inputPriceSub = "내 요금";
   static const String payment1 = "결제수단";
   static const String payment2 = "결제";
   static const String empty = "없음";

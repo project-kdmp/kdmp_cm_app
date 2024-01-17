@@ -24,6 +24,7 @@ class CallInfoResponse {
   String reqEndPlaceNm;
   List<StopOver> stopOverLst;
   String? drvSafeCall;
+  String? dmMbrMobilePhone;
   int drvPaymPrice;
   int drvDistance;
   String? reqAsk;
@@ -58,6 +59,7 @@ class CallInfoResponse {
     required this.reqEndPlaceNm,
     required this.stopOverLst,
     this.drvSafeCall,
+    this.dmMbrMobilePhone,
     required this.drvPaymPrice,
     required this.drvDistance,
     this.reqAsk,
@@ -93,6 +95,7 @@ class CallInfoResponse {
         reqEndPlaceNm: json["reqEndPlaceNm"] ?? "",
         stopOverLst: json["stopOverLst"] != null && json["stopOverLst"] != "" ? List<StopOver>.from(jsonDecode(json["stopOverLst"]).map((x) => StopOver.fromJson(x))) : List.empty(),
         drvSafeCall: json["drvSafeCall"],
+        dmMbrMobilePhone: json["dmMbrMobilePhone"],
         drvPaymPrice: json["drvPaymPrice"],
         drvDistance: json["drvDistance"],
         reqAsk: json["reqAsk"],
@@ -128,6 +131,7 @@ class CallInfoResponse {
         "reqEndPlaceNm": reqEndPlaceNm,
         "stopOverLst": stopOverLst.isNotEmpty ? jsonEncode(stopOverLst) : "",
         "drvSafeCall": drvSafeCall,
+        "dmMbrMobilePhone": dmMbrMobilePhone,
         "drvPaymPrice": drvPaymPrice,
         "drvDistance": drvDistance,
         "reqAsk": reqAsk,

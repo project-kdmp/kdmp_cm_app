@@ -71,7 +71,7 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
 
   // 앱 상태 변경시 호출
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
+  void didChangeAppLifecycleState(AppLifecycleState state) {
     // https://api.flutter.dev/flutter/dart-ui/AppLifecycleState-class.html
     switch (state) {
       case AppLifecycleState.resumed:
@@ -80,7 +80,7 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
         debugPrint("resumed");
 
         /// 호출정보 조회
-        await _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
+        _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
         break;
       case AppLifecycleState.inactive:
         // 앱이 비활성화 상태이고 사용자의 입력을 받지 않습니다.
@@ -210,14 +210,13 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
                                   },
                                 ),
 
-                                // TODO: 필요하면 적용
-                                // /// 전화 버튼
-                                // ValueListenableBuilder<String>(
-                                //   valueListenable: _workViewModel.callNumberNotifier,
-                                //   builder: (context, value, child) {
-                                //     return value.isNotEmpty ? getCallButton(value) : const SizedBox();
-                                //   },
-                                // ),
+                                /// 전화 버튼
+                                ValueListenableBuilder<String>(
+                                  valueListenable: _workViewModel.callNumberNotifier,
+                                  builder: (context, value, child) {
+                                    return value.isNotEmpty ? getCallButton(value) : const SizedBox();
+                                  },
+                                ),
                               ],
                             ),
                             const SizedBox(height: 80),

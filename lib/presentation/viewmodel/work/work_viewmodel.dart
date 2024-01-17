@@ -174,7 +174,8 @@ class WorkViewModel {
       stopOverList = response.stopOverLst;
       name = response.mbrDmNm ?? "";
       imagePath = response.mbrProfilePic ?? "";
-      callNumber = response.drvSafeCall ?? "";
+      // callNumber = response.drvSafeCall ?? "";
+      callNumber = response.dmMbrMobilePhone ?? "";
       _mbrDmSq = response.mbrDmSq ?? 0;
     }
 

@@ -9,6 +9,7 @@ import 'package:kdmp_cm_app/data/model/common/drv_response.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/work/call_cancel_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_fee_change_request.dart';
+import 'package:kdmp_cm_app/data/model/work/call_info_change_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_info_response.dart';
 import 'package:kdmp_cm_app/data/model/work/call_request.dart';
 import 'package:kdmp_cm_app/data/model/work/confirm_call_cancel_request.dart';
@@ -293,6 +294,42 @@ class WorkRepositoryImpl extends WorkRepository {
       /// bizErrCode 없으면 정상 데이터 파싱
       if (!response.data.containsKey("bizErrCode")) {
         final responseObject = DefaultResponse.fromJson(response.data);
+        final StateAPI state = Success(responseObject);
+        debugPrint("state: $state");
+        return state;
+      } else {
+        final badResponse = BadResponse.fromJson(response.data);
+        final StateAPI state = Bad(badResponse);
+        if (badResponse.detailMessage.isNotEmpty) {
+          Fluttertoast.showToast(msg: badResponse.detailMessage);
+        } else {
+          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
+        }
+        debugPrint("state: $state");
+        return state;
+      }
+    } catch (e) {
+      const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      Fluttertoast.showToast(msg: errorMessage);
+      return Fail(errorMessage: errorMessage);
+    }
+  }
+
+  @override
+  Future<StateAPI> changeCallInfo({required CallInfoChangeRequest callInfoChangeRequest}) async {
+    const api = '/v1/biztotal/cm/drv/setCallEndAndStopover';
+    final url = '${AppConstants.API}$api';
+
+    try {
+      final response = await _dio.post(
+        url,
+        data: callInfoChangeRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      /// bizErrCode 없으면 정상 데이터 파싱
+      if (!response.data.containsKey("bizErrCode")) {
+        final responseObject = DrvResponse.fromJson(response.data);
         final StateAPI state = Success(responseObject);
         debugPrint("state: $state");
         return state;

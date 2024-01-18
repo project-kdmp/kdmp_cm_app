@@ -28,10 +28,10 @@ class CallInfoResponse {
   int drvPaymPrice;
   int drvDistance;
   String? reqAsk;
-  double? gpsStartLat;
-  double? gpsStartLong;
-  double? gpsEndLat;
-  double? gpsEndLong;
+  double gpsStartLat;
+  double gpsStartLong;
+  double gpsEndLat;
+  double gpsEndLong;
   String? createId;
   String? createDt;
   String? updateId;
@@ -63,10 +63,10 @@ class CallInfoResponse {
     required this.drvPaymPrice,
     required this.drvDistance,
     this.reqAsk,
-    this.gpsStartLat,
-    this.gpsStartLong,
-    this.gpsEndLat,
-    this.gpsEndLong,
+    required this.gpsStartLat,
+    required this.gpsStartLong,
+    required this.gpsEndLat,
+    required this.gpsEndLong,
     this.createId,
     this.createDt,
     this.updateId,

@@ -1,19 +1,26 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/common/fcm/notification.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/constant/constants.dart';
+import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/get_driving_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_call_info_change_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
@@ -24,6 +31,8 @@ import 'package:kdmp_cm_app/presentation/view/bottomsheet/review_bottom_sheet.da
 import 'package:kdmp_cm_app/presentation/view/dialog/call_cancel_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/vertical_dashed_divider.dart';
@@ -114,9 +123,18 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
       setCallCancelUseCase: GetIt.instance<SetCallCancelUseCase>(),
       setConfirmCallCancelUseCase: GetIt.instance<SetConfirmCallCancelUseCase>(),
       setCallFeeChangeUseCase: GetIt.instance<SetCallFeeChangeUseCase>(),
+      setCallInfoChangeUseCase: GetIt.instance<SetCallInfoChangeUseCase>(),
       setReviewWriteUseCase: GetIt.instance<SetReviewWriteUseCase>(),
       setFCMPushUseCase: GetIt.instance<SetFCMPushUseCase>(),
+      getDrivingPriceUseCase: GetIt.instance<GetDrivingPriceUseCase>(),
+      getNaverDrivingUseCase: GetIt.instance<GetNaverDrivingUseCase>(),
+      getNaverAddressInfoUseCase: GetIt.instance<GetNaverAddressInfoUseCase>(),
     );
+
+    /// 키 관리 파일 가져오기
+    await dotenv.load(fileName: ".env");
+    _workViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
+    _workViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
   }
 
   void initData() async {
@@ -124,7 +142,7 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
     accessToken = await GetIt.instance<GetJwtUseCase>().execute();
 
     /// 호출정보 조회
-    _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
+    _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq, isSearchMapData: true);
   }
 
   @override
@@ -140,369 +158,449 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
         body: WillPopScope(
           onWillPop: _onBackPressed,
           child: SafeArea(
-            child: Column(
+            child: Stack(
               children: [
-                Expanded(
-                  child: ScrollConfiguration(
-                    behavior: CustomScrollBehavior(),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
+                  children: [
+                    Expanded(
+                      child: ScrollConfiguration(
+                        behavior: CustomScrollBehavior(),
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                            child: Column(
                               children: [
-                                /// 호출취소 버튼
-                                ValueListenableBuilder<bool>(
-                                  valueListenable: _workViewModel.isCancelVisibleNotifier,
-                                  builder: (context, value, child) {
-                                    return value
-                                        ? CustomRoundButton(
-                                            text: StringWork.cancel,
-                                            backgroundColor: Theme.of(context).toggleButtonsTheme.fillColor,
-                                            textColor: Theme.of(context).colorScheme.secondary,
-                                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                            onPressed: () async {
-                                              /// 호출취소 팝업 띄움
-                                              final cancelResult = _workViewModel.drvReqSt == DrvReqSt.cal
-                                                  ?
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    /// 호출취소 버튼
+                                    ValueListenableBuilder<bool>(
+                                      valueListenable: _workViewModel.isCancelVisibleNotifier,
+                                      builder: (context, value, child) {
+                                        return value
+                                            ? CustomRoundButton(
+                                                text: StringWork.cancel,
+                                                backgroundColor: Theme.of(context).toggleButtonsTheme.fillColor,
+                                                textColor: Theme.of(context).colorScheme.secondary,
+                                                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                                                onPressed: () async {
+                                                  /// 호출취소 팝업 띄움
+                                                  final cancelResult = _workViewModel.drvReqSt == DrvReqSt.cal
+                                                      ?
 
-                                                  /// 미확정 호출취소 팝업
-                                                  await _showConfirmDialog(
-                                                      content: StringWork.cancelConfirm,
-                                                      onConfirm: () async {
-                                                        /// 미확정 호출취소
-                                                        final result = await _workViewModel.cancelCall(drvReqSq: widget.drvReqSq);
-                                                        if (result is Success) {
-                                                          /// 호출취소 팝업 닫기
-                                                          context.pop(true);
-                                                        }
-                                                      },
-                                                    )
-                                                  :
+                                                      /// 미확정 호출취소 팝업
+                                                      await _showConfirmDialog(
+                                                          content: StringWork.cancelConfirm,
+                                                          onConfirm: () async {
+                                                            /// 미확정 호출취소
+                                                            final result = await _workViewModel.cancelCall(drvReqSq: widget.drvReqSq);
+                                                            if (result is Success) {
+                                                              /// 호출취소 팝업 닫기
+                                                              context.pop(true);
+                                                            }
+                                                          },
+                                                        )
+                                                      :
 
-                                                  /// 호출취소 사유 선택 팝업
-                                                  await _showCallCancelDialog(
-                                                      onConfirm: (drvCancelTp) async {
-                                                        /// 확정 호출취소
-                                                        final result = await _workViewModel.cancelConfirmCall(
-                                                          drvReqSq: widget.drvReqSq,
-                                                          drvCancelTp: drvCancelTp,
+                                                      /// 호출취소 사유 선택 팝업
+                                                      await _showCallCancelDialog(
+                                                          onConfirm: (drvCancelTp) async {
+                                                            /// 확정 호출취소
+                                                            final result = await _workViewModel.cancelConfirmCall(
+                                                              drvReqSq: widget.drvReqSq,
+                                                              drvCancelTp: drvCancelTp,
+                                                            );
+                                                            if (result is Success) {
+                                                              /// 호출취소 사유 선택 팝업 닫기
+                                                              context.pop(true);
+                                                            }
+                                                          },
                                                         );
-                                                        if (result is Success) {
-                                                          /// 호출취소 사유 선택 팝업 닫기
-                                                          context.pop(true);
-                                                        }
-                                                      },
-                                                    );
 
-                                              if (cancelResult == true) {
-                                                /// 호출 취소 완료 팝업 띄움
-                                                await _showAlertDialog(content: StringWork.cancelSuccess, isCanceled: false);
+                                                  if (cancelResult == true) {
+                                                    /// 호출 취소 완료 팝업 띄움
+                                                    await _showAlertDialog(content: StringWork.cancelSuccess, isCanceled: false);
 
-                                                /// 화면 닫기, 홈 화면 초기화
-                                                context.pop(false);
-                                              }
-                                            },
-                                          )
-                                        : const SizedBox();
-                                  },
+                                                    /// 화면 닫기, 홈 화면 초기화
+                                                    context.pop(false);
+                                                  }
+                                                },
+                                              )
+                                            : const SizedBox();
+                                      },
+                                    ),
+
+                                    /// 전화 버튼
+                                    ValueListenableBuilder<String>(
+                                      valueListenable: _workViewModel.callNumberNotifier,
+                                      builder: (context, value, child) {
+                                        return value.isNotEmpty ? getCallButton(value) : const SizedBox();
+                                      },
+                                    ),
+                                  ],
                                 ),
+                                const SizedBox(height: 80),
 
-                                /// 전화 버튼
                                 ValueListenableBuilder<String>(
-                                  valueListenable: _workViewModel.callNumberNotifier,
+                                  valueListenable: _workViewModel.drvReqStNotifier,
                                   builder: (context, value, child) {
-                                    return value.isNotEmpty ? getCallButton(value) : const SizedBox();
-                                  },
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 80),
-
-                            ValueListenableBuilder<String>(
-                              valueListenable: _workViewModel.drvReqStNotifier,
-                              builder: (context, value, child) {
-                                return value == DrvReqSt.cal
-                                    ? Column(
-                                        children: [
-                                          Image.asset(ImageWork.imgWork, width: 90, height: 90),
-                                          const SizedBox(height: 24),
-                                          Text(StringWork.calling, style: Theme.of(context).textTheme.displaySmall),
-                                        ],
-                                      )
-                                    : Column(
-                                        children: [
-                                          /// 프로필 사진
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(66),
-                                              border: Border.all(color: Theme.of(context).colorScheme.primary, width: 3),
-                                            ),
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(60),
-                                              child: ValueListenableBuilder<String>(
-                                                valueListenable: _workViewModel.imagePathNotifier,
-                                                builder: (context, value, _) {
-                                                  return Image.network(
-                                                    "${AppConstants.IMAGE_URL}$value",
-                                                    headers: Map.from({"SCLAuthorization": "Bearer $accessToken"}),
-                                                    fit: BoxFit.cover,
-                                                    width: 88,
-                                                    height: 88,
-                                                    errorBuilder: (context, error, stackTrace) {
-                                                      return Container(
+                                    return value == DrvReqSt.cal
+                                        ? Column(
+                                            children: [
+                                              Image.asset(ImageWork.imgWork, width: 90, height: 90),
+                                              const SizedBox(height: 24),
+                                              Text(StringWork.calling, style: Theme.of(context).textTheme.displaySmall),
+                                            ],
+                                          )
+                                        : Column(
+                                            children: [
+                                              /// 프로필 사진
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(66),
+                                                  border: Border.all(color: Theme.of(context).colorScheme.primary, width: 3),
+                                                ),
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(60),
+                                                  child: ValueListenableBuilder<String>(
+                                                    valueListenable: _workViewModel.imagePathNotifier,
+                                                    builder: (context, value, _) {
+                                                      return Image.network(
+                                                        "${AppConstants.IMAGE_URL}$value",
+                                                        headers: Map.from({"SCLAuthorization": "Bearer $accessToken"}),
+                                                        fit: BoxFit.cover,
                                                         width: 88,
                                                         height: 88,
-                                                        color: Theme.of(context).scaffoldBackgroundColor,
+                                                        errorBuilder: (context, error, stackTrace) {
+                                                          return Container(
+                                                            width: 88,
+                                                            height: 88,
+                                                            color: Theme.of(context).scaffoldBackgroundColor,
+                                                          );
+                                                        },
                                                       );
                                                     },
-                                                  );
+                                                  ),
+                                                ),
+                                              ),
+
+                                              const SizedBox(height: 24),
+
+                                              /// 기사명
+                                              ValueListenableBuilder(
+                                                valueListenable: _workViewModel.nameNotifier,
+                                                builder: (context, value, _) {
+                                                  return Text("$value ${StringCommon.driver}", style: Theme.of(context).textTheme.displaySmall);
                                                 },
                                               ),
-                                            ),
-                                          ),
-
-                                          const SizedBox(height: 24),
-
-                                          /// 기사명
-                                          ValueListenableBuilder(
-                                            valueListenable: _workViewModel.nameNotifier,
-                                            builder: (context, value, _) {
-                                              return Text("$value ${StringCommon.driver}", style: Theme.of(context).textTheme.displaySmall);
-                                            },
-                                          ),
-                                        ],
-                                      );
-                              },
-                            ),
-
-                            const SizedBox(height: 60),
-                            const Divider(thickness: 1, height: 72),
-
-                            /// 출발지
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.location_on,
-                                  size: 22,
-                                  color: Theme.of(context).colorScheme.secondary,
-                                ),
-                                const SizedBox(width: 10),
-                                SizedBox(
-                                  width: 70,
-                                  child: Text(
-                                    StringWork.start,
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: Theme.of(context).colorScheme.secondary,
-                                        ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                                ValueListenableBuilder<String>(
-                                  valueListenable: _workViewModel.startNotifier,
-                                  builder: (context, value, child) {
-                                    return Expanded(child: Text(value, style: Theme.of(context).textTheme.titleMedium));
+                                            ],
+                                          );
                                   },
+                                ),
+
+                                const SizedBox(height: 60),
+                                const Divider(thickness: 1, height: 72),
+
+                                /// 출발지
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.location_on,
+                                      size: 22,
+                                      color: Theme.of(context).colorScheme.secondary,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    SizedBox(
+                                      width: 70,
+                                      child: Text(
+                                        StringWork.start,
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: Theme.of(context).colorScheme.secondary,
+                                            ),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                                    ValueListenableBuilder<String>(
+                                      valueListenable: _workViewModel.startNotifier,
+                                      builder: (context, value, child) {
+                                        return Expanded(child: Text(value, style: Theme.of(context).textTheme.titleMedium));
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+
+                                /// 경유지
+                                ValueListenableBuilder<List<StopOver>>(
+                                  valueListenable: _workViewModel.stopOverListNotifier,
+                                  builder: (context, value, child) {
+                                    String text = value.isNotEmpty
+                                        ? value[0].placeName.isNotEmpty
+                                            ? value[0].placeName
+                                            : value[0].address
+                                        : "";
+                                    if (value.length > 1) {
+                                      text += " 외 ${value.length - 1}";
+                                    }
+                                    return Row(
+                                      children: [
+                                        SizedBox(
+                                          height: 60,
+                                          child: VerticalDashedDivider(
+                                            thickness: 1,
+                                            color: Theme.of(context).colorScheme.secondary,
+                                            space: 22,
+                                            length: 2,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        SizedBox(
+                                          width: 70,
+                                          child: Text(
+                                            value.isNotEmpty ? StringWork.stopOver : "",
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: Theme.of(context).colorScheme.secondary,
+                                                ),
+                                            textAlign: TextAlign.left,
+                                          ),
+                                        ),
+                                        Expanded(child: Text(text, style: Theme.of(context).textTheme.titleMedium)),
+
+                                        /// 경유지 추가, 변경 버튼
+                                        ValueListenableBuilder<bool>(
+                                          valueListenable: _workViewModel.isCallInfoChangeVisibleNotifier,
+                                          builder: (context, buttonValue, child) {
+                                            return buttonValue
+                                                ? CustomRoundButton(
+                                                    text: value.isNotEmpty ? StringHome.changeButton : StringWork.addStopover,
+                                                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                                    textColor: Theme.of(context).colorScheme.secondary,
+                                                    borderColor: Theme.of(context).colorScheme.secondary,
+                                                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                                                    onPressed: () async {
+                                                      /// 경유지 설정 화면으로 이동
+                                                      final result = await context.pushNamed(
+                                                        StopOverScreen.routeName,
+                                                        extra: _workViewModel.stopOverList,
+                                                      );
+
+                                                      if (result != null && result is List<StopOver>) {
+                                                        final changeResult = await _workViewModel.changeCallInfo(
+                                                          drvReqSq: widget.drvReqSq,
+                                                          changeStopOverList: result,
+                                                        );
+                                                        if (changeResult is Success) {
+                                                          _showAlertDialog(
+                                                            title: StringWork.changeCallStopOverTitle,
+                                                            content: StringWork.changeCallStopOverAlert,
+                                                            isCanceled: false,
+                                                          );
+                                                        } else {
+                                                          Fluttertoast.showToast(msg: "경유지를 변경할 수 없습니다.");
+                                                        }
+                                                      } else {
+                                                        Fluttertoast.showToast(msg: "경유지 변경을 취소했습니다.");
+                                                      }
+                                                    },
+                                                  )
+                                                : const SizedBox(height: 40);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+
+                                /// 도착지
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.flag,
+                                      size: 22,
+                                      color: Theme.of(context).colorScheme.secondary,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    SizedBox(
+                                      width: 70,
+                                      child: Text(
+                                        StringWork.end,
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: Theme.of(context).colorScheme.secondary,
+                                            ),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                                    ValueListenableBuilder<String>(
+                                      valueListenable: _workViewModel.endNotifier,
+                                      builder: (context, value, child) {
+                                        return Expanded(child: Text(value, style: Theme.of(context).textTheme.titleMedium));
+                                      },
+                                    ),
+
+                                    /// 도착지 변경 버튼
+                                    ValueListenableBuilder<bool>(
+                                      valueListenable: _workViewModel.isCallInfoChangeVisibleNotifier,
+                                      builder: (context, buttonValue, child) {
+                                        return buttonValue
+                                            ? CustomRoundButton(
+                                                text: StringHome.changeButton,
+                                                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                                textColor: Theme.of(context).colorScheme.secondary,
+                                                borderColor: Theme.of(context).colorScheme.secondary,
+                                                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                                                onPressed: () async {
+                                                  /// 도착지 설정 검색 화면으로 이동
+                                                  final result = await context.pushNamed(EndSearchScreen.routeName);
+                                                  if (result != null && result is MapData) {
+                                                    final changeResult = await _workViewModel.changeCallInfo(
+                                                      drvReqSq: widget.drvReqSq,
+                                                      changeEndMapData: result,
+                                                    );
+                                                    if (changeResult is Success) {
+                                                      _showAlertDialog(
+                                                        title: StringWork.changeCallEndTitle,
+                                                        content: StringWork.changeCallEndAlert,
+                                                        isCanceled: false,
+                                                      );
+                                                    } else {
+                                                      Fluttertoast.showToast(msg: "도착지를 변경할 수 없습니다.");
+                                                    }
+                                                  } else {
+                                                    Fluttertoast.showToast(msg: "도착지 변경을 취소했습니다.");
+                                                  }
+                                                },
+                                              )
+                                            : const SizedBox(height: 40);
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 12),
-
-                            /// 경유지
-                            ValueListenableBuilder<List<StopOver>>(
-                              valueListenable: _workViewModel.stopOverListNotifier,
-                              builder: (context, value, child) {
-                                String text = value.isNotEmpty
-                                    ? value[0].placeName.isNotEmpty
-                                        ? value[0].placeName
-                                        : value[0].address
-                                    : "";
-                                if (value.length > 1) {
-                                  text += " 외 ${value.length - 1}";
-                                }
-                                return value.isNotEmpty
-                                    ? Row(
-                                        children: [
-                                          SizedBox(
-                                            height: 60,
-                                            child: VerticalDashedDivider(
-                                              thickness: 1,
-                                              color: Theme.of(context).colorScheme.secondary,
-                                              space: 22,
-                                              length: 2,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          SizedBox(
-                                            width: 70,
-                                            child: Text(
-                                              StringWork.stopOver,
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                    color: Theme.of(context).colorScheme.secondary,
-                                                  ),
-                                              textAlign: TextAlign.left,
-                                            ),
-                                          ),
-                                          Expanded(child: Text(text, style: Theme.of(context).textTheme.titleMedium)),
-                                        ],
-                                      )
-                                    : Row(
-                                        children: [
-                                          SizedBox(
-                                            height: 24,
-                                            child: VerticalDashedDivider(
-                                              thickness: 1,
-                                              color: Theme.of(context).colorScheme.secondary,
-                                              space: 22,
-                                              length: 2,
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                              },
-                            ),
-                            const SizedBox(height: 12),
-
-                            /// 도착지
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.flag,
-                                  size: 22,
-                                  color: Theme.of(context).colorScheme.secondary,
-                                ),
-                                const SizedBox(width: 10),
-                                SizedBox(
-                                  width: 70,
-                                  child: Text(
-                                    StringWork.end,
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: Theme.of(context).colorScheme.secondary,
-                                        ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                                ValueListenableBuilder<String>(
-                                  valueListenable: _workViewModel.endNotifier,
-                                  builder: (context, value, child) {
-                                    return Expanded(child: Text(value, style: Theme.of(context).textTheme.titleMedium));
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                const Divider(thickness: 6, height: 72),
+                    const Divider(thickness: 6, height: 72),
 
-                /// 결제
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20, bottom: 24),
-                  child: Column(
-                    children: [
-                      Row(
+                    /// 결제
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 24),
+                      child: Column(
                         children: [
-                          SizedBox(
-                            width: 60,
-                            child: Text(
-                              StringWork.payment,
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Theme.of(context).colorScheme.secondary,
-                                  ),
-                              textAlign: TextAlign.left,
-                            ),
-                          ),
-                          ValueListenableBuilder<String>(
-                            valueListenable: _workViewModel.paymKindNotifier,
-                            builder: (context, value, child) {
-                              return Expanded(child: Text(getPaymentKind(value), style: Theme.of(context).textTheme.bodyLarge));
-                            },
-                          ),
-                        ],
-                      ),
-
-                      /// 요금
-                      ValueListenableBuilder<int>(
-                        valueListenable: _workViewModel.priceNotifier,
-                        builder: (context, value, child) {
-                          return Row(
+                          Row(
                             children: [
                               SizedBox(
                                 width: 60,
                                 child: Text(
-                                  StringWork.price,
+                                  StringWork.payment,
                                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                         color: Theme.of(context).colorScheme.secondary,
                                       ),
                                   textAlign: TextAlign.left,
                                 ),
                               ),
-
-                              Expanded(child: Text(getPrice(value), style: Theme.of(context).textTheme.bodyLarge)),
-
-                              /// 요금 변경 버튼
-                              ValueListenableBuilder<bool>(
-                                valueListenable: _workViewModel.isPriceInputVisibleNotifier,
-                                builder: (context, buttonValue, child) {
-                                  return buttonValue
-                                      ? CustomRoundButton(
-                                          text: StringHome.changeButton,
-                                          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                                          textColor: Theme.of(context).colorScheme.secondary,
-                                          borderColor: Theme.of(context).cardColor,
-                                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                          onPressed: () async {
-                                            /// 요금 직접 입력 팝업 띄움
-                                            final result = await showModalBottomSheet(
-                                              context: context,
-                                              isScrollControlled: true,
-                                              builder: (context) {
-                                                return Wrap(
-                                                  children: [
-                                                    Padding(
-                                                      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                                      child: CallPriceBottomSheet(
-                                                        initPrice: value,
-                                                        minPrice: value + 1000,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
-                                            if (result != null) {
-                                              final changeCallFeeResult = await _workViewModel.changeCallFee(
-                                                drvReqSq: widget.drvReqSq,
-                                                newPrice: result,
-                                              );
-                                              if (changeCallFeeResult is Success) {
-                                                _showAlertDialog(content: StringWork.changeCallFeeAlert, isCanceled: false);
-                                              }
-                                            }
-                                          },
-                                        )
-                                      : const SizedBox(height: 40);
+                              ValueListenableBuilder<String>(
+                                valueListenable: _workViewModel.paymKindNotifier,
+                                builder: (context, value, child) {
+                                  return Expanded(child: Text(getPaymentKind(value), style: Theme.of(context).textTheme.bodyLarge));
                                 },
                               ),
                             ],
-                          );
-                        },
+                          ),
+
+                          /// 요금
+                          ValueListenableBuilder<int>(
+                            valueListenable: _workViewModel.priceNotifier,
+                            builder: (context, value, child) {
+                              return Row(
+                                children: [
+                                  SizedBox(
+                                    width: 60,
+                                    child: Text(
+                                      StringWork.price,
+                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                            color: Theme.of(context).colorScheme.secondary,
+                                          ),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+
+                                  Expanded(child: Text(getPrice(value), style: Theme.of(context).textTheme.bodyLarge)),
+
+                                  /// 요금 변경 버튼
+                                  ValueListenableBuilder<bool>(
+                                    valueListenable: _workViewModel.isPriceInputVisibleNotifier,
+                                    builder: (context, buttonValue, child) {
+                                      return buttonValue
+                                          ? CustomRoundButton(
+                                              text: StringHome.changeButton,
+                                              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                              textColor: Theme.of(context).colorScheme.secondary,
+                                              borderColor: Theme.of(context).colorScheme.secondary,
+                                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                                              onPressed: () async {
+                                                /// 요금 직접 입력 팝업 띄움
+                                                final result = await showModalBottomSheet(
+                                                  context: context,
+                                                  isScrollControlled: true,
+                                                  builder: (context) {
+                                                    return Wrap(
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                                          child: CallPriceBottomSheet(
+                                                            initPrice: value,
+                                                            minPrice: value + 1000,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                                if (result != null) {
+                                                  final changeCallFeeResult = await _workViewModel.changeCallFee(
+                                                    drvReqSq: widget.drvReqSq,
+                                                    newPrice: result,
+                                                  );
+                                                  if (changeCallFeeResult is Success) {
+                                                    _showAlertDialog(content: StringWork.changeCallFeeAlert, isCanceled: false);
+                                                  }
+                                                }
+                                              },
+                                            )
+                                          : const SizedBox(height: 40);
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    StreamBuilder<Map<String, dynamic>>(
+                      stream: FlutterLocalNotification.streamController.stream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                          _showPushDialog(snapshot);
+                        }
+                        return const SizedBox();
+                      },
+                    ),
+                  ],
                 ),
-                StreamBuilder<Map<String, dynamic>>(
-                  stream: FlutterLocalNotification.streamController.stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                      _showPushDialog(snapshot);
-                    }
-                    return const SizedBox();
+                ValueListenableBuilder<StateAPI>(
+                  valueListenable: _workViewModel.stateNotifier,
+                  builder: (context, value, child) {
+                    return value is Loading
+                        ? Center(
+                            child: CircularProgressIndicator(
+                              color: Theme.of(context).colorScheme.secondary,
+                              backgroundColor: Theme.of(context).cardColor,
+                            ),
+                          )
+                        : const SizedBox();
                   },
                 ),
               ],

@@ -83,12 +83,6 @@ class HomeViewModel {
     _getDrivingCalculate();
   }
 
-  addStopOverList(StopOver item) {
-    List<StopOver> copyList = List.from(stopOverList);
-    copyList.add(item);
-    stopOverList = copyList;
-  }
-
   /// 다시 호출하기 데이터
   setDrivingData({required MapData startMapData, required MapData endMapData, required List<StopOver> stopOverList}) {
     _startMapData.value = startMapData;
@@ -397,7 +391,7 @@ class HomeViewModel {
     return result;
   }
 
-  // TODO: 콜 호출하기 API
+  /// 콜 호출하기 API
   Future<StateAPI> requestCall({required String carNumId}) async {
     state = Loading();
 

@@ -90,8 +90,10 @@ abstract class StringHome {
   static const String endPlaceHint = "도착지 검색";
   static const String stopOverButton = "+ 경유지";
   static const String basicPrice = "일반요금";
+
   // static const String basicPriceSub = "혼잡 시 긴 대기시간";
   static const String inputPrice = "요금 직접 입력";
+
   // static const String inputPriceSub = "내 요금";
   static const String payment1 = "결제수단";
   static const String payment2 = "결제";
@@ -323,10 +325,15 @@ abstract class StringWork {
   static const String payment = "결제";
   static const String price = "요금";
   static const String date = "일시";
+  static const String addStopover = "경유지 추가";
 
   static const String cancelConfirm = "호출을 취소하시겠습니까?";
   static const String cancelSuccess = "호출이 취소되었습니다.";
   static const String changeCallFeeAlert = "호출 요금을 변경했습니다.";
+  static const String changeCallEndTitle = "도착지 변경";
+  static const String changeCallEndAlert = "변경된 운행경로와\n요금을 확인해주세요.";
+  static const String changeCallStopOverTitle = "경유지 변경";
+  static const String changeCallStopOverAlert = "변경된 운행경로와\n요금을 확인해주세요.";
 }
 
 abstract class StringCallCancel {
@@ -402,6 +409,7 @@ abstract class StringPush {
   static const String reviewBody = "리뷰가 등록되었습니다.";
   static const String feeBody1 = "호출 요금이 ";
   static const String feeBody2 = "으로 변경되었습니다.";
+  static const String changeInfoBody = "운행정보가 변경되었습니다. 변경된 정보를 확인해주세요.";
 }
 
 abstract class StringCalled {
@@ -429,7 +437,7 @@ abstract class StringCalled {
   static const String amount = "요금";
   static const String delete = "삭제";
   static const String driver = "이름";
- static const String driverId = "코드";
+  static const String driverId = "코드";
   static const String car = "차량";
   static const String review = "리뷰";
 

@@ -88,6 +88,7 @@ import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_reservation_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_call_info_change_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_pay_usecase.dart';
@@ -363,6 +364,8 @@ void main() async {
   getIt.registerSingleton<SetCallCancelUseCase>(setCallCancelUseCase);
   final setCallFeeChangeUseCase = SetCallFeeChangeUseCase(workRepository: workRepository);
   getIt.registerSingleton<SetCallFeeChangeUseCase>(setCallFeeChangeUseCase);
+  final setCallInfoChangeUseCase = SetCallInfoChangeUseCase(workRepository: workRepository);
+  getIt.registerSingleton<SetCallInfoChangeUseCase>(setCallInfoChangeUseCase);
   final setCallRequestUseCase = SetCallRequestUseCase(workRepository: workRepository);
   getIt.registerSingleton<SetCallRequestUseCase>(setCallRequestUseCase);
   final setConfirmCallCancelUseCase = SetConfirmCallCancelUseCase(workRepository: workRepository);

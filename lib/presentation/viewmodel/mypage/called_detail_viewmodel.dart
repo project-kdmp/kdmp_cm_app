@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/drv_request.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -251,7 +252,7 @@ class CalledDetailViewModel {
     state = result;
 
     if (result is Success) {
-      await _sendPush(title: StringPush.callTitle, body: StringPush.reviewBody, type: "review");
+      await _sendPush(title: StringPush.callTitle, body: StringPush.reviewBody, type: PushType.review);
     }
 
     return result;

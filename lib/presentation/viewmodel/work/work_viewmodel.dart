@@ -371,7 +371,7 @@ class WorkViewModel {
     state = result;
 
     if (result is Success) {
-      await _sendPush(title: StringPush.callTitle, body: StringPush.reviewBody, type: "review");
+      await _sendPush(title: StringPush.callTitle, body: StringPush.reviewBody, type: PushType.review);
     }
 
     return result;

@@ -96,6 +96,15 @@ abstract class DrvReqSt {
   static const String end = "END"; // 운행종료
 }
 
+/// 콜 운행 상태 외 푸시 알림 유형
+abstract class PushType {
+  PushType._();
+
+  static const String review = "review"; // 리뷰 작성 및 수정
+  static const String changeFee = "fee"; // 운행 요금 변경
+  static const String changeInfo = "changeInfo"; // 도착지, 경유지 정보 변경
+}
+
 /// 콜 취소사유 유형
 abstract class DrvCancelTp {
   DrvCancelTp._();
@@ -110,7 +119,6 @@ abstract class IncomReqUseTp {
 
   static const String tax = "TAX"; // 신고용
 }
-
 
 /// 상담문의 답변여부
 abstract class InqRtnSt {

@@ -67,96 +67,100 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
       appBar: BaseAppBar(
         appBar: AppBar(),
         title: widget.isPay ? StringPayment.selectPaymentManagement : StringPayment.paymentManagement,
+        onPressed: _onBackPressed,
       ),
 
       /// 화면
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ScrollConfiguration(
-                behavior: CustomScrollBehavior(),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 32),
+      body: WillPopScope(
+        onWillPop: _onBackPressed,
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: ScrollConfiguration(
+                  behavior: CustomScrollBehavior(),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 32),
 
-                    /// 결제 정보
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: SizedBox(
-                        width: double.maxFinite,
-                        child: Text(widget.isPay ? StringPaymentManagement.payTitle : StringPaymentManagement.paymentTitle, style: Theme.of(context).textTheme.displaySmall),
+                      /// 결제 정보
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: SizedBox(
+                          width: double.maxFinite,
+                          child: Text(widget.isPay ? StringPaymentManagement.payTitle : StringPaymentManagement.paymentTitle, style: Theme.of(context).textTheme.displaySmall),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 28),
+                      const SizedBox(height: 28),
 
-                    ValueListenableBuilder<List<Payment>>(
-                      valueListenable: _paymentManagementViewModel.paymentListNotifier,
-                      builder: (context, value, _) {
-                        return Column(
-                          children: [
-                            SizedBox(
-                              height: 200,
-                              child: getPageView(value),
-                            ),
-                            Container(
-                              width: double.infinity,
-                              alignment: Alignment.center,
-                              child: SmoothPageIndicator(
-                                controller: _pageController,
-                                count: value.length,
-                                effect: ScrollingDotsEffect(
-                                  activeDotColor: Theme.of(context).colorScheme.secondary,
-                                  activeStrokeWidth: 10,
-                                  activeDotScale: 1.7,
-                                  maxVisibleDots: 5,
-                                  radius: 8,
-                                  spacing: 14,
-                                  dotHeight: 5,
-                                  dotWidth: 5,
-                                ),
+                      ValueListenableBuilder<List<Payment>>(
+                        valueListenable: _paymentManagementViewModel.paymentListNotifier,
+                        builder: (context, value, _) {
+                          return Column(
+                            children: [
+                              SizedBox(
+                                height: 200,
+                                child: getPageView(value),
                               ),
-                            )
-                          ],
-                        );
-                      },
-                    ),
-                  ],
+                              Container(
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                child: SmoothPageIndicator(
+                                  controller: _pageController,
+                                  count: value.length,
+                                  effect: ScrollingDotsEffect(
+                                    activeDotColor: Theme.of(context).colorScheme.secondary,
+                                    activeStrokeWidth: 10,
+                                    activeDotScale: 1.7,
+                                    maxVisibleDots: 5,
+                                    radius: 8,
+                                    spacing: 14,
+                                    dotHeight: 5,
+                                    dotWidth: 5,
+                                  ),
+                                ),
+                              )
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            /// 하단 버튼
-            widget.isPay
-                ? ValueListenableBuilder<Payment?>(
-                    valueListenable: _paymentManagementViewModel.currentPaymentNotifier,
-                    builder: (context, value, child) {
-                      return Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: CustomElevatedButton(
-                          text: StringCommon.confirm,
-                          isEnabled: value != null && value.cardId != "ADD",
-                          onPressed: () async {
-                            /// 화면 닫기, 선택한 결제수단 전달
-                            if (_paymentManagementViewModel.currentPayment?.cardId != "ADD") {
-                              // if (_paymentManagementViewModel.currentPayment?.cardId != "CASH") {
-                              //   /// 결제 비밀번호 입력 화면으로 이동
-                              //   final result = await context.pushNamed(PaymentPasswordScreen.routeName);
-                              //   if (result != true) {
-                              //     return;
-                              //   }
-                              // }
-                              context.pop(_paymentManagementViewModel.currentPayment);
-                            } else {
-                              context.pop();
-                            }
-                          },
-                        ),
-                      );
-                    },
-                  )
-                : const SizedBox(),
-          ],
+              /// 하단 버튼
+              widget.isPay
+                  ? ValueListenableBuilder<Payment?>(
+                      valueListenable: _paymentManagementViewModel.currentPaymentNotifier,
+                      builder: (context, value, child) {
+                        return Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: CustomElevatedButton(
+                            text: StringCommon.confirm,
+                            isEnabled: value != null && value.cardId != "ADD",
+                            onPressed: () async {
+                              /// 화면 닫기, 선택한 결제수단 전달
+                              if (_paymentManagementViewModel.currentPayment?.cardId != "ADD") {
+                                // if (_paymentManagementViewModel.currentPayment?.cardId != "CASH") {
+                                //   /// 결제 비밀번호 입력 화면으로 이동
+                                //   final result = await context.pushNamed(PaymentPasswordScreen.routeName);
+                                //   if (result != true) {
+                                //     return;
+                                //   }
+                                // }
+                                context.pop(_paymentManagementViewModel.currentPayment);
+                              } else {
+                                context.pop();
+                              }
+                            },
+                          ),
+                        );
+                      },
+                    )
+                  : const SizedBox(),
+            ],
+          ),
         ),
       ),
     );
@@ -329,5 +333,11 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
         );
       },
     );
+  }
+
+  /// 앱 뒤로가기
+  Future<bool> _onBackPressed() async {
+    context.pop(_paymentManagementViewModel.currentPayment);
+    return false;
   }
 }

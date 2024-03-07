@@ -66,8 +66,10 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
   void initScrollController() {
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent == _scrollController.position.pixels) {
-        /// 검색 리스트 조회
-        _stopOverSearchViewModel.getSearchList();
+        if (!_stopOverSearchViewModel.isRecentListValid) {
+          /// 검색 리스트 조회
+          _stopOverSearchViewModel.getSearchList();
+        }
       }
     });
   }
@@ -77,7 +79,7 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
     await dotenv.load(fileName: ".env");
     _stopOverSearchViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
     _stopOverSearchViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
-    _stopOverSearchViewModel.jusoApiKey = dotenv.get(AppConstants.JUSO_API_KEY);
+    _stopOverSearchViewModel.jusoApiKey = dotenv.get(AppConstants.KAKAO_REST_API_KEY);
 
     /// 자주 가는 장소 리스트 가져오기
     _stopOverSearchViewModel.getPlaceList();
@@ -264,9 +266,9 @@ class _StopOverSearchScreenState extends State<StopOverSearchScreen> with Single
       primary: false,
       itemBuilder: (context, index) {
         final item = value[index];
-        final addressRoad = item.roadAddr;
-        final addressJibun = item.jibunAddr;
-        final place = item.bdNm;
+        final addressRoad = item.roadAddressName;
+        final addressJibun = item.addressName;
+        final place = item.placeName;
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {

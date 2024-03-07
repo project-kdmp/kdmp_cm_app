@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -322,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                               /// 경유지 삭제 버튼
                                               GestureDetector(
-                                                child: Icon(Icons.close, size: 16, color: Theme.of(context).disabledColor),
+                                                child: Icon(Icons.close, size: 24, color: Theme.of(context).disabledColor),
                                                 onTap: () {
                                                   /// 경유지 삭제
                                                   _homeViewModel.clearStopOverList();
@@ -999,22 +1000,30 @@ class _HomeScreenState extends State<HomeScreen> {
         controller.addOverlayAll(markers);
 
         var target = _homeViewModel.currentLatLng;
+        var zoom = 11.0;
+
         if (startMapData != null && endMapData != null) {
           target = NLatLng(
             (startMapData.latLng.latitude + endMapData.latLng.latitude) / 2,
             (startMapData.latLng.longitude + endMapData.latLng.longitude) / 2,
           );
-        } else if (startMapData != null) {
+          zoom = 8;
+        } else if (startMapData == null && endMapData == null) {
+          target = _homeViewModel.currentLatLng;
+        } else if (startMapData != null && endMapData == null) {
           target = NLatLng(startMapData.latLng.latitude, startMapData.latLng.longitude);
-        } else if (endMapData != null) {
+        } else if (startMapData == null && endMapData != null) {
           target = NLatLng(endMapData.latLng.latitude, endMapData.latLng.longitude);
         }
+
+        /// 현위치 표시
+        controller.setLocationTrackingMode(NLocationTrackingMode.follow);
 
         /// 카메라 위치 변경
         controller.updateCamera(
           NCameraUpdate.scrollAndZoomTo(
             target: target,
-            zoom: 8, // 0.0 ~ 21.0
+            zoom: zoom, // 0.0 ~ 21.0
           ),
         );
       },
@@ -1036,6 +1045,7 @@ class _HomeScreenState extends State<HomeScreen> {
       Fluttertoast.showToast(msg: StringHome.onBackPressed);
       return false;
     }
+    SystemNavigator.pop();
     return true;
   }
 }

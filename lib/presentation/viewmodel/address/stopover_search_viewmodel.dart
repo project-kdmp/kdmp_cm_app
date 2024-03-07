@@ -76,6 +76,9 @@ class StopOverSearchViewModel {
     _checkRecentListValid();
   }
 
+  /// 검색 리스트 마지막 페이지 여부
+  bool _isEndPage = false;
+
   /// 최근 검색 리스트
   final ValueNotifier<List<MapData>> _recentList = ValueNotifier<List<MapData>>(List.empty());
 
@@ -152,29 +155,32 @@ class StopOverSearchViewModel {
 
   /// 검색 리스트 조회 API
   Future<StateAPI> getSearchList() async {
-    state = Loading();
+    if (!_isEndPage) {
+      state = Loading();
 
-    final request = JusoListRequest(
-      countPerPage: 10,
-      currentPage: page + 1,
-      keyword: keyword,
-      confmKey: jusoApiKey,
-    );
-    final result = await getJusoListUseCase.execute(jusoListRequest: request);
-    state = result;
+      final request = JusoListRequest(
+        page: page + 1,
+        query: keyword,
+        confmKey: jusoApiKey,
+      );
+      final result = await getJusoListUseCase.execute(jusoListRequest: request);
+      state = result;
 
-    if (result is Success) {
-      final response = result.jusoListResponse;
-      final jusoList = response.results.juso;
-      if (jusoList.isNotEmpty) {
-        page++;
+      if (result is Success) {
+        final response = result.jusoListResponse;
+        final jusoList = response.documents;
+        if (jusoList.isNotEmpty) {
+          page++;
+        }
+        List<Juso> copyList = List.from(searchList);
+        copyList.addAll(jusoList);
+        searchList = copyList;
+
+        _isEndPage = response.meta.isEnd;
       }
-      List<Juso> copyList = List.from(searchList);
-      copyList.addAll(jusoList);
-      searchList = copyList;
+      return result;
     }
-
-    return result;
+    return Fail();
   }
 
   /// 페이지 정보 초기화

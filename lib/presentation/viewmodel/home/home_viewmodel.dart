@@ -330,14 +330,18 @@ class HomeViewModel {
           /// 요금표에 해당 지역이 있는 경우
           basicPrice = priceResponse.price;
         } else {
+          debugPrint("=====${startMapData!.drivingAddress.sido} ${endMapData!.drivingAddress.sido}");
           /// 없는 경우
           final km = (distance / 1000).floor(); // m 단위 절삭
-          if (startMapData!.drivingAddress.sido == "경기도" && endMapData!.drivingAddress.sido == "경기도") {
+          if (startMapData!.drivingAddress.sido == "경기도" && endMapData!.drivingAddress.sido == "경기도"
+              || startMapData!.drivingAddress.sido == "인천광역시" && endMapData!.drivingAddress.sido == "인천광역시"
+              || startMapData!.drivingAddress.sido == "경기도" && endMapData!.drivingAddress.sido == "인천광역시"
+              || startMapData!.drivingAddress.sido == "인천광역시" && endMapData!.drivingAddress.sido == "경기도") {
+            // 경기<->경기, 인천<->경기, 인천<->인천 기본요금 15000 + 키로당 1000원
             basicPrice = ((15000 + (km * 1000)) / 1000).floor() * 1000; // 1000원 단위 이하 절삭
           } else {
-            final taxiFare = response.route!.traoptimal[0].summary.taxiFare; // 택시 요금
-            final tollFare = response.route!.traoptimal[0].summary.tollFare; // 통행 요금(톨게이트)
-            basicPrice = ((15000 + taxiFare + tollFare + (km * 1000)) / 1000).floor() * 1000; // 1000원 단위 이하 절삭
+            // 그외 지역 기본요금 10000원 + 키로당 1000원
+            basicPrice = ((10000 + (km * 1000)) / 1000).floor() * 1000; // 1000원 단위 이하 절삭
           }
         }
       }

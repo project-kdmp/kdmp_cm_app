@@ -62,8 +62,10 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
   void initScrollController() {
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent == _scrollController.position.pixels) {
-        /// 검색 리스트 조회
-        _startSearchViewModel.getSearchList();
+        if (!_startSearchViewModel.isRecentListValid) {
+          /// 검색 리스트 조회
+          _startSearchViewModel.getSearchList();
+        }
       }
     });
   }
@@ -73,7 +75,7 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
     await dotenv.load(fileName: ".env");
     _startSearchViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
     _startSearchViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
-    _startSearchViewModel.jusoApiKey = dotenv.get(AppConstants.JUSO_API_KEY);
+    _startSearchViewModel.jusoApiKey = dotenv.get(AppConstants.KAKAO_REST_API_KEY);
 
     /// 최근 검색 리스트 가져오기
     _startSearchViewModel.getRecentList();
@@ -229,9 +231,9 @@ class _StartSearchScreenState extends State<StartSearchScreen> with SingleTicker
       primary: false,
       itemBuilder: (context, index) {
         final item = value[index];
-        final addressRoad = item.roadAddr;
-        final addressJibun = item.jibunAddr;
-        final place = item.bdNm;
+        final addressRoad = item.roadAddressName;
+        final addressJibun = item.addressName;
+        final place = item.placeName;
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {

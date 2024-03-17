@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
+import 'package:kdmp_cm_app/domain/usecase/payment/delete_card_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_payment_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
@@ -46,7 +49,9 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
   /// Create
   void initViewModel() {
     _paymentManagementViewModel = PaymentManagementViewModel(
+      getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getPaymentListUseCase: GetIt.instance<GetPaymentListUseCase>(),
+      deleteCardInfoUseCase: GetIt.instance<DeleteCardInfoUseCase>(),
       deletePaymentUseCase: GetIt.instance<DeletePaymentUseCase>(),
     );
   }
@@ -281,7 +286,9 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                       onConfirm: () async {
                         /// 결제수단 삭제
                         final deleteResult = await _paymentManagementViewModel.deletePayment();
-                        context.pop(deleteResult);
+                        if (deleteResult is Success) {
+                          context.pop(true);
+                        }
                       },
                     );
                     if (result == true) {

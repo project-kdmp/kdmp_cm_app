@@ -61,7 +61,7 @@ dependencies:
     sdk: flutter
 
   # Naver Map
-  flutter_naver_map: ^1.0.2
+  flutter_naver_map: ^1.2.3+1
 
   # 키 관리
   flutter_dotenv: ^5.1.0

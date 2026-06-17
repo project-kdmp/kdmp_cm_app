@@ -106,7 +106,9 @@ import 'presentation/router/router.dart';
 /// background : 앱 실행중이나 화면이 보이지 않는 상태
 @pragma('vm:entry-point')
 Future<void> onBackgroundMessage(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp();
+  }
   debugPrint("fcmTest onBackgroundMessage - title=${message.notification!.title}");
   debugPrint("fcmTest onBackgroundMessage - body=${message.notification!.body}");
 }
@@ -188,7 +190,11 @@ void main() async {
   CustomThemeMode.change(mThemeMode);
 
   /// firebase messaging
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } on FirebaseException catch (e) {
+    if (e.code != 'duplicate-app') rethrow;
+  }
 
   /// local firebase messaging
   await FlutterLocalNotification.init();
@@ -256,7 +262,12 @@ void main() async {
     sound: true,
   );
 
-  String? fcmToken = await FlutterLocalNotification.getFcmToken();
+  String? fcmToken;
+  try {
+    fcmToken = await FlutterLocalNotification.getFcmToken();
+  } catch (e) {
+    debugPrint("fcmToken 가져오기 실패 (시뮬레이터/APNs 미지원 환경): $e");
+  }
   debugPrint("fcmToken: $fcmToken");
   setFCMUseCase.execute(fcm: fcmToken ?? "");
 

@@ -52,3 +52,6 @@ private_key.pepk
 /android/app/google-services.json
 /ios/firebase_app_id_file.json
 /ios/Runner/GoogleService-info.plist
+
+# FVM Version Cache
+.fvm/

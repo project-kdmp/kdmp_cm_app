@@ -25,7 +25,9 @@ class FlutterLocalNotification {
   );
 
   static init() async {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    }
 
     InitializationSettings initializationSettings = const InitializationSettings(
       /// Android 초기 설정

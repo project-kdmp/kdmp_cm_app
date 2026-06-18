@@ -155,8 +155,8 @@ class _SplashScreenState extends State<SplashScreen> {
     /// 위치 권한 상태 조회
     var locationStatus = await Permission.location.isGranted;
 
-    /// 전화 권한 상태 조회
-    var phoneStatus = await Permission.phone.isGranted;
+    /// 전화 권한 상태 조회 (Android 전용, iOS는 해당 권한 없음)
+    var phoneStatus = Platform.isAndroid ? await Permission.phone.isGranted : true;
 
     /// 알림 권한 상태 조회
     var notificationStatus = await FirebaseMessaging.instance.getNotificationSettings();
@@ -164,17 +164,25 @@ class _SplashScreenState extends State<SplashScreen> {
     debugPrint("필수 권한 - location: $locationStatus, phone: $phoneStatus, notification: ${notificationStatus.authorizationStatus}");
 
     Future.delayed(const Duration(milliseconds: 1000), () async {
-      if (!locationStatus || !phoneStatus || notificationStatus.authorizationStatus != AuthorizationStatus.authorized) {
-        await context.pushNamed(PermissionScreen.routeName);
-      }
+      if (!mounted) return;
 
-      if (isLogin) {
-        /// 로그인 상태, 자동 로그인 처리
-        _autoLogin();
-      } else {
-        /// 로그아웃 상태
-        /// 첫 로그인 여부 상관 없이, 이용약관 화면으로 이동
-        context.pushNamed(TermScreen.routeName);
+      try {
+        if (!locationStatus || !phoneStatus || notificationStatus.authorizationStatus != AuthorizationStatus.authorized) {
+          await context.pushNamed(PermissionScreen.routeName);
+        }
+
+        if (!mounted) return;
+
+        if (isLogin) {
+          /// 로그인 상태, 자동 로그인 처리
+          _autoLogin();
+        } else {
+          /// 로그아웃 상태
+          /// 첫 로그인 여부 상관 없이, 이용약관 화면으로 이동
+          context.pushNamed(TermScreen.routeName);
+        }
+      } catch (e, stack) {
+        debugPrint("checkPermission navigation error: $e\n$stack");
       }
     });
   }

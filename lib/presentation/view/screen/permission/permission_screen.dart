@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,8 +33,8 @@ class _PermissionScreenState extends State<PermissionScreen> {
     /// 위치 권한
     var locationStatus = await Permission.location.request().isGranted;
 
-    /// 전화 권한
-    var phoneStatus = await Permission.phone.request().isGranted;
+    /// 전화 권한 (Android 전용, iOS는 해당 권한 없음)
+    var phoneStatus = Platform.isAndroid ? await Permission.phone.request().isGranted : true;
 
     /// 알림 권한
     var notificationStatus = await FirebaseMessaging.instance.requestPermission(
@@ -120,26 +122,27 @@ class _PermissionScreenState extends State<PermissionScreen> {
                               )
                             ],
                           ),
-                          const SizedBox(height: 24),
-
-                          /// 전화 권한
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Image.asset(ImagePermission.iconCall, width: 40, height: 40),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(StringPermission.permissionTitle2, style: Theme.of(context).textTheme.bodyLarge),
-                                    const SizedBox(height: 4),
-                                    Text(StringPermission.permissionContent2, style: Theme.of(context).textTheme.bodySmall),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
+                          /// 전화 권한 (Android 전용)
+                          if (Platform.isAndroid) ...[
+                            const SizedBox(height: 24),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Image.asset(ImagePermission.iconCall, width: 40, height: 40),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(StringPermission.permissionTitle2, style: Theme.of(context).textTheme.bodyLarge),
+                                      const SizedBox(height: 4),
+                                      Text(StringPermission.permissionContent2, style: Theme.of(context).textTheme.bodySmall),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
                           const SizedBox(height: 24),
 
                           /// 알림 권한

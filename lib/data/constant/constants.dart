@@ -57,15 +57,15 @@ class _Config {
   /// 개발
   static Map<String, dynamic> devConstants = {
     environment: Environment.DEV,
-    API: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/kdmp",
-    AUTH_API: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/kdmp",
-    IMAGE_URL: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/kdmp/v1/biztotal",
+    API: "http://210.223.56.94:8088",
+    AUTH_API: "http://210.223.56.94:8085",
+    IMAGE_URL: "http://210.223.56.94:8088/v1/biztotal",
     NAVER_API: "https://naveropenapi.apigw.ntruss.com",
     JUSO_API: "https://business.juso.go.kr/addrlink/addrLinkApi.do",
     JUSO_API_KEY: "JUSO_API_KEY_DEV",
     NAVER_CLIENT_ID: "NAVER_CLIENT_ID",
     NAVER_CLIENT_SECRET: "NAVER_CLIENT_SECRET",
-    PHONE_VERIFY_URL: "http://ec2-13-209-109-214.ap-northeast-2.compute.amazonaws.com:8080/mobiliansTest",
+    PHONE_VERIFY_URL: "http://210.223.56.94:8088/mobiliansTest",
   };
 
   /// 운영

@@ -13,8 +13,6 @@ import 'package:kdmp_cm_app/data/model/mypage/call_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
-import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
-import 'package:kdmp_cm_app/data/model/mypage/place_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/profile_detail_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/directions_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/geocoding_response.dart';
@@ -89,10 +87,6 @@ class Success extends StateAPI {
   CalledListResponse get calledListResponse => _response;
 
   CarListResponse get carListResponse => _response;
-
-  PlaceListResponse get placeListResponse => _response;
-
-  PlaceResponse get placeResponse => _response;
 
   CallInfoResponse get callInfoResponse => _response;
 

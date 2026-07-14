@@ -98,7 +98,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                                             Image.asset(ImageCommon.imgWarning, width: 72, height: 72),
                                             const SizedBox(height: 20),
                                             Text(
-                                              StringPlace.noList,
+                                              StringCar.noList,
                                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                     color: Theme.of(context).disabledColor,
                                                   ),

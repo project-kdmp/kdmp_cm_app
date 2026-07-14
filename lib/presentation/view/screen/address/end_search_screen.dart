@@ -8,9 +8,7 @@ import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/juso/juso_list_response.dart';
-import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/juso/get_juso_address_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/mypage/get_place_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_mapdata_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mapdata_list_usecase.dart';
@@ -21,7 +19,6 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/end_map_screen.dart
 import 'package:kdmp_cm_app/presentation/view/screen/address/recent_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_icon_text_button.dart';
-import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_search_field.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_tag.dart';
@@ -57,7 +54,6 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getNaverAddressInfoUseCase: GetIt.instance<GetNaverAddressInfoUseCase>(),
       getJusoListUseCase: GetIt.instance<GetJusoListUseCase>(),
-      getPlaceListUseCase: GetIt.instance<GetPlaceListUseCase>(),
       getMapDataListUseCase: GetIt.instance<GetMapDataListUseCase>(),
       addMapDataUseCase: GetIt.instance<AddMapDataUseCase>(),
     );
@@ -78,9 +74,6 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
     _endSearchViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
     _endSearchViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
     _endSearchViewModel.jusoApiKey = dotenv.get(AppConstants.JUSO_API_KEY);
-
-    /// 자주 가는 장소 리스트 가져오기
-    _endSearchViewModel.getPlaceList();
 
     /// 최근 검색 리스트 가져오기
     _endSearchViewModel.getRecentList();
@@ -140,17 +133,8 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        /// 자주 가는 장소 리스트
-                        ValueListenableBuilder<List<Place>>(
-                          valueListenable: _endSearchViewModel.placeListNotifier,
-                          builder: (context, value, child) {
-                            return Expanded(child: SizedBox(height: 40, child: getPlaceList(value)));
-                          },
-                        ),
-                        const SizedBox(width: 8),
-
                         /// 지도에서 선택 버튼
                         CustomIconTextButton(
                           icon: Icons.map_outlined,
@@ -223,36 +207,6 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
           ),
         ),
       ),
-    );
-  }
-
-  /// 자주 가는 장소 리스트
-  Widget getPlaceList(List<Place> value) {
-    return ListView.separated(
-      itemCount: value.length,
-      shrinkWrap: true,
-      primary: false,
-      scrollDirection: Axis.horizontal,
-      itemBuilder: (context, index) {
-        final item = value[index];
-        final addressJibun = item.fplaceAddress;
-        final addressRoad = "";
-        final place = item.fplacePlaceNm;
-        return CustomRoundButton(
-          text: value[index].fplaceNicknm,
-          backgroundColor: Theme.of(context).toggleButtonsTheme.fillColor,
-          textColor: Theme.of(context).colorScheme.secondary,
-          textSize: 16,
-          // 텍스트 사이즈 고정
-          onPressed: () async {
-            /// 자주 가는 장소 리스트 아이템 클릭
-            await setMapData(addressRoad: addressRoad, addressJibun: addressJibun, place: place);
-          },
-        );
-      },
-      separatorBuilder: (context, index) {
-        return const SizedBox(width: 8);
-      },
     );
   }
 

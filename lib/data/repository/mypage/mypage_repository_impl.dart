@@ -18,11 +18,6 @@ import 'package:kdmp_cm_app/data/model/mypage/car_add_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_delete_request.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_modify_request.dart';
-import 'package:kdmp_cm_app/data/model/mypage/place_add_request.dart';
-import 'package:kdmp_cm_app/data/model/mypage/place_delete_request.dart';
-import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
-import 'package:kdmp_cm_app/data/model/mypage/place_modify_request.dart';
-import 'package:kdmp_cm_app/data/model/mypage/place_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/profile_detail_response.dart';
 import 'package:kdmp_cm_app/domain/repository/mypage/mypage_repository.dart';
 
@@ -76,42 +71,6 @@ class MyPageRepositoryImpl extends MyPageRepository {
       final response = await _dio.post(
         url,
         data: withdrawalMemberRequest.toJson(),
-        options: Options(contentType: Headers.jsonContentType),
-      );
-
-      /// bizErrCode 없으면 정상 데이터 파싱
-      if (!response.data.containsKey("bizErrCode")) {
-        final responseObject = DefaultResponse.fromJson(response.data);
-        final StateAPI state = Success(responseObject);
-        debugPrint("state: $state");
-        return state;
-      } else {
-        final badResponse = BadResponse.fromJson(response.data);
-        final StateAPI state = Bad(badResponse);
-        if (badResponse.detailMessage.isNotEmpty) {
-          Fluttertoast.showToast(msg: badResponse.detailMessage);
-        } else {
-          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
-        }
-        debugPrint("state: $state");
-        return state;
-      }
-    } catch (e) {
-      const errorMessage = "알 수 없는 오류가 발생했습니다.";
-      Fluttertoast.showToast(msg: errorMessage);
-      return Fail(errorMessage: errorMessage);
-    }
-  }
-
-  @override
-  Future<StateAPI> deletePlace({required PlaceDeleteRequest placeDeleteRequest}) async {
-    const api = '/v1/biztotal/cm/myinfo/delFplace';
-    final url = '${AppConstants.API}$api';
-
-    try {
-      final response = await _dio.post(
-        url,
-        data: placeDeleteRequest.toJson(),
         options: Options(contentType: Headers.jsonContentType),
       );
 
@@ -212,42 +171,6 @@ class MyPageRepositoryImpl extends MyPageRepository {
   }
 
   @override
-  Future<StateAPI> addPlace({required PlaceAddRequest placeAddRequest}) async {
-    const api = '/v1/biztotal/cm/myinfo/regFplace';
-    final url = '${AppConstants.API}$api';
-
-    try {
-      final response = await _dio.post(
-        url,
-        data: placeAddRequest.toJson(),
-        options: Options(contentType: Headers.jsonContentType),
-      );
-
-      /// bizErrCode 없으면 정상 데이터 파싱
-      if (!response.data.containsKey("bizErrCode")) {
-        final responseObject = PlaceResponse.fromJson(response.data);
-        final StateAPI state = Success(responseObject);
-        debugPrint("state: $state");
-        return state;
-      } else {
-        final badResponse = BadResponse.fromJson(response.data);
-        final StateAPI state = Bad(badResponse);
-        if (badResponse.detailMessage.isNotEmpty) {
-          Fluttertoast.showToast(msg: badResponse.detailMessage);
-        } else {
-          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
-        }
-        debugPrint("state: $state");
-        return state;
-      }
-    } catch (e) {
-      const errorMessage = "알 수 없는 오류가 발생했습니다.";
-      Fluttertoast.showToast(msg: errorMessage);
-      return Fail(errorMessage: errorMessage);
-    }
-  }
-
-  @override
   Future<StateAPI> addCar({required CarAddRequest carAddRequest}) async {
     const api = '/v1/biztotal/cm/myinfo/regMycar';
     final url = '${AppConstants.API}$api';
@@ -262,42 +185,6 @@ class MyPageRepositoryImpl extends MyPageRepository {
       /// bizErrCode 없으면 정상 데이터 파싱
       if (!response.data.containsKey("bizErrCode")) {
         final responseObject = DefaultResponse.fromJson(response.data);
-        final StateAPI state = Success(responseObject);
-        debugPrint("state: $state");
-        return state;
-      } else {
-        final badResponse = BadResponse.fromJson(response.data);
-        final StateAPI state = Bad(badResponse);
-        if (badResponse.detailMessage.isNotEmpty) {
-          Fluttertoast.showToast(msg: badResponse.detailMessage);
-        } else {
-          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
-        }
-        debugPrint("state: $state");
-        return state;
-      }
-    } catch (e) {
-      const errorMessage = "알 수 없는 오류가 발생했습니다.";
-      Fluttertoast.showToast(msg: errorMessage);
-      return Fail(errorMessage: errorMessage);
-    }
-  }
-
-  @override
-  Future<StateAPI> modifyPlace({required PlaceModifyRequest placeModifyRequest}) async {
-    const api = '/v1/biztotal/cm/myinfo/setFplace';
-    final url = '${AppConstants.API}$api';
-
-    try {
-      final response = await _dio.post(
-        url,
-        data: placeModifyRequest.toJson(),
-        options: Options(contentType: Headers.jsonContentType),
-      );
-
-      /// bizErrCode 없으면 정상 데이터 파싱
-      if (!response.data.containsKey("bizErrCode")) {
-        final responseObject = PlaceResponse.fromJson(response.data);
         final StateAPI state = Success(responseObject);
         debugPrint("state: $state");
         return state;
@@ -478,42 +365,6 @@ class MyPageRepositoryImpl extends MyPageRepository {
       /// bizErrCode 없으면 정상 데이터 파싱
       if (!response.data.containsKey("bizErrCode")) {
         final responseObject = CalledListResponse.fromJson(response.data);
-        final StateAPI state = Success(responseObject);
-        debugPrint("state: $state");
-        return state;
-      } else {
-        final badResponse = BadResponse.fromJson(response.data);
-        final StateAPI state = Bad(badResponse);
-        if (badResponse.detailMessage.isNotEmpty) {
-          Fluttertoast.showToast(msg: badResponse.detailMessage);
-        } else {
-          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
-        }
-        debugPrint("state: $state");
-        return state;
-      }
-    } catch (e) {
-      const errorMessage = "알 수 없는 오류가 발생했습니다.";
-      Fluttertoast.showToast(msg: errorMessage);
-      return Fail(errorMessage: errorMessage);
-    }
-  }
-
-  @override
-  Future<StateAPI> getPlaceList({required DefaultRequest getPlaceListRequest}) async {
-    const api = '/v1/biztotal/cm/myinfo/listFplace';
-    final url = '${AppConstants.API}$api';
-
-    try {
-      final response = await _dio.get(
-        url,
-        queryParameters: getPlaceListRequest.toJson(),
-        options: Options(contentType: Headers.jsonContentType),
-      );
-
-      /// bizErrCode 없으면 정상 데이터 파싱
-      if (!response.data.containsKey("bizErrCode")) {
-        final responseObject = PlaceListResponse.fromJson(response.data);
         final StateAPI state = Success(responseObject);
         debugPrint("state: $state");
         return state;

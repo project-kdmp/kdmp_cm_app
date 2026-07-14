@@ -1,13 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
-import 'package:kdmp_cm_app/data/model/mypage/place_list_response.dart';
 import 'package:kdmp_cm_app/data/model/register/register_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/address/place_map_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/address/place_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/recent_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
@@ -28,9 +25,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.d
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/car_info_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/mypage/modify_place_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/mypage/place_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/withdraw_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/onboarding/onboarding_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/add_payment_management_screen.dart';
@@ -307,42 +302,6 @@ final GoRouter router = GoRouter(
             //   path: SetPaymentPasswordScreen.routeName,
             //   builder: (context, state) => const SetPaymentPasswordScreen(),
             // ),
-          ],
-        ),
-
-        /// 자주 가는 장소
-        GoRoute(
-          name: PlaceScreen.routeName,
-          path: PlaceScreen.routeName,
-          builder: (context, state) => const PlaceScreen(),
-          routes: [
-            /// 자주 가는 장소 등록/수정
-            GoRoute(
-              name: ModifyPlaceScreen.routeName,
-              path: ModifyPlaceScreen.routeName,
-              builder: (context, state) {
-                final Place? place = state.extra != null ? state.extra as Place : null;
-                return ModifyPlaceScreen(place: place);
-              },
-              routes: [
-                /// 장소 설정 검색
-                GoRoute(
-                  name: PlaceSearchScreen.routeName,
-                  path: PlaceSearchScreen.routeName,
-                  builder: (context, state) => const PlaceSearchScreen(),
-                  routes: [
-                    /// 장소 설정 지도
-                    GoRoute(
-                      name: PlaceMapScreen.routeName,
-                      path: PlaceMapScreen.routeName,
-                      builder: (context, state) {
-                        return const PlaceMapScreen();
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
           ],
         ),
 

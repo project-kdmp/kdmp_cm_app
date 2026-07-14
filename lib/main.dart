@@ -40,15 +40,11 @@ import 'package:kdmp_cm_app/domain/usecase/mypage/get_call_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_called_detail_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_called_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/mypage/get_place_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_profile_detail_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_called_delete_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_car_add_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_car_delete_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_car_modify_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/mypage/set_place_add_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/mypage/set_place_delete_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/mypage/set_place_modify_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_withdrawal_member_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart';
@@ -356,14 +352,6 @@ void main() async {
   getIt.registerSingleton<SetCarDeleteUseCase>(setCarDeleteUseCase);
   final setCarModifyUseCase = SetCarModifyUseCase(myPageRepository: myPageRepository);
   getIt.registerSingleton<SetCarModifyUseCase>(setCarModifyUseCase);
-  final getPlaceListUseCase = GetPlaceListUseCase(myPageRepository: myPageRepository);
-  getIt.registerSingleton<GetPlaceListUseCase>(getPlaceListUseCase);
-  final setPlaceAddUseCase = SetPlaceAddUseCase(myPageRepository: myPageRepository);
-  getIt.registerSingleton<SetPlaceAddUseCase>(setPlaceAddUseCase);
-  final setPlaceDeleteUseCase = SetPlaceDeleteUseCase(myPageRepository: myPageRepository);
-  getIt.registerSingleton<SetPlaceDeleteUseCase>(setPlaceDeleteUseCase);
-  final setPlaceModifyUseCase = SetPlaceModifyUseCase(myPageRepository: myPageRepository);
-  getIt.registerSingleton<SetPlaceModifyUseCase>(setPlaceModifyUseCase);
 
   /// 기사요청
   final workRepository = WorkRepositoryImpl(dio);

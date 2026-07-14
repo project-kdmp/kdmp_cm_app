@@ -9,7 +9,6 @@ import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/car_info_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/mypage/place_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
@@ -66,19 +65,6 @@ class MenuScreen extends StatelessWidget {
                       ),
                       onPressed: () {
                         context.pushNamed(CalledScreen.routeName);
-                      },
-                    ),
-
-                    /// 자주 가는 장소 버튼
-                    CustomMoveButton(
-                      text: StringMenu.place,
-                      iconImage: Image.asset(
-                        themeMode == ThemeMode.light ? ImageMenuLight.iconPlace : ImageMenuDark.iconPlace,
-                        width: 28,
-                        height: 28,
-                      ),
-                      onPressed: () {
-                        context.pushNamed(PlaceScreen.routeName);
                       },
                     ),
 

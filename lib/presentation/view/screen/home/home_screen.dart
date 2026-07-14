@@ -16,6 +16,7 @@ import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/policy/get_policy_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
@@ -46,6 +47,7 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_text_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/vertical_dashed_divider.dart';
+import 'package:kdmp_cm_app/presentation/viewmodel/address/naver_map_viewmodel.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/home/home_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -64,6 +66,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final HomeViewModel _homeViewModel;
+  late final NaverMapViewModel _naverMapViewModel;
   DateTime? _lastOnPressed;
 
   late final NMarker currentMarker;
@@ -103,6 +106,12 @@ class _HomeScreenState extends State<HomeScreen> {
     await dotenv.load(fileName: ".env");
     _homeViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
     _homeViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
+
+    _naverMapViewModel = NaverMapViewModel(
+      clientId: _homeViewModel.clientId,
+      clientSecret: _homeViewModel.clientSecret,
+      getNaverAddressUseCase: GetIt.instance<GetNaverAddressUseCase>(),
+    );
   }
 
   void initDataFirst() async {
@@ -133,6 +142,13 @@ class _HomeScreenState extends State<HomeScreen> {
     /// 현위치 좌표 가져오기
     _homeViewModel.currentLatLng = await getCurrentLocation();
     // _homeViewModel.currentLatLng = const NLatLng(37.4668787, 126.88837); // TODO: 임시값
+
+    /// 출발지 미지정 시 현재 위치를 기본 출발지로 설정 (다시 호출 데이터가 있는 경우는 제외)
+    if (_homeViewModel.startMapData == null && widget.drivingData == null) {
+      final currentMapData = await _naverMapViewModel.getAddress(nLatLng: _homeViewModel.currentLatLng);
+      _homeViewModel.startMapData = currentMapData;
+    }
+
     /// 네이버 지도 초기화
     naverMap = initNaverMap(nLatLng: _homeViewModel.currentLatLng);
   }
@@ -946,7 +962,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         initialCameraPosition: NCameraPosition(
           target: nLatLng,
-          zoom: 8, // 0.0 ~ 21.0
+          zoom: 16, // 0.0 ~ 21.0
         ),
         mapType: NMapType.navi,
         nightModeEnable: CustomThemeMode.getThemeMode == ThemeMode.dark, // mapType이 네비게이션일 경우에만 제공
@@ -960,13 +976,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Set<NAddableOverlay> markers = Set.from({});
 
+        NMarker? startMarker;
         if (startMapData != null) {
           /// 출발지 마커 추가
-          markers.add(NMarker(
+          startMarker = NMarker(
             id: "start",
             position: startMapData.latLng,
-            icon: const NOverlayImage.fromAssetImage(ImageCommon.icStart),
-          ));
+            icon: await NOverlayImage.fromWidget(
+              widget: Icon(
+                Icons.flag,
+                size: 30,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              size: const Size(30, 30),
+              context: context,
+            ),
+          );
+          markers.add(startMarker);
         }
 
         if (endMapData != null) {
@@ -996,7 +1022,17 @@ class _HomeScreenState extends State<HomeScreen> {
             markers.add(stopOverMarker);
           }
         }
-        controller.addOverlayAll(markers);
+        await controller.addOverlayAll(markers);
+
+        if (startMarker != null) {
+          /// 출발지 마커 라벨 표시
+          final startInfoWindow = NInfoWindow.onMarker(id: "start_info", text: "출발지");
+          startInfoWindow.setOffsetY(-1);
+          startMarker.openInfoWindow(startInfoWindow);
+        }
+
+        /// 내 위치 표시(파란 동그라미) 기본 활성화
+        controller.setLocationTrackingMode(NLocationTrackingMode.noFollow);
 
         var target = _homeViewModel.currentLatLng;
         if (startMapData != null && endMapData != null) {
@@ -1014,7 +1050,7 @@ class _HomeScreenState extends State<HomeScreen> {
         controller.updateCamera(
           NCameraUpdate.scrollAndZoomTo(
             target: target,
-            zoom: 8, // 0.0 ~ 21.0
+            zoom: 16, // 0.0 ~ 21.0
           ),
         );
       },

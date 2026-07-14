@@ -108,7 +108,7 @@ class Summary {
   Goal goal;
   int distance;
   int duration;
-  int etaServiceType;
+  int? etaServiceType;
   String departureTime;
   List<List<double>> bbox;
   int tollFare;
@@ -120,7 +120,7 @@ class Summary {
     required this.goal,
     required this.distance,
     required this.duration,
-    required this.etaServiceType,
+    this.etaServiceType,
     required this.departureTime,
     required this.bbox,
     required this.tollFare,

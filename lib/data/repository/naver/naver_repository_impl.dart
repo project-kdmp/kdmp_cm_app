@@ -46,8 +46,9 @@ class NaverRepositoryImpl extends NaverRepository {
         Fluttertoast.showToast(msg: responseObject.status.message);
         return Fail(errorMessage: responseObject.status.message);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -77,8 +78,9 @@ class NaverRepositoryImpl extends NaverRepository {
       final StateAPI state = Success(responseObject);
       debugPrint("state: $state");
       return state;
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -113,8 +115,9 @@ class NaverRepositoryImpl extends NaverRepository {
         Fluttertoast.showToast(msg: responseObject.message);
         return Fail(errorMessage: responseObject.message);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }

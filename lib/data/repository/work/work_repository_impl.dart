@@ -56,8 +56,9 @@ class WorkRepositoryImpl extends WorkRepository {
         debugPrint("state: $state");
         return state;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -92,8 +93,9 @@ class WorkRepositoryImpl extends WorkRepository {
         debugPrint("state: $state");
         return state;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -128,8 +130,9 @@ class WorkRepositoryImpl extends WorkRepository {
         debugPrint("state: $state");
         return state;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -164,8 +167,9 @@ class WorkRepositoryImpl extends WorkRepository {
         debugPrint("state: $state");
         return state;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -200,8 +204,9 @@ class WorkRepositoryImpl extends WorkRepository {
         debugPrint("state: $state");
         return state;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -236,8 +241,9 @@ class WorkRepositoryImpl extends WorkRepository {
         debugPrint("state: $state");
         return state;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -272,8 +278,9 @@ class WorkRepositoryImpl extends WorkRepository {
         debugPrint("state: $state");
         return state;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -308,8 +315,9 @@ class WorkRepositoryImpl extends WorkRepository {
         debugPrint("state: $state");
         return state;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -344,8 +352,9 @@ class WorkRepositoryImpl extends WorkRepository {
         debugPrint("state: $state");
         return state;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -380,8 +389,9 @@ class WorkRepositoryImpl extends WorkRepository {
         debugPrint("state: $state");
         return state;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -416,8 +426,9 @@ class WorkRepositoryImpl extends WorkRepository {
         debugPrint("state: $state");
         return state;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }
@@ -452,8 +463,9 @@ class WorkRepositoryImpl extends WorkRepository {
         debugPrint("state: $state");
         return state;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }

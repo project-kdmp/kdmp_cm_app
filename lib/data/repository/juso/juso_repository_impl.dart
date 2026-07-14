@@ -34,8 +34,9 @@ class JusoRepositoryImpl extends JusoRepository {
       } else {
         return Fail(errorMessage: responseObject.results.common.errorMessage);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
     }

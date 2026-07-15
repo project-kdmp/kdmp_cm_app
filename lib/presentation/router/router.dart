@@ -34,6 +34,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_screen.dart
 import 'package:kdmp_cm_app/presentation/view/screen/permission/permission_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/demo_login_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/no_permission_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/register/phone_inline_verify_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/phone_verify_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/register_car_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/register/register_verify_screen.dart';
@@ -52,7 +53,7 @@ final GoRouter router = GoRouter(
     final isLogin = (await GetIt.instance<GetJwtUseCase>().execute()).isNotEmpty;
 
     /// 로그인 상태가 아니고, 스플래시 화면이 아닐 경우
-    if (!isLogin && !state.matchedLocation.contains(PermissionScreen.routeURL) && !state.matchedLocation.contains(TermScreen.routeURL) && !state.matchedLocation.contains(RegisterVerifyScreen.routeURL) && !state.matchedLocation.contains(DemoLoginScreen.routeURL)) {
+    if (!isLogin && !state.matchedLocation.contains(PermissionScreen.routeURL) && !state.matchedLocation.contains(TermScreen.routeURL) && !state.matchedLocation.contains(RegisterVerifyScreen.routeURL) && !state.matchedLocation.contains(DemoLoginScreen.routeURL) && !state.matchedLocation.contains(PhoneInlineVerifyScreen.routeURL)) {
       return SplashScreen.routeURL;
     }
     return null;
@@ -127,6 +128,13 @@ final GoRouter router = GoRouter(
       name: PhoneVerifyScreen.routeName,
       path: PhoneVerifyScreen.routeURL,
       builder: (context, state) => const PhoneVerifyScreen(),
+    ),
+
+    /// 본인인증 확인 (인라인 네이티브 UI 스캐폴드, API 연동 전)
+    GoRoute(
+      name: PhoneInlineVerifyScreen.routeName,
+      path: PhoneInlineVerifyScreen.routeURL,
+      builder: (context, state) => const PhoneInlineVerifyScreen(),
     ),
 
     /// 초기 차량정보 등록

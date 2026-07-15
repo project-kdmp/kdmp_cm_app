@@ -1,5 +1,7 @@
 import 'package:kdmp_cm_app/data/model/auth/login_response.dart';
 import 'package:kdmp_cm_app/data/model/auth/refresh_response.dart';
+import 'package:kdmp_cm_app/data/model/auth/send_sms_cert_code_response.dart';
+import 'package:kdmp_cm_app/data/model/auth/send_sms_verify_response.dart';
 import 'package:kdmp_cm_app/data/model/auth/verify_response.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
 import 'package:kdmp_cm_app/data/model/common/default_response.dart';
@@ -61,6 +63,10 @@ class Success extends StateAPI {
   DrvResponse get drvResponse => _response;
 
   VerifyResponse get verifyResponse => _response;
+
+  SendSmsCertCodeResponse get sendSmsCertCodeResponse => _response;
+
+  SendSmsVerifyResponse get sendSmsVerifyResponse => _response;
 
   LoginResponse get loginResponse => _response;
 

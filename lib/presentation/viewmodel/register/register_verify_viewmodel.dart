@@ -1,12 +1,10 @@
 import 'package:kdmp_cm_app/data/constant/client_info.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/auth/login_request.dart';
-import 'package:kdmp_cm_app/data/model/auth/verify_request.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/fcm/fcm_token_request.dart';
 import 'package:kdmp_cm_app/data/model/register/register_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/login/get_login_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/auth/verify/get_verify_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
@@ -24,7 +22,6 @@ class RegisterVerifyViewModel {
     required this.getFCMUseCase,
     required this.setFCMTokenUseCase,
     required this.deleteUserDataUseCase,
-    required this.getVerifyInfoUseCase,
   });
 
   final SetRegisterUseCase setRegisterUseCase;
@@ -34,7 +31,6 @@ class RegisterVerifyViewModel {
   final GetFCMUseCase getFCMUseCase;
   final SetFCMTokenUseCase setFCMTokenUseCase;
   final DeleteUserDataUseCase deleteUserDataUseCase;
-  final GetVerifyInfoUseCase getVerifyInfoUseCase;
 
   /// 상태
   StateAPI state = Loading();
@@ -127,16 +123,5 @@ class RegisterVerifyViewModel {
   Future<void> logout() async {
     ClientInfo.setClientId = "";
     await deleteUserDataUseCase.withdrawal();
-  }
-
-  /// 본인확인
-  Future<StateAPI> getVerifyInfo({required String value}) async {
-    state = Loading();
-
-    final request = VerifyRequest(value: value);
-    final result = await getVerifyInfoUseCase.execute(verifyRequest: request);
-    state = result;
-
-    return result;
   }
 }

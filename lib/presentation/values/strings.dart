@@ -134,6 +134,29 @@ abstract class StringPhoneVerify {
   static const String verifyFail = "본인 확인에 실패하였습니다.\n다시 시도해주세요.";
 }
 
+abstract class StringPhoneInlineVerify {
+  StringPhoneInlineVerify._();
+
+  static const String title = "휴대폰번호 인증";
+  static const String nameLabel = "이름";
+  static const String nameHint = "이름 입력";
+  static const String phoneLabel = "휴대폰번호";
+  static const String phoneHint = "휴대폰번호 입력";
+  static const String requestButton = "인증요청";
+  static const String codeGuide1 = "휴대폰 번호를 확인하기 위해 6자리 숫자를 포함한 인증문자를 입력하신 번호로 보냈습니다.";
+  static const String codeGuide2 = "문자에 있는 번호 6자리를 입력해 주세요.";
+  static const String codeLabel = "인증번호";
+  static const String codeHint = "인증번호를 입력해주세요";
+  static const String resendButton = "재시도";
+  static const String remainingTimePrefix = "남은 시간: ";
+  static const String codeExpired = "인증 시간이 만료되었습니다. 재시도를 눌러주세요.";
+  static const String nameOrPhoneEmpty = "정보를 입력해주세요.";
+  static const String phoneLengthInvalid = "휴대폰번호 11자리를 입력해주세요.";
+  static const String codeInvalid = "인증번호를 확인해주세요.";
+  static const String codeLengthInvalid = "인증번호 6자리를 입력해주세요.";
+  static const String verifyCompleteButton = "인증완료";
+}
+
 abstract class StringOnBoarding {
   StringOnBoarding._();
 

@@ -5,6 +5,10 @@ import 'package:kdmp_cm_app/common/network/dio_exceptions.dart';
 import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/auth/login_request.dart';
 import 'package:kdmp_cm_app/data/model/auth/login_response.dart';
+import 'package:kdmp_cm_app/data/model/auth/send_sms_cert_code_request.dart';
+import 'package:kdmp_cm_app/data/model/auth/send_sms_cert_code_response.dart';
+import 'package:kdmp_cm_app/data/model/auth/send_sms_verify_request.dart';
+import 'package:kdmp_cm_app/data/model/auth/send_sms_verify_response.dart';
 import 'package:kdmp_cm_app/data/model/auth/verify_request.dart';
 import 'package:kdmp_cm_app/data/model/auth/verify_response.dart';
 import 'package:kdmp_cm_app/data/model/common/bad_response.dart';
@@ -108,6 +112,82 @@ class AuthRepositoryImpl extends AuthRepository {
       if (!response.data.containsKey("bizErrCode")) {
         final loginResponse = VerifyResponse.fromJson(response.data);
         final StateAPI state = Success(loginResponse);
+        debugPrint("state: $state");
+        return state;
+      } else {
+        final badResponse = BadResponse.fromJson(response.data);
+        final StateAPI state = Bad(badResponse);
+        if (badResponse.detailMessage.isNotEmpty) {
+          Fluttertoast.showToast(msg: badResponse.detailMessage);
+        } else {
+          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
+        }
+        debugPrint("state: $state");
+        return state;
+      }
+    } catch (e, stackTrace) {
+      const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
+      Fluttertoast.showToast(msg: errorMessage);
+      return Fail(errorMessage: errorMessage);
+    }
+  }
+
+  /// 휴대폰 본인인증 - 인증번호(SMS) 발송/재전송
+  @override
+  Future<StateAPI> sendSmsCertCode({required SendSmsCertCodeRequest sendSmsCertCodeRequest}) async {
+    const api = '/v1/auth-svr/sendSmsCertCode';
+    final url = '${AppConstants.AUTH_API}$api';
+
+    try {
+      final response = await _dio.post(
+        url,
+        data: sendSmsCertCodeRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      /// bizErrCode 없으면 정상 데이터 파싱
+      if (!response.data.containsKey("bizErrCode")) {
+        final sendSmsCertCodeResponse = SendSmsCertCodeResponse.fromJson(response.data);
+        final StateAPI state = Success(sendSmsCertCodeResponse);
+        debugPrint("state: $state");
+        return state;
+      } else {
+        final badResponse = BadResponse.fromJson(response.data);
+        final StateAPI state = Bad(badResponse);
+        if (badResponse.detailMessage.isNotEmpty) {
+          Fluttertoast.showToast(msg: badResponse.detailMessage);
+        } else {
+          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
+        }
+        debugPrint("state: $state");
+        return state;
+      }
+    } catch (e, stackTrace) {
+      const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
+      Fluttertoast.showToast(msg: errorMessage);
+      return Fail(errorMessage: errorMessage);
+    }
+  }
+
+  /// 휴대폰 본인인증 - 인증번호 확인
+  @override
+  Future<StateAPI> sendSmsVerify({required SendSmsVerifyRequest sendSmsVerifyRequest}) async {
+    const api = '/v1/auth-svr/sendSmsVerify';
+    final url = '${AppConstants.AUTH_API}$api';
+
+    try {
+      final response = await _dio.post(
+        url,
+        data: sendSmsVerifyRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      /// bizErrCode 없으면 정상 데이터 파싱
+      if (!response.data.containsKey("bizErrCode")) {
+        final sendSmsVerifyResponse = SendSmsVerifyResponse.fromJson(response.data);
+        final StateAPI state = Success(sendSmsVerifyResponse);
         debugPrint("state: $state");
         return state;
       } else {

@@ -1,6 +1,5 @@
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/register/register_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_map_screen.dart';
@@ -8,9 +7,6 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.d
 import 'package:kdmp_cm_app/presentation/view/screen/address/recent_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_map_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/cs_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_screen.dart';
@@ -201,34 +197,6 @@ final GoRouter router = GoRouter(
               builder: (context, state) {
                 return const EndMapScreen();
               },
-            ),
-          ],
-        ),
-
-        /// 경유지 설정
-        GoRoute(
-          name: StopOverScreen.routeName,
-          path: StopOverScreen.routeName,
-          builder: (context, state) {
-            final List<StopOver> stopOverList = state.extra as List<StopOver>;
-            return StopOverScreen(stopOverList: stopOverList);
-          },
-          routes: [
-            /// 경유지 설정 검색
-            GoRoute(
-              name: StopOverSearchScreen.routeName,
-              path: StopOverSearchScreen.routeName,
-              builder: (context, state) => const StopOverSearchScreen(),
-              routes: [
-                /// 경유지 설정 지도
-                GoRoute(
-                  name: StopOverMapScreen.routeName,
-                  path: StopOverMapScreen.routeName,
-                  builder: (context, state) {
-                    return const StopOverMapScreen();
-                  },
-                ),
-              ],
             ),
           ],
         ),

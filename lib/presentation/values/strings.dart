@@ -88,7 +88,6 @@ abstract class StringHome {
   static const String callButton = "호출하기";
   static const String startPlaceHint = "출발지 검색";
   static const String endPlaceHint = "도착지 검색";
-  static const String stopOverButton = "+ 경유지";
   static const String basicPrice = "일반요금";
 
   // static const String basicPriceSub = "혼잡 시 긴 대기시간";
@@ -262,18 +261,6 @@ abstract class StringEndSetup {
   static const String bottomButton = "도착지 설정";
 }
 
-abstract class StringStopOverSetup {
-  StringStopOverSetup._();
-
-  static const String title = "경유지 설정";
-  static const String addButton = "+ 경유지 추가";
-  static const String searchHint = "경유지 검색";
-  static const String selectMap = "지도에서 선택";
-  static const String edit = "편집";
-  static const String recentKeyword = "최근 검색";
-  static const String bottomButton = "경유지 등록";
-}
-
 abstract class StringRecentSearch {
   StringRecentSearch._();
 
@@ -314,15 +301,12 @@ abstract class StringWork {
   static const String payment = "결제";
   static const String price = "요금";
   static const String date = "일시";
-  static const String addStopover = "경유지 추가";
 
   static const String cancelConfirm = "호출을 취소하시겠습니까?";
   static const String cancelSuccess = "호출이 취소되었습니다.";
   static const String changeCallFeeAlert = "호출 요금을 변경했습니다.";
   static const String changeCallEndTitle = "도착지 변경";
   static const String changeCallEndAlert = "변경된 운행경로와\n요금을 확인해주세요.";
-  static const String changeCallStopOverTitle = "경유지 변경";
-  static const String changeCallStopOverAlert = "변경된 운행경로와\n요금을 확인해주세요.";
 }
 
 abstract class StringCallCancel {

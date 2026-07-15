@@ -66,7 +66,6 @@ class HomeViewModel {
 
   set startMapData(MapData? value) {
     _startMapData.value = value;
-    _checkStopOverButtonValid();
     _getDrivingCalculate();
   }
 
@@ -79,7 +78,6 @@ class HomeViewModel {
 
   set stopOverList(List<StopOver> value) {
     _stopOverList.value = value;
-    _checkStopOverButtonValid();
     _getDrivingCalculate();
   }
 
@@ -88,7 +86,6 @@ class HomeViewModel {
     _startMapData.value = startMapData;
     _endMapData.value = endMapData;
     _stopOverList.value = stopOverList;
-    _checkStopOverButtonValid();
     _getDrivingCalculate();
   }
 
@@ -105,28 +102,7 @@ class HomeViewModel {
 
   set endMapData(MapData? value) {
     _endMapData.value = value;
-    _checkStopOverButtonValid();
     _getDrivingCalculate();
-  }
-
-  /// 도착지 검색 내 경유 버튼 활성화 여부
-  final ValueNotifier<bool> _isStopOverButtonValid = ValueNotifier<bool>(false);
-
-  ValueNotifier<bool> get isStopOverButtonValidNotifier => _isStopOverButtonValid;
-
-  bool get isStopOverButtonValid => _isStopOverButtonValid.value;
-
-  set isStopOverButtonValid(bool value) => _isStopOverButtonValid.value = value;
-
-  _checkStopOverButtonValid() {
-    bool valid;
-    debugPrint("경유지 버튼 ${startMapData != null} ${endMapData != null} ${stopOverList.isEmpty}");
-    if (startMapData != null && endMapData != null && stopOverList.isEmpty) {
-      valid = true;
-    } else {
-      valid = false;
-    }
-    isStopOverButtonValid = valid;
   }
 
   /// 요금 선택 버튼 활성화 여부
@@ -267,7 +243,6 @@ class HomeViewModel {
     distance = 0;
     basicPrice = 0;
     getPayment();
-    _checkStopOverButtonValid();
   }
 
   /// 상태

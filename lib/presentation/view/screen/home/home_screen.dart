@@ -38,7 +38,6 @@ import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_management_screen.dart';
@@ -311,28 +310,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ),
                                               ),
 
-                                              /// 경유지 설정 버튼
+                                              /// 경유지 표시
                                               Expanded(
-                                                child: CustomTextButton(
-                                                  text: text,
-                                                  backgroundColor: Colors.transparent,
-                                                  onPressed: () async {
-                                                    /// 화면 이동 전 네이버지도 가림
-                                                    naverMap = null;
-
-                                                    /// 경유지 설정 화면으로 이동
-                                                    final result = await context.pushNamed(
-                                                      StopOverScreen.routeName,
-                                                      extra: _homeViewModel.stopOverList,
-                                                    );
-
-                                                    if (result != null && result is List<StopOver>) {
-                                                      _homeViewModel.stopOverList = result;
-                                                    }
-
-                                                    /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
-                                                    initData();
-                                                  },
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                                  child: Text(text, style: Theme.of(context).textTheme.bodyLarge),
                                                 ),
                                               ),
 
@@ -411,39 +393,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                               initData();
                                             },
                                           ),
-                                        ),
-
-                                        /// 도착지 검색 내 경유지 설정 버튼
-                                        ValueListenableBuilder<bool>(
-                                          valueListenable: _homeViewModel.isStopOverButtonValidNotifier,
-                                          builder: (context, value, child) {
-                                            return value
-                                                ? CustomRoundButton(
-                                                    text: StringHome.stopOverButton,
-                                                    backgroundColor: Theme.of(context).colorScheme.primary,
-                                                    textColor: Colors.white,
-                                                    borderColor: Theme.of(context).colorScheme.primary,
-                                                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                                    onPressed: () async {
-                                                      /// 화면 이동 전 네이버지도 가림
-                                                      naverMap = null;
-
-                                                      /// 경유지 설정 화면으로 이동
-                                                      final result = await context.pushNamed(
-                                                        StopOverScreen.routeName,
-                                                        extra: _homeViewModel.stopOverList,
-                                                      );
-
-                                                      if (result != null && result is List<StopOver>) {
-                                                        _homeViewModel.stopOverList = result;
-                                                      }
-
-                                                      /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
-                                                      initData();
-                                                    },
-                                                  )
-                                                : const SizedBox();
-                                          },
                                         ),
                                       ],
                                     );

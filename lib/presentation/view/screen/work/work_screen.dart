@@ -32,7 +32,6 @@ import 'package:kdmp_cm_app/presentation/view/dialog/call_cancel_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/address/stopover_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/vertical_dashed_divider.dart';
@@ -365,47 +364,6 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
                                           ),
                                         ),
                                         Expanded(child: Text(text, style: Theme.of(context).textTheme.titleMedium)),
-
-                                        /// 경유지 추가, 변경 버튼
-                                        ValueListenableBuilder<bool>(
-                                          valueListenable: _workViewModel.isCallInfoChangeVisibleNotifier,
-                                          builder: (context, buttonValue, child) {
-                                            return buttonValue
-                                                ? CustomRoundButton(
-                                                    text: value.isNotEmpty ? StringHome.changeButton : StringWork.addStopover,
-                                                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                                                    textColor: Theme.of(context).colorScheme.secondary,
-                                                    borderColor: Theme.of(context).colorScheme.secondary,
-                                                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                                    onPressed: () async {
-                                                      /// 경유지 설정 화면으로 이동
-                                                      final result = await context.pushNamed(
-                                                        StopOverScreen.routeName,
-                                                        extra: _workViewModel.stopOverList,
-                                                      );
-
-                                                      if (result != null && result is List<StopOver>) {
-                                                        final changeResult = await _workViewModel.changeCallInfo(
-                                                          drvReqSq: widget.drvReqSq,
-                                                          changeStopOverList: result,
-                                                        );
-                                                        if (changeResult is Success) {
-                                                          _showAlertDialog(
-                                                            title: StringWork.changeCallStopOverTitle,
-                                                            content: StringWork.changeCallStopOverAlert,
-                                                            isCanceled: false,
-                                                          );
-                                                        } else {
-                                                          Fluttertoast.showToast(msg: "경유지를 변경할 수 없습니다.");
-                                                        }
-                                                      } else {
-                                                        Fluttertoast.showToast(msg: "경유지 변경을 취소했습니다.");
-                                                      }
-                                                    },
-                                                  )
-                                                : const SizedBox(height: 40);
-                                          },
-                                        ),
                                       ],
                                     );
                                   },

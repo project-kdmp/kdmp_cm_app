@@ -12,7 +12,6 @@ class CallConfirmDialog extends StatelessWidget {
     required this.onConfirm,
     this.onCancel,
     required this.notiPolicy,
-    required this.waitPolicy,
   }) : super(key: key);
 
   final String? title;
@@ -20,7 +19,6 @@ class CallConfirmDialog extends StatelessWidget {
   final Function() onConfirm;
   final Function()? onCancel;
   final Policy notiPolicy;
-  final Policy waitPolicy;
 
   @override
   Widget build(BuildContext context) {
@@ -68,31 +66,6 @@ class CallConfirmDialog extends StatelessWidget {
             ),
             child: Text(
               notiPolicy.content,
-              style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.start,
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          /// 대기료 발생 안내
-          SizedBox(
-            width: double.maxFinite,
-            child: Text(
-              waitPolicy.title,
-              style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.start,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Container(
-            width: double.maxFinite,
-            padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 20),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              waitPolicy.content,
               style: Theme.of(context).textTheme.bodySmall,
               textAlign: TextAlign.start,
             ),

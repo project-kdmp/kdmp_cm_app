@@ -665,12 +665,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   return;
                                 }
 
-                                /// 대기료 정책 조회
-                                final waitPolicy = await _homeViewModel.getPolicy(policyTp: PolicyTp.wait);
-                                if (waitPolicy == null) {
-                                  return;
-                                }
-
                                 /// 예약 일시 팝업 띄움
                                 final result = await showModalBottomSheet(
                                   context: context,
@@ -702,7 +696,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       end: _homeViewModel.endMapData!,
                                       stopOverList: _homeViewModel.stopOverList,
                                       notiPolicy: notiPolicy,
-                                      waitPolicy: waitPolicy,
                                     );
                                   },
                                 );
@@ -773,17 +766,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         return;
                                       }
 
-                                      /// 대기료 정책 조회
-                                      final waitPolicy = await _homeViewModel.getPolicy(policyTp: PolicyTp.wait);
-                                      if (waitPolicy == null) {
-                                        return;
-                                      }
-
                                       final content = _homeViewModel.endMapData!.place.isNotEmpty ? _homeViewModel.endMapData!.place : _homeViewModel.endMapData!.addressRoad;
                                       await _showCallConfirmDialog(
                                         content: content,
                                         notiPolicy: notiPolicy,
-                                        waitPolicy: waitPolicy,
                                         onConfirm: () async {
                                           Navigator.pop(context);
 
@@ -919,7 +905,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _showCallConfirmDialog({String? title, required String content, required Policy notiPolicy, required Policy waitPolicy, required Function() onConfirm}) {
+  _showCallConfirmDialog({String? title, required String content, required Policy notiPolicy, required Function() onConfirm}) {
     return showDialog(
       context: context,
       barrierDismissible: true, // dialog 영역 외 터치 여부
@@ -928,7 +914,6 @@ class _HomeScreenState extends State<HomeScreen> {
           title: title,
           content: content,
           notiPolicy: notiPolicy,
-          waitPolicy: waitPolicy,
           onConfirm: onConfirm,
         );
       },

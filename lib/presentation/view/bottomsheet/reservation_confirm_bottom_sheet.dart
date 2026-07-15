@@ -19,7 +19,6 @@ class ReservationConfirmBottomSheet extends StatefulWidget {
     required this.end,
     required this.stopOverList,
     required this.notiPolicy,
-    required this.waitPolicy,
   }) : super(key: key);
 
   final String dateTitle;
@@ -30,7 +29,6 @@ class ReservationConfirmBottomSheet extends StatefulWidget {
   final MapData end;
   final List<StopOver> stopOverList;
   final Policy notiPolicy;
-  final Policy waitPolicy;
 
   @override
   State<ReservationConfirmBottomSheet> createState() => _ReservationConfirmBottomSheetState();
@@ -205,30 +203,6 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                           //   ),
                           // ),
                           // const SizedBox(height: 14),
-
-                          /// 대기료 발생 안내
-                          SizedBox(
-                            width: double.maxFinite,
-                            child: Text(
-                              widget.waitPolicy.title,
-                              style: Theme.of(context).textTheme.bodySmall,
-                              textAlign: TextAlign.start,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Container(
-                            width: double.maxFinite,
-                            padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 20),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              widget.waitPolicy.content,
-                              style: Theme.of(context).textTheme.bodySmall,
-                              textAlign: TextAlign.start,
-                            ),
-                          ),
                         ],
                       ),
                     ),

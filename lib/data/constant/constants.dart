@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-enum Environment { DEV, PROD }
+enum Environment { DEV, STAGE, PROD }
 
 class AppConstants {
   static late Map<String, dynamic> _config;
@@ -9,6 +9,9 @@ class AppConstants {
     switch (env) {
       case Environment.DEV:
         _config = _Config.devConstants;
+        break;
+      case Environment.STAGE:
+        _config = _Config.stageConstants;
         break;
       case Environment.PROD:
         _config = _Config.prodConstants;
@@ -66,6 +69,20 @@ class _Config {
     NAVER_CLIENT_ID: "NAVER_CLIENT_ID",
     NAVER_CLIENT_SECRET: "NAVER_CLIENT_SECRET",
     PHONE_VERIFY_URL: "http://210.223.56.94:8088/mobiliansTest",
+  };
+
+  /// 스테이징
+  static Map<String, dynamic> stageConstants = {
+    environment: Environment.STAGE,
+    API: "https://stage.appkddsa.or.kr",
+    AUTH_API: "https://stage.appkddsa.or.kr",
+    IMAGE_URL: "https://stage.appkddsa.or.kr/v1/biztotal",
+    NAVER_API: "https://naveropenapi.apigw.ntruss.com",
+    JUSO_API: "https://business.juso.go.kr/addrlink/addrLinkApi.do",
+    JUSO_API_KEY: "JUSO_API_KEY_PROD",
+    NAVER_CLIENT_ID: "NAVER_CLIENT_ID",
+    NAVER_CLIENT_SECRET: "NAVER_CLIENT_SECRET",
+    PHONE_VERIFY_URL: "https://stage.appkddsa.or.kr/mobilians",
   };
 
   /// 운영

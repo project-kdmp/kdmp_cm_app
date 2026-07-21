@@ -24,7 +24,7 @@ class CustomThemeData {
         primary: ColorLight.primary,
         secondary: ColorLight.icon,
       ),
-      dialogTheme: const DialogTheme(
+      dialogTheme: const DialogThemeData(
         surfaceTintColor: ColorLight.background,
         backgroundColor: ColorLight.background,
       ),
@@ -122,7 +122,7 @@ class CustomThemeData {
         primary: ColorNight.primary,
         secondary: ColorNight.icon,
       ),
-      dialogTheme: const DialogTheme(
+      dialogTheme: const DialogThemeData(
         surfaceTintColor: ColorNight.background,
         backgroundColor: ColorNight.background,
       ),

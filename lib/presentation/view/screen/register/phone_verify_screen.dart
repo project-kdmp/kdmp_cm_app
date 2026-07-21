@@ -152,7 +152,7 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
                         child: InAppWebView(
                           key: webViewKey,
                           initialUrlRequest: URLRequest(
-                            url: Uri.parse(AppConstants.PHONE_VERIFY_URL),
+                            url: WebUri(AppConstants.PHONE_VERIFY_URL),
                             body: Uint8List.fromList(
                               utf8.encode("deviceId=$value"),
                             ),

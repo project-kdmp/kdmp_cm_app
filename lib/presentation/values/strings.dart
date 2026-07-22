@@ -371,6 +371,23 @@ abstract class StringOther {
   static const String delete = "삭제하기";
 }
 
+abstract class StringLostChild {
+  StringLostChild._();
+
+  static const String title = "실종아동 찾기";
+  static const String introText = "(사)한국 대리운전기사연합회 전국회원들은\n아동권리보장원의 실종아동 찾기에 함께합니다.";
+  static const String noticeCycle = "본 안내는 %d시간마다 표시됩니다.";
+  static const String noPhoto = "사진이 없습니다";
+  static const String male = "남";
+  static const String female = "여";
+  static const String occurredDt = "실종일시";
+  static const String occurredPlace = "실종지역";
+  static const String appearance = "인상착의";
+  static const String feature = "특이사항";
+  static const String ageThen = "당시 만 %d세";
+  static const String ageNow = "(현재 만 %d세)";
+}
+
 abstract class StringPush {
   StringPush._();
 

@@ -14,4 +14,20 @@ class SetupUseCase {
   Future<void> setThemeMode({required String themeMode}) async {
     await _secureStorageRepository.setThemeMode(themeMode: themeMode);
   }
+
+  Future<String> getLostChildLastShownDt() async {
+    return await _secureStorageRepository.getLostChildLastShownDt();
+  }
+
+  Future<void> setLostChildLastShownDt({required String lostChildLastShownDt}) async {
+    await _secureStorageRepository.setLostChildLastShownDt(lostChildLastShownDt: lostChildLastShownDt);
+  }
+
+  Future<int> getLostChildHour() async {
+    return await _secureStorageRepository.getLostChildHour();
+  }
+
+  Future<void> setLostChildHour({required int lostChildHour}) async {
+    await _secureStorageRepository.setLostChildHour(lostChildHour: lostChildHour);
+  }
 }

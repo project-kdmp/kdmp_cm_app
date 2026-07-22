@@ -14,6 +14,37 @@ String convertMToKm(int? m) {
   return "";
 }
 
+/// 실종아동 성별 한글로 반환
+/// - 서버에서 "1"/"2" 코드값 또는 "남자"/"여자" 문자열을 모두 내려줄 수 있어 둘 다 처리
+String getSexdstn(String? sexdstnDscd) {
+  switch (sexdstnDscd) {
+    case "1":
+    case "남":
+    case "남자":
+      return "남";
+    case "2":
+    case "여":
+    case "여자":
+      return "여";
+  }
+  return "";
+}
+
+/// 실종아동 성별 남성 여부 반환
+bool isMaleSexdstn(String? sexdstnDscd) => getSexdstn(sexdstnDscd) == "남";
+
+/// 서버가 값이 없을 때 문자열 "null"을 그대로 내려주는 경우가 있어 빈 문자열로 치환
+String getNonNullText(String? value) {
+  if (value == null) {
+    return "";
+  }
+  final trimmed = value.trim();
+  if (trimmed.isEmpty || trimmed.toLowerCase() == "null") {
+    return "";
+  }
+  return trimmed;
+}
+
 /// 결제수단 한글로 반환
 String getPaymentKind(String? paymentKind) {
   if (paymentKind != null) {

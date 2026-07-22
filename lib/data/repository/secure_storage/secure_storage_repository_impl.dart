@@ -251,4 +251,28 @@ class SecureStorageRepositoryImpl extends SecureStorageRepository {
   Future<void> deletePaymentPassword() async {
     await _storage.delete(key: 'paymentPassword');
   }
+
+  /// 로컬에 저장된 '실종아동 찾기 마지막 노출시각' 반환
+  @override
+  Future<String> getLostChildLastShownDt() async {
+    return await _storage.read(key: 'lostChildLastShownDt') ?? '';
+  }
+
+  /// 로컬에 '실종아동 찾기 마지막 노출시각' 저장
+  @override
+  Future<void> setLostChildLastShownDt({required String lostChildLastShownDt}) async {
+    await _storage.write(key: 'lostChildLastShownDt', value: lostChildLastShownDt);
+  }
+
+  /// 로컬에 저장된 '실종아동 찾기 노출 주기(시간)' 반환
+  @override
+  Future<int> getLostChildHour() async {
+    return int.parse(await _storage.read(key: 'lostChildHour') ?? '24');
+  }
+
+  /// 로컬에 '실종아동 찾기 노출 주기(시간)' 저장
+  @override
+  Future<void> setLostChildHour({required int lostChildHour}) async {
+    await _storage.write(key: 'lostChildHour', value: lostChildHour.toString());
+  }
 }

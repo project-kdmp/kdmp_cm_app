@@ -15,12 +15,14 @@ import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
+import 'package:kdmp_cm_app/domain/usecase/lost_child/get_lost_child_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/policy/get_policy_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/setup/setup_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
@@ -36,6 +38,7 @@ import 'package:kdmp_cm_app/presentation/view/bottomsheet/reservation_confirm_bo
 import 'package:kdmp_cm_app/presentation/view/dialog/call_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/lost_child_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
@@ -48,6 +51,7 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_text_b
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/vertical_dashed_divider.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/address/naver_map_viewmodel.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/home/home_viewmodel.dart';
+import 'package:kdmp_cm_app/presentation/viewmodel/home/lost_child_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 /// 홈 화면
@@ -66,6 +70,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late final HomeViewModel _homeViewModel;
   late final NaverMapViewModel _naverMapViewModel;
+  late final LostChildViewModel _lostChildViewModel;
   DateTime? _lastOnPressed;
 
   late final NMarker currentMarker;
@@ -111,6 +116,11 @@ class _HomeScreenState extends State<HomeScreen> {
       clientSecret: _homeViewModel.clientSecret,
       getNaverAddressUseCase: GetIt.instance<GetNaverAddressUseCase>(),
     );
+
+    _lostChildViewModel = LostChildViewModel(
+      getLostChildListUseCase: GetIt.instance<GetLostChildListUseCase>(),
+      setupUseCase: GetIt.instance<SetupUseCase>(),
+    );
   }
 
   void initDataFirst() async {
@@ -143,13 +153,47 @@ class _HomeScreenState extends State<HomeScreen> {
     // _homeViewModel.currentLatLng = const NLatLng(37.4668787, 126.88837); // TODO: 임시값
 
     /// 출발지 미지정 시 현재 위치를 기본 출발지로 설정 (다시 호출 데이터가 있는 경우는 제외)
+    MapData? currentMapData;
     if (_homeViewModel.startMapData == null && widget.drivingData == null) {
-      final currentMapData = await _naverMapViewModel.getAddress(nLatLng: _homeViewModel.currentLatLng);
+      currentMapData = await _naverMapViewModel.getAddress(nLatLng: _homeViewModel.currentLatLng);
       _homeViewModel.startMapData = currentMapData;
     }
 
     /// 네이버 지도 초기화
     naverMap = initNaverMap(nLatLng: _homeViewModel.currentLatLng);
+
+    /// 실종아동 찾기 팝업 (24시간마다 1회 자동 노출)
+    _checkLostChild(currentMapData);
+  }
+
+  /// 실종아동 찾기 팝업 노출 여부 확인 후 노출
+  void _checkLostChild(MapData? currentMapData) async {
+    final needToShow = await _lostChildViewModel.needToShow();
+    if (!needToShow) {
+      return;
+    }
+
+    final mapData = currentMapData ?? await _naverMapViewModel.getAddress(nLatLng: _homeViewModel.currentLatLng);
+
+    final lostChildList = await _lostChildViewModel.getLostChildList(
+      sido: mapData.drivingAddress.sido,
+      sigungu: mapData.drivingAddress.sigungu,
+    );
+
+    if (!mounted || lostChildList.isEmpty) {
+      return;
+    }
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return LostChildDialog(
+          lostChildList: lostChildList,
+          lostChildHour: _lostChildViewModel.lostChildHour,
+        );
+      },
+    );
   }
 
   @override

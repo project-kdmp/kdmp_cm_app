@@ -77,4 +77,12 @@ abstract class SecureStorageRepository {
   Future<void> setPaymentPassword({required String paymentPassword});
 
   Future<void> deletePaymentPassword();
+
+  Future<String> getLostChildLastShownDt();
+
+  Future<void> setLostChildLastShownDt({required String lostChildLastShownDt});
+
+  Future<int> getLostChildHour();
+
+  Future<void> setLostChildHour({required int lostChildHour});
 }

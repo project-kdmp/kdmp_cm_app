@@ -75,6 +75,42 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late final NMarker currentMarker;
 
+  /// 호출 정보 바텀시트 (출발/도착지는 항상 노출, 그 외 정보는 자유롭게 드래그하여 크기 조절)
+  /// 현재 드래그로 펼쳐진 나머지 영역(요금/결제/버튼)의 높이(px). 손을 뗀 위치 그대로 고정됨.
+  double _extraContentHeight = 0;
+
+  /// 나머지 영역이 전부 펼쳐졌을 때의 실제(자연스러운) 높이(px). 콘텐츠에 따라 매 프레임 갱신됨.
+  double _extraContentMaxHeight = 0;
+  bool _extraContentHeightInitialized = false;
+  final GlobalKey _extraContentKey = GlobalKey();
+
+  /// 나머지 영역의 실제 높이를 측정하여 드래그 가능 범위(0 ~ 실제 높이)를 최신 상태로 유지
+  void _measureExtraContentHeight() {
+    final renderBox =
+        _extraContentKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null || !renderBox.hasSize) {
+      return;
+    }
+
+    final measuredHeight = renderBox.size.height;
+    if ((measuredHeight - _extraContentMaxHeight).abs() < 0.5) {
+      return;
+    }
+
+    final wasAtMax = !_extraContentHeightInitialized ||
+        _extraContentHeight >= _extraContentMaxHeight - 0.5;
+    setState(() {
+      _extraContentMaxHeight = measuredHeight;
+      if (!_extraContentHeightInitialized || wasAtMax) {
+        /// 최초 진입 시, 혹은 이전에 완전히 펼쳐진 상태였다면 새 높이에 맞춰 펼침 유지
+        _extraContentHeight = measuredHeight;
+      } else {
+        _extraContentHeight = _extraContentHeight.clamp(0.0, measuredHeight);
+      }
+      _extraContentHeightInitialized = true;
+    });
+  }
+
   /// 네이버 지도
   final ValueNotifier<NaverMap?> _naverMap = ValueNotifier<NaverMap?>(null);
 
@@ -99,7 +135,8 @@ class _HomeScreenState extends State<HomeScreen> {
       getCarListUseCase: GetIt.instance<GetCarListUseCase>(),
       getNaverDrivingUseCase: GetIt.instance<GetNaverDrivingUseCase>(),
       setCallRequestUseCase: GetIt.instance<SetCallRequestUseCase>(),
-      setReservationRequestUseCase: GetIt.instance<SetReservationRequestUseCase>(),
+      setReservationRequestUseCase:
+          GetIt.instance<SetReservationRequestUseCase>(),
       getDrivingUseCase: GetIt.instance<GetDrivingUseCase>(),
       getDrivingPriceUseCase: GetIt.instance<GetDrivingPriceUseCase>(),
       getPaymentListUseCase: GetIt.instance<GetPaymentListUseCase>(),
@@ -155,7 +192,8 @@ class _HomeScreenState extends State<HomeScreen> {
     /// 출발지 미지정 시 현재 위치를 기본 출발지로 설정 (다시 호출 데이터가 있는 경우는 제외)
     MapData? currentMapData;
     if (_homeViewModel.startMapData == null && widget.drivingData == null) {
-      currentMapData = await _naverMapViewModel.getAddress(nLatLng: _homeViewModel.currentLatLng);
+      currentMapData = await _naverMapViewModel.getAddress(
+          nLatLng: _homeViewModel.currentLatLng);
       _homeViewModel.startMapData = currentMapData;
     }
 
@@ -173,7 +211,9 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    final mapData = currentMapData ?? await _naverMapViewModel.getAddress(nLatLng: _homeViewModel.currentLatLng);
+    final mapData = currentMapData ??
+        await _naverMapViewModel.getAddress(
+            nLatLng: _homeViewModel.currentLatLng);
 
     final lostChildList = await _lostChildViewModel.getLostChildList(
       sido: mapData.drivingAddress.sido,
@@ -198,6 +238,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _measureExtraContentHeight());
+
     return MultiProvider(
       providers: [
         Provider<HomeViewModel>(
@@ -236,620 +279,1059 @@ class _HomeScreenState extends State<HomeScreen> {
         body: WillPopScope(
           onWillPop: _onBackPressed,
           child: SafeArea(
-            child: Column(
+            child: Stack(
               children: [
-                /// 네이버 지도
-                ValueListenableBuilder<NaverMap?>(
-                  valueListenable: naverMapNotifier,
-                  builder: (context, value, child) {
-                    return Expanded(child: value ?? Container(color: Theme.of(context).cardColor));
-                  },
+                /// 네이버 지도 (전체 화면)
+                Positioned.fill(
+                  child: ValueListenableBuilder<NaverMap?>(
+                    valueListenable: naverMapNotifier,
+                    builder: (context, value, child) {
+                      return value ??
+                          Container(color: Theme.of(context).cardColor);
+                    },
+                  ),
                 ),
 
-                Stack(
-                  children: [
-                    /// 상단 둥근 테두리
-                    Transform.translate(
-                      offset: const Offset(0, -20),
-                      child: Container(
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).disabledColor.withOpacity(0.5),
-                              spreadRadius: 0,
-                              blurRadius: 20,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                      ),
+                /// 호출 정보 바텀시트 (출발/도착지는 항상 노출, 나머지는 접고 펼침)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.9,
                     ),
-
-                    /// 호출 정보 입력
-                    Container(
+                    decoration: BoxDecoration(
                       color: Theme.of(context).scaffoldBackgroundColor,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color:
+                              Theme.of(context).disabledColor.withOpacity(0.5),
+                          spreadRadius: 0,
+                          blurRadius: 20,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
+                    ),
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onVerticalDragUpdate: (details) {
+                        setState(() {
+                          _extraContentHeight =
+                              (_extraContentHeight - details.delta.dy)
+                                  .clamp(0.0, _extraContentMaxHeight);
+                        });
+                      },
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 28),
+                          /// 드래그 핸들 (시트 어디를 드래그해도 동작, 손을 뗀 위치 그대로 고정됨)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            alignment: Alignment.center,
+                            child: Container(
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).disabledColor,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          ),
+
+                          SingleChildScrollView(
                             child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                /// 출발지
-                                ValueListenableBuilder<MapData?>(
-                                  valueListenable: _homeViewModel.startMapDataNotifier,
-                                  builder: (context, value, child) {
-                                    return Row(
-                                      children: [
-                                        Icon(
-                                          Icons.location_on,
-                                          color: value != null ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor,
-                                          size: 24,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          StringCommon.startSpot,
-                                          style: TextStyle(
-                                            color: value != null ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor,
-                                          ),
-                                        ),
-
-                                        /// 출발지 검색 버튼
-                                        Expanded(
-                                          child: CustomTextButton(
-                                            hint: StringHome.startPlaceHint,
-                                            text: value != null
-                                                ? value.place.isNotEmpty
-                                                    ? value.place
-                                                    : value.addressRoad
-                                                : "",
-                                            backgroundColor: Colors.transparent,
-                                            onPressed: () async {
-                                              /// 화면 이동 전 네이버지도 가림
-                                              naverMap = null;
-
-                                              /// 출발지 설정 검색 화면으로 이동
-                                              final result = await context.pushNamed(StartSearchScreen.routeName);
-                                              if (result != null && result is MapData) {
-                                                _homeViewModel.startMapData = result;
-                                              }
-
-                                              /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
-                                              initData();
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-
-                                /// 구분선
-                                ValueListenableBuilder<List<StopOver>>(
-                                  valueListenable: _homeViewModel.stopOverListNotifier,
-                                  builder: (context, value, child) {
-                                    String text = value.isNotEmpty
-                                        ? value[0].placeName.isNotEmpty
-                                            ? value[0].placeName
-                                            : value[0].address
-                                        : "";
-                                    if (value.length > 1) {
-                                      text += " 외 ${value.length - 1}";
-                                    }
-                                    return value.isNotEmpty
-                                        ? Row(
+                                /// 출발지 / 도착지 (항상 노출)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(28, 0, 28, 20),
+                                  child: Column(
+                                    children: [
+                                      /// 출발지
+                                      ValueListenableBuilder<MapData?>(
+                                        valueListenable:
+                                            _homeViewModel.startMapDataNotifier,
+                                        builder: (context, value, child) {
+                                          return Row(
                                             children: [
-                                              SizedBox(
-                                                height: 44,
-                                                child: VerticalDashedDivider(
-                                                  thickness: 2,
-                                                  color: Theme.of(context).disabledColor,
-                                                  space: 24,
-                                                  length: 3,
+                                              Icon(
+                                                Icons.location_on,
+                                                color: value != null
+                                                    ? Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary
+                                                    : Theme.of(context)
+                                                        .disabledColor,
+                                                size: 24,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                StringCommon.startSpot,
+                                                style: TextStyle(
+                                                  color: value != null
+                                                      ? Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary
+                                                      : Theme.of(context)
+                                                          .disabledColor,
                                                 ),
                                               ),
 
-                                              /// 경유지 표시
+                                              /// 출발지 검색 버튼
                                               Expanded(
-                                                child: Padding(
-                                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                                  child: Text(text, style: Theme.of(context).textTheme.bodyLarge),
+                                                child: CustomTextButton(
+                                                  hint:
+                                                      StringHome.startPlaceHint,
+                                                  text: value != null
+                                                      ? value.place.isNotEmpty
+                                                          ? value.place
+                                                          : value.addressRoad
+                                                      : "",
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  onPressed: () async {
+                                                    /// 화면 이동 전 네이버지도 가림
+                                                    naverMap = null;
+
+                                                    /// 출발지 설정 검색 화면으로 이동
+                                                    final result =
+                                                        await context.pushNamed(
+                                                            StartSearchScreen
+                                                                .routeName);
+                                                    if (result != null &&
+                                                        result is MapData) {
+                                                      _homeViewModel
+                                                              .startMapData =
+                                                          result;
+                                                    }
+
+                                                    /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                                    initData();
+                                                  },
                                                 ),
                                               ),
-
-                                              /// 경유지 삭제 버튼
-                                              GestureDetector(
-                                                child: Icon(Icons.close, size: 16, color: Theme.of(context).disabledColor),
-                                                onTap: () {
-                                                  /// 경유지 삭제
-                                                  _homeViewModel.clearStopOverList();
-
-                                                  /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
-                                                  naverMap = null;
-                                                  initData();
-                                                },
-                                              ),
-                                            ],
-                                          )
-                                        : Row(
-                                            children: [
-                                              SizedBox(
-                                                height: 16,
-                                                child: VerticalDashedDivider(
-                                                  thickness: 2,
-                                                  color: Theme.of(context).disabledColor,
-                                                  space: 24,
-                                                  length: 2,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 18),
-                                              const Expanded(child: Divider(thickness: 1)),
                                             ],
                                           );
-                                  },
+                                        },
+                                      ),
+
+                                      /// 구분선
+                                      ValueListenableBuilder<List<StopOver>>(
+                                        valueListenable:
+                                            _homeViewModel.stopOverListNotifier,
+                                        builder: (context, value, child) {
+                                          String text = value.isNotEmpty
+                                              ? value[0].placeName.isNotEmpty
+                                                  ? value[0].placeName
+                                                  : value[0].address
+                                              : "";
+                                          if (value.length > 1) {
+                                            text += " 외 ${value.length - 1}";
+                                          }
+                                          return value.isNotEmpty
+                                              ? Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      height: 44,
+                                                      child:
+                                                          VerticalDashedDivider(
+                                                        thickness: 2,
+                                                        color: Theme.of(context)
+                                                            .disabledColor,
+                                                        space: 24,
+                                                        length: 3,
+                                                      ),
+                                                    ),
+
+                                                    /// 경유지 표시
+                                                    Expanded(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 12),
+                                                        child: Text(text,
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodyLarge),
+                                                      ),
+                                                    ),
+
+                                                    /// 경유지 삭제 버튼
+                                                    GestureDetector(
+                                                      child: Icon(Icons.close,
+                                                          size: 16,
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .disabledColor),
+                                                      onTap: () {
+                                                        /// 경유지 삭제
+                                                        _homeViewModel
+                                                            .clearStopOverList();
+
+                                                        /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                                        naverMap = null;
+                                                        initData();
+                                                      },
+                                                    ),
+                                                  ],
+                                                )
+                                              : Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      height: 16,
+                                                      child:
+                                                          VerticalDashedDivider(
+                                                        thickness: 2,
+                                                        color: Theme.of(context)
+                                                            .disabledColor,
+                                                        space: 24,
+                                                        length: 2,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 18),
+                                                    const Expanded(
+                                                        child: Divider(
+                                                            thickness: 1)),
+                                                  ],
+                                                );
+                                        },
+                                      ),
+
+                                      /// 도착지
+                                      ValueListenableBuilder<MapData?>(
+                                        valueListenable:
+                                            _homeViewModel.endMapDataNotifier,
+                                        builder: (context, value, child) {
+                                          return Row(
+                                            children: [
+                                              Icon(
+                                                Icons.flag_sharp,
+                                                color: value != null
+                                                    ? Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary
+                                                    : Theme.of(context)
+                                                        .disabledColor,
+                                                size: 24,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                StringCommon.endSpot,
+                                                style: TextStyle(
+                                                  color: value != null
+                                                      ? Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary
+                                                      : Theme.of(context)
+                                                          .disabledColor,
+                                                ),
+                                              ),
+
+                                              /// 도착지 검색 버튼
+                                              Expanded(
+                                                child: CustomTextButton(
+                                                  hint: StringHome.endPlaceHint,
+                                                  text: value != null
+                                                      ? value.place.isNotEmpty
+                                                          ? value.place
+                                                          : value.addressRoad
+                                                      : "",
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  onPressed: () async {
+                                                    /// 화면 이동 전 네이버지도 가림
+                                                    naverMap = null;
+
+                                                    /// 도착지 설정 검색 화면으로 이동
+                                                    final result =
+                                                        await context.pushNamed(
+                                                            EndSearchScreen
+                                                                .routeName);
+                                                    if (result != null &&
+                                                        result is MapData) {
+                                                      _homeViewModel
+                                                          .endMapData = result;
+                                                    }
+
+                                                    /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                                    initData();
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
 
-                                /// 도착지
-                                ValueListenableBuilder<MapData?>(
-                                  valueListenable: _homeViewModel.endMapDataNotifier,
-                                  builder: (context, value, child) {
-                                    return Row(
-                                      children: [
-                                        Icon(
-                                          Icons.flag_sharp,
-                                          color: value != null ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor,
-                                          size: 24,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          StringCommon.endSpot,
-                                          style: TextStyle(
-                                            color: value != null ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor,
-                                          ),
-                                        ),
+                                /// 나머지 영역 (요금/결제/버튼) - 드래그한 높이만큼만 노출됨
+                                ClipRect(
+                                  child: SizedBox(
+                                    height: _extraContentHeight,
+                                    child: OverflowBox(
+                                      alignment: Alignment.topCenter,
+                                      minHeight: 0,
+                                      maxHeight: double.infinity,
+                                      child: Column(
+                                        key: _extraContentKey,
+                                        children: [
+                                          /// 요금 선택
+                                          ValueListenableBuilder<bool>(
+                                            valueListenable: _homeViewModel
+                                                .isPriceButtonValidNotifier,
+                                            builder: (context, value, child) {
+                                              debugPrint(
+                                                  "asdfasdfasdfasdf: $value");
+                                              return value
+                                                  ? Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 24,
+                                                          vertical: 18),
+                                                      child:
+                                                          ValueListenableBuilder<
+                                                              PriceType>(
+                                                        valueListenable:
+                                                            _homeViewModel
+                                                                .priceTypeNotifier,
+                                                        builder: (context,
+                                                            value, child) {
+                                                          return Column(
+                                                            children: [
+                                                              /// 일반요금
+                                                              Container(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical:
+                                                                            4),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      const BorderRadius
+                                                                          .all(
+                                                                          Radius.circular(
+                                                                              12)),
+                                                                  border: Border.all(
+                                                                      color: value ==
+                                                                              PriceType
+                                                                                  .basic
+                                                                          ? Theme.of(context)
+                                                                              .colorScheme
+                                                                              .secondary
+                                                                          : Colors
+                                                                              .transparent,
+                                                                      width: 1),
+                                                                  color: value ==
+                                                                          PriceType
+                                                                              .basic
+                                                                      ? Theme.of(
+                                                                              context)
+                                                                          .toggleButtonsTheme
+                                                                          .fillColor
+                                                                      : Theme.of(
+                                                                              context)
+                                                                          .cardColor,
+                                                                ),
+                                                                child:
+                                                                    RadioListTile(
+                                                                  value:
+                                                                      PriceType
+                                                                          .basic,
+                                                                  groupValue:
+                                                                      _homeViewModel
+                                                                          .priceType,
+                                                                  onChanged:
+                                                                      (value) {
+                                                                    /// 일반요금 선택
+                                                                    if (value
+                                                                        is PriceType) {
+                                                                      _homeViewModel
+                                                                              .priceType =
+                                                                          value;
+                                                                    }
+                                                                  },
+                                                                  title: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      Text(
+                                                                        StringHome
+                                                                            .basicPrice,
+                                                                        style: value ==
+                                                                                PriceType.basic
+                                                                            ? Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary)
+                                                                            : Theme.of(context).textTheme.bodyMedium,
+                                                                      ),
+                                                                      // const SizedBox(height: 4),
+                                                                      // Text(StringHome.basicPriceSub, style: Theme.of(context).textTheme.bodySmall),
+                                                                    ],
+                                                                  ),
+                                                                  secondary:
+                                                                      ValueListenableBuilder<
+                                                                          int>(
+                                                                    valueListenable:
+                                                                        _homeViewModel
+                                                                            .basicPriceNotifier,
+                                                                    builder: (context,
+                                                                        value,
+                                                                        child) {
+                                                                      return Text(
+                                                                          getPrice(
+                                                                              value),
+                                                                          style: Theme.of(context)
+                                                                              .textTheme
+                                                                              .bodyMedium);
+                                                                    },
+                                                                  ),
+                                                                  fillColor: MaterialStateProperty.all(value ==
+                                                                          PriceType
+                                                                              .basic
+                                                                      ? Theme.of(
+                                                                              context)
+                                                                          .colorScheme
+                                                                          .secondary
+                                                                      : Theme.of(
+                                                                              context)
+                                                                          .disabledColor),
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                  height: 8),
 
-                                        /// 도착지 검색 버튼
-                                        Expanded(
-                                          child: CustomTextButton(
-                                            hint: StringHome.endPlaceHint,
-                                            text: value != null
-                                                ? value.place.isNotEmpty
-                                                    ? value.place
-                                                    : value.addressRoad
-                                                : "",
-                                            backgroundColor: Colors.transparent,
-                                            onPressed: () async {
-                                              /// 화면 이동 전 네이버지도 가림
-                                              naverMap = null;
-
-                                              /// 도착지 설정 검색 화면으로 이동
-                                              final result = await context.pushNamed(EndSearchScreen.routeName);
-                                              if (result != null && result is MapData) {
-                                                _homeViewModel.endMapData = result;
-                                              }
-
-                                              /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
-                                              initData();
+                                                              /// 요금 직접 입력
+                                                              GestureDetector(
+                                                                onTap:
+                                                                    () async {
+                                                                  /// 요금 직접 입력 팝업 띄움
+                                                                  final result =
+                                                                      await showModalBottomSheet(
+                                                                    context:
+                                                                        context,
+                                                                    isScrollControlled:
+                                                                        true,
+                                                                    builder:
+                                                                        (context) {
+                                                                      return Wrap(
+                                                                        children: [
+                                                                          Padding(
+                                                                            padding:
+                                                                                EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                                                            child:
+                                                                                CallPriceBottomSheet(
+                                                                              initPrice: _homeViewModel.inputPrice,
+                                                                              minPrice: 0,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                  if (result !=
+                                                                      null) {
+                                                                    _homeViewModel
+                                                                            .inputPrice =
+                                                                        result;
+                                                                    _homeViewModel
+                                                                            .priceType =
+                                                                        PriceType
+                                                                            .input;
+                                                                  }
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  padding: const EdgeInsets
+                                                                      .symmetric(
+                                                                      vertical:
+                                                                          4),
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    borderRadius:
+                                                                        const BorderRadius
+                                                                            .all(
+                                                                            Radius.circular(12)),
+                                                                    border: Border.all(
+                                                                        color: value == PriceType.input
+                                                                            ? Theme.of(context)
+                                                                                .colorScheme
+                                                                                .secondary
+                                                                            : Colors
+                                                                                .transparent,
+                                                                        width:
+                                                                            1),
+                                                                    color: value ==
+                                                                            PriceType
+                                                                                .input
+                                                                        ? Theme.of(context)
+                                                                            .toggleButtonsTheme
+                                                                            .fillColor
+                                                                        : Theme.of(context)
+                                                                            .cardColor,
+                                                                  ),
+                                                                  child:
+                                                                      RadioListTile(
+                                                                    value: PriceType
+                                                                        .input,
+                                                                    groupValue:
+                                                                        _homeViewModel
+                                                                            .priceType,
+                                                                    onChanged:
+                                                                        null,
+                                                                    title:
+                                                                        Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Text(
+                                                                          StringHome
+                                                                              .inputPrice,
+                                                                          style: value == PriceType.input
+                                                                              ? Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary)
+                                                                              : Theme.of(context).textTheme.bodyMedium,
+                                                                        ),
+                                                                        // const SizedBox(height: 4),
+                                                                        // Text(StringHome.inputPriceSub, style: Theme.of(context).textTheme.bodySmall),
+                                                                      ],
+                                                                    ),
+                                                                    secondary:
+                                                                        ValueListenableBuilder<
+                                                                            int>(
+                                                                      valueListenable:
+                                                                          _homeViewModel
+                                                                              .inputPriceNotifier,
+                                                                      builder: (context,
+                                                                          value,
+                                                                          child) {
+                                                                        return Text(
+                                                                            getPrice(
+                                                                                value),
+                                                                            style:
+                                                                                Theme.of(context).textTheme.bodyMedium);
+                                                                      },
+                                                                    ),
+                                                                    fillColor: MaterialStateProperty.all(value ==
+                                                                            PriceType
+                                                                                .input
+                                                                        ? Theme.of(context)
+                                                                            .colorScheme
+                                                                            .secondary
+                                                                        : Theme.of(context)
+                                                                            .disabledColor),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      ),
+                                                    )
+                                                  : const SizedBox();
                                             },
                                           ),
-                                        ),
-                                      ],
-                                    );
-                                  },
+
+                                          const Divider(thickness: 1),
+
+                                          /// 결제수단
+                                          ValueListenableBuilder<String>(
+                                            valueListenable: _homeViewModel
+                                                .paymentNmNotifier,
+                                            builder: (context, value, child) {
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 28),
+                                                child: Column(
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.credit_card,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.color,
+                                                          size: 24,
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 18),
+
+                                                        Text(
+                                                            value.isEmpty
+                                                                ? StringHome
+                                                                    .payment1
+                                                                : StringHome
+                                                                    .payment2,
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodyLarge),
+                                                        const SizedBox(
+                                                            width: 14),
+
+                                                        /// 선택한 결제수단
+                                                        Expanded(
+                                                          child: Text(
+                                                            value.isEmpty
+                                                                ? StringHome
+                                                                    .empty
+                                                                : value,
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodyLarge
+                                                                ?.copyWith(
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .disabledColor,
+                                                                ),
+                                                          ),
+                                                        ),
+
+                                                        /// 결제수단 선택 버튼
+                                                        CustomRoundButton(
+                                                          text: value.isEmpty
+                                                              ? StringHome
+                                                                  .selectButton
+                                                              : StringHome
+                                                                  .changeButton,
+                                                          backgroundColor:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                          textColor:
+                                                              Colors.white,
+                                                          borderColor:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  vertical: 10,
+                                                                  horizontal:
+                                                                      16),
+                                                          onPressed: () async {
+                                                            /// 화면 이동 전 네이버지도 가림
+                                                            naverMap = null;
+
+                                                            /// 결제수단 화면으로 이동
+                                                            final result =
+                                                                await context
+                                                                    .pushNamed(
+                                                              PaymentManagementScreen
+                                                                  .routeName,
+                                                              extra:
+                                                                  true, // 결제선택 여부
+                                                            );
+                                                            if (result
+                                                                is Payment) {
+                                                              /// 선택한 결제수단 데이터 받기
+                                                              _homeViewModel
+                                                                  .setPaymentInfo(
+                                                                paymKind: result
+                                                                            .cardId ==
+                                                                        "CASH"
+                                                                    ? "CASH"
+                                                                    : "CARD",
+                                                                paymentNm: result
+                                                                    .paymentNm,
+                                                                cardId: result
+                                                                            .cardId ==
+                                                                        "CASH"
+                                                                    ? ""
+                                                                    : result
+                                                                        .cardId,
+                                                              );
+                                                            }
+
+                                                            /// 화면 이동 완료 후 네이버 지도 보여줌
+                                                            initData();
+                                                          },
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+
+                                          /// 예약하기 / 호출하기 버튼
+                                          ValueListenableBuilder<bool>(
+                                            valueListenable: _homeViewModel
+                                                .isCallButtonValidNotifier,
+                                            builder: (context, value, child) {
+                                              return Container(
+                                                color: Theme.of(context)
+                                                    .scaffoldBackgroundColor,
+                                                padding: const EdgeInsets.only(
+                                                    top: 8,
+                                                    bottom: 20,
+                                                    left: 20,
+                                                    right: 20),
+                                                child: Row(
+                                                  children: [
+                                                    /// 예약하기 버튼
+                                                    Expanded(
+                                                      child: CustomRadiusButton(
+                                                        isEnabled: value,
+                                                        text: StringHome
+                                                            .reservationButton,
+                                                        onPressed: () async {
+                                                          /// 예약콜 유의사항 조회
+                                                          final notiPolicy =
+                                                              await _homeViewModel
+                                                                  .getPolicy(
+                                                                      policyTp:
+                                                                          PolicyTp
+                                                                              .notc);
+                                                          if (notiPolicy ==
+                                                              null) {
+                                                            return;
+                                                          }
+
+                                                          /// 예약 일시 팝업 띄움
+                                                          final result =
+                                                              await showModalBottomSheet(
+                                                            context: context,
+                                                            isScrollControlled:
+                                                                true,
+                                                            builder: (context) {
+                                                              return const Wrap(
+                                                                  children: [
+                                                                    ReservationBottomSheet()
+                                                                  ]);
+                                                            },
+                                                          );
+                                                          debugPrint(
+                                                              "======$result");
+                                                          if (result == null) {
+                                                            return;
+                                                          }
+
+                                                          final dateTitle =
+                                                              result["title"];
+                                                          final dateValue =
+                                                              result["value"];
+
+                                                          /// 예약 정보 확인 팝업 띄움
+                                                          final resultConfirm =
+                                                              await showModalBottomSheet(
+                                                            context: context,
+                                                            isScrollControlled:
+                                                                true,
+                                                            useSafeArea: true,
+                                                            builder: (context) {
+                                                              return ReservationConfirmBottomSheet(
+                                                                dateTitle:
+                                                                    dateTitle,
+                                                                dateValue:
+                                                                    dateValue,
+                                                                price:
+                                                                    _homeViewModel
+                                                                        .price,
+                                                                paymentNm:
+                                                                    _homeViewModel
+                                                                        .paymentNm,
+                                                                start: _homeViewModel
+                                                                    .startMapData!,
+                                                                end: _homeViewModel
+                                                                    .endMapData!,
+                                                                stopOverList:
+                                                                    _homeViewModel
+                                                                        .stopOverList,
+                                                                notiPolicy:
+                                                                    notiPolicy,
+                                                              );
+                                                            },
+                                                          );
+                                                          debugPrint(
+                                                              "======$resultConfirm");
+                                                          if (resultConfirm ==
+                                                              null) {
+                                                            return;
+                                                          }
+
+                                                          /// 차량정보 리스트 조회
+                                                          final carList =
+                                                              await _homeViewModel
+                                                                  .getCarList();
+
+                                                          String carNumId = "";
+                                                          if (carList
+                                                              .isNotEmpty) {
+                                                            /// 선택 안함 추가
+                                                            carList.add(Car(
+                                                                carNumId: ""));
+
+                                                            /// 차량선택 팝업
+                                                            final carResult =
+                                                                await showModalBottomSheet(
+                                                              context: context,
+                                                              isScrollControlled:
+                                                                  true,
+                                                              builder:
+                                                                  (context) {
+                                                                return Wrap(
+                                                                    children: [
+                                                                      CarSelectBottomSheet(
+                                                                          carList:
+                                                                              carList)
+                                                                    ]);
+                                                              },
+                                                            );
+                                                            if (carResult !=
+                                                                    null &&
+                                                                carResult
+                                                                    is Car) {
+                                                              carNumId =
+                                                                  carResult
+                                                                      .carNumId;
+                                                            } else {
+                                                              return;
+                                                            }
+                                                          }
+
+                                                          /// 예약하기
+                                                          final requestResult =
+                                                              await _homeViewModel
+                                                                  .requestReservation(
+                                                            carNumId: carNumId,
+                                                            date: dateValue,
+                                                          );
+                                                          if (requestResult
+                                                              is Success) {
+                                                            /// 예약 접수 성공 팝업
+                                                            await _showAlertDialog(
+                                                                content:
+                                                                    StringReservation
+                                                                        .reservationConfirmAlert,
+                                                                isCanceled:
+                                                                    false);
+
+                                                            /// 입력 데이터 삭제
+                                                            _homeViewModel
+                                                                .clearData();
+
+                                                            /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                                            naverMap = null;
+                                                            initData();
+
+                                                            /// 운행 정보 화면으로 이동
+                                                            final drvReqSq =
+                                                                requestResult
+                                                                    .drvResponse
+                                                                    .drvReqSq;
+                                                            await context
+                                                                .pushNamed(
+                                                              CallDetailScreen
+                                                                  .routeName,
+                                                              extra: drvReqSq,
+                                                            );
+                                                          }
+                                                        },
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+
+                                                    /// 호출하기 버튼
+                                                    Expanded(
+                                                      child: ElevatedButton(
+                                                        onPressed: value
+                                                            ? () async {
+                                                                /// 일반콜 유의사항 조회
+                                                                final notiPolicy =
+                                                                    await _homeViewModel.getPolicy(
+                                                                        policyTp:
+                                                                            PolicyTp.cano);
+                                                                if (notiPolicy ==
+                                                                    null) {
+                                                                  return;
+                                                                }
+
+                                                                final content = _homeViewModel
+                                                                        .endMapData!
+                                                                        .place
+                                                                        .isNotEmpty
+                                                                    ? _homeViewModel
+                                                                        .endMapData!
+                                                                        .place
+                                                                    : _homeViewModel
+                                                                        .endMapData!
+                                                                        .addressRoad;
+                                                                await _showCallConfirmDialog(
+                                                                  content:
+                                                                      content,
+                                                                  notiPolicy:
+                                                                      notiPolicy,
+                                                                  onConfirm:
+                                                                      () async {
+                                                                    Navigator.pop(
+                                                                        context);
+
+                                                                    /// 차량정보 리스트 조회
+                                                                    final carList =
+                                                                        await _homeViewModel
+                                                                            .getCarList();
+
+                                                                    String
+                                                                        carNumId =
+                                                                        "";
+                                                                    if (carList
+                                                                        .isNotEmpty) {
+                                                                      /// 선택 안함 추가
+                                                                      carList.add(Car(
+                                                                          carNumId:
+                                                                              ""));
+
+                                                                      /// 차량선택 팝업
+                                                                      final carResult =
+                                                                          await showModalBottomSheet(
+                                                                        context:
+                                                                            context,
+                                                                        isScrollControlled:
+                                                                            true,
+                                                                        builder:
+                                                                            (context) {
+                                                                          return Wrap(
+                                                                              children: [
+                                                                                CarSelectBottomSheet(carList: carList)
+                                                                              ]);
+                                                                        },
+                                                                      );
+                                                                      if (carResult !=
+                                                                              null &&
+                                                                          carResult
+                                                                              is Car) {
+                                                                        carNumId =
+                                                                            carResult.carNumId;
+                                                                      } else {
+                                                                        return;
+                                                                      }
+                                                                    }
+
+                                                                    /// 호출하기
+                                                                    final requestResult =
+                                                                        await _homeViewModel.requestCall(
+                                                                            carNumId:
+                                                                                carNumId);
+                                                                    if (requestResult
+                                                                        is Success) {
+                                                                      /// 화면 이동 전 네이버지도 가림
+                                                                      naverMap =
+                                                                          null;
+
+                                                                      /// 운행 화면으로 이동
+                                                                      final drvReqSq = requestResult
+                                                                          .drvResponse
+                                                                          .drvReqSq;
+                                                                      final callResult =
+                                                                          await context
+                                                                              .pushNamed(
+                                                                        WorkScreen
+                                                                            .routeName,
+                                                                        extra:
+                                                                            drvReqSq,
+                                                                      );
+                                                                      if (callResult ==
+                                                                          false) {
+                                                                        /// 운행취소
+                                                                        /// 입력 데이터 삭제
+                                                                        _homeViewModel
+                                                                            .clearData();
+                                                                      }
+
+                                                                      /// 화면 이동 완료 후 네이버 지도 보여줌
+                                                                      initData();
+                                                                    }
+                                                                  },
+                                                                );
+                                                              }
+                                                            : null,
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  vertical: 14,
+                                                                  horizontal:
+                                                                      24),
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            /// 아이콘
+                                                            Container(
+                                                              width: 32,
+                                                              height: 32,
+                                                              decoration: const BoxDecoration(
+                                                                  color: Colors
+                                                                      .white10,
+                                                                  shape: BoxShape
+                                                                      .circle),
+                                                              child:
+                                                                  const Material(
+                                                                color: Colors
+                                                                    .transparent,
+                                                                child: InkWell(
+                                                                  child: Icon(
+                                                                      Icons
+                                                                          .call,
+                                                                      color: Colors
+                                                                          .white,
+                                                                      size: 20),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 18),
+
+                                                            /// 예약콜
+                                                            const Expanded(
+                                                              child: Text(
+                                                                StringHome
+                                                                    .callButton,
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-
-                          /// 요금 선택
-                          ValueListenableBuilder<bool>(
-                            valueListenable: _homeViewModel.isPriceButtonValidNotifier,
-                            builder: (context, value, child) {
-                              debugPrint("asdfasdfasdfasdf: $value");
-                              return value
-                                  ? Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                                      child: ValueListenableBuilder<PriceType>(
-                                        valueListenable: _homeViewModel.priceTypeNotifier,
-                                        builder: (context, value, child) {
-                                          return Column(
-                                            children: [
-                                              /// 일반요금
-                                              Container(
-                                                padding: const EdgeInsets.symmetric(vertical: 4),
-                                                decoration: BoxDecoration(
-                                                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                                                  border: Border.all(color: value == PriceType.basic ? Theme.of(context).colorScheme.secondary : Colors.transparent, width: 1),
-                                                  color: value == PriceType.basic ? Theme.of(context).toggleButtonsTheme.fillColor : Theme.of(context).cardColor,
-                                                ),
-                                                child: RadioListTile(
-                                                  value: PriceType.basic,
-                                                  groupValue: _homeViewModel.priceType,
-                                                  onChanged: (value) {
-                                                    /// 일반요금 선택
-                                                    if (value is PriceType) {
-                                                      _homeViewModel.priceType = value;
-                                                    }
-                                                  },
-                                                  title: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        StringHome.basicPrice,
-                                                        style: value == PriceType.basic ? Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary) : Theme.of(context).textTheme.bodyMedium,
-                                                      ),
-                                                      // const SizedBox(height: 4),
-                                                      // Text(StringHome.basicPriceSub, style: Theme.of(context).textTheme.bodySmall),
-                                                    ],
-                                                  ),
-                                                  secondary: ValueListenableBuilder<int>(
-                                                    valueListenable: _homeViewModel.basicPriceNotifier,
-                                                    builder: (context, value, child) {
-                                                      return Text(getPrice(value), style: Theme.of(context).textTheme.bodyMedium);
-                                                    },
-                                                  ),
-                                                  fillColor: MaterialStateProperty.all(value == PriceType.basic ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 8),
-
-                                              /// 요금 직접 입력
-                                              GestureDetector(
-                                                onTap: () async {
-                                                  /// 요금 직접 입력 팝업 띄움
-                                                  final result = await showModalBottomSheet(
-                                                    context: context,
-                                                    isScrollControlled: true,
-                                                    builder: (context) {
-                                                      return Wrap(
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                                            child: CallPriceBottomSheet(
-                                                              initPrice: _homeViewModel.inputPrice,
-                                                              minPrice: 0,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      );
-                                                    },
-                                                  );
-                                                  if (result != null) {
-                                                    _homeViewModel.inputPrice = result;
-                                                    _homeViewModel.priceType = PriceType.input;
-                                                  }
-                                                },
-                                                child: Container(
-                                                  padding: const EdgeInsets.symmetric(vertical: 4),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: const BorderRadius.all(Radius.circular(12)),
-                                                    border: Border.all(color: value == PriceType.input ? Theme.of(context).colorScheme.secondary : Colors.transparent, width: 1),
-                                                    color: value == PriceType.input ? Theme.of(context).toggleButtonsTheme.fillColor : Theme.of(context).cardColor,
-                                                  ),
-                                                  child: RadioListTile(
-                                                    value: PriceType.input,
-                                                    groupValue: _homeViewModel.priceType,
-                                                    onChanged: null,
-                                                    title: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text(
-                                                          StringHome.inputPrice,
-                                                          style: value == PriceType.input ? Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary) : Theme.of(context).textTheme.bodyMedium,
-                                                        ),
-                                                        // const SizedBox(height: 4),
-                                                        // Text(StringHome.inputPriceSub, style: Theme.of(context).textTheme.bodySmall),
-                                                      ],
-                                                    ),
-                                                    secondary: ValueListenableBuilder<int>(
-                                                      valueListenable: _homeViewModel.inputPriceNotifier,
-                                                      builder: (context, value, child) {
-                                                        return Text(getPrice(value), style: Theme.of(context).textTheme.bodyMedium);
-                                                      },
-                                                    ),
-                                                    fillColor: MaterialStateProperty.all(value == PriceType.input ? Theme.of(context).colorScheme.secondary : Theme.of(context).disabledColor),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                    )
-                                  : const SizedBox();
-                            },
-                          ),
-
-                          const Divider(thickness: 1),
-
-                          /// 결제수단
-                          ValueListenableBuilder<String>(
-                            valueListenable: _homeViewModel.paymentNmNotifier,
-                            builder: (context, value, child) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 28),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.credit_card,
-                                          color: Theme.of(context).textTheme.bodyMedium?.color,
-                                          size: 24,
-                                        ),
-                                        const SizedBox(width: 18),
-
-                                        Text(value.isEmpty ? StringHome.payment1 : StringHome.payment2, style: Theme.of(context).textTheme.bodyLarge),
-                                        const SizedBox(width: 14),
-
-                                        /// 선택한 결제수단
-                                        Expanded(
-                                          child: Text(
-                                            value.isEmpty ? StringHome.empty : value,
-                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                  color: Theme.of(context).disabledColor,
-                                                ),
-                                          ),
-                                        ),
-
-                                        /// 결제수단 선택 버튼
-                                        CustomRoundButton(
-                                          text: value.isEmpty ? StringHome.selectButton : StringHome.changeButton,
-                                          backgroundColor: Theme.of(context).colorScheme.primary,
-                                          textColor: Colors.white,
-                                          borderColor: Theme.of(context).colorScheme.primary,
-                                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                          onPressed: () async {
-                                            /// 화면 이동 전 네이버지도 가림
-                                            naverMap = null;
-
-                                            /// 결제수단 화면으로 이동
-                                            final result = await context.pushNamed(
-                                              PaymentManagementScreen.routeName,
-                                              extra: true, // 결제선택 여부
-                                            );
-                                            if (result is Payment) {
-                                              /// 선택한 결제수단 데이터 받기
-                                              _homeViewModel.setPaymentInfo(
-                                                paymKind: result.cardId == "CASH" ? "CASH" : "CARD",
-                                                paymentNm: result.paymentNm,
-                                                cardId: result.cardId == "CASH" ? "" : result.cardId,
-                                              );
-                                            }
-
-                                            /// 화면 이동 완료 후 네이버 지도 보여줌
-                                            initData();
-                                          },
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-                ValueListenableBuilder<bool>(
-                  valueListenable: _homeViewModel.isCallButtonValidNotifier,
-                  builder: (context, value, child) {
-                    return Container(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      padding: const EdgeInsets.only(top: 8, bottom: 20, left: 20, right: 20),
-                      child: Row(
-                        children: [
-                          /// 예약하기 버튼
-                          Expanded(
-                            child: CustomRadiusButton(
-                              isEnabled: value,
-                              text: StringHome.reservationButton,
-                              onPressed: () async {
-                                /// 예약콜 유의사항 조회
-                                final notiPolicy = await _homeViewModel.getPolicy(policyTp: PolicyTp.notc);
-                                if (notiPolicy == null) {
-                                  return;
-                                }
-
-                                /// 예약 일시 팝업 띄움
-                                final result = await showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  builder: (context) {
-                                    return const Wrap(children: [ReservationBottomSheet()]);
-                                  },
-                                );
-                                debugPrint("======$result");
-                                if (result == null) {
-                                  return;
-                                }
-
-                                final dateTitle = result["title"];
-                                final dateValue = result["value"];
-
-                                /// 예약 정보 확인 팝업 띄움
-                                final resultConfirm = await showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  useSafeArea: true,
-                                  builder: (context) {
-                                    return ReservationConfirmBottomSheet(
-                                      dateTitle: dateTitle,
-                                      dateValue: dateValue,
-                                      price: _homeViewModel.price,
-                                      paymentNm: _homeViewModel.paymentNm,
-                                      start: _homeViewModel.startMapData!,
-                                      end: _homeViewModel.endMapData!,
-                                      stopOverList: _homeViewModel.stopOverList,
-                                      notiPolicy: notiPolicy,
-                                    );
-                                  },
-                                );
-                                debugPrint("======$resultConfirm");
-                                if (resultConfirm == null) {
-                                  return;
-                                }
-
-                                /// 차량정보 리스트 조회
-                                final carList = await _homeViewModel.getCarList();
-
-                                String carNumId = "";
-                                if (carList.isNotEmpty) {
-                                  /// 선택 안함 추가
-                                  carList.add(Car(carNumId: ""));
-
-                                  /// 차량선택 팝업
-                                  final carResult = await showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (context) {
-                                      return Wrap(children: [CarSelectBottomSheet(carList: carList)]);
-                                    },
-                                  );
-                                  if (carResult != null && carResult is Car) {
-                                    carNumId = carResult.carNumId;
-                                  } else {
-                                    return;
-                                  }
-                                }
-
-                                /// 예약하기
-                                final requestResult = await _homeViewModel.requestReservation(
-                                  carNumId: carNumId,
-                                  date: dateValue,
-                                );
-                                if (requestResult is Success) {
-                                  /// 예약 접수 성공 팝업
-                                  await _showAlertDialog(content: StringReservation.reservationConfirmAlert, isCanceled: false);
-
-                                  /// 입력 데이터 삭제
-                                  _homeViewModel.clearData();
-
-                                  /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
-                                  naverMap = null;
-                                  initData();
-
-                                  /// 운행 정보 화면으로 이동
-                                  final drvReqSq = requestResult.drvResponse.drvReqSq;
-                                  await context.pushNamed(
-                                    CallDetailScreen.routeName,
-                                    extra: drvReqSq,
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-
-                          /// 호출하기 버튼
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: value
-                                  ? () async {
-                                      /// 일반콜 유의사항 조회
-                                      final notiPolicy = await _homeViewModel.getPolicy(policyTp: PolicyTp.cano);
-                                      if (notiPolicy == null) {
-                                        return;
-                                      }
-
-                                      final content = _homeViewModel.endMapData!.place.isNotEmpty ? _homeViewModel.endMapData!.place : _homeViewModel.endMapData!.addressRoad;
-                                      await _showCallConfirmDialog(
-                                        content: content,
-                                        notiPolicy: notiPolicy,
-                                        onConfirm: () async {
-                                          Navigator.pop(context);
-
-                                          /// 차량정보 리스트 조회
-                                          final carList = await _homeViewModel.getCarList();
-
-                                          String carNumId = "";
-                                          if (carList.isNotEmpty) {
-                                            /// 선택 안함 추가
-                                            carList.add(Car(carNumId: ""));
-
-                                            /// 차량선택 팝업
-                                            final carResult = await showModalBottomSheet(
-                                              context: context,
-                                              isScrollControlled: true,
-                                              builder: (context) {
-                                                return Wrap(children: [CarSelectBottomSheet(carList: carList)]);
-                                              },
-                                            );
-                                            if (carResult != null && carResult is Car) {
-                                              carNumId = carResult.carNumId;
-                                            } else {
-                                              return;
-                                            }
-                                          }
-
-                                          /// 호출하기
-                                          final requestResult = await _homeViewModel.requestCall(carNumId: carNumId);
-                                          if (requestResult is Success) {
-                                            /// 화면 이동 전 네이버지도 가림
-                                            naverMap = null;
-
-                                            /// 운행 화면으로 이동
-                                            final drvReqSq = requestResult.drvResponse.drvReqSq;
-                                            final callResult = await context.pushNamed(
-                                              WorkScreen.routeName,
-                                              extra: drvReqSq,
-                                            );
-                                            if (callResult == false) {
-                                              /// 운행취소
-                                              /// 입력 데이터 삭제
-                                              _homeViewModel.clearData();
-                                            }
-
-                                            /// 화면 이동 완료 후 네이버 지도 보여줌
-                                            initData();
-                                          }
-                                        },
-                                      );
-                                    }
-                                  : null,
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                              ),
-                              child: Row(
-                                children: [
-                                  /// 아이콘
-                                  Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: const BoxDecoration(color: Colors.white10, shape: BoxShape.circle),
-                                    child: const Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        child: Icon(Icons.call, color: Colors.white, size: 20),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 18),
-
-                                  /// 예약콜
-                                  const Expanded(
-                                    child: Text(
-                                      StringHome.callButton,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                  ),
                 ),
               ],
             ),
@@ -860,12 +1342,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<NLatLng> getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     debugPrint("location position: $position");
     return NLatLng(position.latitude, position.longitude);
   }
 
-  _showAlertDialog({String? title, String? content, bool isWarning = false, bool isCanceled = true}) {
+  _showAlertDialog(
+      {String? title,
+      String? content,
+      bool isWarning = false,
+      bool isCanceled = true}) {
     return showDialog(
       context: context,
       barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
@@ -883,7 +1370,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _showConfirmDialog({String? title, String? content, bool isWarning = false, required Function() onConfirm}) {
+  _showConfirmDialog(
+      {String? title,
+      String? content,
+      bool isWarning = false,
+      required Function() onConfirm}) {
     return showDialog(
       context: context,
       barrierDismissible: true, // dialog 영역 외 터치 여부
@@ -898,7 +1389,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _showCallConfirmDialog({String? title, required String content, required Policy notiPolicy, required Function() onConfirm}) {
+  _showCallConfirmDialog(
+      {String? title,
+      required String content,
+      required Policy notiPolicy,
+      required Function() onConfirm}) {
     return showDialog(
       context: context,
       barrierDismissible: true, // dialog 영역 외 터치 여부
@@ -943,7 +1438,8 @@ class _HomeScreenState extends State<HomeScreen> {
           zoom: 16, // 0.0 ~ 21.0
         ),
         mapType: NMapType.navi,
-        nightModeEnable: CustomThemeMode.getThemeMode == ThemeMode.dark, // mapType이 네비게이션일 경우에만 제공
+        nightModeEnable: CustomThemeMode.getThemeMode ==
+            ThemeMode.dark, // mapType이 네비게이션일 경우에만 제공
       ),
       onMapReady: (controller) async {
         debugPrint("========== onMapReady ===========");
@@ -1004,7 +1500,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
         if (startMarker != null) {
           /// 출발지 마커 라벨 표시
-          final startInfoWindow = NInfoWindow.onMarker(id: "start_info", text: "출발지");
+          final startInfoWindow =
+              NInfoWindow.onMarker(id: "start_info", text: "출발지");
           startInfoWindow.setOffsetY(-1);
           startMarker.openInfoWindow(startInfoWindow);
         }
@@ -1019,9 +1516,11 @@ class _HomeScreenState extends State<HomeScreen> {
             (startMapData.latLng.longitude + endMapData.latLng.longitude) / 2,
           );
         } else if (startMapData != null) {
-          target = NLatLng(startMapData.latLng.latitude, startMapData.latLng.longitude);
+          target = NLatLng(
+              startMapData.latLng.latitude, startMapData.latLng.longitude);
         } else if (endMapData != null) {
-          target = NLatLng(endMapData.latLng.latitude, endMapData.latLng.longitude);
+          target =
+              NLatLng(endMapData.latLng.latitude, endMapData.latLng.longitude);
         }
 
         /// 카메라 위치 변경
@@ -1045,7 +1544,8 @@ class _HomeScreenState extends State<HomeScreen> {
   /// 앱 뒤로가기
   Future<bool> _onBackPressed() async {
     final now = DateTime.now();
-    if (_lastOnPressed == null || now.difference(_lastOnPressed!) > const Duration(seconds: 2)) {
+    if (_lastOnPressed == null ||
+        now.difference(_lastOnPressed!) > const Duration(seconds: 2)) {
       _lastOnPressed = now;
       Fluttertoast.showToast(msg: StringHome.onBackPressed);
       return false;

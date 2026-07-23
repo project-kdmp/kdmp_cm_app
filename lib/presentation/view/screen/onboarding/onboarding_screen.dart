@@ -37,6 +37,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         valueListenable: CustomThemeMode.themeMode,
         builder: (context, themeMode, child) {
           return IntroductionScreen(
+            // 안드로이드 네비게이션 바에 컨트롤 영역이 가려지지 않도록 하단 세이프 영역 확보
+            safeAreaList: const [false, false, false, true],
+            // 페이지가 1개뿐이라 도트 인디케이터는 숨김
+            isProgress: false,
+            // 좌측(스킵/뒤로) 및 도트 영역의 flex를 0으로 두어(내용이 비어있으므로) 시작하기 버튼이 남은 폭 전체를 차지하며 하단 중앙에 오도록 함
+            skipOrBackFlex: 0,
+            dotsFlex: 0,
             pages: [
               // 대부분의 온보딩 스크린은 여러 페이지로 구성되어 있기 때문에, 칼럼 위젯처럼 pages 알규먼트는 리스트를 불러와야 한다.
               PageViewModel(

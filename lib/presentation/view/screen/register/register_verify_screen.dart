@@ -11,7 +11,6 @@ import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_token_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/register/set_register_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/fcm/get_fcm_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_user_data_usecase.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
@@ -52,7 +51,6 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
       setRegisterUseCase: GetIt.instance<SetRegisterUseCase>(),
       getLoginUseCase: GetIt.instance<GetLoginUseCase>(),
       setUserDataUseCase: GetIt.instance<SetUserDataUseCase>(),
-      getOnBoardingCheckUseCase: GetIt.instance<GetOnBoardingCheckUseCase>(),
       getFCMUseCase: GetIt.instance<GetFCMUseCase>(),
       setFCMTokenUseCase: GetIt.instance<SetFCMTokenUseCase>(),
       deleteUserDataUseCase: GetIt.instance<DeleteUserDataUseCase>(),
@@ -132,12 +130,9 @@ class _RegisterVerifyScreenState extends State<RegisterVerifyScreen> {
                 await context.pushNamed(CMTermScreen.routeName);
               }
 
-              /// 필수 약관 모두 동의
-              final isOnBoardingCheck = await _registerVerifyViewModel.isOnBoardingCheck();
-              if (!isOnBoardingCheck) {
-                if (!mounted) return;
-                await context.pushNamed(OnBoardingScreen.routeName);
-              }
+              /// 수동 로그인 시에는 매번 온보딩 화면을 노출
+              if (!mounted) return;
+              await context.pushNamed(OnBoardingScreen.routeName);
               if (!mounted) return;
               context.goNamed(HomeScreen.routeName);
               break;

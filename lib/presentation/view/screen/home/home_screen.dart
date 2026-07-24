@@ -29,7 +29,6 @@ import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
-import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/car_select_bottom_sheet.dart';
@@ -1469,13 +1468,23 @@ class _HomeScreenState extends State<HomeScreen> {
           markers.add(startMarker);
         }
 
+        NMarker? endMarker;
         if (endMapData != null) {
-          /// 도착지 마커 추가
-          markers.add(NMarker(
+          /// 도착지 마커 추가 (출발지 마커와 동일한 스타일로 통일)
+          endMarker = NMarker(
             id: "end",
             position: endMapData.latLng,
-            icon: const NOverlayImage.fromAssetImage(ImageCommon.icEnd),
-          ));
+            icon: await NOverlayImage.fromWidget(
+              widget: Icon(
+                Icons.flag,
+                size: 30,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              size: const Size(30, 30),
+              context: context,
+            ),
+          );
+          markers.add(endMarker);
         }
 
         if (stopOverList.isNotEmpty) {
@@ -1506,30 +1515,52 @@ class _HomeScreenState extends State<HomeScreen> {
           startMarker.openInfoWindow(startInfoWindow);
         }
 
+        if (endMarker != null) {
+          /// 도착지 마커 라벨 표시
+          final endInfoWindow =
+              NInfoWindow.onMarker(id: "end_info", text: "도착지");
+          endInfoWindow.setOffsetY(-1);
+          endMarker.openInfoWindow(endInfoWindow);
+        }
+
         /// 내 위치 표시(파란 동그라미) 기본 활성화
         controller.setLocationTrackingMode(NLocationTrackingMode.noFollow);
 
-        var target = _homeViewModel.currentLatLng;
         if (startMapData != null && endMapData != null) {
-          target = NLatLng(
-            (startMapData.latLng.latitude + endMapData.latLng.latitude) / 2,
-            (startMapData.latLng.longitude + endMapData.latLng.longitude) / 2,
+          /// 출발지와 도착지가 멀리 떨어져 있어도 두 마커가 모두 화면에 보이도록 범위 맞춤
+          final points = [startMapData.latLng, endMapData.latLng];
+          for (final stopOver in stopOverList) {
+            points.add(NLatLng(stopOver.lat, stopOver.long));
+          }
+          /// 하단 호출 정보 바텀시트에 마커가 가려지지 않도록 아래쪽에 여유 패딩 확보
+          final screenHeight = MediaQuery.of(context).size.height;
+          controller.updateCamera(
+            NCameraUpdate.fitBounds(
+              NLatLngBounds.from(points),
+              padding: EdgeInsets.only(
+                top: 100,
+                left: 60,
+                right: 60,
+                bottom: screenHeight * 0.55,
+              ),
+            ),
           );
-        } else if (startMapData != null) {
-          target = NLatLng(
-              startMapData.latLng.latitude, startMapData.latLng.longitude);
-        } else if (endMapData != null) {
-          target =
-              NLatLng(endMapData.latLng.latitude, endMapData.latLng.longitude);
-        }
+        } else {
+          var target = _homeViewModel.currentLatLng;
+          if (startMapData != null) {
+            target = startMapData.latLng;
+          } else if (endMapData != null) {
+            target = endMapData.latLng;
+          }
 
-        /// 카메라 위치 변경
-        controller.updateCamera(
-          NCameraUpdate.scrollAndZoomTo(
-            target: target,
-            zoom: 16, // 0.0 ~ 21.0
-          ),
-        );
+          /// 카메라 위치 변경
+          controller.updateCamera(
+            NCameraUpdate.scrollAndZoomTo(
+              target: target,
+              zoom: 16, // 0.0 ~ 21.0
+            ),
+          );
+        }
       },
       onCameraChange: (reason, animated) async {
         /// 카메라 위치 변경에 따른 위치값 변경

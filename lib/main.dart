@@ -114,7 +114,8 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
 }
 
 void main() async {
-  AppConstants.setEnvironment(kDebugMode ? Environment.DEV : Environment.PROD);
+  // AppConstants.setEnvironment(kDebugMode ? Environment.DEV : Environment.PROD);
+  AppConstants.setEnvironment(kDebugMode ? Environment.STAGE : Environment.PROD);
 
   WidgetsFlutterBinding.ensureInitialized();
 

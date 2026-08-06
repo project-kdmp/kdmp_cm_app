@@ -105,7 +105,7 @@ dev_dependencies:
 flutter_icons:
   ios: true
   android: true
-  image_path: "assets/app_icon.png"
+  image_path: "assets/kpma_logo.png"
   remove_alpha_ios: true
 
 flutter:
@@ -113,7 +113,7 @@ flutter:
 
   assets:
     - .env
-    - assets/app_icon.png
+    - assets/kpma_logo.png
     - assets/common/app_logo_light.png
     - assets/common/app_logo_dark.png
     - assets/common/icon_warning.png

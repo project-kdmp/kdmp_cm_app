@@ -302,7 +302,6 @@ abstract class StringWork {
   static const String price = "요금";
   static const String date = "일시";
 
-  static const String cancelConfirm = "호출을 취소하시겠습니까?";
   static const String cancelSuccess = "호출이 취소되었습니다.";
   static const String changeCallFeeAlert = "호출 요금을 변경했습니다.";
   static const String changeCallEndTitle = "도착지 변경";
@@ -314,8 +313,7 @@ abstract class StringCallCancel {
 
   static const String title = "호출을 취소하시겠습니까?";
   static const String content = "사유를 선택해주세요.";
-  static const String typeOTHS = "다른 서비스 이용";
-  static const String typeDRVC = "기사님 사정으로 연락 후 취소";
+  static const String etcHint = "취소 사유를 입력해주세요.";
 }
 
 abstract class StringReservation {
@@ -441,7 +439,6 @@ abstract class StringCalled {
   static const String reservationCancel = "예약 취소";
   static const String reservationAdd = "대리 추가 호출";
 
-  static const String reservationCancelConfirm = "예악을 취소하시겠습니까?";
   static const String reservationCancelSuccess = "예약이 취소되었습니다.";
   static const String deleteAlert = "이용 정보를 삭제하시겠습니까?";
   static const String deleteSuccess = "이용 정보가 삭제되었습니다.";

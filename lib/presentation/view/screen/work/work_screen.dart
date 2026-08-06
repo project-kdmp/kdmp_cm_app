@@ -30,7 +30,6 @@ import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_shee
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/review_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/call_cancel_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
-import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
@@ -182,48 +181,7 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
                                                 backgroundColor: Theme.of(context).toggleButtonsTheme.fillColor,
                                                 textColor: Theme.of(context).colorScheme.secondary,
                                                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                                onPressed: () async {
-                                                  /// 호출취소 팝업 띄움
-                                                  final cancelResult = _workViewModel.drvReqSt == DrvReqSt.cal
-                                                      ?
-
-                                                      /// 미확정 호출취소 팝업
-                                                      await _showConfirmDialog(
-                                                          content: StringWork.cancelConfirm,
-                                                          onConfirm: () async {
-                                                            /// 미확정 호출취소
-                                                            final result = await _workViewModel.cancelCall(drvReqSq: widget.drvReqSq);
-                                                            if (result is Success) {
-                                                              /// 호출취소 팝업 닫기
-                                                              context.pop(true);
-                                                            }
-                                                          },
-                                                        )
-                                                      :
-
-                                                      /// 호출취소 사유 선택 팝업
-                                                      await _showCallCancelDialog(
-                                                          onConfirm: (drvCancelTp) async {
-                                                            /// 확정 호출취소
-                                                            final result = await _workViewModel.cancelConfirmCall(
-                                                              drvReqSq: widget.drvReqSq,
-                                                              drvCancelTp: drvCancelTp,
-                                                            );
-                                                            if (result is Success) {
-                                                              /// 호출취소 사유 선택 팝업 닫기
-                                                              context.pop(true);
-                                                            }
-                                                          },
-                                                        );
-
-                                                  if (cancelResult == true) {
-                                                    /// 호출 취소 완료 팝업 띄움
-                                                    await _showAlertDialog(content: StringWork.cancelSuccess, isCanceled: false);
-
-                                                    /// 화면 닫기, 홈 화면 초기화
-                                                    context.pop(false);
-                                                  }
-                                                },
+                                                onPressed: _handleCancelPress,
                                               )
                                             : const SizedBox();
                                       },
@@ -707,22 +665,7 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
     );
   }
 
-  _showConfirmDialog({String? title, String? content, bool isWarning = false, required Function() onConfirm}) {
-    return showDialog(
-      context: context,
-      barrierDismissible: true, // dialog 영역 외 터치 여부
-      builder: (BuildContext context) {
-        return CustomConfirmDialog(
-          title: title,
-          content: content,
-          isWarning: isWarning,
-          onConfirm: onConfirm,
-        );
-      },
-    );
-  }
-
-  _showCallCancelDialog({required Function(String) onConfirm}) {
+  _showCallCancelDialog({required Function(String, String) onConfirm}) {
     return showDialog(
       context: context,
       barrierDismissible: true, // dialog 영역 외 터치 여부
@@ -732,5 +675,38 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
         );
       },
     );
+  }
+
+  /// 호출취소 버튼 클릭
+  Future<void> _handleCancelPress() async {
+    /// 호출취소 사유 선택 팝업
+    final cancelResult = await _showCallCancelDialog(
+      onConfirm: (drvCancelTp, cancelReason) async {
+        /// 미확정 콜은 cancelCall, 확정 콜은 cancelConfirmCall
+        final result = _workViewModel.drvReqSt == DrvReqSt.cal
+            ? await _workViewModel.cancelCall(
+                drvReqSq: widget.drvReqSq,
+                drvCancelTp: drvCancelTp,
+                cancelReason: cancelReason,
+              )
+            : await _workViewModel.cancelConfirmCall(
+                drvReqSq: widget.drvReqSq,
+                drvCancelTp: drvCancelTp,
+                cancelReason: cancelReason,
+              );
+        if (result is Success) {
+          /// 호출취소 사유 선택 팝업 닫기
+          context.pop(true);
+        }
+      },
+    );
+
+    if (cancelResult == true) {
+      /// 호출 취소 완료 팝업 띄움
+      await _showAlertDialog(content: StringWork.cancelSuccess, isCanceled: false);
+
+      /// 화면 닫기, 홈 화면 초기화
+      context.pop(false);
+    }
   }
 }

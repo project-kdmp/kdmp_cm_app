@@ -6,17 +6,20 @@ class ConfirmCallCancelRequest {
   int mbrCmSq;
   int drvReqSq;
   String drvCancelTp;
+  String cancelReason;
 
   ConfirmCallCancelRequest({
     required this.mbrCmSq,
     required this.drvReqSq,
     required this.drvCancelTp,
+    this.cancelReason = '',
   });
 
   factory ConfirmCallCancelRequest.fromJson(Map<String, dynamic> json) => ConfirmCallCancelRequest(
         mbrCmSq: json["mbrCmSq"],
         drvReqSq: json["drvReqSq"],
         drvCancelTp: json["drvCancelTp"],
+        cancelReason: json["cancelReason"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -25,5 +28,6 @@ class ConfirmCallCancelRequest {
         "mbrCmSq": mbrCmSq,
         "drvReqSq": drvReqSq,
         "drvCancelTp": drvCancelTp,
+        "cancelReason": cancelReason,
       };
 }

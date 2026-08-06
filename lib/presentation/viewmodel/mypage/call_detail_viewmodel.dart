@@ -166,7 +166,7 @@ class CallDetailViewModel {
   }
 
   /// 미확정 호출취소 API
-  Future<StateAPI> cancelCall({required int drvReqSq}) async {
+  Future<StateAPI> cancelCall({required int drvReqSq, required String drvCancelTp, String cancelReason = ''}) async {
     state = Loading();
 
     final mbrSq = await getMbrSqUseCase.execute();
@@ -174,6 +174,8 @@ class CallDetailViewModel {
     final request = CallCancelRequest(
       mbrCmSq: mbrSq,
       drvReqSq: drvReqSq,
+      drvCancelTp: drvCancelTp,
+      cancelReason: cancelReason,
     );
 
     final result = await setCallCancelUseCase.execute(callCancelRequest: request);
@@ -183,7 +185,7 @@ class CallDetailViewModel {
   }
 
   /// 확정 호출취소 API
-  Future<StateAPI> cancelConfirmCall({required int drvReqSq, required String drvCancelTp}) async {
+  Future<StateAPI> cancelConfirmCall({required int drvReqSq, required String drvCancelTp, String cancelReason = ''}) async {
     state = Loading();
 
     final mbrSq = await getMbrSqUseCase.execute();
@@ -192,6 +194,7 @@ class CallDetailViewModel {
       mbrCmSq: mbrSq,
       drvReqSq: drvReqSq,
       drvCancelTp: drvCancelTp,
+      cancelReason: cancelReason,
     );
 
     final result = await setConfirmCallCancelUseCase.execute(confirmCallCancelRequest: request);

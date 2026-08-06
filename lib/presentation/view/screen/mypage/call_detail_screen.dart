@@ -13,7 +13,6 @@ import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/call_cancel_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
-import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/home/home_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
@@ -472,49 +471,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                                   ? Expanded(
                                       child: CustomRadiusButton(
                                         text: StringCalled.reservationCancel,
-                                        onPressed: () async {
-
-                                          /// 호출취소 팝업 띄움
-                                          final cancelResult = _callDetailViewModel.drvReqSt == DrvReqSt.res
-                                              ?
-
-                                              /// 미확정 호출취소 팝업
-                                              await _showConfirmDialog(
-                                                  content: StringCalled.reservationCancelConfirm,
-                                                  onConfirm: () async {
-                                                    /// 미확정 호출취소
-                                                    final result = await _callDetailViewModel.cancelCall(drvReqSq: widget.drvReqSq);
-                                                    if (result is Success) {
-                                                      /// 호출취소 팝업 닫기
-                                                      context.pop(true);
-                                                    }
-                                                  },
-                                                )
-                                              :
-
-                                              /// 호출취소 사유 선택 팝업
-                                              await _showCallCancelDialog(
-                                                  onConfirm: (drvCancelTp) async {
-                                                    /// 확정 호출취소
-                                                    final result = await _callDetailViewModel.cancelConfirmCall(
-                                                      drvReqSq: widget.drvReqSq,
-                                                      drvCancelTp: drvCancelTp,
-                                                    );
-                                                    if (result is Success) {
-                                                      /// 호출취소 사유 선택 팝업 닫기
-                                                      context.pop(true);
-                                                    }
-                                                  },
-                                                );
-
-                                          if (cancelResult == true) {
-                                            /// 호출 취소 완료 팝업 띄움
-                                            await _showAlertDialog(content: StringCalled.reservationCancelSuccess, isCanceled: false);
-
-                                            /// 화면 닫기, 이전 화면 갱신
-                                            context.pop(true);
-                                          }
-                                        },
+                                        onPressed: _handleCancelPress,
                                       ),
                                     )
                                   : const SizedBox(),
@@ -604,22 +561,7 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
     );
   }
 
-  _showConfirmDialog({String? title, String? content, bool isWarning = false, required Function() onConfirm}) {
-    return showDialog(
-      context: context,
-      barrierDismissible: true, // dialog 영역 외 터치 여부
-      builder: (BuildContext context) {
-        return CustomConfirmDialog(
-          title: title,
-          content: content,
-          isWarning: isWarning,
-          onConfirm: onConfirm,
-        );
-      },
-    );
-  }
-
-  _showCallCancelDialog({required Function(String) onConfirm}) {
+  _showCallCancelDialog({required Function(String, String) onConfirm}) {
     return showDialog(
       context: context,
       barrierDismissible: true, // dialog 영역 외 터치 여부
@@ -629,5 +571,38 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
         );
       },
     );
+  }
+
+  /// 예약취소 버튼 클릭
+  Future<void> _handleCancelPress() async {
+    /// 호출취소 사유 선택 팝업
+    final cancelResult = await _showCallCancelDialog(
+      onConfirm: (drvCancelTp, cancelReason) async {
+        /// 미확정 예약은 cancelCall, 확정 예약은 cancelConfirmCall
+        final result = _callDetailViewModel.drvReqSt == DrvReqSt.res
+            ? await _callDetailViewModel.cancelCall(
+                drvReqSq: widget.drvReqSq,
+                drvCancelTp: drvCancelTp,
+                cancelReason: cancelReason,
+              )
+            : await _callDetailViewModel.cancelConfirmCall(
+                drvReqSq: widget.drvReqSq,
+                drvCancelTp: drvCancelTp,
+                cancelReason: cancelReason,
+              );
+        if (result is Success) {
+          /// 호출취소 사유 선택 팝업 닫기
+          context.pop(true);
+        }
+      },
+    );
+
+    if (cancelResult == true) {
+      /// 호출 취소 완료 팝업 띄움
+      await _showAlertDialog(content: StringCalled.reservationCancelSuccess, isCanceled: false);
+
+      /// 화면 닫기, 이전 화면 갱신
+      context.pop(true);
+    }
   }
 }

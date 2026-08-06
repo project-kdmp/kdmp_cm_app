@@ -109,8 +109,11 @@ abstract class PushType {
 abstract class DrvCancelTp {
   DrvCancelTp._();
 
-  static const String oths = "OTHS"; // 다른 서비스 이용
-  static const String drvc = "DRVC"; // 기사님 연락 후 취소
+  static const String oths = "OTHS"; // 다른서비스로 취소
+  static const String drvc = "DRVC"; // 기사님 연락후 취소
+  static const String drvo = "DRVO"; // 기사님 일방적인 취소
+  static const String etcd = "ETCD"; // 기타
+  static const String comp = "COMP"; // 확정후 고객·기사 협의취소
 }
 
 /// 종합소득세 신청 용도

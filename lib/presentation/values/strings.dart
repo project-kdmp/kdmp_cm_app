@@ -35,7 +35,7 @@ abstract class StringPermission {
   StringPermission._();
 
   static const String title = "접근 권한 안내";
-  static const String content = "드라이버는 아래 접근 권한을 사용합니다.";
+  static const String content = "콜프렌드 고객용은 아래 접근 권한을 사용합니다.";
   static const String permissionTitle1 = "위치";
   static const String permissionContent1 = "사용자의 현재 위치를 안내하기 위해 필요한 권한";
   static const String permissionTitle2 = "전화";
@@ -45,10 +45,10 @@ abstract class StringPermission {
   // static const String permissionContent3 = "(미정)";
   static const String permissionTitle4 = "알림";
   static const String permissionContent4 = "기사님 호출 및 배정 결과 등 대리 서비스 이용 상태 안내를 위해 필요한 권한";
-  static const String permissionGuide = "선택 권한은 서비스 사용 중 필요한 시점에 동의를 받고 있습니다. 허용하지 않아도 해당 기능 외 서비스를 이용할 수 있습니다.\n\n접근 권한 변경 휴대폰 설정 > 앱(애플리케이션) > 드라이버";
+  static const String permissionGuide = "선택 권한은 서비스 사용 중 필요한 시점에 동의를 받고 있습니다. 허용하지 않아도 해당 기능 외 서비스를 이용할 수 있습니다.\n\n접근 권한 변경 휴대폰 설정 > 앱(애플리케이션) > 콜프렌드 고객용";
   static const String bottomButton = "확인";
 
-  static const String alertTitle = "접근 권한이 없어\n드라이버를 사용할 수 없습니다.";
+  static const String alertTitle = "접근 권한이 없어\n콜프렌드 고객용을 사용할 수 없습니다.";
   static const String alertContent1 = "아래 확인 버튼을 눌러\n필요한 권한을 허용해주세요.";
   static const String alertContent2 = "필요 권한 : 위치, 전화, 알림";
 }
@@ -60,7 +60,7 @@ abstract class StringTerm {
   static const String allAgree = "전체 이용약관을 동의합니다.";
   static const String detail = "보기";
   static const String bottomButton = "동의";
-  static const String content = "드라이버 서비스를 이용하기 위해\n변경된 필수 약관에 대한 동의가 필요합니다.";
+  static const String content = "콜프렌드 고객용 서비스를 이용하기 위해\n변경된 필수 약관에 대한 동의가 필요합니다.";
 }
 
 abstract class StringLogin {
@@ -83,7 +83,7 @@ abstract class StringHome {
 
   static const String onBackPressed = "뒤로가기를 한번 더 누르면 종료됩니다.";
 
-  static const String title = "드라이버";
+  static const String title = "콜프렌드 고객용";
   static const String reservationButton = "예약하기";
   static const String callButton = "호출하기";
   static const String startPlaceHint = "출발지 검색";
@@ -207,7 +207,7 @@ abstract class StringWithdraw {
   StringWithdraw._();
 
   static const String title = "탈퇴하기";
-  static const String content1 = "드라이버 서비스를 탈퇴하시겠습니까?";
+  static const String content1 = "콜프렌드 고객용 서비스를 탈퇴하시겠습니까?";
   static const String bottomButton = "탈퇴하기";
 
   static const String withdrawalConfirm = "정말 탈퇴하시겠습니까?";
@@ -373,7 +373,7 @@ abstract class StringLostChild {
   StringLostChild._();
 
   static const String title = "실종아동 찾기";
-  static const String introText = "(사)한국 대리운전기사연합회 전국회원들은\n아동권리보장원의 실종아동 찾기에 함께합니다.";
+  static const String introText = "(사)한국플랫폼모빌리티협회 전국회원들은\n아동권리보장원의 실종아동 찾기에 함께합니다.";
   static const String noticeCycle = "본 안내는 %d시간마다 표시됩니다.";
   static const String noPhoto = "사진이 없습니다";
   static const String male = "남";
@@ -389,7 +389,7 @@ abstract class StringLostChild {
 abstract class StringPush {
   StringPush._();
 
-  static const String title = "드라이버";
+  static const String title = "콜프렌드 고객용";
   static const String callTitle = "대리기사 콜";
   static const String reservationTitle = "대리기사 예약콜";
 

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -71,6 +72,13 @@ class _SplashScreenState extends State<SplashScreen> {
     final packageInfo = await PackageInfo.fromPlatform();
     versionName = packageInfo.version;
     final versionCode = packageInfo.buildNumber;
+
+    if (kDebugMode) {
+      debugPrint("디버그 모드: InAppUpdate 스토어 체크 생략");
+      checkPermission();
+      return;
+    }
+
     if (Platform.isAndroid) {
       await _getAndroidStoreVersion(versionCode: versionCode);
     } else if (Platform.isIOS) {

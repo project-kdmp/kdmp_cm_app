@@ -57,3 +57,9 @@ private_key.pepk
 
 # FVM Version Cache
 .fvm/
+
+# Gradle build output
+/android/build/
+
+# 로컬 작업용 임시 디렉터리
+scratch/

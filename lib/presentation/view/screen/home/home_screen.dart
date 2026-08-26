@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -117,7 +118,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   NaverMap? get naverMap => _naverMap.value;
 
-  set naverMap(NaverMap? value) => _naverMap.value = value;
+  /// 지도 위젯이 교체·제거될 때마다 증가.
+  /// onMapReady의 비동기 작업이 이미 사라진 지도에 명령을 보내는지 판별하는 데 사용.
+  int _mapGeneration = 0;
+
+  set naverMap(NaverMap? value) {
+    _mapGeneration++;
+    _naverMap.value = value;
+  }
 
   @override
   void initState() {
@@ -1443,6 +1451,11 @@ class _HomeScreenState extends State<HomeScreen> {
       onMapReady: (controller) async {
         debugPrint("========== onMapReady ===========");
 
+        /// 지도가 이미 교체·제거된 뒤에도 이 콜백의 비동기 작업이 이어지면
+        /// 해제된 네이티브 뷰로 명령이 나가 MissingPluginException이 발생한다.
+        final mapGeneration = _mapGeneration;
+        bool isMapAlive() => mounted && mapGeneration == _mapGeneration;
+
         final startMapData = _homeViewModel.startMapData;
         final endMapData = _homeViewModel.endMapData;
         final stopOverList = _homeViewModel.stopOverList;
@@ -1468,6 +1481,8 @@ class _HomeScreenState extends State<HomeScreen> {
           markers.add(startMarker);
         }
 
+        if (!isMapAlive()) return;
+
         NMarker? endMarker;
         if (endMapData != null) {
           /// 도착지 마커 추가 (출발지 마커와 동일한 스타일로 통일)
@@ -1487,6 +1502,8 @@ class _HomeScreenState extends State<HomeScreen> {
           markers.add(endMarker);
         }
 
+        if (!isMapAlive()) return;
+
         if (stopOverList.isNotEmpty) {
           /// 경유지 마커 추가
           for (int i = 0; i < stopOverList.length; i++) {
@@ -1505,61 +1522,70 @@ class _HomeScreenState extends State<HomeScreen> {
             markers.add(stopOverMarker);
           }
         }
-        await controller.addOverlayAll(markers);
+        if (!isMapAlive()) return;
 
-        if (startMarker != null) {
-          /// 출발지 마커 라벨 표시
-          final startInfoWindow =
-              NInfoWindow.onMarker(id: "start_info", text: "출발지");
-          startInfoWindow.setOffsetY(-1);
-          startMarker.openInfoWindow(startInfoWindow);
-        }
+        try {
+          await controller.addOverlayAll(markers);
+          if (!isMapAlive()) return;
 
-        if (endMarker != null) {
-          /// 도착지 마커 라벨 표시
-          final endInfoWindow =
-              NInfoWindow.onMarker(id: "end_info", text: "도착지");
-          endInfoWindow.setOffsetY(-1);
-          endMarker.openInfoWindow(endInfoWindow);
-        }
-
-        /// 내 위치 표시(파란 동그라미) 기본 활성화
-        controller.setLocationTrackingMode(NLocationTrackingMode.noFollow);
-
-        if (startMapData != null && endMapData != null) {
-          /// 출발지와 도착지가 멀리 떨어져 있어도 두 마커가 모두 화면에 보이도록 범위 맞춤
-          final points = [startMapData.latLng, endMapData.latLng];
-          for (final stopOver in stopOverList) {
-            points.add(NLatLng(stopOver.lat, stopOver.long));
+          if (startMarker != null) {
+            /// 출발지 마커 라벨 표시
+            final startInfoWindow =
+                NInfoWindow.onMarker(id: "start_info", text: "출발지");
+            startInfoWindow.setOffsetY(-1);
+            startMarker.openInfoWindow(startInfoWindow);
           }
-          /// 하단 호출 정보 바텀시트에 마커가 가려지지 않도록 아래쪽에 여유 패딩 확보
-          final screenHeight = MediaQuery.of(context).size.height;
-          controller.updateCamera(
-            NCameraUpdate.fitBounds(
-              NLatLngBounds.from(points),
-              padding: EdgeInsets.only(
-                top: 100,
-                left: 60,
-                right: 60,
-                bottom: screenHeight * 0.55,
+
+          if (endMarker != null) {
+            /// 도착지 마커 라벨 표시
+            final endInfoWindow =
+                NInfoWindow.onMarker(id: "end_info", text: "도착지");
+            endInfoWindow.setOffsetY(-1);
+            endMarker.openInfoWindow(endInfoWindow);
+          }
+
+          /// 내 위치 표시(파란 동그라미) 기본 활성화
+          controller.setLocationTrackingMode(NLocationTrackingMode.noFollow);
+
+          if (startMapData != null && endMapData != null) {
+            /// 출발지와 도착지가 멀리 떨어져 있어도 두 마커가 모두 화면에 보이도록 범위 맞춤
+            final points = [startMapData.latLng, endMapData.latLng];
+            for (final stopOver in stopOverList) {
+              points.add(NLatLng(stopOver.lat, stopOver.long));
+            }
+
+            /// 하단 호출 정보 바텀시트에 마커가 가려지지 않도록 아래쪽에 여유 패딩 확보
+            final screenHeight = MediaQuery.of(context).size.height;
+            await controller.updateCamera(
+              NCameraUpdate.fitBounds(
+                NLatLngBounds.from(points),
+                padding: EdgeInsets.only(
+                  top: 100,
+                  left: 60,
+                  right: 60,
+                  bottom: screenHeight * 0.55,
+                ),
               ),
-            ),
-          );
-        } else {
-          var target = _homeViewModel.currentLatLng;
-          if (startMapData != null) {
-            target = startMapData.latLng;
-          } else if (endMapData != null) {
-            target = endMapData.latLng;
-          }
+            );
+          } else {
+            var target = _homeViewModel.currentLatLng;
+            if (startMapData != null) {
+              target = startMapData.latLng;
+            } else if (endMapData != null) {
+              target = endMapData.latLng;
+            }
 
-          /// 카메라 위치 변경
-          controller.updateCamera(
-            NCameraUpdate.scrollAndZoomTo(
-              target: target,
-              zoom: 16, // 0.0 ~ 21.0
-            ),
-          );
+            /// 카메라 위치 변경
+            await controller.updateCamera(
+              NCameraUpdate.scrollAndZoomTo(
+                target: target,
+                zoom: 16, // 0.0 ~ 21.0
+              ),
+            );
+          }
+        } on MissingPluginException {
+          /// 명령을 보내는 사이 지도 뷰가 해제된 경우
+          debugPrint("naverMap disposed while onMapReady was running");
         }
       },
       onCameraChange: (reason, animated) async {

@@ -4,13 +4,6 @@ import 'package:kdmp_cm_app/presentation/values/colors.dart';
 class CustomThemeData {
   static ThemeData light(TextTheme textTheme) {
     return ThemeData(
-      /// PageTransitionsTheme로 화면이 열리고 닫힐 때 iOS 같은 애니메이션 효과를 적용
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-        },
-      ),
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       canvasColor: Colors.transparent,
@@ -102,13 +95,6 @@ class CustomThemeData {
 
   static ThemeData dark(TextTheme textTheme) {
     return ThemeData(
-      /// PageTransitionsTheme로 화면이 열리고 닫힐 때 iOS 같은 애니메이션 효과를 적용
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-        },
-      ),
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       canvasColor: Colors.transparent,

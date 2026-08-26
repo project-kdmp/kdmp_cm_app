@@ -436,7 +436,7 @@ class WorkRepositoryImpl extends WorkRepository {
 
   @override
   Future<StateAPI> getDrivingPrice({required DrivingPriceRequest drivingPriceRequest}) async {
-    const api = '/v1/biztotal/cm/drv/getDrivingPrice';
+    const api = '/v1/biztotal/cm/drv/getDrivingPriceByDistance';
     final url = '${AppConstants.API}$api';
 
     try {

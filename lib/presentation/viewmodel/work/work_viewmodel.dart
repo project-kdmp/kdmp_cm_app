@@ -485,15 +485,15 @@ class WorkViewModel {
     required MapData endMapData,
     required List<StopOver> stopOverList,
   }) async {
-    List<DrivingAddress> drivingAddressList = List.from({});
+    List<NLatLng> stopoverCoordList = List.from({});
     for (int i = 0; i < stopOverList.length; i++) {
-      drivingAddressList.add(stopOverList[i].drivingAddress);
+      stopoverCoordList.add(NLatLng(stopOverList[i].lat, stopOverList[i].long));
     }
 
     final request = DrivingPriceRequest(
-      start: startMapData.drivingAddress,
-      end: endMapData.drivingAddress,
-      stopoverList: drivingAddressList,
+      startCoord: startMapData.latLng,
+      endCoord: endMapData.latLng,
+      stopoverCoordList: stopoverCoordList,
     );
     final result = await getDrivingPriceUseCase.execute(drivingPriceRequest: request);
 

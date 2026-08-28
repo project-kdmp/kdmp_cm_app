@@ -30,19 +30,16 @@ class CustomThemeData {
       iconTheme: const IconThemeData(color: ColorLight.gray1),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
           minimumSize: const Size(double.infinity, double.minPositive),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8),
           ),
           elevation: 0,
           backgroundColor: ColorLight.primary,
           textStyle: textTheme.bodyLarge?.copyWith(
             color: ColorLight.background,
             fontWeight: FontWeight.w400,
-            letterSpacing: 0.0,
-            wordSpacing: 0.0,
-            height: 0.0,
           ),
         ),
       ),
@@ -121,19 +118,16 @@ class CustomThemeData {
       iconTheme: const IconThemeData(color: ColorNight.gray1),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
           minimumSize: const Size(double.infinity, double.minPositive),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8),
           ),
           elevation: 0,
           backgroundColor: ColorNight.primary,
           textStyle: textTheme.bodyLarge?.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.w400,
-            letterSpacing: 0.0,
-            wordSpacing: 0.0,
-            height: 0.0,
           ),
         ),
       ),

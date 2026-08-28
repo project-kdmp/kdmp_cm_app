@@ -29,7 +29,7 @@ class CustomRadiusButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
           minimumSize: minimumSize,
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
           side: BorderSide(
             color: isEnabled ? Theme.of(context).colorScheme.secondary : Theme.of(context).dividerColor,
             width: 1,

@@ -31,7 +31,7 @@ class CustomElevatedButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: isEnabled ? backgroundColor ?? Theme.of(context).colorScheme.primary : enabledBackgroundColor ?? Theme.of(context).cardColor,
           minimumSize: minimumSize,
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
         ),
         child: Text(
           text,

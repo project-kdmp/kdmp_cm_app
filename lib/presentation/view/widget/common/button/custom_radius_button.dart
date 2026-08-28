@@ -31,7 +31,7 @@ class CustomRadiusButton extends StatelessWidget {
           minimumSize: minimumSize,
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
           side: BorderSide(
-            color: isEnabled ? Theme.of(context).colorScheme.secondary : Theme.of(context).cardColor,
+            color: isEnabled ? Theme.of(context).colorScheme.secondary : Theme.of(context).dividerColor,
             width: 1,
           ),
           disabledBackgroundColor: backgroundColor != null ? Theme.of(context).cardColor : Theme.of(context).scaffoldBackgroundColor,

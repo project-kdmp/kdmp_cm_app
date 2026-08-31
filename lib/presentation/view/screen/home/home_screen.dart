@@ -40,6 +40,7 @@ import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/lost_child_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.dart';
@@ -180,6 +181,21 @@ class _HomeScreenState extends State<HomeScreen> {
         stopOverList: widget.drivingData!["stopOverList"] as List<StopOver>,
       );
     }
+  }
+
+  /// 지도의 출발지 마커를 탭했을 때, 지도에서 출발지를 다시 선택한다.
+  void changeStartSpotOnMap() async {
+    /// 화면 이동 전 네이버지도 가림
+    naverMap = null;
+
+    /// 출발지 설정 지도 화면으로 이동
+    final result = await context.pushNamed(StartMapScreen.routeName);
+    if (result != null && result is MapData) {
+      _homeViewModel.startMapData = result;
+    }
+
+    /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+    initData();
   }
 
   void initData() async {
@@ -1478,6 +1494,10 @@ class _HomeScreenState extends State<HomeScreen> {
               context: context,
             ),
           );
+
+          /// 출발지 마커를 탭하면 지도에서 출발지를 다시 선택
+          startMarker.setOnTapListener((overlay) => changeStartSpotOnMap());
+
           markers.add(startMarker);
         }
 

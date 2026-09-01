@@ -1,0 +1,16 @@
+# 실행돼야 하는 파일만 줄바꿈을 고정한다.
+#
+# 주의: `* text=auto eol=lf` 같은 전역 규칙을 넣지 말 것.
+# kdmp-msa-servers 는 추적 파일 1276개 중 938개가 이미 CRLF 로 커밋돼 있어
+# 전역 규칙은 대량 재정규화를 일으키고 git blame 을 통째로 망가뜨린다.
+# (2026-09-01 확인)
+
+gradlew      text eol=lf
+*.sh         text eol=lf
+*.bat        text eol=crlf
+
+*.jar        binary
+*.png        binary
+*.jpg        binary
+*.p12        binary
+*.keystore   binary

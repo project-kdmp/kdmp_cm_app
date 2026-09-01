@@ -1,0 +1,23 @@
+{
+  "extraKnownMarketplaces": {
+    "kdmp": {
+      "source": {
+        "source": "github",
+        "repo": "project-kdmp/kdmp-harness"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "kdmp-common@kdmp": true,
+    "kdmp-flutter@kdmp": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(flutter analyze *)",
+      "Bash(dart analyze *)",
+      "Bash(fvm flutter analyze *)",
+      "Bash(fvm flutter --version)",
+      "Bash(open -R *)"
+    ]
+  }
+}

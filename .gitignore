@@ -61,3 +61,7 @@ private_key.pepk
 
 # 로컬 작업용 임시 디렉터리
 scratch/
+
+### Claude Code ###
+# 공유 설정(.claude/settings.json)은 커밋한다 — 하네스 플러그인을 팀에 자동 배포한다.
+.claude/settings.local.json

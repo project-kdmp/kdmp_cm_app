@@ -2,7 +2,7 @@ name: kdmp_cm_app
 description: A new Flutter project.
 publish_to: 'none'
 
-version: 2.1.0+201
+version: 2.1.1+202
 
 environment:
   sdk: '>=2.19.4 <4.0.0'

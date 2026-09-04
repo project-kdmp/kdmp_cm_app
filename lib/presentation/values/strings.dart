@@ -418,6 +418,7 @@ abstract class StringCalled {
   static const String date = "일시";
   static const String callType = "호출";
   static const String driveType = "상태";
+  static const String cancelReason = "사유";
   static const String startSpot = "출발지";
   static const String endSpot = "도착지";
   static const String stopover = "경유지";

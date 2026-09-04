@@ -46,6 +46,9 @@ class Called {
   String? payCardInfo;
   String? paymKind;
 
+  /// 취소된 콜만 채워진다
+  String? cancelReason;
+
   Called({
     required this.drvReqSq,
     this.reqRegDt,
@@ -60,6 +63,7 @@ class Called {
     this.drvPaymPrice,
     this.payCardInfo,
     this.paymKind,
+    this.cancelReason,
   });
 
   factory Called.fromJson(Map<String, dynamic> json) => Called(
@@ -76,6 +80,7 @@ class Called {
         drvPaymPrice: json["drvPaymPrice"],
         payCardInfo: json["payCardInfo"],
         paymKind: json["paymKind"],
+        cancelReason: json["cancelReason"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -92,5 +97,6 @@ class Called {
         "drvPaymPrice": drvPaymPrice,
         "payCardInfo": payCardInfo,
         "paymKind": paymKind,
+        "cancelReason": cancelReason,
       };
 }

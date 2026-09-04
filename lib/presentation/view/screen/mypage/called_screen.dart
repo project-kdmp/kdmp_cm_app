@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/mypage/call_list_response.dart';
 import 'package:kdmp_cm_app/data/model/mypage/called_list_response.dart';
@@ -329,6 +330,10 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
           text += " 외 ${stopOverList.length - 1}";
         }
         final date = value[index].drvStartDt != null ? getDateAndTimeFormat(startDate: value[index].drvStartDt, endDate: value[index].drvEndDt) : getDateAndTimeFormat(startDate: value[index].reqRegDt);
+
+        /// 취소된 콜. 일일콜(DDL)은 법인만 신청하므로 여기서는 즉시(DEL)·예약(RDL) 뿐이다
+        final drvReqSt = value[index].drvReqSt;
+        final isCanceled = drvReqSt == DrvReqSt.del || drvReqSt == DrvReqSt.rdl;
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
@@ -370,30 +375,32 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                           Expanded(child: Text(date, textAlign: TextAlign.start)),
 
                           /// 삭제 버튼
-                          GestureDetector(
-                            onTap: () async {
-                              /// 이용내역 삭제 확인 팝업
-                              final deleteResult = await _showConfirmDialog(
-                                content: StringCalled.deleteAlert,
-                                onConfirm: () async {
-                                  /// 이용내역 삭제
-                                  final deleteResult = await _calledViewModel.deleteCalled(drvReqSq: value[index].drvReqSq);
-                                  if (deleteResult is Success) {
-                                    /// 이용내역 삭제 확인 팝업 닫기
-                                    context.pop(true);
+                          /// 취소는 kdmp_drv_end 에 없어 숨김 처리가 걸리지 않는다. 지울 수 없으므로 감춘다
+                          if (!isCanceled)
+                            GestureDetector(
+                                onTap: () async {
+                                  /// 이용내역 삭제 확인 팝업
+                                  final deleteResult = await _showConfirmDialog(
+                                    content: StringCalled.deleteAlert,
+                                    onConfirm: () async {
+                                      /// 이용내역 삭제
+                                      final deleteResult = await _calledViewModel.deleteCalled(drvReqSq: value[index].drvReqSq);
+                                      if (deleteResult is Success) {
+                                        /// 이용내역 삭제 확인 팝업 닫기
+                                        context.pop(true);
+                                      }
+                                    },
+                                  );
+                                  if (deleteResult == true) {
+                                    /// 이용내역 삭제 완료 팝업
+                                    await _showAlertDialog(content: StringCalled.deleteSuccess, isCanceled: false);
+
+                                    /// 리스트 갱신
+                                    initData();
                                   }
                                 },
-                              );
-                              if (deleteResult == true) {
-                                /// 이용내역 삭제 완료 팝업
-                                await _showAlertDialog(content: StringCalled.deleteSuccess, isCanceled: false);
-
-                                /// 리스트 갱신
-                                initData();
-                              }
-                            },
-                            child: Text(StringCalled.delete, style: TextStyle(color: Theme.of(context).disabledColor)),
-                          ),
+                                child: Text(StringCalled.delete, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              ),
                         ],
                       ),
 
@@ -425,6 +432,24 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
                         ],
                       ),
                       const SizedBox(height: 10),
+
+                      /// 사유 — 취소된 콜만
+                      if (isCanceled) ...[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(StringCalled.cancelReason, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                value[index].cancelReason?.trim().isNotEmpty == true ? value[index].cancelReason! : "-",
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                      ],
 
                       /// 출발지
                       Row(

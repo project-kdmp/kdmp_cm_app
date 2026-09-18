@@ -437,7 +437,14 @@ abstract class StringCalled {
   static const String reservationStateTitle = "접수 완료";
 
   static const String code = "코드";
-  static const String date = "일시";
+
+  /// 일시는 콜 상태에 따라 가리키는 값이 달라 라벨을 나눈다
+  static const String reserveDate = "예약 일시";
+  static const String workDate = "운행 일시";
+  static const String requestDate = "접수 일시";
+
+  /// 목록은 라벨 자리가 없어 예약 건에만 접두를 붙인다
+  static const String reservePrefix = "예약";
   static const String callType = "호출";
   static const String driveType = "상태";
   static const String cancelReason = "사유";

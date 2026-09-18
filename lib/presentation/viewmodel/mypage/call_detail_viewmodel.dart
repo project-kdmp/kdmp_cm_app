@@ -35,6 +35,13 @@ class CallDetailViewModel {
   /// 일시
   final ValueNotifier<String> _date = ValueNotifier<String>("");
 
+  /// 일시 라벨 (예약 일시 / 운행 일시 / 접수 일시)
+  final ValueNotifier<String> _dateLabel = ValueNotifier<String>(StringCalled.requestDate);
+
+  ValueNotifier<String> get dateLabelNotifier => _dateLabel;
+
+  set dateLabel(String value) => _dateLabel.value = value;
+
   ValueNotifier<String> get dateNotifier => _date;
 
   String get date => _date.value;
@@ -149,7 +156,18 @@ class CallDetailViewModel {
 
     if (result is Success) {
       final response = result.callDetailResponse;
-      date = response.drvStartDt != null ? getDateAndTimeFormat(startDate: response.drvStartDt, endDate: response.drvEndDt) : getDateAndTimeFormat(startDate: response.reqRegDt);
+      /// 일시는 상태에 따라 가리키는 값이 달라 라벨도 함께 정한다.
+      /// 예약 건이 접수 시각으로 보이면 기사 앱과 어긋난다
+      if (response.drvStartDt != null) {
+        dateLabel = StringCalled.workDate;
+        date = getDateAndTimeFormat(startDate: response.drvStartDt, endDate: response.drvEndDt);
+      } else if (response.drvReserveDt != null) {
+        dateLabel = StringCalled.reserveDate;
+        date = getDateAndTimeFormat(startDate: response.drvReserveDt);
+      } else {
+        dateLabel = StringCalled.requestDate;
+        date = getDateAndTimeFormat(startDate: response.reqRegDt);
+      }
       drvReqSt = response.drvReqSt ?? "";
       startPlace = response.reqStartPlaceNm.isNotEmpty ? response.reqStartPlaceNm : response.reqStartAddress;
       endPlace = response.reqEndPlaceNm.isNotEmpty ? response.reqEndPlaceNm : response.reqEndAddress;

@@ -166,7 +166,15 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
         if (stopOverList.length > 1) {
           text += " 외 ${stopOverList.length - 1}";
         }
-        final date = value[index].drvStartDt != null ? getDateAndTimeFormat(startDate: value[index].drvStartDt, endDate: value[index].drvEndDt) : getDateAndTimeFormat(startDate: value[index].reqRegDt);
+        /// 목록은 라벨 자리가 없어 예약 건에만 접두를 붙인다
+        final String date;
+        if (value[index].drvStartDt != null) {
+          date = getDateAndTimeFormat(startDate: value[index].drvStartDt, endDate: value[index].drvEndDt);
+        } else if (value[index].drvReserveDt != null) {
+          date = "${StringCalled.reservePrefix} ${getDateAndTimeFormat(startDate: value[index].drvReserveDt)}";
+        } else {
+          date = getDateAndTimeFormat(startDate: value[index].reqRegDt);
+        }
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
@@ -329,7 +337,15 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
         if (stopOverList.length > 1) {
           text += " 외 ${stopOverList.length - 1}";
         }
-        final date = value[index].drvStartDt != null ? getDateAndTimeFormat(startDate: value[index].drvStartDt, endDate: value[index].drvEndDt) : getDateAndTimeFormat(startDate: value[index].reqRegDt);
+        /// 목록은 라벨 자리가 없어 예약 건에만 접두를 붙인다
+        final String date;
+        if (value[index].drvStartDt != null) {
+          date = getDateAndTimeFormat(startDate: value[index].drvStartDt, endDate: value[index].drvEndDt);
+        } else if (value[index].drvReserveDt != null) {
+          date = "${StringCalled.reservePrefix} ${getDateAndTimeFormat(startDate: value[index].drvReserveDt)}";
+        } else {
+          date = getDateAndTimeFormat(startDate: value[index].reqRegDt);
+        }
 
         /// 취소된 콜. 일일콜(DDL)은 법인만 신청하므로 여기서는 즉시(DEL)·예약(RDL) 뿐이다
         final drvReqSt = value[index].drvReqSt;

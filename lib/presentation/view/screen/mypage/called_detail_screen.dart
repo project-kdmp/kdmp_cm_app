@@ -127,7 +127,12 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalled.date, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              ValueListenableBuilder<String>(
+                                valueListenable: _calledDetailViewModel.dateLabelNotifier,
+                                builder: (context, label, _) {
+                                  return Text(label, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor));
+                                },
+                              ),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _calledDetailViewModel.dateNotifier,

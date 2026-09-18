@@ -199,7 +199,12 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(StringCalled.date, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                              ValueListenableBuilder<String>(
+                                valueListenable: _callDetailViewModel.dateLabelNotifier,
+                                builder: (context, label, _) {
+                                  return Text(label, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor));
+                                },
+                              ),
                               const SizedBox(width: 14),
                               ValueListenableBuilder<String>(
                                 valueListenable: _callDetailViewModel.dateNotifier,

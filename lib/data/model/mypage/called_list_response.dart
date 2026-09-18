@@ -34,6 +34,7 @@ class CalledListResponse {
 class Called {
   int drvReqSq;
   String? reqRegDt;
+  String? drvReserveDt;
   String? drvStartDt;
   String? drvEndDt;
   String? drvReqSt;
@@ -52,6 +53,7 @@ class Called {
   Called({
     required this.drvReqSq,
     this.reqRegDt,
+    this.drvReserveDt,
     this.drvStartDt,
     this.drvEndDt,
     this.drvReqSt,
@@ -69,6 +71,7 @@ class Called {
   factory Called.fromJson(Map<String, dynamic> json) => Called(
         drvReqSq: json["drvReqSq"],
         reqRegDt: json["reqRegDt"],
+        drvReserveDt: json["drvReserveDt"],
         drvStartDt: json["drvStartDt"],
         drvEndDt: json["drvEndDt"],
         drvReqSt: json["drvReqSt"],
@@ -86,6 +89,7 @@ class Called {
   Map<String, dynamic> toJson() => {
         "drvReqSq": drvReqSq,
         "reqRegDt": reqRegDt,
+        "drvReserveDt": drvReserveDt,
         "drvStartDt": drvStartDt,
         "drvEndDt": drvEndDt,
         "drvReqSt": drvReqSt,

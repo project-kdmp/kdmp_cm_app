@@ -7,6 +7,7 @@ class CalledDetailResponse {
   String serverId;
   int drvReqSq;
   String? reqRegDt;
+  String? drvReserveDt;
   String? drvStartDt;
   String? drvEndDt;
   String? drvReqSt;
@@ -31,6 +32,7 @@ class CalledDetailResponse {
     required this.serverId,
     required this.drvReqSq,
     this.reqRegDt,
+    this.drvReserveDt,
     this.drvStartDt,
     this.drvEndDt,
     this.drvReqSt,
@@ -56,6 +58,7 @@ class CalledDetailResponse {
         serverId: json["serverId"],
         drvReqSq: json["drvReqSq"],
         reqRegDt: json["reqRegDt"],
+        drvReserveDt: json["drvReserveDt"],
         drvStartDt: json["drvStartDt"],
         drvEndDt: json["drvEndDt"],
         drvReqSt: json["drvReqSt"],
@@ -81,6 +84,7 @@ class CalledDetailResponse {
         "serverId": serverId,
         "drvReqSq": drvReqSq,
         "reqRegDt": reqRegDt,
+        "drvReserveDt": drvReserveDt,
         "drvStartDt": drvStartDt,
         "drvEndDt": drvEndDt,
         "drvReqSt": drvReqSt,

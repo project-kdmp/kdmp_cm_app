@@ -72,6 +72,7 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mapdata_list_u
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrci_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrci_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
@@ -154,6 +155,8 @@ void main() async {
   getIt.registerSingleton<SetUserDataUseCase>(setUserDataUseCase);
   final setupUseCase = SetupUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<SetupUseCase>(setupUseCase);
+  final setMbrCiUseCase = SetMbrCiUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<SetMbrCiUseCase>(setMbrCiUseCase);
   final getFirstLoginUseCase = GetFirstLoginUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<GetFirstLoginUseCase>(getFirstLoginUseCase);
   final deleteUserDataUseCase = DeleteUserDataUseCase(secureStorageRepository: secureStorageRepository);

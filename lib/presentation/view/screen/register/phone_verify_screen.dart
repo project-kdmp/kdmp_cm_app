@@ -12,6 +12,7 @@ import 'package:kdmp_cm_app/data/constant/constants.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/domain/usecase/auth/verify/get_verify_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrci_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrci_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/device_info_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
@@ -65,6 +66,7 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
     _phoneVerifyViewModel = PhoneVerifyViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getMbrCIUseCase: GetIt.instance<GetMbrCiUseCase>(),
+      setMbrCIUseCase: GetIt.instance<SetMbrCiUseCase>(),
       getVerifyInfoUseCase: GetIt.instance<GetVerifyInfoUseCase>(),
     );
   }

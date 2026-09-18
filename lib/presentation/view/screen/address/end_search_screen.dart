@@ -25,9 +25,12 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_tag.dart
 import 'package:kdmp_cm_app/presentation/viewmodel/address/end_search_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-/// 도착지 설정 검색 화면
+/// 도착지 설정 검색 화면 (isStopOver 가 true 면 경유지 설정으로 재사용)
 class EndSearchScreen extends StatefulWidget {
-  const EndSearchScreen({Key? key}) : super(key: key);
+  const EndSearchScreen({Key? key, this.isStopOver = false}) : super(key: key);
+
+  /// 경유지 설정으로 진입했는지 여부. 화면 구성은 같고 문구만 다르다.
+  final bool isStopOver;
 
   static const String routeName = "end_search";
 
@@ -92,7 +95,7 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
         /// 상단 앱바
         appBar: BaseAppBar(
           appBar: AppBar(),
-          title: StringEndSetup.title,
+          title: widget.isStopOver ? StringStopOverSetup.title : StringEndSetup.title,
         ),
 
         /// 화면
@@ -110,7 +113,7 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
                       valueListenable: _endSearchViewModel.keywordNotifier,
                       builder: (context, value, _) {
                         return CustomSearchField(
-                          hint: StringEndSetup.searchHint,
+                          hint: widget.isStopOver ? StringStopOverSetup.searchHint : StringEndSetup.searchHint,
                           icon: Icon(
                             Icons.location_on,
                             size: 22,

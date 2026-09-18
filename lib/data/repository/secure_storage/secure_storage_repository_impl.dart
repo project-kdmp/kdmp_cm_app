@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:kdmp_cm_app/data/model/common/favorite_address_model.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
 
@@ -161,6 +162,39 @@ class SecureStorageRepositoryImpl extends SecureStorageRepository {
   @override
   Future<void> deleteMapDataList() async {
     await _storage.delete(key: 'mapDataList');
+  }
+
+  /// 리뷰를 아직 쓰지 않은 운행 번호 반환 (없으면 null)
+  @override
+  Future<int?> getPendingReviewDrvReqSq() async {
+    final value = await _storage.read(key: 'pendingReviewDrvReqSq') ?? '';
+    return int.tryParse(value);
+  }
+
+  /// 리뷰를 아직 쓰지 않은 운행 번호 저장
+  @override
+  Future<void> setPendingReviewDrvReqSq({required int drvReqSq}) async {
+    await _storage.write(key: 'pendingReviewDrvReqSq', value: drvReqSq.toString());
+  }
+
+  /// 리뷰를 아직 쓰지 않은 운행 번호 삭제
+  @override
+  Future<void> deletePendingReviewDrvReqSq() async {
+    await _storage.delete(key: 'pendingReviewDrvReqSq');
+  }
+
+  /// 로컬에 저장된 자주 가는 주소 리스트 반환
+  @override
+  Future<List<FavoriteAddress>> getFavoriteAddressList() async {
+    final json = await _storage.read(key: 'favoriteAddressList') ?? '[]';
+    List<FavoriteAddress> favoriteAddressList = List.from(List<FavoriteAddress>.from(jsonDecode(json).map((x) => FavoriteAddress.fromJson(x))));
+    return favoriteAddressList;
+  }
+
+  /// 로컬에 자주 가는 주소 리스트 저장
+  @override
+  Future<void> setFavoriteAddressList({required List<FavoriteAddress> favoriteAddressList}) async {
+    await _storage.write(key: 'favoriteAddressList', value: jsonEncode(favoriteAddressList));
   }
 
   /// 로컬에 저장된 FCM 반환

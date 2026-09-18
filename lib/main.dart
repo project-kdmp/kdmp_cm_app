@@ -68,7 +68,9 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_mapdata_use
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_payment_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/delete_user_data_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_firstlogin_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_favorite_address_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mapdata_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_favorite_address_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrci_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
@@ -187,6 +189,10 @@ void main() async {
   getIt.registerSingleton<DeleteMapDataUseCase>(deleteMapDataUseCase);
 
   /// 환경설정값
+  final getFavoriteAddressListUseCase = GetFavoriteAddressListUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<GetFavoriteAddressListUseCase>(getFavoriteAddressListUseCase);
+  final setFavoriteAddressListUseCase = SetFavoriteAddressListUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<SetFavoriteAddressListUseCase>(setFavoriteAddressListUseCase);
   final themeMode = await setupUseCase.getThemeMode();
   CustomThemeMode.instance;
   CustomTextMode.instance;

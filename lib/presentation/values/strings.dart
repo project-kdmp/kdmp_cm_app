@@ -99,6 +99,7 @@ abstract class StringHome {
   static const String empty = "없음";
   static const String selectButton = "선택";
   static const String changeButton = "변경";
+  static const String addStopOverButton = "+ 경유";
 }
 
 abstract class StringSetup {
@@ -259,6 +260,27 @@ abstract class StringEndSetup {
   static const String edit = "편집";
   static const String recentKeyword = "최근 검색";
   static const String bottomButton = "도착지 설정";
+}
+
+abstract class StringFavoriteAddress {
+  StringFavoriteAddress._();
+
+  static const String title = "자주 가는 주소";
+  static const String guide = "등록해 두면 호출할 때 한 번에 선택됩니다.";
+  static const String home = "집";
+  static const String work = "회사";
+  static const String recent = "최근";
+  static const String empty = "등록되지 않았습니다";
+  static const String register = "등록";
+  static const String change = "변경";
+  static const String deleteTitle = "등록을 삭제하시겠습니까?";
+}
+
+abstract class StringStopOverSetup {
+  StringStopOverSetup._();
+
+  static const String title = "경유지 설정";
+  static const String searchHint = "경유지 검색";
 }
 
 abstract class StringRecentSearch {

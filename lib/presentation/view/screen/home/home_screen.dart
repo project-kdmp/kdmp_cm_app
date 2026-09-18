@@ -10,6 +10,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/constant/constants.dart';
+import 'package:kdmp_cm_app/data/model/common/favorite_address_model.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/common/policy_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
@@ -21,7 +22,9 @@ import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/policy/get_policy_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_favorite_address_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_favorite_address_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/setup/setup_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_price_usecase.dart';
@@ -41,6 +44,7 @@ import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart'
 import 'package:kdmp_cm_app/presentation/view/dialog/lost_child_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/favorite_address_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.dart';
@@ -52,6 +56,7 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_text_b
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/vertical_dashed_divider.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/address/naver_map_viewmodel.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/home/home_viewmodel.dart';
+import 'package:kdmp_cm_app/presentation/viewmodel/address/favorite_address_viewmodel.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/home/lost_child_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -73,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late final NaverMapViewModel _naverMapViewModel;
   late final LostChildViewModel _lostChildViewModel;
   DateTime? _lastOnPressed;
+  late final FavoriteAddressViewModel _favoriteAddressViewModel;
 
   late final NMarker currentMarker;
 
@@ -152,6 +158,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     /// 키 관리 파일 가져오기
+    /// 칩이 첫 build 에서 바로 읽으므로 await 앞에서 만든다
+    _favoriteAddressViewModel = FavoriteAddressViewModel(
+      getFavoriteAddressListUseCase:
+          GetIt.instance<GetFavoriteAddressListUseCase>(),
+      setFavoriteAddressListUseCase:
+          GetIt.instance<SetFavoriteAddressListUseCase>(),
+    );
+    _favoriteAddressViewModel.getFavoriteAddressList();
+
     await dotenv.load(fileName: ".env");
     _homeViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
     _homeViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
@@ -200,6 +215,65 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void initData() async {
     /// 현재 진행중인 콜 여부 조회, 운행 화면으로 이동
+  /// 지도의 도착지 마커를 탭했을 때, 지도에서 도착지를 다시 선택한다.
+  void changeEndSpotOnMap() async {
+    /// 화면 이동 전 네이버지도 가림
+    naverMap = null;
+
+    /// 도착지 설정 지도 화면으로 이동
+    final result = await context.pushNamed(EndMapScreen.routeName);
+    if (result != null && result is MapData) {
+      _homeViewModel.endMapData = result;
+    }
+
+    /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+    initData();
+  }
+
+  /// 자주 가는 주소 칩. 등록돼 있으면 도착지로 넣고, 없으면 등록 화면으로 보낸다.
+  Widget _buildFavoriteChip({required String name, required IconData icon}) {
+    final mapData = _favoriteAddressViewModel.getMapData(name: name);
+
+    return CustomRoundButton(
+      text: name,
+      icon: icon,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+      textSize: 14,
+      backgroundColor: Theme.of(context).cardColor,
+      textColor: mapData != null
+          ? Theme.of(context).textTheme.bodyMedium?.color
+          : Theme.of(context).disabledColor,
+      onPressed: () async {
+        if (mapData != null) {
+          _homeViewModel.endMapData = mapData;
+
+          /// 데이터 갱신 후, 네이버 지도 갱신
+          naverMap = null;
+          initData();
+          return;
+        }
+
+        /// 미등록이면 등록 화면으로 이동 후, 돌아와서 목록을 다시 읽는다
+        await context.pushNamed(FavoriteAddressScreen.routeName);
+        _favoriteAddressViewModel.getFavoriteAddressList();
+      },
+    );
+  }
+
+  /// 도착지 설정 검색 화면으로 이동
+  void _handleEndSearchPress() async {
+    /// 화면 이동 전 네이버지도 가림
+    naverMap = null;
+
+    final result = await context.pushNamed(EndSearchScreen.routeName);
+    if (result != null && result is MapData) {
+      _homeViewModel.endMapData = result;
+    }
+
+    /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+    initData();
+  }
+
     final drvReqSq = await _homeViewModel.getDriving();
     if (drvReqSq != null) {
       await context.pushNamed(
@@ -383,6 +457,53 @@ class _HomeScreenState extends State<HomeScreen> {
                                             _homeViewModel.startMapDataNotifier,
                                         builder: (context, value, child) {
                                           return Row(
+                                /// 자주 가는 주소 칩 (항상 노출)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(28, 0, 28, 12),
+                                  child: ValueListenableBuilder<
+                                      List<FavoriteAddress>>(
+                                    valueListenable: _favoriteAddressViewModel
+                                        .favoriteAddressListNotifier,
+                                    builder: (context, value, child) {
+                                      return Row(
+                                        children: [
+                                          _buildFavoriteChip(
+                                            name: StringFavoriteAddress.home,
+                                            icon: Icons.home,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          _buildFavoriteChip(
+                                            name: StringFavoriteAddress.work,
+                                            icon: Icons.apartment,
+                                          ),
+                                          const SizedBox(width: 8),
+
+                                          /// 최근 검색은 도착지 검색 화면에서 바로 보여준다
+                                          CustomRoundButton(
+                                            text:
+                                                StringFavoriteAddress.recent,
+                                            icon: Icons.history,
+                                            padding:
+                                                const EdgeInsets.symmetric(
+                                                    vertical: 8,
+                                                    horizontal: 14),
+                                            textSize: 14,
+                                            backgroundColor:
+                                                Theme.of(context).cardColor,
+                                            textColor: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.color,
+                                            onPressed: () =>
+                                                _handleEndSearchPress(),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
+
                                             children: [
                                               Icon(
                                                 Icons.location_on,
@@ -602,6 +723,69 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ClipRect(
                                   child: SizedBox(
                                     height: _extraContentHeight,
+
+                                              /// 도착지 삭제 버튼 (입력된 경우에만 노출)
+                                              if (value != null)
+                                                GestureDetector(
+                                                  child: Icon(Icons.close,
+                                                      size: 16,
+                                                      color: Theme.of(context)
+                                                          .disabledColor),
+                                                  onTap: () {
+                                                    /// 도착지 삭제 (경유지, 요금도 함께 초기화)
+                                                    _homeViewModel
+                                                        .clearEndMapData();
+
+                                                    /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                                    naverMap = null;
+                                                    initData();
+                                                  },
+                                                ),
+
+                                              /// 경유지 추가 버튼 (도착지가 있어야 경로가 성립한다)
+                                              if (value != null)
+                                                CustomRoundButton(
+                                                  text: StringHome
+                                                      .addStopOverButton,
+                                                  margin:
+                                                      const EdgeInsets.only(
+                                                          left: 8),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      vertical: 6,
+                                                      horizontal: 12),
+                                                  textSize: 13,
+                                                  backgroundColor:
+                                                      Theme.of(context)
+                                                          .toggleButtonsTheme
+                                                          .fillColor,
+                                                  textColor: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  borderColor:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                  onPressed: () async {
+                                                    /// 화면 이동 전 네이버지도 가림
+                                                    naverMap = null;
+
+                                                    /// 경유지 설정 검색 화면으로 이동
+                                                    final result =
+                                                        await context.pushNamed(
+                                                      EndSearchScreen.routeName,
+                                                      extra: true,
+                                                    );
+                                                    if (result != null &&
+                                                        result is MapData) {
+                                                      _homeViewModel
+                                                          .addStopOver(result);
+                                                    }
+
+                                                    /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
+                                                    initData();
+                                                  },
+                                                ),
                                     child: OverflowBox(
                                       alignment: Alignment.topCenter,
                                       minHeight: 0,
@@ -1551,7 +1735,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (startMarker != null) {
             /// 출발지 마커 라벨 표시
             final startInfoWindow =
-                NInfoWindow.onMarker(id: "start_info", text: "출발지");
+                NInfoWindow.onMarker(id: "start_info", text: "출발지 변경");
             startInfoWindow.setOffsetY(-1);
             startMarker.openInfoWindow(startInfoWindow);
           }
@@ -1559,7 +1743,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (endMarker != null) {
             /// 도착지 마커 라벨 표시
             final endInfoWindow =
-                NInfoWindow.onMarker(id: "end_info", text: "도착지");
+                NInfoWindow.onMarker(id: "end_info", text: "도착지 변경");
             endInfoWindow.setOffsetY(-1);
             endMarker.openInfoWindow(endInfoWindow);
           }

@@ -93,6 +93,20 @@ class HomeViewModel {
     stopOverList = List.empty();
   }
 
+  /// 경유지 추가 (도착지 검색 화면에서 고른 장소를 경유지로 넣는다)
+  /// stopDistance 는 서버가 채우는 값이라 요청 시점에는 0 으로 둔다.
+  addStopOver(MapData mapData) {
+    stopOverList = List.from(stopOverList)
+      ..add(StopOver(
+        address: mapData.addressRoad,
+        placeName: mapData.place,
+        stopDistance: 0,
+        lat: mapData.latLng.latitude,
+        long: mapData.latLng.longitude,
+        drivingAddress: mapData.drivingAddress,
+      ));
+  }
+
   /// 도착지 데이터 모델
   final ValueNotifier<MapData?> _endMapData = ValueNotifier<MapData?>(null);
 
@@ -103,6 +117,15 @@ class HomeViewModel {
   set endMapData(MapData? value) {
     _endMapData.value = value;
     _getDrivingCalculate();
+  }
+
+  /// 도착지가 비면 경로 자체가 성립하지 않으므로 경유지와 요금도 함께 지운다.
+  /// _getDrivingCalculate() 는 도착지가 없으면 즉시 반환하므로 직접 초기화한다.
+  clearEndMapData() {
+    _endMapData.value = null;
+    _stopOverList.value = List.empty();
+    distance = 0;
+    basicPrice = 0;
   }
 
   /// 요금 선택 버튼 활성화 여부

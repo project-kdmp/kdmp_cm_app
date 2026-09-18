@@ -1,3 +1,4 @@
+import 'package:kdmp_cm_app/data/model/common/favorite_address_model.dart';
 import 'package:kdmp_cm_app/data/model/common/map_data_model.dart';
 import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
 
@@ -49,6 +50,16 @@ abstract class SecureStorageRepository {
   Future<void> setMapDataList({required List<MapData> mapDataList});
 
   Future<void> deleteMapDataList();
+
+  Future<int?> getPendingReviewDrvReqSq();
+
+  Future<void> setPendingReviewDrvReqSq({required int drvReqSq});
+
+  Future<void> deletePendingReviewDrvReqSq();
+
+  Future<List<FavoriteAddress>> getFavoriteAddressList();
+
+  Future<void> setFavoriteAddressList({required List<FavoriteAddress> favoriteAddressList});
 
   Future<String> getFCM();
 

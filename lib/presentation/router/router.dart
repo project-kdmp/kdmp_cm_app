@@ -4,6 +4,7 @@ import 'package:kdmp_cm_app/data/model/register/register_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/favorite_address_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/recent_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
@@ -184,11 +185,18 @@ final GoRouter router = GoRouter(
           ],
         ),
 
+        /// 자주 가는 주소
+        GoRoute(
+          name: FavoriteAddressScreen.routeName,
+          path: FavoriteAddressScreen.routeName,
+          builder: (context, state) => const FavoriteAddressScreen(),
+        ),
+
         /// 도착지 설정 검색
         GoRoute(
           name: EndSearchScreen.routeName,
           path: EndSearchScreen.routeName,
-          builder: (context, state) => const EndSearchScreen(),
+          builder: (context, state) => EndSearchScreen(isStopOver: state.extra == true),
           routes: [
             /// 도착지 설정 지도
             GoRoute(

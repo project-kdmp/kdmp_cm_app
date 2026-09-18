@@ -102,7 +102,9 @@ class _PaymentManagementScreenState extends State<PaymentManagementScreen> {
                                 height: 200,
                                 child: getPageView(value),
                               ),
-                              Container(
+                              /// 카드가 없으면 PageView 가 비어 offset 이 NaN 이 되므로 인디케이터를 그리지 않는다
+                              if (value.isNotEmpty)
+                                Container(
                                 width: double.infinity,
                                 alignment: Alignment.center,
                                 child: SmoothPageIndicator(

@@ -16,6 +16,7 @@ import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/jwt/get_jwt_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/setup/setup_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
@@ -31,9 +32,11 @@ import 'package:kdmp_cm_app/presentation/view/bottomsheet/review_bottom_sheet.da
 import 'package:kdmp_cm_app/presentation/view/dialog/call_cancel_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/vertical_dashed_divider.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/section/call_progress_indicator.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/work/work_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -58,6 +61,9 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
   late final WorkViewModel _workViewModel;
 
   String accessToken = "";
+
+  /// 리뷰 흐름을 이미 태웠는지 (푸시와 복귀 감지가 겹쳐 두 번 뜨는 것을 막는다)
+  bool _isReviewHandled = false;
 
   @override
   void initState() {
@@ -86,8 +92,8 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
         // 주의! 최초 앱 실행때는 해당 이벤트가 발생하지 않습니다.
         debugPrint("resumed");
 
-        /// 호출정보 조회
-        _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
+        /// 호출정보 조회 후, 자리를 비운 사이 운행이 끝났는지 확인
+        _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq).then((_) => _checkWorkEnded());
         break;
       case AppLifecycleState.inactive:
         // 앱이 비활성화 상태이고 사용자의 입력을 받지 않습니다.
@@ -139,8 +145,33 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
     /// 저장된 인증 토큰 가져오기
     accessToken = await GetIt.instance<GetJwtUseCase>().execute();
 
+    /// 푸시를 놓쳐도 복귀할 수 있도록 진행 중인 운행 번호를 남긴다
+    await GetIt.instance<SetupUseCase>().setPendingReviewDrvReqSq(drvReqSq: widget.drvReqSq);
+
     /// 호출정보 조회
-    _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq, isSearchMapData: true);
+    await _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq, isSearchMapData: true);
+
+    /// 화면에 들어온 시점에 이미 운행이 끝나 있으면 (푸시를 놓친 경우) 리뷰 흐름을 태운다
+    _checkWorkEnded();
+  }
+
+  /// 조회된 상태가 운행종료면 리뷰 작성으로 보낸다. 푸시 수신 여부와 무관하게 동작한다.
+  void _checkWorkEnded() {
+    if (_isReviewHandled) return;
+
+    final drvReqSt = _workViewModel.drvReqSt;
+
+    /// 취소된 콜은 마무리할 것이 없으므로 기록만 지운다
+    if (drvReqSt == DrvReqSt.del || drvReqSt == DrvReqSt.rdl) {
+      _isReviewHandled = true;
+      GetIt.instance<SetupUseCase>().deletePendingReviewDrvReqSq();
+      return;
+    }
+
+    if (drvReqSt != DrvReqSt.end && drvReqSt != DrvReqSt.ren) return;
+
+    _isReviewHandled = true;
+    _showReviewBottomSheet(drvReqSt);
   }
 
   @override
@@ -196,7 +227,16 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 80),
+                                const SizedBox(height: 32),
+
+                                /// 콜 진행 단계
+                                ValueListenableBuilder<String>(
+                                  valueListenable: _workViewModel.drvReqStNotifier,
+                                  builder: (context, value, child) {
+                                    return CallProgressIndicator(drvReqSt: value);
+                                  },
+                                ),
+                                const SizedBox(height: 48),
 
                                 ValueListenableBuilder<String>(
                                   valueListenable: _workViewModel.drvReqStNotifier,
@@ -551,7 +591,10 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
           break;
         case DrvReqSt.end:
         case DrvReqSt.ren:
-          _showReviewBottomSheet(type);
+          if (!_isReviewHandled) {
+            _isReviewHandled = true;
+            _showReviewBottomSheet(type);
+          }
           break;
         case DrvReqSt.del:
         case DrvReqSt.rdl:
@@ -602,8 +645,18 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
       },
     );
 
+    /// 리뷰 흐름을 마쳤으므로 복귀용 기록을 지운다
+    await GetIt.instance<SetupUseCase>().deletePendingReviewDrvReqSq();
+
+    /// 정산 내용 확인 (이용내역 상세)
+    if (mounted) {
+      await context.pushNamed(CalledDetailScreen.routeName, extra: widget.drvReqSq);
+    }
+
     /// 화면 닫기, 홈 화면 초기화
-    context.pop(false);
+    if (mounted) {
+      context.pop(false);
+    }
   }
 
   /// 앱 뒤로가기

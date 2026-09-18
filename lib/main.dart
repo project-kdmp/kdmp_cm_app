@@ -72,9 +72,9 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_favorite_addre
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mapdata_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_favorite_address_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrci_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrci_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
-import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrci_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
@@ -112,8 +112,10 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
   if (Firebase.apps.isEmpty) {
     await Firebase.initializeApp();
   }
-  debugPrint("fcmTest onBackgroundMessage - title=${message.notification!.title}");
-  debugPrint("fcmTest onBackgroundMessage - body=${message.notification!.body}");
+  /// notification 없이 data 만 오는 푸시도 있으므로 ! 를 쓰지 않는다
+  debugPrint("fcmTest onBackgroundMessage - title=${message.notification?.title}");
+  debugPrint("fcmTest onBackgroundMessage - body=${message.notification?.body}");
+  debugPrint("fcmTest onBackgroundMessage - data type=${message.data["type"]}");
 }
 
 void main() async {
@@ -153,12 +155,12 @@ void main() async {
   getIt.registerSingleton<GetMbrPwUseCase>(getMbrPwUseCase);
   final getMbrCiUseCase = GetMbrCiUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<GetMbrCiUseCase>(getMbrCiUseCase);
+  final setMbrCiUseCase = SetMbrCiUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<SetMbrCiUseCase>(setMbrCiUseCase);
   final setUserDataUseCase = SetUserDataUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<SetUserDataUseCase>(setUserDataUseCase);
   final setupUseCase = SetupUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<SetupUseCase>(setupUseCase);
-  final setMbrCiUseCase = SetMbrCiUseCase(secureStorageRepository: secureStorageRepository);
-  getIt.registerSingleton<SetMbrCiUseCase>(setMbrCiUseCase);
   final getFirstLoginUseCase = GetFirstLoginUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<GetFirstLoginUseCase>(getFirstLoginUseCase);
   final deleteUserDataUseCase = DeleteUserDataUseCase(secureStorageRepository: secureStorageRepository);
@@ -187,12 +189,12 @@ void main() async {
   getIt.registerSingleton<AddMapDataUseCase>(addMapDataUseCase);
   final deleteMapDataUseCase = DeleteMapDataUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<DeleteMapDataUseCase>(deleteMapDataUseCase);
-
-  /// 환경설정값
   final getFavoriteAddressListUseCase = GetFavoriteAddressListUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<GetFavoriteAddressListUseCase>(getFavoriteAddressListUseCase);
   final setFavoriteAddressListUseCase = SetFavoriteAddressListUseCase(secureStorageRepository: secureStorageRepository);
   getIt.registerSingleton<SetFavoriteAddressListUseCase>(setFavoriteAddressListUseCase);
+
+  /// 환경설정값
   final themeMode = await setupUseCase.getThemeMode();
   CustomThemeMode.instance;
   CustomTextMode.instance;
@@ -221,20 +223,18 @@ void main() async {
   /// Background : 앱 실행중이나 화면이 보이지 않는 상태에 푸시 알림 클릭 시
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? message) {
     if (message != null) {
-      if (message.notification != null) {
-        debugPrint("fcmTest onMessageOpenedApp - title=${message.notification!.title}");
-        debugPrint("fcmTest onMessageOpenedApp - body=${message.notification!.body}");
-        debugPrint("fcmTest onMessageOpenedApp - data type=${message.data["type"]}");
+      debugPrint("fcmTest onMessageOpenedApp - title=${message.notification?.title}");
+      debugPrint("fcmTest onMessageOpenedApp - body=${message.notification?.body}");
+      debugPrint("fcmTest onMessageOpenedApp - data type=${message.data["type"]}");
 
-        /// stream 값 전달
-        if (message.data.containsKey("type")) {
-          Map<String, dynamic> map = Map.from({
-            "title": message.notification!.title,
-            "body": message.notification!.body,
-            "type": message.data["type"],
-          });
-          FlutterLocalNotification.streamController.add(map);
-        }
+      /// stream 값 전달 (notification 없이 data 만 오는 경우도 흘려보낸다)
+      if (message.data.containsKey("type")) {
+        Map<String, dynamic> map = Map.from({
+          "title": message.notification?.title ?? message.data["title"] ?? "",
+          "body": message.notification?.body ?? message.data["body"] ?? "",
+          "type": message.data["type"],
+        });
+        FlutterLocalNotification.streamController.add(map);
       }
     }
   });
@@ -243,25 +243,27 @@ void main() async {
   /// Foreground 상태에는 푸시 알림이 뜨지않아 직접 띄워야함
   FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
     if (message != null) {
-      if (message.notification != null) {
-        debugPrint("fcmTest onMessage - title=${message.notification!.title}");
-        debugPrint("fcmTest onMessage - body=${message.notification!.body}");
+      final title = message.notification?.title ?? message.data["title"] ?? "";
+      final body = message.notification?.body ?? message.data["body"] ?? "";
+      debugPrint("fcmTest onMessage - title=$title");
+      debugPrint("fcmTest onMessage - body=$body");
 
-        /// 푸시 알림 띄움
+      /// 푸시 알림 띄움
+      if (message.notification != null) {
         FlutterLocalNotification.showNotification(
           title: message.notification!.title,
           body: message.notification!.body,
         );
+      }
 
-        /// stream 값 전달
-        if (message.data.containsKey("type")) {
-          Map<String, dynamic> map = Map.from({
-            "title": message.notification!.title,
-            "body": message.notification!.body,
-            "type": message.data["type"],
-          });
-          FlutterLocalNotification.streamController.add(map);
-        }
+      /// stream 값 전달 (notification 없이 data 만 오는 경우도 흘려보낸다)
+      if (message.data.containsKey("type")) {
+        Map<String, dynamic> map = Map.from({
+          "title": title,
+          "body": body,
+          "type": message.data["type"],
+        });
+        FlutterLocalNotification.streamController.add(map);
       }
     }
   });

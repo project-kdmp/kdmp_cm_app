@@ -42,9 +42,10 @@ import 'package:kdmp_cm_app/presentation/view/dialog/call_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/lost_child_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/end_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_search_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/favorite_address_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.dart';
@@ -55,8 +56,8 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_text_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/vertical_dashed_divider.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/address/naver_map_viewmodel.dart';
-import 'package:kdmp_cm_app/presentation/viewmodel/home/home_viewmodel.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/address/favorite_address_viewmodel.dart';
+import 'package:kdmp_cm_app/presentation/viewmodel/home/home_viewmodel.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/home/lost_child_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -77,8 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late final HomeViewModel _homeViewModel;
   late final NaverMapViewModel _naverMapViewModel;
   late final LostChildViewModel _lostChildViewModel;
-  DateTime? _lastOnPressed;
   late final FavoriteAddressViewModel _favoriteAddressViewModel;
+  DateTime? _lastOnPressed;
 
   late final NMarker currentMarker;
 
@@ -157,7 +158,6 @@ class _HomeScreenState extends State<HomeScreen> {
       getPolicyUseCase: GetIt.instance<GetPolicyUseCase>(),
     );
 
-    /// 키 관리 파일 가져오기
     /// 칩이 첫 build 에서 바로 읽으므로 await 앞에서 만든다
     _favoriteAddressViewModel = FavoriteAddressViewModel(
       getFavoriteAddressListUseCase:
@@ -167,6 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     _favoriteAddressViewModel.getFavoriteAddressList();
 
+    /// 키 관리 파일 가져오기
     await dotenv.load(fileName: ".env");
     _homeViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
     _homeViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
@@ -181,6 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
       getLostChildListUseCase: GetIt.instance<GetLostChildListUseCase>(),
       setupUseCase: GetIt.instance<SetupUseCase>(),
     );
+
   }
 
   void initDataFirst() async {
@@ -213,8 +215,6 @@ class _HomeScreenState extends State<HomeScreen> {
     initData();
   }
 
-  void initData() async {
-    /// 현재 진행중인 콜 여부 조회, 운행 화면으로 이동
   /// 지도의 도착지 마커를 탭했을 때, 지도에서 도착지를 다시 선택한다.
   void changeEndSpotOnMap() async {
     /// 화면 이동 전 네이버지도 가림
@@ -274,12 +274,24 @@ class _HomeScreenState extends State<HomeScreen> {
     initData();
   }
 
+  void initData() async {
+    /// 현재 진행중인 콜 여부 조회, 운행 화면으로 이동
     final drvReqSq = await _homeViewModel.getDriving();
     if (drvReqSq != null) {
       await context.pushNamed(
         WorkScreen.routeName,
         extra: drvReqSq,
       );
+    } else {
+      /// 진행중인 콜이 없어도, 종료 푸시를 놓쳐 마무리하지 못한 운행이 있으면 이어서 처리한다
+      final pendingDrvReqSq =
+          await GetIt.instance<SetupUseCase>().getPendingReviewDrvReqSq();
+      if (pendingDrvReqSq != null && mounted) {
+        await context.pushNamed(
+          WorkScreen.routeName,
+          extra: pendingDrvReqSq,
+        );
+      }
     }
 
     /// 현위치 좌표 가져오기
@@ -445,18 +457,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                /// 출발지 / 도착지 (항상 노출)
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(28, 0, 28, 20),
-                                  child: Column(
-                                    children: [
-                                      /// 출발지
-                                      ValueListenableBuilder<MapData?>(
-                                        valueListenable:
-                                            _homeViewModel.startMapDataNotifier,
-                                        builder: (context, value, child) {
-                                          return Row(
                                 /// 자주 가는 주소 칩 (항상 노출)
                                 Padding(
                                   padding:
@@ -504,6 +504,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
 
+                                /// 출발지 / 도착지 (항상 노출)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(28, 0, 28, 20),
+                                  child: Column(
+                                    children: [
+                                      /// 출발지
+                                      ValueListenableBuilder<MapData?>(
+                                        valueListenable:
+                                            _homeViewModel.startMapDataNotifier,
+                                        builder: (context, value, child) {
+                                          return Row(
                                             children: [
                                               Icon(
                                                 Icons.location_on,
@@ -711,18 +723,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   },
                                                 ),
                                               ),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                /// 나머지 영역 (요금/결제/버튼) - 드래그한 높이만큼만 노출됨
-                                ClipRect(
-                                  child: SizedBox(
-                                    height: _extraContentHeight,
 
                                               /// 도착지 삭제 버튼 (입력된 경우에만 노출)
                                               if (value != null)
@@ -786,6 +786,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     initData();
                                                   },
                                                 ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                /// 나머지 영역 (요금/결제/버튼) - 드래그한 높이만큼만 노출됨
+                                ClipRect(
+                                  child: SizedBox(
+                                    height: _extraContentHeight,
                                     child: OverflowBox(
                                       alignment: Alignment.topCenter,
                                       minHeight: 0,
@@ -1703,6 +1715,10 @@ class _HomeScreenState extends State<HomeScreen> {
               context: context,
             ),
           );
+
+          /// 도착지 마커를 탭하면 지도에서 도착지를 다시 선택
+          endMarker.setOnTapListener((overlay) => changeEndSpotOnMap());
+
           markers.add(endMarker);
         }
 

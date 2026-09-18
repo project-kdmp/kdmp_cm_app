@@ -23,6 +23,18 @@ class SetupUseCase {
     await _secureStorageRepository.setLostChildLastShownDt(lostChildLastShownDt: lostChildLastShownDt);
   }
 
+  Future<int?> getPendingReviewDrvReqSq() async {
+    return await _secureStorageRepository.getPendingReviewDrvReqSq();
+  }
+
+  Future<void> setPendingReviewDrvReqSq({required int drvReqSq}) async {
+    await _secureStorageRepository.setPendingReviewDrvReqSq(drvReqSq: drvReqSq);
+  }
+
+  Future<void> deletePendingReviewDrvReqSq() async {
+    await _secureStorageRepository.deletePendingReviewDrvReqSq();
+  }
+
   Future<int> getLostChildHour() async {
     return await _secureStorageRepository.getLostChildHour();
   }

@@ -947,7 +947,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         children: [
                                                                           Padding(
                                                                             padding:
-                                                                                EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                                                                EdgeInsets.only(
+                                                                                  bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
+                                                                                ),
                                                                             child:
                                                                                 CallPriceBottomSheet(
                                                                               initPrice: _homeViewModel.inputPrice,

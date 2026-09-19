@@ -149,7 +149,9 @@ class _RegisterCarScreenState extends State<RegisterCarScreen> {
                                     return Wrap(
                                       children: [
                                         Padding(
-                                          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                          padding: EdgeInsets.only(
+                                            bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
+                                          ),
                                           child: const CarAddBottomSheet(),
                                         ),
                                       ],

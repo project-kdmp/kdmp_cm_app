@@ -148,7 +148,9 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                         return Wrap(
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                              padding: EdgeInsets.only(
+                                bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
+                              ),
                               child: const CarAddBottomSheet(),
                             ),
                           ],
@@ -245,7 +247,9 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                             return Wrap(
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                  padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
+                                  ),
                                   child: CarAddBottomSheet(initCarNumber: value[index].carNumId),
                                 ),
                               ],

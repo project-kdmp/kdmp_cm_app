@@ -552,7 +552,9 @@ class _CalledDetailScreenState extends State<CalledDetailScreen> with SingleTick
         return Wrap(
           children: [
             Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
+              ),
               child: ReviewBottomSheet(
                 onPressed: (star, review) async {
                   debugPrint("$star, $review");

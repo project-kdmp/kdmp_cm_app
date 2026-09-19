@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:kdmp_cm_app/common/fcm/notification.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/constant/constants.dart';
@@ -26,6 +29,7 @@ import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.
 import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
+import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/review_bottom_sheet.dart';
@@ -65,6 +69,21 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
   /// 리뷰 흐름을 이미 태웠는지 (푸시와 복귀 감지가 겹쳐 두 번 뜨는 것을 막는다)
   bool _isReviewHandled = false;
 
+  /// 이동 지도를 펼쳤는지.
+  ///
+  /// 접어 두는 것이 기본이다. 운행 화면에는 단계·요금·기사 연락처럼 더 자주 쓰는
+  /// 것이 있어 지도가 그것을 밀어내면 손해다. 보고 싶은 사람만 펼친다.
+  final ValueNotifier<bool> _isMapOpen = ValueNotifier<bool>(false);
+
+  /// 내 현재 위치. 펼친 동안에만 갱신한다
+  final ValueNotifier<NLatLng?> _myLatLng = ValueNotifier<NLatLng?>(null);
+
+  /// 위치 구독. 펼칠 때 걸고 접거나 화면을 떠날 때 끊는다 —
+  /// 주행 30~60분 내내 물고 있으면 배터리를 먹는다
+  StreamSubscription<Position>? _positionSubscription;
+
+  NaverMapController? _mapController;
+
   @override
   void initState() {
     super.initState();
@@ -76,10 +95,180 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _stopWatchingLocation();
+    _mapController = null;
+    _isMapOpen.dispose();
+    _myLatLng.dispose();
+
     // 앱 상태 변경 이벤트 해제
     // 문제는 앱 종료시 dispose함수가 호출되지 않아 해당 함수를 실행 할 수가 없다.
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  /// 지도를 펼치거나 접는다. 펼친 동안에만 위치를 따라간다
+  Future<void> _toggleMap() async {
+    final willOpen = !_isMapOpen.value;
+    _isMapOpen.value = willOpen;
+
+    if (!willOpen) {
+      _stopWatchingLocation();
+
+      /// 지도 위젯이 트리에서 빠지면 네이티브 뷰도 사라진다. 컨트롤러를 들고 있으면
+      /// 해제된 뷰로 명령이 나가 MissingPluginException 이 된다
+      _mapController = null;
+      return;
+    }
+
+    /// 펼치는 순간 한 번 읽어 지도가 빈 채로 뜨지 않게 한다
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      if (!mounted) return;
+      _myLatLng.value = NLatLng(position.latitude, position.longitude);
+    } catch (e) {
+      debugPrint("현위치 조회 실패: $e");
+    }
+
+    _positionSubscription = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+
+        /// 20m 넘게 움직였을 때만 갱신한다. 주행 중 초당 갱신은 배터리만 먹는다
+        distanceFilter: 20,
+      ),
+    ).listen((position) {
+      if (!mounted) return;
+      final latLng = NLatLng(position.latitude, position.longitude);
+      _myLatLng.value = latLng;
+      _drawMovingMarkers(latLng);
+    });
+  }
+
+  void _stopWatchingLocation() {
+    _positionSubscription?.cancel();
+    _positionSubscription = null;
+  }
+
+  /// 이동 지도 카드.
+  ///
+  /// 대리운전은 고객이 자기 차 뒷좌석에 앉아 있는 상황이라 "제대로 가고 있나" 를
+  /// 묻기 어색하다. 지도는 그것을 말 없이 확인하게 해준다.
+  ///
+  /// 내 위치만 찍으면 기준이 없어 판단이 안 된다. 도착지를 함께 그려야
+  /// "가까워지고 있다" 가 읽힌다.
+  Widget getMapCard() {
+    final theme = Theme.of(context);
+
+    return ValueListenableBuilder<bool>(
+      valueListenable: _isMapOpen,
+      builder: (context, isOpen, _) {
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: theme.dividerColor),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              InkWell(
+                onTap: _toggleMap,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  child: Row(
+                    children: [
+                      Icon(Icons.map_outlined, size: 20, color: theme.colorScheme.primary),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          isOpen ? StringWork.mapClose : StringWork.mapOpen,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
+                      Icon(isOpen ? Icons.expand_less : Icons.expand_more, size: 22),
+                    ],
+                  ),
+                ),
+              ),
+              if (isOpen)
+                SizedBox(
+                  height: 220,
+                  child: ValueListenableBuilder<NLatLng?>(
+                    valueListenable: _myLatLng,
+                    builder: (context, myLatLng, _) {
+                      if (myLatLng == null) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return getMovingMap(myLatLng);
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// 내 위치와 도착지를 함께 그린다.
+  ///
+  /// 지도 위젯을 다시 만들지 않고 컨트롤러로 카메라만 옮긴다 — 위치가 갱신될 때마다
+  /// 새로 만들면 네이티브 뷰가 매번 다시 뜬다.
+  Widget getMovingMap(NLatLng myLatLng) {
+    return NaverMap(
+      options: NaverMapViewOptions(
+        initialCameraPosition: NCameraPosition(target: myLatLng, zoom: 15),
+        mapType: NMapType.navi,
+        nightModeEnable: CustomThemeMode.getThemeMode == ThemeMode.dark,
+        logoClickEnable: false,
+        scaleBarEnable: false,
+
+        /// 카드 안의 작은 지도다. 몸짓은 막고 보여주기만 한다 —
+        /// 스크롤 중에 지도가 잡아채면 본문을 내릴 수가 없다
+        scrollGesturesEnable: false,
+        zoomGesturesEnable: false,
+        rotationGesturesEnable: false,
+      ),
+      onMapReady: (controller) async {
+        _mapController = controller;
+        await _drawMovingMarkers(myLatLng);
+      },
+    );
+  }
+
+  /// 내 위치·도착지 마커를 올리고 둘이 함께 보이게 맞춘다
+  Future<void> _drawMovingMarkers(NLatLng myLatLng) async {
+    final controller = _mapController;
+
+    /// 접혔거나 화면을 떠났으면 그릴 지도가 없다. 이 확인을 빼면 해제된 네이티브
+    /// 뷰로 명령이 나가 MissingPluginException 으로 떨어진다
+    if (controller == null || !mounted || !_isMapOpen.value) return;
+
+    final endLatLng = _workViewModel.endMapData?.latLng;
+
+    /// 지도는 보조 수단이다. 그리다 실패해도 운행 화면이 흔들려서는 안 된다
+    try {
+      await controller.clearOverlays();
+      await controller.addOverlay(NMarker(id: "me", position: myLatLng));
+
+      if (endLatLng == null) {
+        await controller.updateCamera(NCameraUpdate.withParams(target: myLatLng, zoom: 15));
+        return;
+      }
+
+      await controller.addOverlay(NMarker(id: "end", position: endLatLng));
+      await controller.updateCamera(
+        NCameraUpdate.fitBounds(
+          NLatLngBounds.from([myLatLng, endLatLng]),
+          padding: const EdgeInsets.all(40),
+        ),
+      );
+    } catch (e) {
+      debugPrint("이동 지도 그리기 실패: $e");
+    }
   }
 
   // 앱 상태 변경시 호출
@@ -236,7 +425,18 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
                                     return CallProgressIndicator(drvReqSt: value);
                                   },
                                 ),
-                                const SizedBox(height: 48),
+                                const SizedBox(height: 16),
+
+                                /// 이동 지도. 운행이 시작된 뒤에만 보여준다 —
+                                /// 아직 출발하지 않았으면 그릴 이동이 없다
+                                ValueListenableBuilder<String>(
+                                  valueListenable: _workViewModel.drvReqStNotifier,
+                                  builder: (context, value, child) {
+                                    final isRunning = value == DrvReqSt.sta || value == DrvReqSt.rst;
+                                    return isRunning ? getMapCard() : const SizedBox();
+                                  },
+                                ),
+                                const SizedBox(height: 32),
 
                                 ValueListenableBuilder<String>(
                                   valueListenable: _workViewModel.drvReqStNotifier,

@@ -316,6 +316,10 @@ abstract class StringCall {
 }
 
 abstract class StringWork {
+  /// 이동 지도. 기본은 접어 둔다 — 보고 싶은 사람만 펼친다
+  static const String mapOpen = "지도로 이동 경로 보기";
+  static const String mapClose = "지도 접기";
+
   StringWork._();
 
   static const String call = "전화";

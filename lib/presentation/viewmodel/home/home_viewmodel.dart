@@ -453,6 +453,17 @@ class HomeViewModel {
     return result;
   }
 
+  /// 진행 중인 콜 번호. 없으면 null.
+  ///
+  /// 전에는 홈이 이 값을 찾으면 곧바로 운행 화면을 열었다. 그래서 운행 화면에서
+  /// 뒤로 나오면 홈이 다시 열어 버려, 뒤로가기를 아예 막아둘 수밖에 없었다.
+  /// 값만 들고 있고 들어갈지는 고객이 정한다.
+  final ValueNotifier<int?> _drivingDrvReqSq = ValueNotifier<int?>(null);
+
+  ValueNotifier<int?> get drivingDrvReqSqNotifier => _drivingDrvReqSq;
+
+  set drivingDrvReqSq(int? value) => _drivingDrvReqSq.value = value;
+
   /// 현재 진행중인 콜 여부 조회 API
   Future<int?> getDriving() async {
     final mbrSq = await getMbrSqUseCase.execute();

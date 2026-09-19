@@ -668,17 +668,13 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
   }
 
   /// 앱 뒤로가기
+  /// 앱 뒤로가기.
+  ///
+  /// 진행 중이어도 막지 않는다. 전에는 막아뒀는데, 홈이 진행 중인 콜을 찾으면
+  /// 곧바로 이 화면을 다시 열어서 그러지 않으면 갇혔기 때문이다. 홈을 배너로
+  /// 바꿔 고객이 직접 들어오게 했으므로 붙들어 둘 이유가 없어졌다.
   Future<bool> _onBackPressed() async {
-    /// 운행이 종료된 경우에만 뒤로가기
-    if (isWorkEnd()) {
-      return true;
-    }
-    return false;
-  }
-
-  /// 운행 종료 여부 체크
-  bool isWorkEnd() {
-    return _workViewModel.drvReqSt == DrvReqSt.end || _workViewModel.drvReqSt == DrvReqSt.ren || _workViewModel.drvReqSt == DrvReqSt.rco || _workViewModel.drvReqSt == DrvReqSt.del;
+    return true;
   }
 
   /// 전화 버튼

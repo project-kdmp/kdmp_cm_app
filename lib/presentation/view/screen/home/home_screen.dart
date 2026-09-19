@@ -274,15 +274,59 @@ class _HomeScreenState extends State<HomeScreen> {
     initData();
   }
 
+  /// 진행 중인 운행으로 돌아가는 배너
+  Widget getDrivingBanner(int drvReqSq) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: theme.colorScheme.primary,
+      borderRadius: BorderRadius.circular(12),
+      elevation: 3,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () async {
+          await context.pushNamed(WorkScreen.routeName, extra: drvReqSq);
+
+          /// 돌아오면 아직 진행 중인지 다시 읽는다 — 끝났으면 배너가 사라져야 한다
+          if (mounted) initData();
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              const Icon(Icons.directions_car, color: Colors.white, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  StringHome.drivingNow,
+                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+                ),
+              ),
+              Text(
+                StringHome.drivingResume,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.white, size: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void initData() async {
-    /// 현재 진행중인 콜 여부 조회, 운행 화면으로 이동
+    /// 현재 진행중인 콜 조회.
+    ///
+    /// 전에는 찾는 즉시 운행 화면을 열었다. 그러면 운행 화면에서 뒤로 나와도 홈이
+    /// 다시 열어 버려 빠져나갈 수가 없었고, 그래서 뒤로가기를 막아두고 있었다.
+    /// 배너로 알리고 들어갈지는 고객이 정한다.
     final drvReqSq = await _homeViewModel.getDriving();
-    if (drvReqSq != null) {
-      await context.pushNamed(
-        WorkScreen.routeName,
-        extra: drvReqSq,
-      );
-    } else {
+    _homeViewModel.drivingDrvReqSq = drvReqSq;
+
+    if (drvReqSq == null) {
       /// 진행중인 콜이 없어도, 종료 푸시를 놓쳐 마무리하지 못한 운행이 있으면 이어서 처리한다
       final pendingDrvReqSq =
           await GetIt.instance<SetupUseCase>().getPendingReviewDrvReqSq();
@@ -1552,6 +1596,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
+                  ),
+                ),
+                /// 진행 중인 운행으로 돌아가는 배너.
+                ///
+                /// 자동 진입을 걷어낸 자리다. 운행 화면에서 뒤로 나와도 여기로 다시
+                /// 들어갈 수 있어야 뒤로가기가 막다른 길이 되지 않는다.
+                /// 지도 위에 겹쳐 띄우되 위쪽에만 두어 지도 조작을 가리지 않는다.
+                Positioned(
+                  top: 12,
+                  left: 20,
+                  right: 20,
+                  child: ValueListenableBuilder<int?>(
+                    valueListenable: _homeViewModel.drivingDrvReqSqNotifier,
+                    builder: (context, drvReqSq, _) {
+                      if (drvReqSq == null) return const SizedBox.shrink();
+                      return getDrivingBanner(drvReqSq);
+                    },
                   ),
                 ),
               ],

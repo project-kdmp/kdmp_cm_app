@@ -83,6 +83,10 @@ abstract class StringHome {
 
   static const String onBackPressed = "뒤로가기를 한번 더 누르면 종료됩니다.";
 
+  /// 진행 중인 운행으로 돌아가는 배너. 운행 화면에서 뒤로 나온 고객이 다시 들어갈 길이다
+  static const String drivingNow = "진행 중인 운행이 있습니다";
+  static const String drivingResume = "이어서 보기";
+
   static const String title = "콜프렌드 고객용";
   static const String reservationButton = "예약하기";
   static const String callButton = "호출하기";

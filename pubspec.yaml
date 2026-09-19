@@ -99,6 +99,10 @@ dev_dependencies:
 
   flutter_lints: ^2.0.0
 
+  # 테스트 — 뷰모델은 유스케이스를 생성자로 받으므로 목만 넣으면 격리된다
+  mockito: ^5.4.4
+  build_runner: ^2.4.9
+
   # App Icon
   flutter_launcher_icons: ^0.13.1
 

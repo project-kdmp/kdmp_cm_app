@@ -582,6 +582,10 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
       final body = snapshot.data?["body"] ?? "";
       switch (type) {
         case DrvReqSt.cco:
+
+        /// 예약 확정도 같은 처리다. 전에는 빠져 있어 default 로 떨어졌는데,
+        /// 결과가 같았을 뿐 의도한 분기가 아니었다
+        case DrvReqSt.rco:
           _workViewModel.getCallInfo(drvReqSq: widget.drvReqSq);
           _showAlertDialog(content: body, isCanceled: false);
           break;

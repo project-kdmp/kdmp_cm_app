@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdmp_cm_app/common/fcm/notification.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
@@ -41,11 +44,40 @@ class CallDetailScreen extends StatefulWidget {
 class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerProviderStateMixin {
   late final CallDetailViewModel _callDetailViewModel;
 
+  /// 배차 푸시 구독.
+  ///
+  /// 이 화면을 띄워 둔 채로 기사가 확정하면 화면은 그대로 예약 대기로 남아 있었다.
+  /// 기사앱이 확정 시 보내는 푸시를 받아 그 자리에서 다시 읽는다.
+  ///
+  /// StreamBuilder 로 받지 않는다 — builder 는 새 데이터가 올 때만이 아니라 화면이
+  /// 다시 그려질 때마다 돌아서, 재조회가 리빌드를 낳고 그 리빌드가 다시 재조회를
+  /// 부른다. 기사용 앱에서 같은 구조로 푸시 한 건에 조회가 92번 나간 적이 있다.
+  StreamSubscription<Map<String, dynamic>>? _pushSubscription;
+
   @override
   void initState() {
     super.initState();
     initViewModel();
     initData();
+    initPushSubscription();
+  }
+
+  /// 배차가 확정되면 다시 읽는다. 그 밖의 푸시는 이 화면이 다룰 것이 없다
+  void initPushSubscription() {
+    _pushSubscription = FlutterLocalNotification.streamController.stream.listen((data) {
+      if (!mounted || data.isEmpty) return;
+
+      final type = data["type"] ?? "";
+      if (type != DrvReqSt.rco && type != DrvReqSt.cco) return;
+
+      initData();
+    });
+  }
+
+  @override
+  void dispose() {
+    _pushSubscription?.cancel();
+    super.dispose();
   }
 
   /// Create

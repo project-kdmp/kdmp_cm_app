@@ -237,6 +237,7 @@ abstract class StringCallPrice {
   static const String inputGuide0 = "  ";
   static const String inputGuide1 = "요금을 입력해주세요.";
   static const String inputGuide2 = "이상으로 입력해주세요.";
+  static const String inputHint = "금액 입력";
 }
 
 abstract class StringReview {

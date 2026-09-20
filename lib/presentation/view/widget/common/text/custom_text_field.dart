@@ -18,6 +18,8 @@ class CustomTextField extends StatelessWidget {
     this.isExpands = false,
     this.backgroundColor,
     this.textInputAction,
+    this.focusNode,
+    this.onSubmitted,
   }) : super(key: key);
 
   final String text;
@@ -34,13 +36,16 @@ class CustomTextField extends StatelessWidget {
   final bool isExpands;
   final Color? backgroundColor;
   final TextInputAction? textInputAction;
+  final FocusNode? focusNode;
+  final Function(String)? onSubmitted;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       inputFormatters: inputType == TextInputType.number ? [FilteringTextInputFormatter.digitsOnly] : [],
       textInputAction: textInputAction,
-      // onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
+      focusNode: focusNode,
+      onFieldSubmitted: onSubmitted,
       keyboardType: inputType,
       enabled: isEnabled,
       controller: controller,
@@ -80,7 +85,9 @@ class CustomTextField extends StatelessWidget {
           ),
         ),
       ),
-      onChanged: controller == null ? onChanged : null,
+      /// 전에는 controller 를 넘기면 onChanged 를 버렸다. 그래서 둘 다 넘긴 화면은
+      /// 입력이 바뀌어도 통지를 받지 못했다 (휴대폰 인증번호 6자리 자동 확인)
+      onChanged: onChanged,
     );
   }
 }

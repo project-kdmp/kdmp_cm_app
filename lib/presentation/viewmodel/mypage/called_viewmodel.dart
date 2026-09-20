@@ -71,7 +71,18 @@ class CalledViewModel {
   }
 
   /// 상태
-  StateAPI state = Loading();
+  /// 조회 상태.
+  ///
+  /// 전에는 평범한 필드라 값을 바꿔도 화면이 다시 그려지지 않았다. 그래서 화면은
+  /// 목록이 비면 로딩인지 기록이 없는지 실패인지 구분하지 못하고 "내역이 없습니다"
+  /// 만 띄웠다.
+  final ValueNotifier<StateAPI> _state = ValueNotifier<StateAPI>(Loading());
+
+  ValueNotifier<StateAPI> get stateNotifier => _state;
+
+  StateAPI get state => _state.value;
+
+  set state(StateAPI value) => _state.value = value;
 
   /// 미완료 이용내역 리스트 조회 API
   Future<void> getCallList() async {

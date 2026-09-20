@@ -10,13 +10,13 @@ import 'package:kdmp_cm_app/domain/usecase/mypage/get_called_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_called_delete_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
-import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/section/async_view.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/horizontal_dashed_divider.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/mypage/called_viewmodel.dart';
@@ -111,31 +111,22 @@ class _CalledScreenState extends State<CalledScreen> with SingleTickerProviderSt
 
                     const SizedBox(height: 16),
 
-                    /// 이용내역 리스트
-                    ValueListenableBuilder<List<Called>>(
-                      valueListenable: _calledViewModel.calledListNotifier,
-                      builder: (context, value, _) {
-                        return _calledViewModel.callList.isEmpty && value.isEmpty
-                            ?
-
-                            /// 이용내역 없음
-                            SizedBox(
-                                height: 500,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.asset(ImageCommon.imgWarning, width: 72, height: 72),
-                                    const SizedBox(height: 20),
-                                    Text(
-                                      StringCalled.noList,
-                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                            color: Theme.of(context).disabledColor,
-                                          ),
-                                    )
-                                  ],
-                                ),
-                              )
-                            : getCalledListView(value);
+                    /// 이용내역 리스트.
+                    ///
+                    /// 전에는 목록이 비면 무조건 "내역이 없습니다" 를 띄웠다. 불러오는
+                    /// 중인지, 기록이 없는지, 조회가 실패했는지 구분되지 않아 느린 망에서는
+                    /// 기록이 있는데도 없다고 읽혔고 실패하면 아무 말도 하지 않았다.
+                    AsyncView(
+                      state: _calledViewModel.stateNotifier,
+                      minHeight: 500,
+                      emptyMessage: StringCalled.noList,
+                      isEmpty: () => _calledViewModel.callList.isEmpty && _calledViewModel.calledList.isEmpty,
+                      onRetry: initData,
+                      builder: (context) {
+                        return ValueListenableBuilder<List<Called>>(
+                          valueListenable: _calledViewModel.calledListNotifier,
+                          builder: (context, value, _) => getCalledListView(value),
+                        );
                       },
                     ),
                   ],

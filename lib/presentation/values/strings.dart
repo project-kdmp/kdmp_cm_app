@@ -1,6 +1,14 @@
 abstract class StringCommon {
   StringCommon._();
 
+  /// 조회 상태 안내 (AsyncView).
+  ///
+  /// 실패에는 다시 시도할 자리를 함께 준다 — 할 수 있는 일이 없으면 안내가
+  /// 안내로 기능하지 않는다
+  static const String loadFail = "정보를 불러오지 못했습니다.\n잠시 후 다시 시도해주세요.";
+  static const String retry = "다시 시도";
+  static const String emptyDefault = "표시할 내용이 없습니다.";
+
   static const String cancel = "취소";
   static const String confirm = "확인";
   static const String next = "다음";

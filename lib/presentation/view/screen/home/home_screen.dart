@@ -1816,6 +1816,12 @@ class _HomeScreenState extends State<HomeScreen> {
             final startInfoWindow =
                 NInfoWindow.onMarker(id: "start_info", text: "출발지 변경");
             startInfoWindow.setOffsetY(-1);
+
+            /// 라벨도 마커와 같이 동작해야 한다. "출발지 변경" 이라고 써 놓고
+            /// 그 글씨를 눌렀을 때 아무 일도 없으면 눌러야 할 곳을 잘못 알려준 셈이다
+            startInfoWindow
+                .setOnTapListener((overlay) => changeStartSpotOnMap());
+
             startMarker.openInfoWindow(startInfoWindow);
           }
 
@@ -1824,6 +1830,7 @@ class _HomeScreenState extends State<HomeScreen> {
             final endInfoWindow =
                 NInfoWindow.onMarker(id: "end_info", text: "도착지 변경");
             endInfoWindow.setOffsetY(-1);
+            endInfoWindow.setOnTapListener((overlay) => changeEndSpotOnMap());
             endMarker.openInfoWindow(endInfoWindow);
           }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -62,6 +64,44 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
     );
   }
 
+  /// 치는 동안 자동으로 검색한다. 글자마다 바로 부르면 주소 API 를 몇 배로
+  /// 두드리게 되니, 손이 멈춘 뒤에 한 번만 부른다
+  static const Duration _debounceDuration = Duration(milliseconds: 400);
+
+  Timer? _debounce;
+
+  /// 검색어가 바뀔 때마다 불린다
+  void _onKeywordChanged(String value) {
+    _debounce?.cancel();
+
+    final keyword = value.trim();
+    _endSearchViewModel.keyword = keyword;
+
+    /// 앞선 결과를 먼저 치운다. 새 검색어에 옛 주소가 남아 있으면 안 된다
+    _endSearchViewModel.clearPagination();
+
+    if (!_endSearchViewModel.hasSearchableKeyword) return;
+
+    _debounce = Timer(_debounceDuration, () => _endSearchViewModel.getSearchList());
+  }
+
+  /// 키보드의 검색 키는 기다리지 않고 바로 찾는다
+  Future<void> _onSearch(String value) async {
+    _debounce?.cancel();
+
+    _endSearchViewModel.keyword = value.trim();
+    _endSearchViewModel.clearPagination();
+
+    await _endSearchViewModel.getSearchList();
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   void initScrollController() {
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent == _scrollController.position.pixels) {
@@ -119,15 +159,8 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
                             size: 22,
                             color: Theme.of(context).disabledColor,
                           ),
-                          onSearch: (value) async {
-                            _endSearchViewModel.keyword = value;
-
-                            /// 페이지 정보 초기화
-                            _endSearchViewModel.clearPagination();
-
-                            /// 검색 리스트 조회
-                            final result = await _endSearchViewModel.getSearchList();
-                          },
+                          onSearch: _onSearch,
+                          onChanged: _onKeywordChanged,
                         );
                       },
                     ),

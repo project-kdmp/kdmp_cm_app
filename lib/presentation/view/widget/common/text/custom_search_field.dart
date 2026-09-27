@@ -11,6 +11,7 @@ class CustomSearchField extends StatelessWidget {
     this.icon,
     this.inputType,
     required this.onSearch,
+    this.onChanged,
   }) : super(key: key);
 
   final String text;
@@ -21,6 +22,9 @@ class CustomSearchField extends StatelessWidget {
   final TextInputType? inputType;
   final Function(String) onSearch;
 
+  /// 한 글자 칠 때마다 알린다. 치는 동안 결과를 따라오게 하려면 이쪽을 쓴다
+  final Function(String)? onChanged;
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -30,6 +34,7 @@ class CustomSearchField extends StatelessWidget {
           inputFormatters: inputType == TextInputType.number ? [FilteringTextInputFormatter.digitsOnly] : [],
           textInputAction: TextInputAction.search,
           onFieldSubmitted: onSearch,
+          onChanged: onChanged,
           keyboardType: inputType,
           enabled: isEnabled,
           initialValue: text,

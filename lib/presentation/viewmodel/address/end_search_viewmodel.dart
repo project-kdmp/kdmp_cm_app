@@ -25,6 +25,9 @@ class EndSearchViewModel {
   final GetMapDataListUseCase getMapDataListUseCase;
   final AddMapDataUseCase addMapDataUseCase;
 
+  /// 자동 검색을 시작하는 최소 글자 수
+  static const int minKeywordLength = 2;
+
   String clientId = "";
   String clientSecret = "";
   String jusoApiKey = "";
@@ -83,9 +86,14 @@ class EndSearchViewModel {
 
   set isRecentListValid(bool value) => _isRecentListValid.value = value;
 
+  /// 검색을 시작했다고 볼 만한 길이인가. 한 글자로는 주소를 좁힐 수 없다
+  bool get hasSearchableKeyword => keyword.trim().length >= minKeywordLength;
+
   _checkRecentListValid() {
+    /// 첫 글자를 치는 동안에는 최근 검색 기록을 남겨둔다. 안 그러면 한 글자
+    /// 쳤을 때 기록이 사라지고 결과도 없어 화면이 통째로 빈다
     bool valid;
-    if (searchList.isEmpty && keyword.isEmpty && recentList.isNotEmpty) {
+    if (searchList.isEmpty && !hasSearchableKeyword && recentList.isNotEmpty) {
       valid = true;
     } else {
       valid = false;
@@ -122,6 +130,9 @@ class EndSearchViewModel {
   Future<StateAPI> getSearchList() async {
     state = Loading();
 
+    /// 어떤 검색어로 부른 요청인지 기억해 둔다
+    final requested = keyword;
+
     final request = JusoListRequest(
       countPerPage: 10,
       currentPage: page + 1,
@@ -130,6 +141,10 @@ class EndSearchViewModel {
     );
     final result = await getJusoListUseCase.execute(jusoListRequest: request);
     state = result;
+
+    /// 치는 사이에 검색어가 바뀌었으면 이 응답은 버린다. 자동 검색은 요청이
+    /// 겹치기 쉬운데, 늦게 온 응답이 새 검색어의 목록에 섞이면 엉뚱한 주소가 남는다
+    if (requested != keyword) return result;
 
     if (result is Success) {
       final response = result.jusoListResponse;

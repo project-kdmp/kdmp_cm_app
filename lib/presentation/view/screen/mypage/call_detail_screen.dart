@@ -246,6 +246,27 @@ class _CallDetailScreenState extends State<CallDetailScreen> with SingleTickerPr
                               ),
                             ],
                           ),
+
+                          /// 접수 일시 (위 일시가 예약·운행을 가리킬 때만)
+                          ValueListenableBuilder<String>(
+                            valueListenable: _callDetailViewModel.requestDateNotifier,
+                            builder: (context, value, _) {
+                              if (value.isEmpty) return const SizedBox();
+                              return Column(
+                                children: [
+                                  const SizedBox(height: 14),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(StringCalled.requestDate, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                                      const SizedBox(width: 14),
+                                      Expanded(child: Text(value, textAlign: TextAlign.start)),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
                           const SizedBox(height: 14),
 
                           /// 호출

@@ -42,6 +42,13 @@ class CallDetailViewModel {
 
   set dateLabel(String value) => _dateLabel.value = value;
 
+  /// 접수 일시. 위 일시가 예약·운행을 가리킬 때만 따로 보여준다
+  final ValueNotifier<String> _requestDate = ValueNotifier<String>("");
+
+  ValueNotifier<String> get requestDateNotifier => _requestDate;
+
+  set requestDate(String value) => _requestDate.value = value;
+
   ValueNotifier<String> get dateNotifier => _date;
 
   String get date => _date.value;
@@ -161,12 +168,16 @@ class CallDetailViewModel {
       if (response.drvStartDt != null) {
         dateLabel = StringCalled.workDate;
         date = getDateAndTimeFormat(startDate: response.drvStartDt, endDate: response.drvEndDt);
+        requestDate = getDateAndTimeFormat(startDate: response.reqRegDt);
       } else if (response.drvReserveDt != null) {
         dateLabel = StringCalled.reserveDate;
         date = getDateAndTimeFormat(startDate: response.drvReserveDt);
+        requestDate = getDateAndTimeFormat(startDate: response.reqRegDt);
       } else {
+        /// 접수 시각만 있으면 같은 값을 두 줄로 보여줄 이유가 없다
         dateLabel = StringCalled.requestDate;
         date = getDateAndTimeFormat(startDate: response.reqRegDt);
+        requestDate = "";
       }
       drvReqSt = response.drvReqSt ?? "";
       startPlace = response.reqStartPlaceNm.isNotEmpty ? response.reqStartPlaceNm : response.reqStartAddress;

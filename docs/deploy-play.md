@@ -28,18 +28,33 @@
    - 역할은 여기서 주지 않는다 (권한은 Play Console 쪽에서 준다)
 4. 만든 계정 → **키 → 키 추가 → 새 키 만들기 → JSON** → 내려받는다
 
-### 2. Play Console 에 연결
+### 2. Play Console 에서 그 계정에 권한 주기
 
-[Play Console](https://play.google.com/console/) → **설정 → API 액세스**:
+**서비스 계정을 「사용자」로 초대한다.** 예전에는 **설정 → API 액세스** 에서 했는데
+지금은 이 방식이다. API 액세스 항목이 안 보여도 정상이다.
 
-1. 위에서 만든 Google Cloud 프로젝트를 연결한다
-2. 서비스 계정 목록에서 `play-publisher` 를 찾아 **앱 액세스 권한 부여**
-3. 권한은 **필요한 것만** 준다
+먼저 내려받은 JSON 키에서 이메일을 꺼낸다.
+
+```bash
+python3 -c "import json;print(json.load(open('<내려받은>.json'))['client_email'])"
+# play-publisher@<프로젝트>.iam.gserviceaccount.com
+```
+
+[Play Console](https://play.google.com/console/) 에서:
+
+1. 왼쪽 위에서 **「모든 앱」**(개발자 계정 화면)으로 나온다 — 앱 안에서는 이 메뉴가
+   보이지 않는다
+2. **사용자 및 권한 → 새 사용자 초대**
+3. 위에서 꺼낸 서비스 계정 이메일을 붙여넣는다
+4. 권한은 **앱 단위로만** 준다
    - 앱: `kr.or.kddsa.kdmp_cm_app`
    - 「출시 관리자」 또는 「비공개 앱 출시 만들기·수정」 정도면 된다
    - **「프로덕션 출시」 권한은 주지 않아도 된다** — 이 자동화는 internal 만 쓴다
 
-> 연결 후 **최대 24시간** 전파 지연이 있을 수 있다. 바로 안 되면 기다린다.
+> 전파에 시간이 걸릴 수 있다. 바로 안 되면 조금 기다렸다 다시 시도한다.
+
+> 「사용자 및 권한」이나 「API 액세스」가 아예 안 보이면 계정 단위 권한이 없는
+> 것이다. 계정 소유자에게 요청한다.
 
 ### 3. 키를 놓는다
 
@@ -124,7 +139,8 @@ internal 에서 확인한 뒤 Play Console 에서:
 ## 걸리는 곳
 
 **`The caller does not have permission`** — 서비스 계정에 Play Console 권한이 없거나
-전파 전이다. 최대 24시간 기다린다.
+아직 전파되지 않았다. 「사용자 및 권한」에 그 이메일이 있는지, 이 앱에 권한이
+붙어 있는지 확인하고 조금 기다렸다 다시 시도한다.
 
 **`APK specifies a version code that has already been used`** — `versionCode` 를 올린다.
 

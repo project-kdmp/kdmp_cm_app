@@ -85,7 +85,10 @@ PY
 
 say "릴리스 빌드"
 
-fvm flutter --version | head -1
+# head 로 바로 파이프하면 flutter 가 닫힌 파이프에 쓰다 터진다. 먼저 담는다
+FLUTTER_VERSION="$(fvm flutter --version)"
+echo "  ${FLUTTER_VERSION%%$'\n'*}"
+
 fvm flutter pub get
 fvm dart analyze lib || die "정적 분석에서 에러가 났다."
 fvm flutter build appbundle --release

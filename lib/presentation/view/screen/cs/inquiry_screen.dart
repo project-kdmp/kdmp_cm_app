@@ -11,6 +11,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_detail_screen.da
 import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_write_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/section/async_view.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/cs/inquiry_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -95,11 +96,17 @@ class _InquiryScreenState extends State<InquiryScreen> with SingleTickerProvider
                           const SizedBox(height: 20),
 
                           /// 상담문의 리스트
-                          ValueListenableBuilder<List<Inquiry>>(
-                            valueListenable: _inquiryViewModel.inquiryListNotifier,
-                            builder: (context, value, _) {
-                              return getListView(value);
-                            },
+                          AsyncView(
+                            state: _inquiryViewModel.stateNotifier,
+                            emptyMessage: StringInquiry.noList,
+                            isEmpty: () => _inquiryViewModel.inquiryList.isEmpty,
+                            onRetry: initData,
+                            builder: (context) => ValueListenableBuilder<List<Inquiry>>(
+                              valueListenable: _inquiryViewModel.inquiryListNotifier,
+                              builder: (context, value, _) {
+                                return getListView(value);
+                              },
+                            ),
                           ),
                         ],
                       ),

@@ -39,7 +39,17 @@ class NoticeViewModel {
   set noticeList(List<Notice> value) => _noticeList.value = value;
 
   /// 상태
-  StateAPI state = Loading();
+  /// 조회 상태.
+  ///
+  /// 평범한 필드면 값을 바꿔도 화면이 다시 그려지지 않는다. 그래서 화면은 목록이
+  /// 비었을 때 불러오는 중인지 없는 것인지 실패인지 구분하지 못했다
+  final ValueNotifier<StateAPI> _state = ValueNotifier<StateAPI>(Loading());
+
+  ValueNotifier<StateAPI> get stateNotifier => _state;
+
+  StateAPI get state => _state.value;
+
+  set state(StateAPI value) => _state.value = value;
 
   /// 공지사항 리스트 조회 API
   void getNoticeList() async {

@@ -8,6 +8,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/term/term_detail_screen.dar
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/menu/custom_move_button.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/section/async_view.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/menu/term_list_viewmodel.dart';
 
 /// 메뉴 > 이용약관 화면
@@ -31,9 +32,14 @@ class _TermListScreenState extends State<TermListScreen> {
   }
 
   /// Create
-  initViewModel() async {
+  initViewModel() {
     _termListViewModel = TermListViewModel(getTermUseCase: GetIt.instance<GetTermUseCase>());
-    await _termListViewModel.getTermList();
+    initData();
+  }
+
+  /// 조회. 실패했을 때 다시 시도하는 자리이기도 하다
+  void initData() {
+    _termListViewModel.getTermList();
   }
 
   @override
@@ -53,11 +59,17 @@ class _TermListScreenState extends State<TermListScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                ValueListenableBuilder(
-                  valueListenable: _termListViewModel.termListNotifier,
-                  builder: (context, value, _) {
-                    return getListView(value);
-                  },
+                AsyncView(
+                  state: _termListViewModel.stateNotifier,
+                  emptyMessage: StringMenu.noTermList,
+                  isEmpty: () => _termListViewModel.termList.isEmpty,
+                  onRetry: initData,
+                  builder: (context) => ValueListenableBuilder(
+                    valueListenable: _termListViewModel.termListNotifier,
+                    builder: (context, value, _) {
+                      return getListView(value);
+                    },
+                  ),
                 ),
               ],
             ),

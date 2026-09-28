@@ -17,6 +17,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/term/driver_term_screen.dar
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/section/async_view.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/mypage/car_info_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -85,29 +86,17 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                       Expanded(
                         child: Column(
                           children: [
-                            ValueListenableBuilder<List<Car>>(
-                              valueListenable: _carInfoViewModel.carListNotifier,
-                              builder: (context, value, _) {
-                                /// 차량정보 리스트 없음
-                                return value.isEmpty
-                                    ? SizedBox(
-                                        height: 500,
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Image.asset(ImageCommon.imgWarning, width: 72, height: 72),
-                                            const SizedBox(height: 20),
-                                            Text(
-                                              StringCar.noList,
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                    color: Theme.of(context).disabledColor,
-                                                  ),
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    : getListView(value);
-                              },
+                            AsyncView(
+                              state: _carInfoViewModel.stateNotifier,
+                              emptyMessage: StringCar.noList,
+                              isEmpty: () => _carInfoViewModel.carList.isEmpty,
+                              onRetry: initData,
+                              /// 비었을 때 그리던 안내는 AsyncView 가 맡는다.
+                              /// 여기까지 왔다는 것은 보여줄 차량이 있다는 뜻이다
+                              builder: (context) => ValueListenableBuilder<List<Car>>(
+                                valueListenable: _carInfoViewModel.carListNotifier,
+                                builder: (context, value, _) => getListView(value),
+                              ),
                             ),
                             const SizedBox(height: 20),
 

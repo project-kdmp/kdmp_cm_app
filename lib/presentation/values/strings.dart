@@ -186,6 +186,7 @@ abstract class StringMenu {
   static const String favoriteAddress = "자주 가는 주소";
   static const String cs = "고객센터";
   static const String terms = "이용약관";
+  static const String noTermList = "등록된 약관이 없습니다.";
   static const String setup = "환경설정";
 }
 
@@ -386,6 +387,7 @@ abstract class StringNotice {
 
   static const String title = "공지사항";
   static const String noticeDetail = "공지사항 상세";
+  static const String noList = "등록된 공지사항이 없습니다.";
 }
 
 abstract class StringInquiry {
@@ -393,6 +395,7 @@ abstract class StringInquiry {
 
   static const String title = "상담문의";
   static const String inquiryDetail = "상담문의 상세";
+  static const String noList = "문의 내역이 없습니다.";
   static const String inquiryWrite = "상담문의 작성";
   static const String writeButton = "등록";
   static const String titleHint = "제목을 입력해주세요.";

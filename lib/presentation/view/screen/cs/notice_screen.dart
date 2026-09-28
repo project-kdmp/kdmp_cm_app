@@ -7,6 +7,7 @@ import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/notice_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/section/async_view.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/cs/notice_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -83,11 +84,17 @@ class _NoticeScreenState extends State<NoticeScreen> with SingleTickerProviderSt
                     const SizedBox(height: 20),
 
                     /// 공지사항 리스트
-                    ValueListenableBuilder<List<Notice>>(
-                      valueListenable: _noticeViewModel.noticeListNotifier,
-                      builder: (context, value, _) {
-                        return getListView(value);
-                      },
+                    AsyncView(
+                      state: _noticeViewModel.stateNotifier,
+                      emptyMessage: StringNotice.noList,
+                      isEmpty: () => _noticeViewModel.noticeList.isEmpty,
+                      onRetry: initData,
+                      builder: (context) => ValueListenableBuilder<List<Notice>>(
+                        valueListenable: _noticeViewModel.noticeListNotifier,
+                        builder: (context, value, _) {
+                          return getListView(value);
+                        },
+                      ),
                     ),
                   ],
                 ),

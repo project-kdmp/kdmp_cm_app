@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "org.jetbrains.kotlin.android"
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.github.triplet.play"
 }
 
 def localProperties = new Properties()
@@ -43,6 +44,27 @@ if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.withReader('UTF-8') { reader ->
         keystoreProperties.load(reader)
     }
+}
+
+/// Play 업로드용 서비스 계정 키. 저장소에 담지 않으므로 없을 수 있다.
+/// 환경변수로 경로를 주거나 android/play-service-account.json 에 둔다
+def playCredentials = file(System.getenv("PLAY_SERVICE_ACCOUNT_JSON") ?: "${rootDir}/play-service-account.json")
+
+play {
+    /// 키가 없으면 퍼블리시 태스크만 꺼진다. 평소 빌드는 영향을 받지 않는다
+    enabled.set(playCredentials.exists())
+
+    if (playCredentials.exists()) {
+        serviceAccountCredentials.set(playCredentials)
+    }
+
+    /// 내부 테스트까지만 자동으로 올린다. 프로덕션 승격은 콘솔에서 사람이 누른다
+    track.set("internal")
+    defaultToAppBundles.set(true)
+
+    /// 여기서 빌드하지 않고 flutter 가 만든 산출물을 올린다.
+    /// gradle 이 직접 bundleRelease 를 돌리면 Dart 버전 정보가 어긋날 수 있다
+    artifactDir.set(file("${rootProject.buildDir}/app/outputs/bundle/release"))
 }
 
 android {

@@ -24,6 +24,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: 디스크 비우기
+        # ubuntu-latest 의 루트 여유는 14GB 남짓이다. Flutter SDK · Android SDK ·
+        # Gradle 캐시 · 빌드 산출물이 겹치면 R8 단계에서 터진다
+        # (java.io.IOException: No space left on device, 기사용 앱에서 2026-09-28 실측).
+        #
+        # 이 빌드가 쓰지 않는 사전 설치물만 지운다. Android SDK · JDK 는 건드리지 않는다.
+        run: |
+          set -euo pipefail
+          echo "== 지우기 전 =="; df -h /
+
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /usr/share/swift || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/.ghcup || true
+          sudo rm -rf /usr/local/share/boost || true
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || true
+          docker image prune -af || true
+
+          echo "== 지운 뒤 =="; df -h /
+
       - name: 로컬 전용 파일 복원
         # .env · 키스토어 · key.properties 는 저장소에 없다. Secrets 에서 되살린다.
         # Firebase 설정 파일(google-services.json)은 이 저장소에 아예 없다 —
@@ -65,7 +85,7 @@ jobs:
 
       - name: 정적 분석
         # 테스트가 사실상 없어 이것이 실질적인 유일한 자동 검증이다.
-        # 경고까지 막으면 통과할 수 없다(기준선 149건) — 에러만 막는다
+        # 경고까지 막으면 통과할 수 없다(2026-09-29 기준선 149건: warning 34 · info 115) — 에러만 막는다
         run: dart analyze lib --no-fatal-warnings
 
       - name: 출시노트 뽑기
@@ -105,7 +125,11 @@ jobs:
           PY
 
       - name: 릴리스 빌드
-        run: flutter build appbundle --release
+        run: |
+          set -euo pipefail
+          df -h /
+          flutter build appbundle --release
+          df -h /
 
       - name: 업로드 (internal)
         if: ${{ inputs.dry_run != true }}

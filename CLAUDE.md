@@ -6,7 +6,7 @@
 -->
 
 `kdmp_cm_app` — KDMP **고객용(CM = customer)** Flutter 앱.
-Android `kr.or.kddsa.kdmp_cm_app` / iOS `kr.or.kddsa.kdmpCmApp`. 현재 `2.1.0+201`.
+Android `kr.or.kddsa.kdmp_cm_app` / iOS `kr.or.kddsa.kdmpCmApp`. 현재 `2.1.2+203`(2026-09-28 확인).
 
 고객이 본인인증 후 가입하고, 출발지·경유지·도착지를 지정해 대리운전 콜을 요청·취소하며,
 요금 흐름과 결제수단(빌링키)을 관리한다. 이용내역·차량 관리·문의·공지·약관·실종아동 조회를 제공한다.

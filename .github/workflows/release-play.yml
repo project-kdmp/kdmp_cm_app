@@ -82,10 +82,11 @@ jobs:
             exit 1
           fi
 
+          # 파일 이름은 트랙과 같아야 한다 — GPP 는 <트랙>.txt 를 default.txt 보다 우선한다
           NOTES_DIR=android/app/src/main/play/release-notes/ko-KR
           mkdir -p "$NOTES_DIR"
 
-          python3 - "$NOTES_SRC" "$NOTES_DIR/default.txt" <<'PY'
+          python3 - "$NOTES_SRC" "$NOTES_DIR/internal.txt" <<'PY'
           import re, sys
 
           src, dst = sys.argv[1], sys.argv[2]

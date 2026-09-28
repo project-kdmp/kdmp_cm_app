@@ -68,4 +68,8 @@ scratch/
 
 # Play 업로드용 서비스 계정 키 — 절대 커밋하지 않는다
 android/play-service-account.json
-android/app/src/main/play/release-notes/
+
+# 스토어 메타데이터는 저장소에서 관리하지 않는다. bootstrapListing 으로 내려받으면
+# 스크린샷까지 딸려 오는데, 반쯤 관리하다 낡은 설명을 라이브에 덮어쓸 수 있다.
+# 출시노트는 릴리스마다 스크립트가 여기에 새로 쓴다
+android/app/src/main/play/

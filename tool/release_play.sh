@@ -57,11 +57,14 @@ NOTES_SRC="docs/release-notes/${VERSION_NAME}.md"
 [[ -f "$NOTES_SRC" ]] ||
   die "$NOTES_SRC 가 없다. 무엇이 바뀌었는지 적지 않은 채로 올리지 않는다."
 
+# 파일 이름은 트랙과 같아야 한다. GPP 는 <트랙>.txt 를 default.txt 보다 우선하므로,
+# default.txt 에 써 두면 스토어에 남아 있던 옛 <트랙>.txt 가 대신 올라간다.
+# android/app/build.gradle 의 track.set("internal") 과 짝이다
 NOTES_DIR="android/app/src/main/play/release-notes/ko-KR"
 mkdir -p "$NOTES_DIR"
 
 # 첫 코드블록이 스토어 붙여넣기용 본문이다
-python3 - "$NOTES_SRC" "$NOTES_DIR/default.txt" <<'PY'
+python3 - "$NOTES_SRC" "$NOTES_DIR/internal.txt" <<'PY'
 import re, sys
 
 src, dst = sys.argv[1], sys.argv[2]

@@ -65,7 +65,7 @@ tool/release_play.sh             # 업로드까지
 
 | 단계 | 하는 일 | 막히면 |
 |---|---|---|
-| 사전 점검 | 작업트리가 깨끗한지, 로컬 전용 파일 4종이 있는지 | 멈춘다 |
+| 사전 점검 | 작업트리가 깨끗한지, 로컬 전용 파일 3종이 있는지 | 멈춘다 |
 | 출시노트 | `docs/release-notes/<버전>.md` 의 **첫 코드블록**을 뽑아 500자 검사 | 없거나 넘치면 멈춘다 |
 | 빌드 | `pub get` → `dart analyze lib` → `build appbundle --release` | 분석 에러면 멈춘다 |
 | 서명 확인 | aab 안에 서명 블록이 있는지 | 없으면 멈춘다 |
@@ -87,13 +87,13 @@ git tag v2.1.3 && git push origin v2.1.3
 
 ### 필요한 Secrets
 
-이 저장소는 빌드에 필요한 파일 네 종을 담지 않는다(`.gitignore`). 러너에는 없으므로
-Secrets 에서 되살린다. **저장소 → Settings → Secrets and variables → Actions**:
+이 저장소는 빌드에 필요한 파일 세 종을 담지 않는다(`.gitignore`). 러너에는 없으므로
+Secrets 에서 되살린다. Firebase 설정 파일(`google-services.json`)은 이 저장소에 아예
+없다 — `lib/firebase_options.dart` 로만 설정하고 Gradle 플러그인을 쓰지 않는다. **저장소 → Settings → Secrets and variables → Actions**:
 
 | 이름 | 내용 | 만드는 법 |
 |---|---|---|
 | `ENV_FILE` | 루트 `.env` 전문 | `cat .env` |
-| `GOOGLE_SERVICES_JSON` | Firebase 설정 전문 | `cat android/app/google-services.json` |
 | `KEY_PROPERTIES` | 서명 설정 전문 | `cat android/key.properties` |
 | `KEYSTORE_BASE64` | 키스토어를 base64 로 | `base64 -i android/kdmp_cm_app-upload-key.jks \| pbcopy` |
 | `PLAY_SERVICE_ACCOUNT_JSON` | 서비스 계정 키 전문 | `cat android/play-service-account.json` |

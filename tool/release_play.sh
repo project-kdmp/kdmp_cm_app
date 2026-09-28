@@ -41,8 +41,11 @@ if [[ $DRY_RUN -eq 0 && ! -f "$CREDENTIALS" ]]; then
      docs/deploy-play.md 의 발급 절차를 먼저 따른다."
 fi
 
-# 빌드에 필요한 로컬 파일 (전부 gitignore 대상이라 없을 수 있다)
-for f in .env android/app/google-services.json android/key.properties; do
+# 빌드에 필요한 로컬 파일 (전부 gitignore 대상이라 없을 수 있다).
+# Firebase 설정 파일(google-services.json)은 이 저장소에 없다 —
+# lib/firebase_options.dart 로만 설정하고 Gradle 플러그인을 쓰지 않는다
+KEYSTORE="android/$(sed -n 's/^storeFile=\.\.\///p' android/key.properties)"
+for f in .env android/key.properties "$KEYSTORE"; do
   [[ -f "$f" ]] || die "$f 가 없다. 이 파일들은 저장소에 담기지 않는다."
 done
 

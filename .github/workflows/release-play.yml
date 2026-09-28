@@ -1,0 +1,120 @@
+name: Release to Play (internal)
+
+# 내부 테스트 트랙까지만 올린다. 프로덕션 승격은 Play Console 에서 사람이 누른다.
+#
+# 자동으로 돌지 않는다 — 태그를 밀거나 Actions 에서 직접 실행할 때만 돈다.
+# 스토어로 나가는 일은 사람이 시작점을 찍어야 한다.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "빌드까지만 하고 업로드하지 않는다"
+        type: boolean
+        default: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 로컬 전용 파일 복원
+        # .env · 키스토어 · key.properties 는 저장소에 없다. Secrets 에서 되살린다.
+        # Firebase 설정 파일(google-services.json)은 이 저장소에 아예 없다 —
+        # lib/firebase_options.dart 로만 설정하고 Gradle 플러그인을 쓰지 않는다.
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEY_PROPERTIES: ${{ secrets.KEY_PROPERTIES }}
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          set -euo pipefail
+
+          for name in ENV_FILE KEYSTORE_BASE64 KEY_PROPERTIES PLAY_SERVICE_ACCOUNT_JSON; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Secret $name 이 비어 있다. docs/deploy-play.md 를 따라 등록한다."
+              exit 1
+            fi
+          done
+
+          printf '%s' "$ENV_FILE" > .env
+          printf '%s' "$KEY_PROPERTIES" > android/key.properties
+          printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON" > android/play-service-account.json
+          printf '%s' "$KEYSTORE_BASE64" | base64 -d > android/kdmp_cm_app-upload-key.jks
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          # .fvmrc 와 같은 버전이어야 한다. 여기만 올리면 로컬과 갈린다
+          flutter-version: "3.35.7"
+          channel: stable
+          cache: true
+
+      - name: 의존성
+        run: flutter pub get
+
+      - name: 정적 분석
+        # 테스트가 사실상 없어 이것이 실질적인 유일한 자동 검증이다.
+        # 경고까지 막으면 통과할 수 없다(기준선 149건) — 에러만 막는다
+        run: dart analyze lib --no-fatal-warnings
+
+      - name: 출시노트 뽑기
+        run: |
+          set -euo pipefail
+
+          VERSION_LINE=$(grep '^version:' pubspec.yaml)
+          VERSION_NAME=${VERSION_LINE#version: }
+          VERSION_NAME=${VERSION_NAME%%+*}
+
+          NOTES_SRC="docs/release-notes/${VERSION_NAME}.md"
+          if [ ! -f "$NOTES_SRC" ]; then
+            echo "::error::$NOTES_SRC 가 없다. 무엇이 바뀌었는지 적지 않은 채로 올리지 않는다."
+            exit 1
+          fi
+
+          # 파일 이름은 트랙과 같아야 한다 — GPP 는 <트랙>.txt 를 default.txt 보다 우선한다
+          NOTES_DIR=android/app/src/main/play/release-notes/ko-KR
+          mkdir -p "$NOTES_DIR"
+
+          python3 - "$NOTES_SRC" "$NOTES_DIR/internal.txt" <<'PY'
+          import re, sys
+
+          src, dst = sys.argv[1], sys.argv[2]
+          text = open(src, encoding="utf-8").read()
+
+          match = re.search(r"^```\n(.*?)\n```", text, re.S | re.M)
+          if not match:
+              sys.exit(f"{src} 에서 스토어 본문(코드블록)을 찾지 못했다.")
+
+          body = match.group(1).strip()
+          if len(body) > 500:
+              sys.exit(f"스토어 본문이 {len(body)}자다. 500자를 넘으면 Play 가 거부한다.")
+
+          open(dst, "w", encoding="utf-8").write(body + "\n")
+          print(f"{len(body)}자 / 500")
+          PY
+
+      - name: 릴리스 빌드
+        run: flutter build appbundle --release
+
+      - name: 업로드 (internal)
+        if: ${{ inputs.dry_run != true }}
+        working-directory: android
+        run: ./gradlew publishBundle --no-daemon
+
+      - name: 산출물 보관
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 14

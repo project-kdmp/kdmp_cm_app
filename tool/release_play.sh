@@ -98,8 +98,11 @@ fvm flutter build appbundle --release
 AAB="build/app/outputs/bundle/release/app-release.aab"
 [[ -f "$AAB" ]] || die "$AAB 가 만들어지지 않았다."
 
-# 업로드 키로 서명됐는지 확인한다 — 디버그 키로 서명된 것을 올리면 Play 가 거부한다
-unzip -l "$AAB" | grep -qE 'META-INF/.*\.(RSA|DSA|EC)' ||
+# 업로드 키로 서명됐는지 확인한다 — 서명 없는 것을 올리면 Play 가 거부한다.
+# grep -q 로 바로 파이프하면 grep 이 먼저 닫아 unzip 이 SIGPIPE 로 죽고,
+# pipefail 이 그것을 실패로 친다. 목록을 먼저 담는다
+AAB_ENTRIES="$(unzip -l "$AAB")"
+grep -qE 'META-INF/.*\.(RSA|DSA|EC)' <<<"$AAB_ENTRIES" ||
   die "서명이 확인되지 않는다. android/key.properties 를 확인한다."
 
 echo "  $AAB ($(du -h "$AAB" | cut -f1))"

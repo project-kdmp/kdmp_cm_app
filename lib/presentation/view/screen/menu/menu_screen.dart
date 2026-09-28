@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/presentation/theme/custom_theme_mode.dart';
 import 'package:kdmp_cm_app/presentation/values/images.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/address/favorite_address_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/cs_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/term_list_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/setup_screen.dart';
@@ -91,6 +92,19 @@ class MenuScreen extends StatelessWidget {
                       ),
                       onPressed: () {
                         context.pushNamed(CarInfoScreen.routeName);
+                      },
+                    ),
+
+                    /// 자주 가는 주소 버튼
+                    ///
+                    /// 홈의 집·회사 칩은 등록돼 있으면 도착지로 넣는 것이 본래 쓸모라,
+                    /// 한 번 등록하고 나면 관리 화면으로 돌아갈 길이 없었다.
+                    /// 등록 여부와 무관하게 늘 열려 있는 길이 하나 필요하다
+                    CustomMoveButton(
+                      text: StringMenu.favoriteAddress,
+                      icon: Icons.star_outline,
+                      onPressed: () {
+                        context.pushNamed(FavoriteAddressScreen.routeName);
                       },
                     ),
                     const Divider(thickness: 6),

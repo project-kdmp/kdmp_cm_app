@@ -14,6 +14,7 @@ class CustomMoveButton extends StatelessWidget {
     this.minimumSize,
     this.isBold = true,
     this.iconImage,
+    this.icon,
   }) : super(key: key);
 
   final String text;
@@ -27,6 +28,11 @@ class CustomMoveButton extends StatelessWidget {
   final Size? minimumSize;
   final bool isBold;
   final Image? iconImage;
+
+  /// 에셋이 없는 항목용. iconImage 와 같은 자리를 같은 크기로 차지한다
+  final IconData? icon;
+
+  bool get hasLeading => iconImage != null || icon != null;
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +48,16 @@ class CustomMoveButton extends StatelessWidget {
             shadowColor: Colors.transparent,
           ),
           child: Row(
-            crossAxisAlignment: iconImage != null ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+            crossAxisAlignment: hasLeading ? CrossAxisAlignment.center : CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              iconImage != null ? iconImage! : const SizedBox(),
-              SizedBox(width: iconImage != null ? 16 : 0),
+              if (iconImage != null)
+                iconImage!
+              else if (icon != null)
+                Icon(icon, size: 28, color: Theme.of(context).iconTheme.color)
+              else
+                const SizedBox(),
+              SizedBox(width: hasLeading ? 16 : 0),
               Text(
                 text,
                 style: isBold ? Theme.of(context).textTheme.titleLarge?.copyWith(color: textColor) : Theme.of(context).textTheme.bodyLarge?.copyWith(color: textColor),

@@ -419,6 +419,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 await context.pushNamed(MenuScreen.routeName);
 
+                /// 메뉴에서 자주 가는 주소를 고쳤을 수 있다. initData 는 이 목록을
+                /// 읽지 않으므로 따로 갱신한다 — 안 하면 칩이 옛 주소를 가리킨다
+                _favoriteAddressViewModel.getFavoriteAddressList();
+
                 /// 화면 이동 완료 후 네이버 지도 보여줌
                 initData();
               },

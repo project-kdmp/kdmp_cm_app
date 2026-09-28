@@ -183,6 +183,7 @@ abstract class StringMenu {
   static const String called = "이용내역";
   static const String payment = "결제관리";
   static const String carInfo = "차량정보";
+  static const String favoriteAddress = "자주 가는 주소";
   static const String cs = "고객센터";
   static const String terms = "이용약관";
   static const String setup = "환경설정";

@@ -86,6 +86,7 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/setup/setup_usecase.da
 import 'package:kdmp_cm_app/domain/usecase/term/get_term_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/term/set_my_term_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/get_driver_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_reservation_info_usecase.dart';
@@ -94,6 +95,7 @@ import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_info_change_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_driver_favorite_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_pay_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_review_write_usecase.dart';
@@ -399,6 +401,10 @@ void main() async {
   getIt.registerSingleton<GetDrivingUseCase>(getDrivingUseCase);
   final getDrivingPriceUseCase = GetDrivingPriceUseCase(workRepository: workRepository);
   getIt.registerSingleton<GetDrivingPriceUseCase>(getDrivingPriceUseCase);
+  final getDriverListUseCase = GetDriverListUseCase(workRepository: workRepository);
+  getIt.registerSingleton<GetDriverListUseCase>(getDriverListUseCase);
+  final setDriverFavoriteUseCase = SetDriverFavoriteUseCase(workRepository: workRepository);
+  getIt.registerSingleton<SetDriverFavoriteUseCase>(setDriverFavoriteUseCase);
 
   /// 결제
   final paymentRepository = PaymentRepositoryImpl(dio);

@@ -120,6 +120,19 @@ class WorkViewModel {
     setCallInfoChangeVisible = value == DrvReqSt.cco || value == DrvReqSt.rco || value == DrvReqSt.wat || value == DrvReqSt.rwt || value == DrvReqSt.rst || value == DrvReqSt.sta;
   }
 
+  /// 지정 호출 대기. 지정한 기사에게만 콜이 보이는 시한이다.
+  /// 지정이 없거나 이미 배차됐으면 null 이고, 시한이 지나면 전체 기사에게 공개된다
+  final ValueNotifier<DateTime?> _appointExpireDt = ValueNotifier<DateTime?>(null);
+
+  ValueNotifier<DateTime?> get appointExpireDtNotifier => _appointExpireDt;
+
+  set appointExpireDt(DateTime? value) => _appointExpireDt.value = value;
+
+  /// 지정한 기사 이름
+  String _appointDmNm = "";
+
+  String get appointDmNm => _appointDmNm;
+
   /// 출발지
   final ValueNotifier<String> _start = ValueNotifier<String>("");
 
@@ -216,6 +229,8 @@ class WorkViewModel {
       // callNumber = response.drvSafeCall ?? "";
       callNumber = response.dmMbrMobilePhone ?? "";
       _mbrDmSq = response.mbrDmSq ?? 0;
+      _appointDmNm = response.appointDmNm ?? "";
+      appointExpireDt = response.appointExpireDt != null ? DateTime.tryParse(response.appointExpireDt!) : null;
 
       if (isSearchMapData) {
         startMapData = await getSearchMapData(address: response.reqStartAddress, place: response.reqStartPlaceNm);

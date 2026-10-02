@@ -142,3 +142,22 @@ abstract class PolicyTp {
   static const String wthd = "WTHD"; // 출금 정책
   static const String cncl = "CNCL"; // 탈퇴 정책
 }
+
+/// 기사 검색 유형
+abstract class DrvSearchTp {
+  DrvSearchTp._();
+
+  static const String recent = "RCNT"; // 최근 이용 기사
+  static const String favorite = "FAVR"; // 단골 기사
+  static const String nearby = "NEAR"; // 주변 대기 기사
+  static const String keyword = "KEYW"; // 이름·기사번호 검색
+}
+
+/// 기사 근무 상태
+abstract class DrvWorkSt {
+  DrvWorkSt._();
+
+  static const String wait = "WAIT"; // 대기중
+  static const String work = "WORK"; // 운행중
+  static const String off = "OFFL"; // 오프라인
+}

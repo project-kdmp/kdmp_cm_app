@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/default_request.dart';
@@ -10,6 +11,7 @@ import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/directions_request.dart';
 import 'package:kdmp_cm_app/data/model/policy/policy_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_request.dart';
+import 'package:kdmp_cm_app/data/model/work/driver_list_response.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_price_request.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_request.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
@@ -21,6 +23,7 @@ import 'package:kdmp_cm_app/domain/usecase/work/get_driving_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_request_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_reservation_request_usecase.dart';
+import 'package:kdmp_cm_app/presentation/values/strings.dart';
 
 class HomeViewModel {
   HomeViewModel({
@@ -106,6 +109,15 @@ class HomeViewModel {
         drivingAddress: mapData.drivingAddress,
       ));
   }
+
+  /// 지정 호출할 기사. 비어 있으면 서버가 일반 배차로 처리한다
+  final ValueNotifier<Driver?> _selectedDriver = ValueNotifier<Driver?>(null);
+
+  ValueNotifier<Driver?> get selectedDriverNotifier => _selectedDriver;
+
+  Driver? get selectedDriver => _selectedDriver.value;
+
+  set selectedDriver(Driver? value) => _selectedDriver.value = value;
 
   /// 도착지 데이터 모델
   final ValueNotifier<MapData?> _endMapData = ValueNotifier<MapData?>(null);
@@ -389,6 +401,17 @@ class HomeViewModel {
     return result;
   }
 
+
+  /// 지정한 기사가 퇴근·탈퇴 상태면 서버가 지정을 떼고 일반 배차로 접수한다.
+  /// 고객이 모르고 지나가지 않도록 알리고, 남아 있는 지정을 지운다.
+  void _noticeAppointReleased(StateAPI result) {
+    if (result is! Success) return;
+    if (!result.drvResponse.appointReleased) return;
+
+    selectedDriver = null;
+    Fluttertoast.showToast(msg: StringDriverSelect.released);
+  }
+
   /// 콜 호출하기 API
   Future<StateAPI> requestCall({required String carNumId}) async {
     state = Loading();
@@ -413,8 +436,10 @@ class HomeViewModel {
       gpsEndLat: endMapData!.latLng.latitude,
       gpsEndLong: endMapData!.latLng.longitude,
       tossCardId: cardId,
+      appointDmSq: selectedDriver?.mbrDmSq,
     );
     final result = await setCallRequestUseCase.execute(callRequest: request);
+    _noticeAppointReleased(result);
     state = result;
 
     return result;
@@ -446,8 +471,10 @@ class HomeViewModel {
       gpsEndLat: endMapData!.latLng.latitude,
       gpsEndLong: endMapData!.latLng.longitude,
       tossCardId: cardId,
+      appointDmSq: selectedDriver?.mbrDmSq,
     );
     final result = await setReservationRequestUseCase.execute(reservationRequest: request);
+    _noticeAppointReleased(result);
     state = result;
 
     return result;

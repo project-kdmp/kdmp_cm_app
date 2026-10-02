@@ -32,6 +32,11 @@ class CallInfoResponse {
   double gpsStartLong;
   double gpsEndLat;
   double gpsEndLong;
+  /// 지정 호출 대기. 지정한 기사 이름과 그 기사에게만 콜이 보이는 시한이다.
+  /// 지정 없이 접수했거나 이미 배차됐으면 둘 다 null 이다
+  String? appointDmNm;
+  String? appointExpireDt;
+
   String? createId;
   String? createDt;
   String? updateId;
@@ -67,6 +72,8 @@ class CallInfoResponse {
     required this.gpsStartLong,
     required this.gpsEndLat,
     required this.gpsEndLong,
+    this.appointDmNm,
+    this.appointExpireDt,
     this.createId,
     this.createDt,
     this.updateId,
@@ -103,6 +110,8 @@ class CallInfoResponse {
         gpsStartLong: json["gpsStartLong"],
         gpsEndLat: json["gpsEndLat"],
         gpsEndLong: json["gpsEndLong"],
+        appointDmNm: json["appointDmNm"],
+        appointExpireDt: json["appointExpireDt"],
         createId: json["createId"],
         createDt: json["createDt"],
         updateId: json["updateId"],
@@ -139,6 +148,8 @@ class CallInfoResponse {
         "gpsStartLong": gpsStartLong,
         "gpsEndLat": gpsEndLat,
         "gpsEndLong": gpsEndLong,
+        "appointDmNm": appointDmNm,
+        "appointExpireDt": appointExpireDt,
         "createId": createId,
         "createDt": createDt,
         "updateId": updateId,

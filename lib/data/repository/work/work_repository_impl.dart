@@ -13,6 +13,9 @@ import 'package:kdmp_cm_app/data/model/work/call_info_change_request.dart';
 import 'package:kdmp_cm_app/data/model/work/call_info_response.dart';
 import 'package:kdmp_cm_app/data/model/work/call_request.dart';
 import 'package:kdmp_cm_app/data/model/work/confirm_call_cancel_request.dart';
+import 'package:kdmp_cm_app/data/model/work/driver_favorite_request.dart';
+import 'package:kdmp_cm_app/data/model/work/driver_list_request.dart';
+import 'package:kdmp_cm_app/data/model/work/driver_list_response.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_price_request.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_price_response.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_request.dart';
@@ -449,6 +452,80 @@ class WorkRepositoryImpl extends WorkRepository {
       /// bizErrCode 없으면 정상 데이터 파싱
       if (!response.data.containsKey("bizErrCode")) {
         final responseObject = DrivingPriceResponse.fromJson(response.data);
+        final StateAPI state = Success(responseObject);
+        debugPrint("state: $state");
+        return state;
+      } else {
+        final badResponse = BadResponse.fromJson(response.data);
+        final StateAPI state = Bad(badResponse);
+        if (badResponse.detailMessage.isNotEmpty) {
+          Fluttertoast.showToast(msg: badResponse.detailMessage);
+        } else {
+          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
+        }
+        debugPrint("state: $state");
+        return state;
+      }
+    } catch (e, stackTrace) {
+      const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
+      Fluttertoast.showToast(msg: errorMessage);
+      return Fail(errorMessage: errorMessage);
+    }
+  }
+
+  @override
+  Future<StateAPI> getDriverList({required DriverListRequest driverListRequest}) async {
+    const api = '/v1/biztotal/cm/drv/listDriver';
+    final url = '${AppConstants.API}$api';
+
+    try {
+      final response = await _dio.get(
+        url,
+        queryParameters: driverListRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      /// bizErrCode 없으면 정상 데이터 파싱
+      if (!response.data.containsKey("bizErrCode")) {
+        final responseObject = DriverListResponse.fromJson(response.data);
+        final StateAPI state = Success(responseObject);
+        debugPrint("state: $state");
+        return state;
+      } else {
+        final badResponse = BadResponse.fromJson(response.data);
+        final StateAPI state = Bad(badResponse);
+        if (badResponse.detailMessage.isNotEmpty) {
+          Fluttertoast.showToast(msg: badResponse.detailMessage);
+        } else {
+          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
+        }
+        debugPrint("state: $state");
+        return state;
+      }
+    } catch (e, stackTrace) {
+      const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
+      Fluttertoast.showToast(msg: errorMessage);
+      return Fail(errorMessage: errorMessage);
+    }
+  }
+
+  @override
+  Future<StateAPI> setDriverFavorite({required DriverFavoriteRequest driverFavoriteRequest}) async {
+    const api = '/v1/biztotal/cm/drv/saveFavoriteDriver';
+    final url = '${AppConstants.API}$api';
+
+    try {
+      final response = await _dio.post(
+        url,
+        data: driverFavoriteRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      /// bizErrCode 없으면 정상 데이터 파싱
+      if (!response.data.containsKey("bizErrCode")) {
+        final responseObject = DefaultResponse.fromJson(response.data);
         final StateAPI state = Success(responseObject);
         debugPrint("state: $state");
         return state;

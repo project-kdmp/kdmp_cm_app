@@ -550,3 +550,40 @@ abstract class StringPaymentPassword {
 
   static const String setPasswordSuccess = "결제 비밀번호가 등록되었습니다.";
 }
+
+abstract class StringDriverSelect {
+  StringDriverSelect._();
+
+  static const String title = "기사 지정";
+  static const String searchHint = "기사 이름 또는 기사번호 검색";
+  static const String tabRecent = "최근 이용";
+  static const String tabFavorite = "단골";
+  static const String tabNearby = "주변 대기";
+  static const String workWait = "대기중";
+  static const String workWorking = "운행중";
+  static const String workOff = "오프라인";
+  static const String favoriteTag = "단골";
+  static const String notice = "지정한 기사가 60초 안에 수락하지 않으면 자동으로 일반 배차로 전환됩니다.";
+  static const String emptyRecent = "최근 이용한 기사가 없습니다.";
+  static const String emptyFavorite = "등록한 단골 기사가 없습니다.";
+  static const String emptyNearby = "주변에 대기 중인 기사가 없습니다.";
+  static const String emptyKeyword = "일치하는 기사가 없습니다.";
+  static const String emptyGuide = "기사 지정 없이 일반 배차로 호출할 수 있습니다.";
+  static const String skipButton = "기사 지정 없이 호출";
+  static const String confirmButton = "지정하고 호출";
+  static const String waitPrefix = "지정 기사";
+  static const String waitSuffix = "님 응답 대기";
+  static const String waitGuide = "시한이 지나면 모든 기사에게 공개됩니다.";
+  static const String driverNo = "기사번호";
+  static const String grade = "평점";
+  static const String drvCnt = "누적 운행";
+  static const String acceptRate = "수락률";
+  static const String arrival = "평균 도착";
+  static const String lastUse = "최근 이용";
+  static const String assignTag = "지정 기사";
+  static const String assignEmpty = "자동 배차";
+  static const String assignTitle = "기사 지정";
+  static const String detailAssign = "이 기사로 지정하고 호출";
+  static const String close = "닫기";
+  static const String released = "지정한 기사가 운행할 수 없는 상태라 일반 배차로 접수했습니다.";
+}

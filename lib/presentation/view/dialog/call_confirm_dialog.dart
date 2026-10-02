@@ -12,6 +12,7 @@ class CallConfirmDialog extends StatelessWidget {
     required this.onConfirm,
     this.onCancel,
     required this.notiPolicy,
+    this.driverNm,
   }) : super(key: key);
 
   final String? title;
@@ -19,6 +20,9 @@ class CallConfirmDialog extends StatelessWidget {
   final Function() onConfirm;
   final Function()? onCancel;
   final Policy notiPolicy;
+
+  /// 지정 호출한 기사 이름. 지정하지 않았으면 null 이다
+  final String? driverNm;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +50,23 @@ class CallConfirmDialog extends StatelessWidget {
             child: Text("$content${StringCall.callContent}", textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
           ),
           const SizedBox(height: 12),
+
+          /// 지정 기사
+          if (driverNm != null)
+            Container(
+              width: double.maxFinite,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                "${StringDriverSelect.assignTag} · $driverNm",
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+          if (driverNm != null) const SizedBox(height: 12),
 
           /// 일반콜 유의사항
           SizedBox(

@@ -16,6 +16,7 @@ import 'package:kdmp_cm_app/data/model/common/policy_model.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/common/stopover_model.dart';
 import 'package:kdmp_cm_app/data/model/mypage/car_list_response.dart';
+import 'package:kdmp_cm_app/data/model/work/driver_list_response.dart';
 import 'package:kdmp_cm_app/data/model/payment/payment_model.dart';
 import 'package:kdmp_cm_app/domain/usecase/lost_child/get_lost_child_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/get_car_list_usecase.dart';
@@ -50,6 +51,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_management_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/work/driver_select_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/work/work_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
@@ -1239,6 +1241,74 @@ class _HomeScreenState extends State<HomeScreen> {
                                             },
                                           ),
 
+                                          const Divider(thickness: 1),
+
+                                          /// 기사 지정
+                                          ValueListenableBuilder<Driver?>(
+                                            valueListenable: _homeViewModel.selectedDriverNotifier,
+                                            builder: (context, driver, child) {
+                                              return Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 28),
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.person_search,
+                                                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                                                      size: 24,
+                                                    ),
+                                                    const SizedBox(width: 18),
+                                                    Text(StringDriverSelect.assignTitle, style: Theme.of(context).textTheme.bodyLarge),
+                                                    const SizedBox(width: 14),
+
+                                                    /// 지정한 기사
+                                                    Expanded(
+                                                      child: Text(
+                                                        driver == null ? StringDriverSelect.assignEmpty : driver.drvNm,
+                                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                              color: Theme.of(context).disabledColor,
+                                                            ),
+                                                      ),
+                                                    ),
+
+                                                    /// 기사 지정 버튼
+                                                    CustomRoundButton(
+                                                      text: driver == null ? StringHome.selectButton : StringHome.changeButton,
+                                                      backgroundColor: Theme.of(context).colorScheme.primary,
+                                                      textColor: Colors.white,
+                                                      borderColor: Theme.of(context).colorScheme.primary,
+                                                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                                                      onPressed: () async {
+                                                        /// 화면 이동 전 네이버지도 가림
+                                                        naverMap = null;
+
+                                                        /// 기사 지정 화면으로 이동. 주변 탭의 거리 기준은 출발지다
+                                                        final startLatLng = _homeViewModel.startMapData?.latLng ?? _homeViewModel.currentLatLng;
+                                                        final result = await context.pushNamed(
+                                                          DriverSelectScreen.routeName,
+                                                          extra: <String, dynamic>{
+                                                            "gpsLat": startLatLng.latitude,
+                                                            "gpsLong": startLatLng.longitude,
+                                                            "selectedDriver": driver,
+                                                          },
+                                                        );
+
+                                                        /// 기사를 고르면 지정하고, 지정 없이 호출을 고르면 지운다
+                                                        if (result is Driver) {
+                                                          _homeViewModel.selectedDriver = result;
+                                                        } else if (result == false) {
+                                                          _homeViewModel.selectedDriver = null;
+                                                        }
+
+                                                        /// 화면 이동 완료 후 네이버 지도 보여줌
+                                                        initData();
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+
                                           /// 예약하기 / 호출하기 버튼
                                           ValueListenableBuilder<bool>(
                                             valueListenable: _homeViewModel
@@ -1306,6 +1376,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             useSafeArea: true,
                                                             builder: (context) {
                                                               return ReservationConfirmBottomSheet(
+                                                                driverNm: _homeViewModel
+                                                                    .selectedDriver
+                                                                    ?.drvNm,
                                                                 dateTitle:
                                                                     dateTitle,
                                                                 dateValue:
@@ -1689,6 +1762,7 @@ class _HomeScreenState extends State<HomeScreen> {
           content: content,
           notiPolicy: notiPolicy,
           onConfirm: onConfirm,
+          driverNm: _homeViewModel.selectedDriver?.drvNm,
         );
       },
     );

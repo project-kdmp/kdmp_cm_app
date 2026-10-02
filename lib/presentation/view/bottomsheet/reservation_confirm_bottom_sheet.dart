@@ -19,6 +19,7 @@ class ReservationConfirmBottomSheet extends StatefulWidget {
     required this.end,
     required this.stopOverList,
     required this.notiPolicy,
+    this.driverNm,
   }) : super(key: key);
 
   final String dateTitle;
@@ -29,6 +30,9 @@ class ReservationConfirmBottomSheet extends StatefulWidget {
   final MapData end;
   final List<StopOver> stopOverList;
   final Policy notiPolicy;
+
+  /// 지정 호출한 기사 이름. 지정하지 않았으면 null 이다
+  final String? driverNm;
 
   @override
   State<ReservationConfirmBottomSheet> createState() => _ReservationConfirmBottomSheetState();
@@ -144,6 +148,18 @@ class _ReservationConfirmBottomSheetState extends State<ReservationConfirmBottom
                               Expanded(child: Text(widget.paymentNm, textAlign: TextAlign.start)),
                             ],
                           ),
+
+                          /// 지정 기사
+                          if (widget.driverNm != null) const SizedBox(height: 14),
+                          if (widget.driverNm != null)
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(StringDriverSelect.assignTitle, textAlign: TextAlign.start, style: TextStyle(color: Theme.of(context).disabledColor)),
+                                SizedBox(height: 12, child: VerticalDivider(thickness: 1, width: 40, color: Theme.of(context).disabledColor)),
+                                Expanded(child: Text(widget.driverNm!, textAlign: TextAlign.start)),
+                              ],
+                            ),
                         ],
                       ),
                     ),

@@ -40,6 +40,8 @@ import 'package:kdmp_cm_app/presentation/view/screen/term/cm_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/driver_term_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/term_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/term/term_screen.dart';
+import 'package:kdmp_cm_app/data/model/work/driver_list_response.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/work/driver_select_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/work/work_screen.dart';
 
 final GoRouter router = GoRouter(
@@ -190,6 +192,20 @@ final GoRouter router = GoRouter(
           name: FavoriteAddressScreen.routeName,
           path: FavoriteAddressScreen.routeName,
           builder: (context, state) => const FavoriteAddressScreen(),
+        ),
+
+        /// 기사 지정
+        GoRoute(
+          name: DriverSelectScreen.routeName,
+          path: DriverSelectScreen.routeName,
+          builder: (context, state) {
+            final data = state.extra as Map<String, dynamic>;
+            return DriverSelectScreen(
+              gpsLat: data["gpsLat"] as double,
+              gpsLong: data["gpsLong"] as double,
+              selectedDriver: data["selectedDriver"] as Driver?,
+            );
+          },
         ),
 
         /// 도착지 설정 검색

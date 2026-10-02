@@ -40,6 +40,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/mypage/called_detail_screen
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_round_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/divider/vertical_dashed_divider.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/section/appoint_wait_notice.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/call_progress_indicator.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/work/work_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -426,6 +427,17 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
                                   },
                                 ),
                                 const SizedBox(height: 16),
+
+                                /// 지정 호출 대기. 지정한 기사가 수락하기 전까지만 보인다
+                                ValueListenableBuilder<DateTime?>(
+                                  valueListenable: _workViewModel.appointExpireDtNotifier,
+                                  builder: (context, value, child) {
+                                    return AppointWaitNotice(
+                                      driverNm: _workViewModel.appointDmNm,
+                                      expireDt: value,
+                                    );
+                                  },
+                                ),
 
                                 /// 이동 지도. 운행이 시작된 뒤에만 보여준다 —
                                 /// 아직 출발하지 않았으면 그릴 이동이 없다

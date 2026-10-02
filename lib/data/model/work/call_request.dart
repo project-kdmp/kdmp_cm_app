@@ -34,6 +34,9 @@ class CallRequest {
 
   String tossCardId;
 
+  /// 지정 호출한 기사. 지정하지 않으면 null 이고 서버가 일반 배차로 처리한다
+  int? appointDmSq;
+
   CallRequest({
     required this.mbrCmSq,
     required this.paymKind,
@@ -57,6 +60,7 @@ class CallRequest {
     required this.gpsEndLat,
     required this.gpsEndLong,
     required this.tossCardId,
+    this.appointDmSq,
   });
 
   factory CallRequest.fromJson(Map<String, dynamic> json) => CallRequest(
@@ -82,6 +86,7 @@ class CallRequest {
         gpsEndLat: json["gpsEndLat"],
         gpsEndLong: json["gpsEndLong"],
         tossCardId: json["tossCardId"],
+        appointDmSq: json["appointDmSq"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -109,5 +114,6 @@ class CallRequest {
         "gpsEndLat": gpsEndLat,
         "gpsEndLong": gpsEndLong,
         "tossCardId": tossCardId,
+        "appointDmSq": appointDmSq,
       };
 }

@@ -191,16 +191,25 @@ class _DriverSelectScreenState extends State<DriverSelectScreen> {
               child: ValueListenableBuilder<Driver?>(
                 valueListenable: _driverSelectViewModel.selectedDriverNotifier,
                 builder: (context, selected, child) {
-                  return Row(
+                  /// 위아래로 쌓는다. 나란히 놓으면 한 칸이 화면 폭의 절반뿐이라
+                  /// 글자가 두 줄로 내려간다.
+                  ///
+                  /// 이 앱은 텍스트 크기를 16·19·22 세 단계로 바꿀 수 있다(CustomTextMode).
+                  /// 22 에서는 두 문구가 각각 패딩까지 156dp 가량을 요구하는데, 폭 360dp
+                  /// 기기의 가용 폭이 312dp 다 — 곁에 두는 배치로는 들어갈 자리가 없다.
+                  /// 전체 폭을 쓰면 가장 큰 글자에도 여유가 남는다.
+                  return Column(
                     children: [
-                      Expanded(
+                      SizedBox(
+                        width: double.infinity,
                         child: CustomRadiusButton(
                           text: StringDriverSelect.skipButton,
                           onPressed: () => context.pop(false),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
                         child: CustomRadiusButton(
                           isEnabled: selected != null,
                           text: StringDriverSelect.confirmButton,

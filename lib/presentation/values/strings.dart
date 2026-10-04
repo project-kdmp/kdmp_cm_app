@@ -563,13 +563,13 @@ abstract class StringDriverSelect {
   static const String workWorking = "운행중";
   static const String workOff = "오프라인";
   static const String favoriteTag = "단골";
-  static const String notice = "지정한 기사가 60초 안에 수락하지 않으면 자동으로 일반 배차로 전환됩니다.";
+  static const String notice = "지정한 기사가 일정 시간 안에 수락하지 않으면 자동으로 일반 배차로 전환됩니다.";
   static const String emptyRecent = "최근 이용한 기사가 없습니다.";
   static const String emptyFavorite = "등록한 단골 기사가 없습니다.";
   static const String emptyNearby = "주변에 대기 중인 기사가 없습니다.";
   static const String emptyKeyword = "일치하는 기사가 없습니다.";
   static const String emptyGuide = "기사 지정 없이 일반 배차로 호출할 수 있습니다.";
-  static const String skipButton = "기사 지정 없이 호출";
+  static const String skipButton = "지정 없이 호출";
   static const String confirmButton = "지정하고 호출";
   static const String waitPrefix = "지정 기사";
   static const String waitSuffix = "님 응답 대기";

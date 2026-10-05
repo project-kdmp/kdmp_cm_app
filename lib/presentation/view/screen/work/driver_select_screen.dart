@@ -99,13 +99,18 @@ class _DriverSelectScreenState extends State<DriverSelectScreen> {
       isScrollControlled: true,
       builder: (context) {
         return Wrap(children: [
-          DriverDetailBottomSheet(
-            driver: driver,
-            onFavoritePressed: () async {
-              await _driverSelectViewModel.toggleFavorite(driver);
-              if (!context.mounted) return;
-              context.pop();
-            },
+          Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
+            ),
+            child: DriverDetailBottomSheet(
+              driver: driver,
+              onFavoritePressed: () async {
+                await _driverSelectViewModel.toggleFavorite(driver);
+                if (!context.mounted) return;
+                context.pop();
+              },
+            ),
           )
         ]);
       },
@@ -187,7 +192,7 @@ class _DriverSelectScreenState extends State<DriverSelectScreen> {
 
             /// 지정 없이 호출 / 지정하고 호출
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+              padding: EdgeInsets.fromLTRB(20, 12, 20, 20 + MediaQuery.of(context).padding.bottom),
               child: ValueListenableBuilder<Driver?>(
                 valueListenable: _driverSelectViewModel.selectedDriverNotifier,
                 builder: (context, selected, child) {

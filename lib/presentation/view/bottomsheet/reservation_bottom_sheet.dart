@@ -126,7 +126,14 @@ class _ReservationBottomSheetState extends State<ReservationBottomSheet> {
                             context: context,
                             isScrollControlled: true,
                             builder: (context) {
-                              return Wrap(children: [ReservationDateBottomSheet()]);
+                              return Wrap(children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
+                                  ),
+                                  child: const ReservationDateBottomSheet(),
+                                )
+                              ]);
                             },
                           );
                           if (result != null && result is DateTime) {
@@ -169,7 +176,14 @@ class _ReservationBottomSheetState extends State<ReservationBottomSheet> {
                             context: context,
                             isScrollControlled: true,
                             builder: (context) {
-                              return Wrap(children: [ReservationTimeBottomSheet(date: date)]);
+                              return Wrap(children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
+                                  ),
+                                  child: ReservationTimeBottomSheet(date: date),
+                                )
+                              ]);
                             },
                           );
                           if (result != null) {

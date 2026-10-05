@@ -1350,9 +1350,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             isScrollControlled:
                                                                 true,
                                                             builder: (context) {
-                                                              return const Wrap(
+                                                              return Wrap(
                                                                   children: [
-                                                                    ReservationBottomSheet()
+                                                                    Padding(
+                                                                      padding: EdgeInsets.only(
+                                                                        bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
+                                                                      ),
+                                                                      child: const ReservationBottomSheet(),
+                                                                    )
                                                                   ]);
                                                             },
                                                           );

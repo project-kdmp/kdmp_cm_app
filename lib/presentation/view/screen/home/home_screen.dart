@@ -1496,19 +1496,15 @@ class _HomeScreenState extends State<HomeScreen> {
         final requestResult =
             await _homeViewModel.requestCall(carNumId: carNumId);
         if (requestResult is Success) {
+          /// 콜을 걸면 입력 폼을 비우고 진행 중인 콜 목록으로 간다.
+          /// 운행 화면으로 직행하지 않아 여러 명을 연달아 부르기 쉽다.
+          _homeViewModel.clearData();
+
           /// 화면 이동 전 네이버지도 가림
           naverMap = null;
 
-          /// 운행 화면으로 이동
-          final drvReqSq = requestResult.drvResponse.drvReqSq;
-          final callResult = await context.pushNamed(
-            WorkScreen.routeName,
-            extra: drvReqSq,
-          );
-          if (callResult == false) {
-            /// 운행취소 → 입력 데이터 삭제
-            _homeViewModel.clearData();
-          }
+          /// 진행 중인 콜 목록으로 이동
+          await context.pushNamed(CallListScreen.routeName);
 
           /// 화면 이동 완료 후 네이버 지도 보여줌
           initData();

@@ -37,10 +37,7 @@ import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/call_price_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/bottomsheet/car_select_bottom_sheet.dart';
-import 'package:kdmp_cm_app/presentation/view/bottomsheet/reservation_bottom_sheet.dart';
-import 'package:kdmp_cm_app/presentation/view/bottomsheet/reservation_confirm_bottom_sheet.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/call_confirm_dialog.dart';
-import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/custom_confirm_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/dialog/lost_child_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/end_map_screen.dart';
@@ -49,7 +46,6 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/favorite_address_sc
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
-import 'package:kdmp_cm_app/presentation/view/screen/mypage/call_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_management_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/work/driver_select_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/work/work_screen.dart';
@@ -1243,73 +1239,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                           const Divider(thickness: 1),
 
-                                          /// 기사 지정
-                                          ValueListenableBuilder<Driver?>(
-                                            valueListenable: _homeViewModel.selectedDriverNotifier,
-                                            builder: (context, driver, child) {
-                                              return Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 28),
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.person_search,
-                                                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                      size: 24,
-                                                    ),
-                                                    const SizedBox(width: 18),
-                                                    Text(StringDriverSelect.assignTitle, style: Theme.of(context).textTheme.bodyLarge),
-                                                    const SizedBox(width: 14),
-
-                                                    /// 지정한 기사
-                                                    Expanded(
-                                                      child: Text(
-                                                        driver == null ? StringDriverSelect.assignEmpty : driver.drvNm,
-                                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                              color: Theme.of(context).disabledColor,
-                                                            ),
-                                                      ),
-                                                    ),
-
-                                                    /// 기사 지정 버튼
-                                                    CustomRoundButton(
-                                                      text: driver == null ? StringHome.selectButton : StringHome.changeButton,
-                                                      backgroundColor: Theme.of(context).colorScheme.primary,
-                                                      textColor: Colors.white,
-                                                      borderColor: Theme.of(context).colorScheme.primary,
-                                                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                                      onPressed: () async {
-                                                        /// 화면 이동 전 네이버지도 가림
-                                                        naverMap = null;
-
-                                                        /// 기사 지정 화면으로 이동. 주변 탭의 거리 기준은 출발지다
-                                                        final startLatLng = _homeViewModel.startMapData?.latLng ?? _homeViewModel.currentLatLng;
-                                                        final result = await context.pushNamed(
-                                                          DriverSelectScreen.routeName,
-                                                          extra: <String, dynamic>{
-                                                            "gpsLat": startLatLng.latitude,
-                                                            "gpsLong": startLatLng.longitude,
-                                                            "selectedDriver": driver,
-                                                          },
-                                                        );
-
-                                                        /// 기사를 고르면 지정하고, 지정 없이 호출을 고르면 지운다
-                                                        if (result is Driver) {
-                                                          _homeViewModel.selectedDriver = result;
-                                                        } else if (result == false) {
-                                                          _homeViewModel.selectedDriver = null;
-                                                        }
-
-                                                        /// 화면 이동 완료 후 네이버 지도 보여줌
-                                                        initData();
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            },
-                                          ),
-
-                                          /// 예약하기 / 호출하기 버튼
+                                          /// 지정기사 호출 / 바로 호출하기 버튼
                                           ValueListenableBuilder<bool>(
                                             valueListenable: _homeViewModel
                                                 .isCallButtonValidNotifier,
@@ -1324,289 +1254,76 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     right: 20),
                                                 child: Row(
                                                   children: [
-                                                    /// 예약하기 버튼
+                                                    /// 지정기사 호출 버튼
                                                     Expanded(
                                                       child: CustomRadiusButton(
                                                         isEnabled: value,
                                                         text: StringHome
-                                                            .reservationButton,
+                                                            .designatedCallButton,
                                                         onPressed: () async {
-                                                          /// 예약콜 유의사항 조회
-                                                          final notiPolicy =
-                                                              await _homeViewModel
-                                                                  .getPolicy(
-                                                                      policyTp:
-                                                                          PolicyTp
-                                                                              .notc);
-                                                          if (notiPolicy ==
-                                                              null) {
-                                                            return;
-                                                          }
+                                                          /// 화면 이동 전 네이버지도 가림
+                                                          naverMap = null;
 
-                                                          /// 예약 일시 팝업 띄움
+                                                          /// 기사 지정 화면으로 이동. 주변 탭의 거리 기준은 출발지다
+                                                          final startLatLng =
+                                                              _homeViewModel
+                                                                      .startMapData
+                                                                      ?.latLng ??
+                                                                  _homeViewModel
+                                                                      .currentLatLng;
                                                           final result =
-                                                              await showModalBottomSheet(
-                                                            context: context,
-                                                            isScrollControlled:
-                                                                true,
-                                                            builder: (context) {
-                                                              return Wrap(
-                                                                  children: [
-                                                                    Padding(
-                                                                      padding: EdgeInsets.only(
-                                                                        bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
-                                                                      ),
-                                                                      child: const ReservationBottomSheet(),
-                                                                    )
-                                                                  ]);
+                                                              await context
+                                                                  .pushNamed(
+                                                            DriverSelectScreen
+                                                                .routeName,
+                                                            extra: <String,
+                                                                dynamic>{
+                                                              "gpsLat":
+                                                                  startLatLng
+                                                                      .latitude,
+                                                              "gpsLong":
+                                                                  startLatLng
+                                                                      .longitude,
+                                                              "selectedDriver":
+                                                                  _homeViewModel
+                                                                      .selectedDriver,
                                                             },
                                                           );
-                                                          debugPrint(
-                                                              "======$result");
-                                                          if (result == null) {
-                                                            return;
-                                                          }
 
-                                                          final dateTitle =
-                                                              result["title"];
-                                                          final dateValue =
-                                                              result["value"];
-
-                                                          /// 예약 정보 확인 팝업 띄움
-                                                          final resultConfirm =
-                                                              await showModalBottomSheet(
-                                                            context: context,
-                                                            isScrollControlled:
-                                                                true,
-                                                            useSafeArea: true,
-                                                            builder: (context) {
-                                                              return ReservationConfirmBottomSheet(
-                                                                driverNm: _homeViewModel
-                                                                    .selectedDriver
-                                                                    ?.drvNm,
-                                                                dateTitle:
-                                                                    dateTitle,
-                                                                dateValue:
-                                                                    dateValue,
-                                                                price:
-                                                                    _homeViewModel
-                                                                        .price,
-                                                                paymentNm:
-                                                                    _homeViewModel
-                                                                        .paymentNm,
-                                                                start: _homeViewModel
-                                                                    .startMapData!,
-                                                                end: _homeViewModel
-                                                                    .endMapData!,
-                                                                stopOverList:
-                                                                    _homeViewModel
-                                                                        .stopOverList,
-                                                                notiPolicy:
-                                                                    notiPolicy,
-                                                              );
-                                                            },
-                                                          );
-                                                          debugPrint(
-                                                              "======$resultConfirm");
-                                                          if (resultConfirm ==
-                                                              null) {
-                                                            return;
-                                                          }
-
-                                                          /// 차량정보 리스트 조회
-                                                          final carList =
-                                                              await _homeViewModel
-                                                                  .getCarList();
-
-                                                          String carNumId = "";
-                                                          if (carList
-                                                              .isNotEmpty) {
-                                                            /// 선택 안함 추가
-                                                            carList.add(Car(
-                                                                carNumId: ""));
-
-                                                            /// 차량선택 팝업
-                                                            final carResult =
-                                                                await showModalBottomSheet(
-                                                              context: context,
-                                                              isScrollControlled:
-                                                                  true,
-                                                              builder:
-                                                                  (context) {
-                                                                return Wrap(
-                                                                    children: [
-                                                                      CarSelectBottomSheet(
-                                                                          carList:
-                                                                              carList)
-                                                                    ]);
-                                                              },
-                                                            );
-                                                            if (carResult !=
-                                                                    null &&
-                                                                carResult
-                                                                    is Car) {
-                                                              carNumId =
-                                                                  carResult
-                                                                      .carNumId;
-                                                            } else {
-                                                              return;
-                                                            }
-                                                          }
-
-                                                          /// 예약하기
-                                                          final requestResult =
-                                                              await _homeViewModel
-                                                                  .requestReservation(
-                                                            carNumId: carNumId,
-                                                            date: dateValue,
-                                                          );
-                                                          if (requestResult
-                                                              is Success) {
-                                                            /// 예약 접수 성공 팝업
-                                                            await _showAlertDialog(
-                                                                content:
-                                                                    StringReservation
-                                                                        .reservationConfirmAlert,
-                                                                isCanceled:
-                                                                    false);
-
-                                                            /// 입력 데이터 삭제
+                                                          /// 기사를 고르면 지정, 지정 없이 호출을 고르면 지움.
+                                                          /// 뒤로 나가면(null) 호출하지 않는다.
+                                                          if (result is Driver) {
                                                             _homeViewModel
-                                                                .clearData();
-
-                                                            /// 화면 이동, 데이터 갱신 후, 네이버 지도 갱신
-                                                            naverMap = null;
+                                                                    .selectedDriver =
+                                                                result;
+                                                          } else if (result ==
+                                                              false) {
+                                                            _homeViewModel
+                                                                .selectedDriver = null;
+                                                          } else {
                                                             initData();
-
-                                                            /// 운행 정보 화면으로 이동
-                                                            final drvReqSq =
-                                                                requestResult
-                                                                    .drvResponse
-                                                                    .drvReqSq;
-                                                            await context
-                                                                .pushNamed(
-                                                              CallDetailScreen
-                                                                  .routeName,
-                                                              extra: drvReqSq,
-                                                            );
+                                                            return;
                                                           }
+
+                                                          /// 화면 이동 완료 후 네이버 지도 보여줌
+                                                          initData();
+
+                                                          /// 선택 후 호출 진행
+                                                          await _requestCall();
                                                         },
                                                       ),
                                                     ),
                                                     const SizedBox(width: 8),
 
-                                                    /// 호출하기 버튼
+                                                    /// 바로 호출하기 버튼
                                                     Expanded(
                                                       child: ElevatedButton(
                                                         onPressed: value
                                                             ? () async {
-                                                                /// 일반콜 유의사항 조회
-                                                                final notiPolicy =
-                                                                    await _homeViewModel.getPolicy(
-                                                                        policyTp:
-                                                                            PolicyTp.cano);
-                                                                if (notiPolicy ==
-                                                                    null) {
-                                                                  return;
-                                                                }
-
-                                                                final content = _homeViewModel
-                                                                        .endMapData!
-                                                                        .place
-                                                                        .isNotEmpty
-                                                                    ? _homeViewModel
-                                                                        .endMapData!
-                                                                        .place
-                                                                    : _homeViewModel
-                                                                        .endMapData!
-                                                                        .addressRoad;
-                                                                await _showCallConfirmDialog(
-                                                                  content:
-                                                                      content,
-                                                                  notiPolicy:
-                                                                      notiPolicy,
-                                                                  onConfirm:
-                                                                      () async {
-                                                                    Navigator.pop(
-                                                                        context);
-
-                                                                    /// 차량정보 리스트 조회
-                                                                    final carList =
-                                                                        await _homeViewModel
-                                                                            .getCarList();
-
-                                                                    String
-                                                                        carNumId =
-                                                                        "";
-                                                                    if (carList
-                                                                        .isNotEmpty) {
-                                                                      /// 선택 안함 추가
-                                                                      carList.add(Car(
-                                                                          carNumId:
-                                                                              ""));
-
-                                                                      /// 차량선택 팝업
-                                                                      final carResult =
-                                                                          await showModalBottomSheet(
-                                                                        context:
-                                                                            context,
-                                                                        isScrollControlled:
-                                                                            true,
-                                                                        builder:
-                                                                            (context) {
-                                                                          return Wrap(
-                                                                              children: [
-                                                                                CarSelectBottomSheet(carList: carList)
-                                                                              ]);
-                                                                        },
-                                                                      );
-                                                                      if (carResult !=
-                                                                              null &&
-                                                                          carResult
-                                                                              is Car) {
-                                                                        carNumId =
-                                                                            carResult.carNumId;
-                                                                      } else {
-                                                                        return;
-                                                                      }
-                                                                    }
-
-                                                                    /// 호출하기
-                                                                    final requestResult =
-                                                                        await _homeViewModel.requestCall(
-                                                                            carNumId:
-                                                                                carNumId);
-                                                                    if (requestResult
-                                                                        is Success) {
-                                                                      /// 화면 이동 전 네이버지도 가림
-                                                                      naverMap =
-                                                                          null;
-
-                                                                      /// 운행 화면으로 이동
-                                                                      final drvReqSq = requestResult
-                                                                          .drvResponse
-                                                                          .drvReqSq;
-                                                                      final callResult =
-                                                                          await context
-                                                                              .pushNamed(
-                                                                        WorkScreen
-                                                                            .routeName,
-                                                                        extra:
-                                                                            drvReqSq,
-                                                                      );
-                                                                      if (callResult ==
-                                                                          false) {
-                                                                        /// 운행취소
-                                                                        /// 입력 데이터 삭제
-                                                                        _homeViewModel
-                                                                            .clearData();
-                                                                      }
-
-                                                                      /// 화면 이동 완료 후 네이버 지도 보여줌
-                                                                      initData();
-                                                                    }
-                                                                  },
-                                                                );
+                                                                /// 바로 호출: 지정 기사 없이 자동 배차로 호출한다
+                                                                _homeViewModel
+                                                                    .selectedDriver = null;
+                                                                await _requestCall();
                                                               }
                                                             : null,
                                                         style: ElevatedButton
@@ -1616,9 +1333,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   .symmetric(
                                                                   vertical: 14,
                                                                   horizontal:
-                                                                      24),
+                                                                      8),
                                                         ),
                                                         child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
                                                           children: [
                                                             /// 아이콘
                                                             Container(
@@ -1644,18 +1364,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               ),
                                                             ),
                                                             const SizedBox(
-                                                                width: 18),
+                                                                width: 6),
 
-                                                            /// 예약콜
-                                                            const Expanded(
-                                                              child: Text(
-                                                                StringHome
-                                                                    .callButton,
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
+                                                            /// 바로 호출
+                                                            const Text(
+                                                              StringHome
+                                                                  .callButton,
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors.white,
                                                               ),
                                                             ),
                                                           ],
@@ -1712,28 +1429,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return NLatLng(position.latitude, position.longitude);
   }
 
-  _showAlertDialog(
-      {String? title,
-      String? content,
-      bool isWarning = false,
-      bool isCanceled = true}) {
-    return showDialog(
-      context: context,
-      barrierDismissible: isCanceled, // dialog 영역 외 터치 여부
-      builder: (BuildContext context) {
-        return CustomAlertDialog(
-          title: title,
-          content: content,
-          isCanceled: isCanceled,
-          isWarning: isWarning,
-          onConfirm: () {
-            Navigator.pop(context);
-          },
-        );
-      },
-    );
-  }
-
   _showConfirmDialog(
       {String? title,
       String? content,
@@ -1749,6 +1444,73 @@ class _HomeScreenState extends State<HomeScreen> {
           isWarning: isWarning,
           onConfirm: onConfirm,
         );
+      },
+    );
+  }
+
+  /// 호출 요청 흐름: 유의사항 → 차량선택 → 콜 요청 → 운행 화면.
+  /// 지정기사 호출·바로 호출하기가 공유한다. 지정 여부는 selectedDriver 로 구분한다.
+  Future<void> _requestCall() async {
+    /// 일반콜 유의사항 조회
+    final notiPolicy = await _homeViewModel.getPolicy(policyTp: PolicyTp.cano);
+    if (notiPolicy == null) {
+      return;
+    }
+
+    final content = _homeViewModel.endMapData!.place.isNotEmpty
+        ? _homeViewModel.endMapData!.place
+        : _homeViewModel.endMapData!.addressRoad;
+
+    await _showCallConfirmDialog(
+      content: content,
+      notiPolicy: notiPolicy,
+      onConfirm: () async {
+        Navigator.pop(context);
+
+        /// 차량정보 리스트 조회
+        final carList = await _homeViewModel.getCarList();
+
+        String carNumId = "";
+        if (carList.isNotEmpty) {
+          /// 선택 안함 추가
+          carList.add(Car(carNumId: ""));
+
+          /// 차량선택 팝업
+          final carResult = await showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) {
+              return Wrap(children: [CarSelectBottomSheet(carList: carList)]);
+            },
+          );
+          if (carResult != null && carResult is Car) {
+            carNumId = carResult.carNumId;
+          } else {
+            return;
+          }
+        }
+
+        /// 호출하기
+        final requestResult =
+            await _homeViewModel.requestCall(carNumId: carNumId);
+        if (requestResult is Success) {
+          /// 화면 이동 전 네이버지도 가림
+          naverMap = null;
+
+          /// 운행 화면으로 이동
+          final drvReqSq = requestResult.drvResponse.drvReqSq;
+          final callResult = await context.pushNamed(
+            WorkScreen.routeName,
+            extra: drvReqSq,
+          );
+          if (callResult == false) {
+            /// 운행취소 → 입력 데이터 삭제
+            _homeViewModel.clearData();
+          }
+
+          /// 화면 이동 완료 후 네이버 지도 보여줌
+          initData();
+        }
       },
     );
   }

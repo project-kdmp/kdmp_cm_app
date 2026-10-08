@@ -97,7 +97,8 @@ abstract class StringHome {
 
   static const String title = "콜프렌드 고객용";
   static const String reservationButton = "예약하기";
-  static const String callButton = "호출하기";
+  static const String callButton = "바로 호출하기";
+  static const String designatedCallButton = "지정기사 호출";
   static const String startPlaceHint = "출발지 검색";
   static const String endPlaceHint = "도착지 검색";
   static const String basicPrice = "일반요금";

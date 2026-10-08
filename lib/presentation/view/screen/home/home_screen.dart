@@ -47,6 +47,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.da
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/menu/menu_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_management_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/work/call_list_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/work/driver_select_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/work/work_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
@@ -283,7 +284,8 @@ class _HomeScreenState extends State<HomeScreen> {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () async {
-          await context.pushNamed(WorkScreen.routeName, extra: drvReqSq);
+          /// 진행 중인 콜 목록으로 간다. 여러 건이어도 거기서 전부 본다.
+          await context.pushNamed(CallListScreen.routeName);
 
           /// 돌아오면 아직 진행 중인지 다시 읽는다 — 끝났으면 배너가 사라져야 한다
           if (mounted) initData();

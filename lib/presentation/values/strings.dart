@@ -602,6 +602,9 @@ abstract class StringCallList {
   /// 별칭 수정
   static const String aliasEditTitle = "별칭 수정";
 
+  /// 카드 인라인 취소
+  static const String cancelButton = "호출취소";
+
   /// 상태 표시
   static const String stCalling = "호출중";
   static const String stAssigned = "배차완료";

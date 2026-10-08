@@ -6,10 +6,15 @@ import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/work/now_driving_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_call_alias_map_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_call_alias_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_now_driving_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/call_cancel_dialog.dart';
+import 'package:kdmp_cm_app/presentation/view/dialog/custom_alert_dialog.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/work/work_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
@@ -42,6 +47,9 @@ class _CallListScreenState extends State<CallListScreen> {
       getNowDrivingListUseCase: GetIt.instance<GetNowDrivingListUseCase>(),
       getCallAliasMapUseCase: GetIt.instance<GetCallAliasMapUseCase>(),
       setCallAliasUseCase: GetIt.instance<SetCallAliasUseCase>(),
+      setCallCancelUseCase: GetIt.instance<SetCallCancelUseCase>(),
+      setConfirmCallCancelUseCase: GetIt.instance<SetConfirmCallCancelUseCase>(),
+      setFCMPushUseCase: GetIt.instance<SetFCMPushUseCase>(),
     );
     _callListViewModel.getCallList();
   }
@@ -183,18 +191,67 @@ class _CallListScreenState extends State<CallListScreen> {
             _buildRoute("도착", call.reqEndPlaceNm, call.reqEndAddress),
             const SizedBox(height: 12),
 
-            /// 요금
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                getPrice(call.drvPaymPrice),
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
+            /// 취소 버튼(호출중·배차확정만) + 요금
+            Row(
+              children: [
+                if (_callListViewModel.canCancel(call))
+                  OutlinedButton(
+                    onPressed: () => _handleCancel(call),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Theme.of(context).disabledColor,
+                      side: BorderSide(color: Theme.of(context).disabledColor.withOpacity(0.4)),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(StringCallList.cancelButton, style: Theme.of(context).textTheme.bodySmall),
+                  ),
+                const Spacer(),
+                Text(
+                  getPrice(call.drvPaymPrice),
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  /// 카드에서 바로 콜 취소. 운행 화면과 같은 사유 선택 → 취소 → 안내 흐름.
+  Future<void> _handleCancel(NowDrivingCall call) async {
+    final cancelResult = await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) => CallCancelDialog(
+        onConfirm: (drvCancelTp, cancelReason) async {
+          final result = await _callListViewModel.cancelCall(
+            call: call,
+            drvCancelTp: drvCancelTp,
+            cancelReason: cancelReason,
+          );
+          if (result is Success && dialogContext.mounted) {
+            Navigator.pop(dialogContext, true);
+          }
+        },
+      ),
+    );
+
+    if (cancelResult == true && mounted) {
+      /// 취소 완료 안내
+      await showDialog(
+        context: context,
+        builder: (dialogContext) => CustomAlertDialog(
+          content: StringWork.cancelSuccess,
+          isCanceled: false,
+          onConfirm: () => Navigator.pop(dialogContext),
+        ),
+      );
+
+      /// 목록 갱신(취소된 콜 제외)
+      _callListViewModel.getCallList();
+    }
   }
 
   /// 별칭 수정 다이얼로그. 비워서 저장하면 도착지 기준 자동 별칭으로 되돌아간다.

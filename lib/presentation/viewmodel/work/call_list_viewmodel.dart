@@ -1,11 +1,19 @@
 import 'package:flutter/foundation.dart';
+import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
+import 'package:kdmp_cm_app/data/model/fcm/fcm_push_request.dart';
+import 'package:kdmp_cm_app/data/model/work/call_cancel_request.dart';
+import 'package:kdmp_cm_app/data/model/work/confirm_call_cancel_request.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_request.dart';
 import 'package:kdmp_cm_app/data/model/work/now_driving_response.dart';
+import 'package:kdmp_cm_app/domain/usecase/fcm/set_fcm_push_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_call_alias_map_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_call_alias_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_now_driving_list_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/set_confirm_call_cancel_usecase.dart';
+import 'package:kdmp_cm_app/presentation/values/strings.dart';
 
 /// 진행 중인 콜 목록(SCR-LIST) 뷰모델.
 /// 한 고객이 동시에 진행 중인 콜 전체를 조회해 보여준다.
@@ -15,12 +23,18 @@ class CallListViewModel {
     required this.getNowDrivingListUseCase,
     required this.getCallAliasMapUseCase,
     required this.setCallAliasUseCase,
+    required this.setCallCancelUseCase,
+    required this.setConfirmCallCancelUseCase,
+    required this.setFCMPushUseCase,
   });
 
   final GetMbrSqUseCase getMbrSqUseCase;
   final GetNowDrivingListUseCase getNowDrivingListUseCase;
   final GetCallAliasMapUseCase getCallAliasMapUseCase;
   final SetCallAliasUseCase setCallAliasUseCase;
+  final SetCallCancelUseCase setCallCancelUseCase;
+  final SetConfirmCallCancelUseCase setConfirmCallCancelUseCase;
+  final SetFCMPushUseCase setFCMPushUseCase;
 
   /// 조회 상태
   final ValueNotifier<StateAPI> _state = ValueNotifier<StateAPI>(Loading());
@@ -76,6 +90,54 @@ class CallListViewModel {
       callList = [];
     }
     state = result;
+  }
+
+  /// 취소 가능 여부. 호출중(CAL)·배차확정(CCO)만 취소할 수 있다(운행 화면과 동일).
+  bool canCancel(NowDrivingCall call) =>
+      call.drvReqSt == DrvReqSt.cal || call.drvReqSt == DrvReqSt.cco;
+
+  /// 콜 취소. 미확정(CAL)은 cancelCall, 확정(CCO)은 cancelConfirmCall + 배정 기사에게 취소 푸시.
+  /// 운행 화면 _handleCancelPress 와 같은 분기를 쓴다.
+  Future<StateAPI> cancelCall({
+    required NowDrivingCall call,
+    required String drvCancelTp,
+    required String cancelReason,
+  }) async {
+    final mbrSq = await getMbrSqUseCase.execute();
+
+    if (call.drvReqSt == DrvReqSt.cal) {
+      return await setCallCancelUseCase.execute(
+        callCancelRequest: CallCancelRequest(
+          mbrCmSq: mbrSq,
+          drvReqSq: call.drvReqSq,
+          drvCancelTp: drvCancelTp,
+          cancelReason: cancelReason,
+        ),
+      );
+    }
+
+    final result = await setConfirmCallCancelUseCase.execute(
+      confirmCallCancelRequest: ConfirmCallCancelRequest(
+        mbrCmSq: mbrSq,
+        drvReqSq: call.drvReqSq,
+        drvCancelTp: drvCancelTp,
+        cancelReason: cancelReason,
+      ),
+    );
+
+    /// 확정 콜 취소는 배정된 기사에게 취소 푸시를 보낸다.
+    if (result is Success && call.mbrDmSq != null) {
+      await setFCMPushUseCase.execute(
+        fcmPushRequest: FCMPushRequest(
+          mbrSqTarget: call.mbrDmSq!,
+          title: StringPush.callTitle,
+          body: StringPush.cancelBody,
+          type: DrvReqSt.del,
+        ),
+      );
+    }
+
+    return result;
   }
 
   /// 콜 한 건의 별칭을 저장한다. 빈 값이면 자동 별칭으로 되돌린다.

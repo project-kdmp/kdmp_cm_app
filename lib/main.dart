@@ -75,7 +75,9 @@ import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrci_usecase.
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_mbrci_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrid_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrpw_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_call_alias_map_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_call_alias_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_onboarding_check_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_payment_password_usecase.dart';
@@ -403,6 +405,10 @@ void main() async {
 
   final getNowDrivingListUseCase = GetNowDrivingListUseCase(workRepository: workRepository);
   getIt.registerSingleton<GetNowDrivingListUseCase>(getNowDrivingListUseCase);
+  final getCallAliasMapUseCase = GetCallAliasMapUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<GetCallAliasMapUseCase>(getCallAliasMapUseCase);
+  final setCallAliasUseCase = SetCallAliasUseCase(secureStorageRepository: secureStorageRepository);
+  getIt.registerSingleton<SetCallAliasUseCase>(setCallAliasUseCase);
   final getDrivingPriceUseCase = GetDrivingPriceUseCase(workRepository: workRepository);
   getIt.registerSingleton<GetDrivingPriceUseCase>(getDrivingPriceUseCase);
   final getDriverListUseCase = GetDriverListUseCase(workRepository: workRepository);

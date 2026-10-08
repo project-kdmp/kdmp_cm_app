@@ -57,6 +57,10 @@ abstract class SecureStorageRepository {
 
   Future<void> deletePendingReviewDrvReqSq();
 
+  Future<Map<int, String>> getCallAliasMap();
+
+  Future<void> setCallAlias({required int drvReqSq, required String alias});
+
   Future<List<FavoriteAddress>> getFavoriteAddressList();
 
   Future<void> setFavoriteAddressList({required List<FavoriteAddress> favoriteAddressList});

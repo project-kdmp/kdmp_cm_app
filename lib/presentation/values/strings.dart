@@ -599,6 +599,9 @@ abstract class StringCallList {
   static const String newCallButton = "＋ 새 콜 호출";
   static const String retry = "다시 시도";
 
+  /// 별칭 수정
+  static const String aliasEditTitle = "별칭 수정";
+
   /// 상태 표시
   static const String stCalling = "호출중";
   static const String stAssigned = "배차완료";

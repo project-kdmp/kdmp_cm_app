@@ -183,6 +183,23 @@ class SecureStorageRepositoryImpl extends SecureStorageRepository {
     await _storage.delete(key: 'pendingReviewDrvReqSq');
   }
 
+  /// 콜별 사용자 지정 별칭 맵 반환 (키: drvReqSq, 값: 별칭)
+  @override
+  Future<Map<int, String>> getCallAliasMap() async {
+    final json = await _storage.read(key: 'callAliasMap') ?? '{}';
+    final decoded = jsonDecode(json) as Map<String, dynamic>;
+    return decoded.map((key, value) => MapEntry(int.parse(key), value as String));
+  }
+
+  /// 콜 한 건의 사용자 지정 별칭 저장
+  @override
+  Future<void> setCallAlias({required int drvReqSq, required String alias}) async {
+    final map = await getCallAliasMap();
+    map[drvReqSq] = alias;
+    final encodable = map.map((key, value) => MapEntry(key.toString(), value));
+    await _storage.write(key: 'callAliasMap', value: jsonEncode(encodable));
+  }
+
   /// 로컬에 저장된 자주 가는 주소 리스트 반환
   @override
   Future<List<FavoriteAddress>> getFavoriteAddressList() async {

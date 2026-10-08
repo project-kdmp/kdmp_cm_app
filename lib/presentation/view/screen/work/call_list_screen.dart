@@ -4,11 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/work/now_driving_response.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_call_alias_map_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/set_call_alias_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_now_driving_list_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/work/work_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevated_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_radius_button.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/work/call_list_viewmodel.dart';
@@ -37,6 +40,8 @@ class _CallListScreenState extends State<CallListScreen> {
     _callListViewModel = CallListViewModel(
       getMbrSqUseCase: GetIt.instance<GetMbrSqUseCase>(),
       getNowDrivingListUseCase: GetIt.instance<GetNowDrivingListUseCase>(),
+      getCallAliasMapUseCase: GetIt.instance<GetCallAliasMapUseCase>(),
+      setCallAliasUseCase: GetIt.instance<SetCallAliasUseCase>(),
     );
     _callListViewModel.getCallList();
   }
@@ -109,10 +114,6 @@ class _CallListScreenState extends State<CallListScreen> {
 
   /// 콜 카드 한 건. 누르면 그 콜의 운행 상세로 이동한다.
   Widget _buildCard(NowDrivingCall call) {
-    final alias = (call.reqEndPlaceNm?.isNotEmpty == true)
-        ? call.reqEndPlaceNm!
-        : (call.reqEndAddress ?? "도착지");
-
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () async {
@@ -131,12 +132,33 @@ class _CallListScreenState extends State<CallListScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// 별칭(도착지 기준 자동)
-            Text(
-              alias,
-              style: Theme.of(context).textTheme.titleMedium,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            /// 별칭(사용자 지정 or 도착지 기준 자동) + 수정 버튼
+            Row(
+              children: [
+                Expanded(
+                  child: ValueListenableBuilder<Map<int, String>>(
+                    valueListenable: _callListViewModel.aliasMapNotifier,
+                    builder: (context, _, child) => Text(
+                      _callListViewModel.aliasOf(call),
+                      style: Theme.of(context).textTheme.titleMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.circular(999),
+                  onTap: () => _showAliasEditDialog(call),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(
+                      Icons.edit_outlined,
+                      size: 18,
+                      color: Theme.of(context).disabledColor,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
 
@@ -173,6 +195,59 @@ class _CallListScreenState extends State<CallListScreen> {
         ),
       ),
     );
+  }
+
+  /// 별칭 수정 다이얼로그. 비워서 저장하면 도착지 기준 자동 별칭으로 되돌아간다.
+  Future<void> _showAliasEditDialog(NowDrivingCall call) async {
+    final custom = _callListViewModel.aliasMapNotifier.value[call.drvReqSq] ?? "";
+    final controller = TextEditingController(text: custom);
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        contentPadding: const EdgeInsets.fromLTRB(18, 20, 18, 12),
+        actionsPadding: const EdgeInsets.only(left: 18, right: 18, bottom: 18),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        title: Text(StringCallList.aliasEditTitle, style: Theme.of(context).textTheme.titleMedium),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLength: 20,
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => _onAliasSubmit(dialogContext, call, controller.text),
+          decoration: InputDecoration(
+            hintText: _callListViewModel.autoAliasOf(call),
+            counterText: "",
+          ),
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: CustomElevatedButton(
+                  text: StringCommon.cancel,
+                  backgroundColor: Theme.of(context).cardColor,
+                  textColor: Theme.of(context).disabledColor,
+                  onPressed: () => Navigator.pop(dialogContext),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: CustomElevatedButton(
+                  text: StringCommon.confirm,
+                  onPressed: () => _onAliasSubmit(dialogContext, call, controller.text),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onAliasSubmit(BuildContext dialogContext, NowDrivingCall call, String text) {
+    _callListViewModel.saveAlias(drvReqSq: call.drvReqSq, alias: text);
+    Navigator.pop(dialogContext);
   }
 
   Widget _buildRoute(String label, String? placeNm, String? address) {

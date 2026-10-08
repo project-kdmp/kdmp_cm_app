@@ -816,7 +816,9 @@ class _WorkScreenState extends State<WorkScreen> with WidgetsBindingObserver {
           break;
         case DrvReqSt.del:
         case DrvReqSt.rdl:
-          context.pop();
+          /// 기사가 취소한 경우에도 고객이 취소했을 때와 동일하게 false 로 닫아
+          /// 홈 화면을 초기화한다(전에 호출한 출발·도착 입력이 남지 않게).
+          context.pop(false);
           _showAlertDialog(content: body, isCanceled: false);
           break;
         default:

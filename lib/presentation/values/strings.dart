@@ -588,3 +588,24 @@ abstract class StringDriverSelect {
   static const String close = "닫기";
   static const String released = "지정한 기사가 운행할 수 없는 상태라 일반 배차로 접수했습니다.";
 }
+
+/// 진행 중인 콜 목록 (SCR-LIST)
+abstract class StringCallList {
+  StringCallList._();
+
+  static const String title = "진행 중인 콜";
+  static const String empty = "진행 중인 콜이 없습니다.";
+  static const String emptyGuide = "홈에서 새로운 콜을 호출할 수 있습니다.";
+  static const String newCallButton = "＋ 새 콜 호출";
+  static const String retry = "다시 시도";
+
+  /// 상태 표시
+  static const String stCalling = "호출중";
+  static const String stAssigned = "배차완료";
+  static const String stWaiting = "대기중";
+  static const String stRunning = "운행중";
+
+  /// 기사 지정 여부
+  static const String appointed = "기사 지정";
+  static const String autoDispatch = "자동 배차";
+}

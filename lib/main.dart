@@ -89,6 +89,7 @@ import 'package:kdmp_cm_app/domain/usecase/work/get_call_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driver_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_price_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_driving_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/work/get_now_driving_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/get_reservation_info_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_cancel_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/work/set_call_fee_change_usecase.dart';
@@ -399,6 +400,9 @@ void main() async {
   getIt.registerSingleton<SetReviewWriteUseCase>(setReviewWriteUseCase);
   final getDrivingUseCase = GetDrivingUseCase(workRepository: workRepository);
   getIt.registerSingleton<GetDrivingUseCase>(getDrivingUseCase);
+
+  final getNowDrivingListUseCase = GetNowDrivingListUseCase(workRepository: workRepository);
+  getIt.registerSingleton<GetNowDrivingListUseCase>(getNowDrivingListUseCase);
   final getDrivingPriceUseCase = GetDrivingPriceUseCase(workRepository: workRepository);
   getIt.registerSingleton<GetDrivingPriceUseCase>(getDrivingPriceUseCase);
   final getDriverListUseCase = GetDriverListUseCase(workRepository: workRepository);

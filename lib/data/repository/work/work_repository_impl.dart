@@ -16,6 +16,7 @@ import 'package:kdmp_cm_app/data/model/work/confirm_call_cancel_request.dart';
 import 'package:kdmp_cm_app/data/model/work/driver_favorite_request.dart';
 import 'package:kdmp_cm_app/data/model/work/driver_list_request.dart';
 import 'package:kdmp_cm_app/data/model/work/driver_list_response.dart';
+import 'package:kdmp_cm_app/data/model/work/now_driving_response.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_price_request.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_price_response.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_request.dart';
@@ -415,6 +416,43 @@ class WorkRepositoryImpl extends WorkRepository {
       /// bizErrCode 없으면 정상 데이터 파싱
       if (!response.data.containsKey("bizErrCode")) {
         final responseObject = DrivingResponse.fromJson(response.data);
+        final StateAPI state = Success(responseObject);
+        debugPrint("state: $state");
+        return state;
+      } else {
+        final badResponse = BadResponse.fromJson(response.data);
+        final StateAPI state = Bad(badResponse);
+        if (badResponse.detailMessage.isNotEmpty) {
+          Fluttertoast.showToast(msg: badResponse.detailMessage);
+        } else {
+          Fluttertoast.showToast(msg: "오류가 발생했습니다.");
+        }
+        debugPrint("state: $state");
+        return state;
+      }
+    } catch (e, stackTrace) {
+      const errorMessage = "알 수 없는 오류가 발생했습니다.";
+      debugPrint("[$runtimeType] error: $e\n$stackTrace");
+      Fluttertoast.showToast(msg: errorMessage);
+      return Fail(errorMessage: errorMessage);
+    }
+  }
+
+  @override
+  Future<StateAPI> getNowDrivingList({required DrivingRequest drivingRequest}) async {
+    const api = '/v1/biztotal/cm/drv/listNowDriving';
+    final url = '${AppConstants.API}$api';
+
+    try {
+      final response = await _dio.get(
+        url,
+        queryParameters: drivingRequest.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      /// bizErrCode 없으면 정상 데이터 파싱
+      if (!response.data.containsKey("bizErrCode")) {
+        final responseObject = NowDrivingResponse.fromJson(response.data);
         final StateAPI state = Success(responseObject);
         debugPrint("state: $state");
         return state;

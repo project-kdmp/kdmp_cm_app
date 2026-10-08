@@ -42,6 +42,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/term/term_detail_screen.dar
 import 'package:kdmp_cm_app/presentation/view/screen/term/term_screen.dart';
 import 'package:kdmp_cm_app/data/model/work/driver_list_response.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/work/driver_select_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/work/call_list_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/work/work_screen.dart';
 
 final GoRouter router = GoRouter(
@@ -242,6 +243,13 @@ final GoRouter router = GoRouter(
         final int drvReqSq = state.extra as int;
         return WorkScreen(drvReqSq: drvReqSq);
       },
+    ),
+
+    /// 진행 중인 콜 목록
+    GoRoute(
+      name: CallListScreen.routeName,
+      path: CallListScreen.routeURL,
+      builder: (context, state) => const CallListScreen(),
     ),
 
     /// 메뉴

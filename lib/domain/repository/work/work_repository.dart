@@ -35,6 +35,8 @@ abstract class WorkRepository {
 
   Future<StateAPI> getDriving({required DrivingRequest drivingRequest});
 
+  Future<StateAPI> getNowDrivingList({required DrivingRequest drivingRequest});
+
   Future<StateAPI> getDrivingPrice({required DrivingPriceRequest drivingPriceRequest});
 
   Future<StateAPI> getDriverList({required DriverListRequest driverListRequest});

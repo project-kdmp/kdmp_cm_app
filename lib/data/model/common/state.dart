@@ -33,6 +33,7 @@ import 'package:kdmp_cm_app/data/model/work/call_info_response.dart';
 import 'package:kdmp_cm_app/data/model/work/driver_list_response.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_price_response.dart';
 import 'package:kdmp_cm_app/data/model/work/driving_response.dart';
+import 'package:kdmp_cm_app/data/model/work/now_driving_response.dart';
 import 'package:kdmp_cm_app/data/model/work/reservation_info_response.dart';
 
 abstract class StateAPI {}
@@ -111,6 +112,8 @@ class Success extends StateAPI {
   InquiryWriteResponse get inquiryWriteResponse => _response;
 
   DrivingResponse get drivingResponse => _response;
+
+  NowDrivingResponse get nowDrivingResponse => _response;
 
   DrivingPriceResponse get drivingPriceResponse => _response;
 

@@ -119,6 +119,36 @@ class Juso {
     required this.buldSlno,
   });
 
+  /// 네이버 지역(장소) 검색 결과를 도로명주소 목록에 함께 보여주기 위한 변환.
+  /// 선택 시 roadAddr(없으면 jibunAddr)를 지오코딩해 좌표·행정동을 얻으므로,
+  /// 표시·선택에 쓰는 bdNm·roadAddr·jibunAddr 만 채우고 나머지는 비운다.
+  factory Juso.place({required String bdNm, required String roadAddr, required String jibunAddr}) => Juso(
+        detBdNmList: "",
+        engAddr: "",
+        rn: "",
+        emdNm: "",
+        zipNo: "",
+        roadAddrPart2: "",
+        emdNo: "",
+        sggNm: "",
+        jibunAddr: jibunAddr,
+        siNm: "",
+        roadAddrPart1: "",
+        bdNm: bdNm,
+        admCd: "",
+        udrtYn: "",
+        lnbrMnnm: "",
+        roadAddr: roadAddr,
+        lnbrSlno: "",
+        buldMnnm: "",
+        bdKdcd: "",
+        liNm: "",
+        rnMgtSn: "",
+        mtYn: "",
+        bdMgtSn: "",
+        buldSlno: "",
+      );
+
   factory Juso.fromJson(Map<String, dynamic> json) => Juso(
         detBdNmList: json["detBdNmList"],
         engAddr: json["engAddr"],

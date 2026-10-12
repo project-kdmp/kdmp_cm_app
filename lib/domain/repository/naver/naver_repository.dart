@@ -1,6 +1,7 @@
 import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/naver/directions_request.dart';
 import 'package:kdmp_cm_app/data/model/naver/geocoding_request.dart';
+import 'package:kdmp_cm_app/data/model/naver/naver_local_request.dart';
 import 'package:kdmp_cm_app/data/model/naver/reverse_geocoding_request.dart';
 
 abstract class NaverRepository {
@@ -9,4 +10,6 @@ abstract class NaverRepository {
   Future<StateAPI> getAddressInfo({required String clientId, required String clientSecret, required GeocodingRequest geocodingRequest});
 
   Future<StateAPI> getDriving({required String clientId, required String clientSecret, required DirectionsRequest directionsRequest});
+
+  Future<StateAPI> searchLocal({required String clientId, required String clientSecret, required NaverLocalRequest naverLocalRequest});
 }

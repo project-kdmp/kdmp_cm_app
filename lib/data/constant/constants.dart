@@ -37,6 +37,13 @@ class AppConstants {
 
   static get NAVER_CLIENT_SECRET => _config[_Config.NAVER_CLIENT_SECRET];
 
+  /// 네이버 지역(장소) 검색 — NCP API Hub. 지도(지오코딩) 키와 별개다.
+  static get NAVER_SEARCH_API => _config[_Config.NAVER_SEARCH_API];
+
+  static get NAVER_SEARCH_CLIENT_ID => _config[_Config.NAVER_SEARCH_CLIENT_ID];
+
+  static get NAVER_SEARCH_CLIENT_SECRET => _config[_Config.NAVER_SEARCH_CLIENT_SECRET];
+
   static get PHONE_VERIFY_URL => _config[_Config.PHONE_VERIFY_URL];
 
   static const methodChannel = MethodChannel('kdmp_cm');
@@ -54,6 +61,9 @@ class _Config {
   static const JUSO_API_KEY = "JUSO_API_KEY";
   static const NAVER_CLIENT_ID = "NAVER_CLIENT_ID";
   static const NAVER_CLIENT_SECRET = "NAVER_CLIENT_SECRET";
+  static const NAVER_SEARCH_API = "NAVER_SEARCH_API";
+  static const NAVER_SEARCH_CLIENT_ID = "NAVER_SEARCH_CLIENT_ID";
+  static const NAVER_SEARCH_CLIENT_SECRET = "NAVER_SEARCH_CLIENT_SECRET";
 
   static const PHONE_VERIFY_URL = "PHONE_VERIFY_URL";
 
@@ -68,6 +78,9 @@ class _Config {
     JUSO_API_KEY: "JUSO_API_KEY_DEV",
     NAVER_CLIENT_ID: "NAVER_CLIENT_ID",
     NAVER_CLIENT_SECRET: "NAVER_CLIENT_SECRET",
+    NAVER_SEARCH_API: "https://naverapihub.apigw.ntruss.com",
+    NAVER_SEARCH_CLIENT_ID: "NAVER_SEARCH_CLIENT_ID",
+    NAVER_SEARCH_CLIENT_SECRET: "NAVER_SEARCH_CLIENT_SECRET",
     PHONE_VERIFY_URL: "http://210.223.56.94:8088/mobiliansTest",
   };
 
@@ -82,6 +95,9 @@ class _Config {
     JUSO_API_KEY: "JUSO_API_KEY_PROD",
     NAVER_CLIENT_ID: "NAVER_CLIENT_ID",
     NAVER_CLIENT_SECRET: "NAVER_CLIENT_SECRET",
+    NAVER_SEARCH_API: "https://naverapihub.apigw.ntruss.com",
+    NAVER_SEARCH_CLIENT_ID: "NAVER_SEARCH_CLIENT_ID",
+    NAVER_SEARCH_CLIENT_SECRET: "NAVER_SEARCH_CLIENT_SECRET",
     PHONE_VERIFY_URL: "https://stage.appkddsa.or.kr/mobilians",
   };
 
@@ -96,6 +112,9 @@ class _Config {
     JUSO_API_KEY: "JUSO_API_KEY_PROD",
     NAVER_CLIENT_ID: "NAVER_CLIENT_ID",
     NAVER_CLIENT_SECRET: "NAVER_CLIENT_SECRET",
+    NAVER_SEARCH_API: "https://naverapihub.apigw.ntruss.com",
+    NAVER_SEARCH_CLIENT_ID: "NAVER_SEARCH_CLIENT_ID",
+    NAVER_SEARCH_CLIENT_SECRET: "NAVER_SEARCH_CLIENT_SECRET",
     PHONE_VERIFY_URL: "https://appkddsa.or.kr/mobilians",
   };
 }

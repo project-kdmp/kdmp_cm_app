@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,6 +10,8 @@ import 'package:kdmp_cm_app/data/model/naver/directions_request.dart';
 import 'package:kdmp_cm_app/data/model/naver/directions_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/geocoding_request.dart';
 import 'package:kdmp_cm_app/data/model/naver/geocoding_response.dart';
+import 'package:kdmp_cm_app/data/model/naver/naver_local_request.dart';
+import 'package:kdmp_cm_app/data/model/naver/naver_local_response.dart';
 import 'package:kdmp_cm_app/data/model/naver/reverse_geocoding_request.dart';
 import 'package:kdmp_cm_app/data/model/naver/reverse_geocoding_response.dart';
 import 'package:kdmp_cm_app/domain/repository/naver/naver_repository.dart';
@@ -83,6 +87,36 @@ class NaverRepositoryImpl extends NaverRepository {
       debugPrint("[$runtimeType] error: $e\n$stackTrace");
       Fluttertoast.showToast(msg: errorMessage);
       return Fail(errorMessage: errorMessage);
+    }
+  }
+
+  @override
+  Future<StateAPI> searchLocal({required String clientId, required String clientSecret, required NaverLocalRequest naverLocalRequest}) async {
+    const api = '/search/v1/local';
+    final url = '${AppConstants.NAVER_SEARCH_API}$api';
+
+    try {
+      final response = await _dio.get(
+        url,
+        queryParameters: naverLocalRequest.toJson(),
+        options: Options(
+          headers: Map.from(
+            {
+              "X-NCP-APIGW-API-KEY-ID": clientId,
+              "X-NCP-APIGW-API-KEY": clientSecret,
+            },
+          ),
+        ),
+      );
+
+      /// API Hub 는 Content-Type 에 따라 응답이 String 으로 올 때가 있어 직접 디코딩한다.
+      final data = response.data is String ? jsonDecode(response.data) : response.data;
+      final responseObject = NaverLocalResponse.fromJson(data);
+      return Success(responseObject);
+    } catch (e, stackTrace) {
+      /// 장소 검색 실패는 조용히 넘긴다. 도로명주소 검색 결과는 그대로 보여준다.
+      debugPrint("[$runtimeType] searchLocal error: $e\n$stackTrace");
+      return Fail(errorMessage: "장소 검색에 실패했습니다.");
     }
   }
 

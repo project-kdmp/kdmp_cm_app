@@ -12,6 +12,7 @@ import 'package:kdmp_cm_app/data/model/common/state.dart';
 import 'package:kdmp_cm_app/data/model/juso/juso_list_response.dart';
 import 'package:kdmp_cm_app/domain/usecase/juso/get_juso_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/search_naver_local_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/add_mapdata_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mapdata_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/secure_storage/mbr/get_mbrsq_usecase.dart';
@@ -61,6 +62,7 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
       getJusoListUseCase: GetIt.instance<GetJusoListUseCase>(),
       getMapDataListUseCase: GetIt.instance<GetMapDataListUseCase>(),
       addMapDataUseCase: GetIt.instance<AddMapDataUseCase>(),
+      searchNaverLocalUseCase: GetIt.instance<SearchNaverLocalUseCase>(),
     );
   }
 
@@ -114,6 +116,8 @@ class _EndSearchScreenState extends State<EndSearchScreen> with SingleTickerProv
   void initData() async {
     /// 키 관리 파일 가져오기
     await dotenv.load(fileName: ".env");
+    _endSearchViewModel.searchClientId = dotenv.get(AppConstants.NAVER_SEARCH_CLIENT_ID);
+    _endSearchViewModel.searchClientSecret = dotenv.get(AppConstants.NAVER_SEARCH_CLIENT_SECRET);
     _endSearchViewModel.clientId = dotenv.get(AppConstants.NAVER_CLIENT_ID);
     _endSearchViewModel.clientSecret = dotenv.get(AppConstants.NAVER_CLIENT_SECRET);
     _endSearchViewModel.jusoApiKey = dotenv.get(AppConstants.JUSO_API_KEY);

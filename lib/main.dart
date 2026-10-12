@@ -51,6 +51,7 @@ import 'package:kdmp_cm_app/domain/usecase/mypage/set_car_delete_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_car_modify_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/mypage/set_withdrawal_member_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_info_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/naver/search_naver_local_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_detail_usecase.dart';
@@ -447,6 +448,8 @@ void main() async {
   getIt.registerSingleton<GetNaverAddressInfoUseCase>(getNaverAddressInfoUseCase);
   final getNaverDrivingUseCase = GetNaverDrivingUseCase(naverRepository: naverRepository);
   getIt.registerSingleton<GetNaverDrivingUseCase>(getNaverDrivingUseCase);
+  final searchNaverLocalUseCase = SearchNaverLocalUseCase(naverRepository: naverRepository);
+  getIt.registerSingleton<SearchNaverLocalUseCase>(searchNaverLocalUseCase);
 
   /// 도로명주소 검색 API
   final jusoRepository = JusoRepositoryImpl(dio);

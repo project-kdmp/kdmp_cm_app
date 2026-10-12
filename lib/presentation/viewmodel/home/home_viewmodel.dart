@@ -277,7 +277,11 @@ class HomeViewModel {
     stopOverList = List.empty();
     distance = 0;
     basicPrice = 0;
-    getPayment();
+
+    /// 결제수단은 경로 데이터가 아니다. 콜을 건 뒤에도 사용자가 고른 수단을
+    /// 유지한다. (전에는 getPayment() 로 로컬 카드목록 기준으로 다시 세팅해
+    /// 사용자의 선택이 버려졌다.)
+    _checkCallButtonValid();
   }
 
   /// 상태

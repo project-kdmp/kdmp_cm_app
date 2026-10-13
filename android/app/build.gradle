@@ -67,6 +67,49 @@ play {
     artifactDir.set(file("${rootProject.buildDir}/app/outputs/bundle/release"))
 }
 
+/// 릴리스 빌드 전 .env 필수 키 검증.
+/// .env 는 gitignore 라 빌드하는 머신마다 다르다. 키가 비어도 지도·장소검색(POI)·
+/// 주소검색은 실패를 조용히 삼켜(naver_repository_impl 의 "장소 검색 실패는 조용히 넘긴다"),
+/// 빈 키로 릴리스가 나가면 사용자에게만 기능이 사라진다. 2.2.8(213) 이 그렇게 나갔다.
+/// 그래서 빈 키로는 릴리스 번들·APK 가 만들어지지 않게 막는다.
+def requiredReleaseEnvKeys = [
+        "NAVER_CLIENT_ID", "NAVER_CLIENT_SECRET",
+        "NAVER_SEARCH_CLIENT_ID", "NAVER_SEARCH_CLIENT_SECRET",
+        "JUSO_API_KEY_PROD",
+]
+
+tasks.register("checkReleaseEnv") {
+    doLast {
+        /// rootProject.projectDir 는 android/ 다. flutter 프로젝트 루트의 .env 를 본다
+        def envFile = file("${rootProject.projectDir}/../.env")
+        if (!envFile.exists()) {
+            throw new GradleException(".env 가 없다: ${envFile}\n" +
+                    "→ 릴리스 키(.env)를 넣고 다시 빌드할 것.")
+        }
+        def env = [:]
+        envFile.eachLine("UTF-8") { line ->
+            def t = line.trim()
+            if (t.isEmpty() || t.startsWith("#")) return
+            def i = t.indexOf('=')
+            if (i > 0) env[t.substring(0, i).trim()] = t.substring(i + 1).trim()
+        }
+        def missing = requiredReleaseEnvKeys.findAll { !env[it] }
+        if (missing) {
+            throw new GradleException(
+                    "릴리스 .env 필수 키가 비었다: ${missing.join(', ')}\n" +
+                    "→ 이 키가 없으면 지도·장소검색(POI)·주소검색이 조용히 실패한다. 키를 채우고 다시 빌드할 것.")
+        }
+        println "[checkReleaseEnv] .env 필수 키 OK (${requiredReleaseEnvKeys.size()}개)"
+    }
+}
+
+/// flutter build appbundle/apk --release 가 돌리는 gradle 태스크에 검증을 건다
+tasks.whenTaskAdded { task ->
+    if (task.name == "bundleRelease" || task.name == "assembleRelease") {
+        task.dependsOn("checkReleaseEnv")
+    }
+}
+
 android {
     namespace "kr.or.kddsa.kdmp_cm_app"
     compileSdkVersion flutterCompileSdkVersion.toInteger()

@@ -20,7 +20,8 @@ class DriverDetailBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSelectable = driver.drvWorkSt != DrvWorkSt.off;
+    /// 대기중 기사만 지정할 수 있다(운행중·오프라인 제외).
+    final isSelectable = driver.drvWorkSt == DrvWorkSt.wait;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),

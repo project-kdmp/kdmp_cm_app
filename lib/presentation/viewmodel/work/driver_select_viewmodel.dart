@@ -119,6 +119,7 @@ class DriverSelectViewModel {
     }
   }
 
-  /// 오프라인 기사는 지정해도 콜을 받을 수 없으므로 고르지 못하게 한다
-  bool isSelectable(Driver driver) => driver.drvWorkSt != DrvWorkSt.off;
+  /// 대기중 기사만 지정할 수 있다. 운행중(다른 콜 운행)·오프라인 기사는
+  /// 콜을 받을 수 없으므로 고르지 못하게 한다.
+  bool isSelectable(Driver driver) => driver.drvWorkSt == DrvWorkSt.wait;
 }

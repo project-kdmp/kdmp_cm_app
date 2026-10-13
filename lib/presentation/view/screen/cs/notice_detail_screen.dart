@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_detail_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_image_usecase.dart';
 import 'package:kdmp_cm_app/presentation/util/string_util.dart';
 import 'package:kdmp_cm_app/presentation/values/strings.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
@@ -38,6 +39,7 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
   void initViewModel() {
     _noticeDetailViewModel = NoticeDetailViewModel(
       getNoticeDetailUseCase: GetIt.instance<GetNoticeDetailUseCase>(),
+      getNoticeImageUseCase: GetIt.instance<GetNoticeImageUseCase>(),
     );
   }
 

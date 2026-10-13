@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -15,6 +17,39 @@ class NoticeRepositoryImpl extends NoticeRepository {
   final Dio _dio;
 
   NoticeRepositoryImpl(this._dio);
+
+  /// 공지 본문에 박힌 이미지를 받아 data URI 로 돌려준다. 실패하면 null.
+  ///
+  /// 본문은 웹뷰로 그리는데, 이미지 경로(`/datafile/...`)는 **인증을 요구한다.**
+  /// 웹뷰는 앱의 토큰을 붙이지 않아 그대로 두면 거절당해 빈 칸이 된다. 그래서 토큰이
+  /// 붙는 Dio 로 미리 받아 본문에 심는다.
+  @override
+  Future<String?> getNoticeImageDataUri({required String path}) async {
+    /// 서버가 주는 경로에는 /v1/biztotal 접두가 없다. 다른 화면들이 IMAGE_URL 과
+    /// 붙여 쓰는 것과 같은 규칙이다.
+    final url = '${AppConstants.IMAGE_URL}$path';
+
+    try {
+      final response = await _dio.get<List<int>>(
+        url,
+        options: Options(responseType: ResponseType.bytes),
+      );
+
+      final bytes = response.data;
+
+      if (bytes == null || bytes.isEmpty) {
+        return null;
+      }
+
+      final mime = response.headers.value(Headers.contentTypeHeader) ?? 'image/png';
+
+      return 'data:$mime;base64,${base64Encode(bytes)}';
+    } catch (e) {
+      /// 이미지 하나를 못 받아도 공지 본문은 보여야 한다. 토스트를 띄우지 않는다.
+      debugPrint('[$runtimeType] 공지 이미지 실패: $path $e');
+      return null;
+    }
+  }
 
   @override
   Future<StateAPI> getNoticeList({required NoticeListRequest noticeListRequest}) async {

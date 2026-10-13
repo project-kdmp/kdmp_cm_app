@@ -55,6 +55,7 @@ import 'package:kdmp_cm_app/domain/usecase/naver/search_naver_local_usecase.dart
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_address_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/naver/get_naver_driving_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_detail_usecase.dart';
+import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_image_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/notice/get_notice_list_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/payment/set_kgmobil_billingkey_usecase.dart';
 import 'package:kdmp_cm_app/domain/usecase/policy/get_policy_usecase.dart';
@@ -428,6 +429,8 @@ void main() async {
   getIt.registerSingleton<GetNoticeListUseCase>(getNoticeListUseCase);
   final getNoticeDetailUseCase = GetNoticeDetailUseCase(noticeRepository: noticeRepository);
   getIt.registerSingleton<GetNoticeDetailUseCase>(getNoticeDetailUseCase);
+  final getNoticeImageUseCase = GetNoticeImageUseCase(noticeRepository: noticeRepository);
+  getIt.registerSingleton<GetNoticeImageUseCase>(getNoticeImageUseCase);
 
   /// 상담문의
   final inquiryRepository = InquiryRepositoryImpl(dio);

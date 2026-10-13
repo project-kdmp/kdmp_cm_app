@@ -6,4 +6,7 @@ abstract class NoticeRepository {
   Future<StateAPI> getNoticeList({required NoticeListRequest noticeListRequest});
 
   Future<StateAPI> getNoticeDetail({required NoticeDetailRequest noticeDetailRequest});
+
+  /// 공지 본문에 박힌 이미지를 받아 data URI 로 돌려준다. 실패하면 null.
+  Future<String?> getNoticeImageDataUri({required String path});
 }

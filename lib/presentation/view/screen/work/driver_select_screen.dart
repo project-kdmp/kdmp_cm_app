@@ -117,7 +117,9 @@ class _DriverSelectScreenState extends State<DriverSelectScreen> {
     );
 
     if (result is Driver && mounted) {
-      context.pop(result);
+      /// 상세에서 '이 기사 선택' 을 누르면 목록으로 돌아와 선택 상태로 둔다.
+      /// 실제 호출은 하단 '지정하고 호출' 버튼 하나로 한다.
+      _driverSelectViewModel.selectedDriver = result;
     }
   }
 
@@ -318,11 +320,10 @@ class _DriverSelectScreenState extends State<DriverSelectScreen> {
     final isSelectable = _driverSelectViewModel.isSelectable(driver);
 
     return GestureDetector(
+      /// 탭하면 선택(하이라이트)만 하고, 하단 '지정하고 호출' 로 호출한다.
+      /// 상세(평점·수락률)는 아래 정보 아이콘으로 따로 연다.
       onTap: isSelectable
-          ? () {
-              _driverSelectViewModel.selectedDriver = driver;
-              _showDetail(driver);
-            }
+          ? () => _driverSelectViewModel.selectedDriver = driver
           : null,
       child: Opacity(
         opacity: isSelectable ? 1 : 0.5,
@@ -365,6 +366,20 @@ class _DriverSelectScreenState extends State<DriverSelectScreen> {
                           ),
                     ),
                   ],
+                ),
+              ),
+
+              /// 상세 보기 (평점·수락률·단골 등록)
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => _showDetail(driver),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Icon(
+                    Icons.info_outline,
+                    color: Theme.of(context).disabledColor,
+                    size: 22,
+                  ),
                 ),
               ),
 

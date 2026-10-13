@@ -584,7 +584,7 @@ abstract class StringDriverSelect {
   static const String assignTag = "지정 기사";
   static const String assignEmpty = "자동 배차";
   static const String assignTitle = "기사 지정";
-  static const String detailAssign = "이 기사로 지정하고 호출";
+  static const String detailAssign = "이 기사 선택";
   static const String close = "닫기";
   static const String released = "지정한 기사가 운행할 수 없는 상태라 일반 배차로 접수했습니다.";
 }

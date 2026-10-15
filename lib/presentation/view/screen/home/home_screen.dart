@@ -336,6 +336,11 @@ class _HomeScreenState extends State<HomeScreen> {
           extra: pendingDrvReqSq,
         );
       }
+
+      /// 진행 중인 콜이 없다 = 직전 트립이 취소·종료됐다(또는 아직 아무것도 안 걸었다).
+      /// 다음 트립을 위해 결제수단을 기본값으로 되돌린다. 콜을 건 직후엔 진행 중인 콜이
+      /// 있어 이 분기를 타지 않으므로, 연달아 부를 때 고른 수단은 그대로 유지된다.
+      await _homeViewModel.getPayment();
     }
 
     /// 현위치 좌표 가져오기

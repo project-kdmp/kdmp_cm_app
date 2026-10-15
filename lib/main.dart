@@ -135,14 +135,7 @@ void main() async {
   await dotenv.load(fileName: ".env");
 
   /// 네이버 지도
-  /// 네이버 지도는 **NCP 신규 인증(initializeNcp)** 으로 초기화한다.
-  ///
-  /// 종전 `NaverMapSdk.instance.initialize` 는 구 인증 채널을 탄다. 키는 NCP 콘솔
-  /// (Services > Application Services > Maps > Application, Dynamic Map)에서 발급받았는데
-  /// 구 경로로 물어보니 **타일만 거부됐다** — 인증 실패 콜백도 오지 않고 지도에 NAVER
-  /// 로고와 마커만 뜬 채 회색 격자로 남는다. 기사용 앱에서 찾아 실기기로 확인한 것을
-  /// 그대로 옮긴다(2026-10-15).
-  await FlutterNaverMap().init(
+  await NaverMapSdk.instance.initialize(
     clientId: dotenv.get(AppConstants.NAVER_CLIENT_ID),
     onAuthFailed: (ex) => debugPrint("********* 네이버맵 인증오류 : $ex *********"),
   );

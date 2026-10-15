@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:kdmp_cm_app/presentation/util/location_util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdmp_cm_app/data/constant/codes.dart';
@@ -1424,12 +1424,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<NLatLng> getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    debugPrint("location position: $position");
-    return NLatLng(position.latitude, position.longitude);
-  }
+  /// 현위치 좌표. timeout·마지막 위치 폴백은 location_util 의 공통 헬퍼가 맡는다.
+  Future<NLatLng> getCurrentLocation() => getCurrentLatLng();
 
   _showConfirmDialog(
       {String? title,

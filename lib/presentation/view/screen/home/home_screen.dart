@@ -345,6 +345,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     /// 현위치 좌표 가져오기
     _homeViewModel.currentLatLng = await getCurrentLocation();
+
+    /// 정밀위치가 꺼져 있으면 현위치가 부정확하므로 한 번 안내한다
+    warnIfApproximateLocationOnce();
     // _homeViewModel.currentLatLng = const NLatLng(37.4668787, 126.88837); // TODO: 임시값
 
     /// 출발지 미지정 시 현재 위치를 기본 출발지로 설정 (다시 호출 데이터가 있는 경우는 제외)

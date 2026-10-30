@@ -8,6 +8,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/address/favorite_address_sc
 import 'package:kdmp_cm_app/presentation/view/screen/address/recent_search_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_map_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/address/start_search_screen.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/benefit/member_benefit_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/cs_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_detail_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/cs/inquiry_screen.dart';
@@ -332,6 +333,13 @@ final GoRouter router = GoRouter(
           name: SetupScreen.routeName,
           path: SetupScreen.routeName,
           builder: (context, state) => const SetupScreen(),
+        ),
+
+        /// 회원 혜택. 협회 웹페이지를 띄운다
+        GoRoute(
+          name: MemberBenefitScreen.routeName,
+          path: MemberBenefitScreen.routeName,
+          builder: (context, state) => const MemberBenefitScreen(),
         ),
 
         /// 고객센터

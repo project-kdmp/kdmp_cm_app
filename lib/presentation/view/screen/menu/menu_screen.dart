@@ -12,6 +12,7 @@ import 'package:kdmp_cm_app/presentation/view/screen/mypage/car_info_screen.dart
 import 'package:kdmp_cm_app/presentation/view/screen/mypage/mypage_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/screen/payment/payment_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/behavior/custom_scroll_behavior.dart';
+import 'package:kdmp_cm_app/presentation/view/screen/benefit/member_benefit_screen.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/menu/custom_move_button.dart';
 
@@ -108,6 +109,18 @@ class MenuScreen extends StatelessWidget {
                       },
                     ),
                     const Divider(thickness: 6),
+
+                    /// 회원 혜택 버튼
+                    ///
+                    /// 혜택 내용은 협회가 웹에서 관리하므로 앱이 목록을 그리지 않고
+                    /// 그 페이지를 띄운다. 기사앱의 '기사혜택' 과 같은 곳을 본다.
+                    CustomMoveButton(
+                      text: StringMenu.memberBenefit,
+                      icon: Icons.card_giftcard_outlined,
+                      onPressed: () {
+                        context.pushNamed(MemberBenefitScreen.routeName);
+                      },
+                    ),
 
                     /// 고객센터 버튼
                     CustomMoveButton(

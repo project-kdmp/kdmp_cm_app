@@ -31,6 +31,8 @@ class AppConstants {
 
   static get JUSO_API => _config[_Config.JUSO_API];
 
+  static get BENEFIT_URL => _config[_Config.BENEFIT_URL];
+
   static get JUSO_API_KEY => _config[_Config.JUSO_API_KEY];
 
   static get NAVER_CLIENT_ID => _config[_Config.NAVER_CLIENT_ID];
@@ -67,6 +69,10 @@ class _Config {
 
   static const PHONE_VERIFY_URL = "PHONE_VERIFY_URL";
 
+  /// 회원 혜택 안내 페이지. 협회가 웹에서 관리하므로 앱은 띄우기만 한다.
+  /// 우리 서버가 아니라 협회(k-pma.or.kr) 주소라 다른 항목과 호스트가 다르다.
+  static const BENEFIT_URL = "BENEFIT_URL";
+
   /// 개발
   static Map<String, dynamic> devConstants = {
     environment: Environment.DEV,
@@ -82,6 +88,8 @@ class _Config {
     NAVER_SEARCH_CLIENT_ID: "NAVER_SEARCH_CLIENT_ID",
     NAVER_SEARCH_CLIENT_SECRET: "NAVER_SEARCH_CLIENT_SECRET",
     PHONE_VERIFY_URL: "http://210.223.56.94:8088/mobiliansTest",
+    // dev 전용 주소를 받지 않았다. stage 와 같은 곳을 본다
+    BENEFIT_URL: "http://stage.k-pma.or.kr/benefits/legal",
   };
 
   /// 스테이징
@@ -99,6 +107,8 @@ class _Config {
     NAVER_SEARCH_CLIENT_ID: "NAVER_SEARCH_CLIENT_ID",
     NAVER_SEARCH_CLIENT_SECRET: "NAVER_SEARCH_CLIENT_SECRET",
     PHONE_VERIFY_URL: "https://stage.appkddsa.or.kr/mobilians",
+    // http 다. AndroidManifest 의 usesCleartextTraffic=true 가 받쳐 준다
+    BENEFIT_URL: "http://stage.k-pma.or.kr/benefits/legal",
   };
 
   /// 운영
@@ -116,5 +126,6 @@ class _Config {
     NAVER_SEARCH_CLIENT_ID: "NAVER_SEARCH_CLIENT_ID",
     NAVER_SEARCH_CLIENT_SECRET: "NAVER_SEARCH_CLIENT_SECRET",
     PHONE_VERIFY_URL: "https://appkddsa.or.kr/mobilians",
+    BENEFIT_URL: "https://k-pma.or.kr/benefits/legal",
   };
 }

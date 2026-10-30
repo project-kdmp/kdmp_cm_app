@@ -185,10 +185,24 @@ abstract class StringMenu {
   static const String payment = "결제관리";
   static const String carInfo = "차량정보";
   static const String favoriteAddress = "자주 가는 주소";
+  /// 협회 웹페이지를 띄운다
+  static const String memberBenefit = "회원 혜택";
   static const String cs = "고객센터";
   static const String terms = "이용약관";
   static const String noTermList = "등록된 약관이 없습니다.";
   static const String setup = "환경설정";
+}
+
+abstract class StringMemberBenefit {
+  StringMemberBenefit._();
+
+  static const String title = "회원 혜택";
+
+  /// 외부 사이트라 앱이 내용을 보장하지 않는다. 빈 화면만 남으면 고객이 앱 탓으로
+  /// 여기므로 까닭을 적어 둔다.
+  static const String errorTitle = "혜택 안내를 불러오지 못했습니다";
+  static const String errorBody = "네트워크 상태를 확인한 뒤 다시 시도해주세요.";
+  static const String retry = "다시 시도";
 }
 
 abstract class StringCarAdd {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,6 +12,7 @@ import 'package:kdmp_cm_app/presentation/view/widget/common/button/custom_elevat
 import 'package:kdmp_cm_app/presentation/view/widget/common/section/base_appbar.dart';
 import 'package:kdmp_cm_app/presentation/view/widget/common/text/custom_text_field.dart';
 import 'package:kdmp_cm_app/presentation/viewmodel/register/phone_inline_verify_viewmodel.dart';
+import 'package:smart_auth/smart_auth.dart';
 
 /// 휴대폰 인라인(네이티브) 본인인증 화면
 ///
@@ -50,6 +52,8 @@ class _PhoneInlineVerifyScreenState extends State<PhoneInlineVerifyScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
 
+  final SmartAuth _smartAuth = SmartAuth.instance;
+
   /// 인증요청 이후 발급된 요청 식별자
   String? _reqNo;
 
@@ -83,6 +87,10 @@ class _PhoneInlineVerifyScreenState extends State<PhoneInlineVerifyScreen> {
     _nameController.dispose();
     _phoneController.dispose();
     _codeController.dispose();
+
+    /// 화면을 떠나면 문자 대기를 거둔다. 남겨 두면 다음에 온 문자까지 집어 간다
+    if (Platform.isAndroid) _smartAuth.removeSmsRetrieverApiListener();
+
     super.dispose();
   }
 
@@ -108,8 +116,16 @@ class _PhoneInlineVerifyScreenState extends State<PhoneInlineVerifyScreen> {
 
     setState(() => _isLoading = true);
 
+    /// 앱 해시를 먼저 얻는다. 서버가 문자 끝에 그대로 붙이고, 그 해시가 있어야
+    /// 기기가 우리 앱에 문자를 건넨다(SMS Retriever).
+    ///
+    /// **못 얻어도 인증은 그대로 진행한다** — 자동입력만 안 되고 손으로 넣으면 된다.
+    /// iOS 는 OS 가 알아서 제안하므로 해시가 필요 없다.
+    final appSignature = await _appSignature();
+
     final result = await _viewModel.sendSmsCertCode(
       mbrMobilePhone: _mbrMobilePhone,
+      appSignature: appSignature,
     );
 
     if (!mounted) return;
@@ -120,8 +136,39 @@ class _PhoneInlineVerifyScreenState extends State<PhoneInlineVerifyScreen> {
       _codeController.clear();
       setState(() => _isRequested = true);
       _startTimers();
+      _listenSms();
     }
     // 실패 시 토스트는 repository에서 이미 처리됨 (Bad/Fail)
+  }
+
+  /// Android SMS Retriever 용 앱 해시 11자.
+  ///
+  /// **서명마다 다르다.** debug·업로드키·Play 재서명본이 각각 다른 값을 낸다 —
+  /// 스토어 빌드에서 자동입력이 안 되면 이 값부터 의심한다.
+  Future<String> _appSignature() async {
+    if (!Platform.isAndroid) return "";
+
+    final result = await _smartAuth.getAppSignature();
+    return result.data ?? "";
+  }
+
+  /// 문자가 오면 인증번호를 칸에 넣는다.
+  ///
+  /// 칸에 6자리가 차면 _codeController 리스너가 검증까지 자동으로 태운다.
+  /// 기다리는 동안 사용자가 손으로 넣어도 그대로 동작한다.
+  Future<void> _listenSms() async {
+    if (!Platform.isAndroid) return;
+
+    final result = await _smartAuth.getSmsWithRetrieverApi();
+    final code = result.data?.code;
+
+    /// 시간이 지나 화면을 떠났거나, 문자에서 숫자를 못 찾았으면 아무것도 하지 않는다.
+    if (!mounted || code == null || code.isEmpty) return;
+
+    /// 그 사이 사용자가 직접 넣었으면 건드리지 않는다 — 입력 중인 글자를 빼앗는 꼴이 된다
+    if (_codeController.text.isNotEmpty) return;
+
+    _codeController.text = code;
   }
 
   /// 인증번호 확인

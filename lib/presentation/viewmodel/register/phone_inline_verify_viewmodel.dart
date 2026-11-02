@@ -17,13 +17,19 @@ class PhoneInlineVerifyViewModel {
   StateAPI state = Loading();
 
   /// 인증번호(SMS) 요청/재전송
+  ///
+  /// [appSignature] 는 Android SMS Retriever 용 앱 해시 11자다. 서버가 문자 끝에
+  /// 그대로 붙이고, 그 해시가 있어야 기기가 우리 앱에 문자를 건넨다.
+  /// 비워 보내면 종전처럼 동작한다 — 자동입력만 안 될 뿐이다.
   Future<StateAPI> sendSmsCertCode({
     required String mbrMobilePhone,
+    String appSignature = "",
   }) async {
     state = Loading();
 
     final request = SendSmsCertCodeRequest(
       receiver: mbrMobilePhone,
+      appSignature: appSignature,
     );
     final result = await sendSmsCertCodeUseCase.execute(sendSmsCertCodeRequest: request);
     state = result;

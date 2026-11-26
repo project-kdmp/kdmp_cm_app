@@ -32,18 +32,25 @@ class TokenInterceptor extends InterceptorsWrapper {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-    if (!options.path.contains("/v1/auth-svr/cmLogin") && !options.path.contains("/v1/biztotal/cm/mbr/newMember") && !options.path.contains("/v1/biztotal/cm/listTerm") && !options.path.contains("/v1/biztotal/cm/getTerm")) {
+    if (_isOwnApiHost(options) && !options.path.contains("/v1/auth-svr/cmLogin") && !options.path.contains("/v1/biztotal/cm/mbr/newMember") && !options.path.contains("/v1/biztotal/cm/listTerm") && !options.path.contains("/v1/biztotal/cm/getTerm")) {
       final token = await getJwtUseCase.execute();
       options.headers['SCLAuthorization'] = 'Bearer $token';
     }
     super.onRequest(options, handler);
   }
 
+  /// 네이버 지도 등 외부 API 는 공용 dio 를 함께 쓴다. 자사 호스트인지 갈라야 한다.
+  bool _isOwnApiHost(RequestOptions options) {
+    final host = options.uri.host;
+    return host == Uri.parse(AppConstants.AUTH_API).host || host == Uri.parse(AppConstants.API).host;
+  }
+
   /// DioException 발생 시 실행됨
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     /// AccessToken 만료 시 RefreshToken 으로 재발급
-    if (err.response?.statusCode == 401) {
+    /// 네이버 지도 등 외부 API의 401은 우리 로그인 세션과 무관하므로 토큰 갱신/강제 로그아웃 대상에서 제외
+    if (err.response?.statusCode == 401 && _isOwnApiHost(err.requestOptions)) {
       final accessToken = await getJwtUseCase.execute();
       final refreshToken = await getAutoRefreshUseCase.execute();
       final mbrSq = await getMbrSqUseCase.execute();
@@ -62,9 +69,19 @@ class TokenInterceptor extends InterceptorsWrapper {
           compact: true,
         ));
       }
+      // 토큰 갱신 API
+      const api = '/v1/auth-svr/refreshToken';
+      final url = '${AppConstants.AUTH_API}$api';
+
       dio.interceptors.add(
         InterceptorsWrapper(
-          onError: (err, handler) async {
+          onError: (innerErr, innerHandler) async {
+            /// 토큰 갱신 자체가 실패한 경우에만 RefreshToken 만료로 본다.
+            /// 재요청 실패는 원래 요청의 오류이므로 그대로 흘려보낸다.
+            if (!innerErr.requestOptions.path.contains(api)) {
+              return innerHandler.next(innerErr);
+            }
+
             /// 다시 인증 오류가 발생했을 경우 RefreshToken 만료된 상태
             // 기기의 자동 로그인 정보 삭제
             ClientInfo.setClientId = "";
@@ -74,16 +91,14 @@ class TokenInterceptor extends InterceptorsWrapper {
 
             /// 앱 종료
             SystemNavigator.pop();
+
+            return innerHandler.next(innerErr);
           },
         ),
       );
 
       // 토큰 갱신 API 요청 시 AccessToken(만료), RefreshToken 포함
       dio.options.headers['SCLAuthorization'] = 'Bearer $accessToken';
-
-      // 토큰 갱신 API 요청
-      const api = '/v1/auth-svr/refreshToken';
-      final url = '${AppConstants.AUTH_API}$api';
 
       /// Token Refresh
       try {

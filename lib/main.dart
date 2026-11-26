@@ -135,7 +135,11 @@ void main() async {
   await dotenv.load(fileName: ".env");
 
   /// 네이버 지도
-  await NaverMapSdk.instance.initialize(
+  ///
+  /// 종전 `NaverMapSdk.instance.initialize` 는 구 인증 채널을 탄다. 구 경로로는
+  /// 타일이 거부돼 회색 격자로 남는다. 기사용 앱이 2026-10-15 에 같은 증상을 겪고
+  /// 이 경로로 옮겨 해결했다.
+  await FlutterNaverMap().init(
     clientId: dotenv.get(AppConstants.NAVER_CLIENT_ID),
     onAuthFailed: (ex) => debugPrint("********* 네이버맵 인증오류 : $ex *********"),
   );

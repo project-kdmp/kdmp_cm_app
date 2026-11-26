@@ -100,6 +100,35 @@ tasks.register("checkReleaseEnv") {
                     "→ 이 키가 없으면 지도·장소검색(POI)·주소검색이 조용히 실패한다. 키를 채우고 다시 빌드할 것.")
         }
         println "[checkReleaseEnv] .env 필수 키 OK (${requiredReleaseEnvKeys.size()}개)"
+
+        /// 비어 있지 않다고 유효한 것이 아니다. 2026-11-26 에 폐기된 구 NCP 키가
+        /// 채워진 채로 릴리스에 나가 지도가 통째로 멈췄다. 위 검사는 그대로 통과했다.
+        /// 그래서 키가 실제로 인증되는지 한 번 물어본다.
+        ///
+        /// 네트워크가 안 되는 환경에서 빌드를 막지는 않는다. 네이버가 명시적으로
+        /// 401 을 줄 때만 실패시킨다 — 그것만이 "키가 죽었다"는 확정 신호다.
+        try {
+            def url = new URL("https://maps.apigw.ntruss.com/map-reversegeocode/v2/gc" +
+                    "?coords=126.9784,37.5666&output=json&orders=addr")
+            def conn = url.openConnection()
+            conn.setRequestProperty("X-NCP-APIGW-API-KEY-ID", env["NAVER_CLIENT_ID"])
+            conn.setRequestProperty("X-NCP-APIGW-API-KEY", env["NAVER_CLIENT_SECRET"])
+            conn.connectTimeout = 5000
+            conn.readTimeout = 5000
+            def code = conn.responseCode
+            if (code == 401) {
+                throw new GradleException(
+                        "NAVER_CLIENT_ID 가 네이버에서 거부된다 (401).\n" +
+                        "→ NCP 콘솔 Services > Application Services > Maps 에서 이 앱\n" +
+                        "  (kr.or.kddsa.kdmp_cm_app) 의 Client ID/Secret 을 확인해 .env 를 고칠 것.\n" +
+                        "  이 상태로 릴리스하면 지도와 주소 변환이 전부 죽는다.")
+            }
+            println "[checkReleaseEnv] 네이버 키 인증 OK (HTTP ${code})"
+        } catch (GradleException ge) {
+            throw ge
+        } catch (Exception e) {
+            println "[checkReleaseEnv] 네이버 키 확인 건너뜀 (${e.class.simpleName}: ${e.message})"
+        }
     }
 }
 
